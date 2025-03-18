@@ -448,6 +448,27 @@
         }
       ]
     },
+        {
+      "name": "ARF Troopers",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/59215140638617511/EF41D3B9F89F86EC4E803863C17D1549052C8B55/",
+      "size": "small",
+      "type": "Clone Trooper",
+      "points": 66,
+      "speed": 2,
+      "upgrades": {
+        "Heavy Weapon": 1,
+        "Personel": 1, 
+        "Training": 1,
+        "Comms": 1,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/1009315641457802621/01F605D855048F823A0ECA6C46D2A62B56C04124/",
+          "secondary": "http://cloud-3.steamusercontent.com/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+        }
+      ]
+    },
     {
       "name": "Wookiee Warriors",
       "image": "http://cloud-3.steamusercontent.com/ugc/1619598366708171464/0A12FC8F203E5376156D3C2A207E33E1F5ACB0B6/",
