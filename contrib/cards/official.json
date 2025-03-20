@@ -1127,6 +1127,20 @@
     ],
     "Heavy Weapon": [
       {
+        "name": "RPS-6 ARF Trooper",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/59215140638617630/9AB204944DB662D2D15FC2FA5E50F02138AD1FD6/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16428815149645590/1B9C028584B5A7DCD488AE1E9C57D33A1B93C92E/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16428815149646251/ADB16A6BF3CADD49D0237A4AB51FB4D7AF0AB521/"
+        },
+        "points": 24,
+        "restrictions": {
+          "include": {
+            "unit": ["ARF Troopers"]
+          }
+        }
+      },
+      {
         "name": "Heavy Aqua Droid",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/1794100632571533/28837AF9D4578A64FDDBF1A1FBCF01B1B500C263/",
         "mini": {
@@ -2351,6 +2365,26 @@
     ],
     "Personnel": [
       {
+        "name": "ARF Trooper Duo",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/59215140639032161/5D3AFD658FC9FC30314A98DF8C5F0A7910B4ADF2/",
+        "minis": [
+          {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/16428815149932608/94AB8C15D97E81FF8040E81BC91F79A7105FF4B4/",
+          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/16428815149932637/F5D29AC3162A9D47B5440E5A3E3399FC12A594BE/"
+        },
+        {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/16428815149932871/EE8DF333D45ED841E9C31625FB4A9385C16B2F49/",
+          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/16428815149933386/736E0CCF2ADE31D6A9F6BE172B20AEB5420B815E/"
+        }
+      ],
+        "points": 26,
+        "restrictions": {
+          "include": {
+            "unit": ["ARF Troopers"]
+          }
+        }
+      },
+      {
         "name": "2-1B Medical Droid",
         "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568137676/C282622A211B384895C61D5EE0811E4E627FBDBF/",
         "mini": {
@@ -3548,6 +3582,22 @@
           }
         }
       }
+    ],
+    "Squad Leader": [
+      {
+        "name": "Jedi Guardian",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/59215140638617630/9AB204944DB662D2D15FC2FA5E50F02138AD1FD6/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/16426912929621400/CC4D94EDC24D933D7333F5A35308606846A9B550/",
+          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/16426912929621469/4B200440B54994D37A5B3667E04769CD92DE4F32/"
+        },
+        "points": 22,
+        "restrictions": {
+          "include": {
+            "faction": ["Republic"]
+          }
+        }
+      } 
     ],
     "Training": [
       {
