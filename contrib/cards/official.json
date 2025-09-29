@@ -2035,38 +2035,6 @@
         }
       },
       {
-        "name": "Fleet Trooper Squad",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384856618/9DED8502636167A62F6D2AEEE5AE8B004D61F3CF/",
-        "minis": [
-          {
-            "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540540670667/CB316B23D59F28C5EF22E94A43280D49DFFDD6AC/",
-            "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540540670760/47DF3E87B3F71E8EA42A89ECFE96E4FB3990D7ED/"
-          },
-          {
-            "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540540671182/A605D9D0DB356DC71473F5C9DF27DE1CADB4F320/",
-            "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540540671278/9B94D359A61113F72EEB0435D70A1291431D737A/"
-          },
-          {
-            "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540540670978/0642E99CB4E8CABA1AA10389F2387A1C70D9322D/",
-            "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540540670760/47DF3E87B3F71E8EA42A89ECFE96E4FB3990D7ED/"
-          },
-          {
-            "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540540671182/A605D9D0DB356DC71473F5C9DF27DE1CADB4F320/",
-            "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540540671278/9B94D359A61113F72EEB0435D70A1291431D737A/"
-          },
-          {
-            "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540540670978/0642E99CB4E8CABA1AA10389F2387A1C70D9322D/",
-            "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540540670760/47DF3E87B3F71E8EA42A89ECFE96E4FB3990D7ED/"
-          }
-        ],
-        "points": 45,
-        "restrictions": {
-          "include": {
-            "unit": ["Fleet Troopers"]
-          }
-        }
-      },
-      {
         "name": "Sonic Charge Saboteur",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140103507/922568C5FAACC25FCE80574BE5459CB511022824/",
         "mini": {
@@ -2915,6 +2883,38 @@
           "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540540670760/47DF3E87B3F71E8EA42A89ECFE96E4FB3990D7ED/"
         },
         "points": 7,
+        "restrictions": {
+          "include": {
+            "unit": ["Fleet Troopers"]
+          }
+        }
+      },
+      {
+        "name": "Fleet Trooper Squad",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384856618/9DED8502636167A62F6D2AEEE5AE8B004D61F3CF/",
+        "minis": [
+          {
+            "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540540670667/CB316B23D59F28C5EF22E94A43280D49DFFDD6AC/",
+            "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540540670760/47DF3E87B3F71E8EA42A89ECFE96E4FB3990D7ED/"
+          },
+          {
+            "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540540671182/A605D9D0DB356DC71473F5C9DF27DE1CADB4F320/",
+            "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540540671278/9B94D359A61113F72EEB0435D70A1291431D737A/"
+          },
+          {
+            "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540540670978/0642E99CB4E8CABA1AA10389F2387A1C70D9322D/",
+            "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540540670760/47DF3E87B3F71E8EA42A89ECFE96E4FB3990D7ED/"
+          },
+          {
+            "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540540671182/A605D9D0DB356DC71473F5C9DF27DE1CADB4F320/",
+            "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540540671278/9B94D359A61113F72EEB0435D70A1291431D737A/"
+          },
+          {
+            "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540540670978/0642E99CB4E8CABA1AA10389F2387A1C70D9322D/",
+            "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540540670760/47DF3E87B3F71E8EA42A89ECFE96E4FB3990D7ED/"
+          }
+        ],
+        "points": 45,
         "restrictions": {
           "include": {
             "unit": ["Fleet Troopers"]
