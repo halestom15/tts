@@ -110,6 +110,9 @@
     },
     {
       "content": "contrib/cards/ShadowCollective/BlackSunEnforcersUnit.json"
+    },
+    {
+      "content": "contrib/cards/ShadowCollective/WeequayPiratesUnit.json"
     }
   ],
   "Special Forces": [
