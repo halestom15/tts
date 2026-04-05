@@ -153,6 +153,7 @@ function onload(saveData)
     templateInfo.moveTemplate[1].shortBundle = "http://cloud-3.steamusercontent.com/ugc/1761462778007615968/4EE8D2332DCB6F4837551255CE5B1F240937BBE5/"
     templateInfo.moveTemplate[1].longBundle = "http://cloud-3.steamusercontent.com/ugc/1848161512056297932/A762E187E43177F01CD89D1348F51B1E3C1C744D/"
     templateInfo.moveTemplate[1].sharedBundle = "https://steamusercontent-a.akamaihd.net/ugc/14063680635734530221/FCD291B71472CA8636D00D0B82B1BA02671FF414/"
+    templateInfo.moveTemplate[1].sharedBundle = "https://steamusercontent-a.akamaihd.net/ugc/14063680635734530221/FCD291B71472CA8636D00D0B82B1BA02671FF414/"
 
 
     templateInfo.moveTemplate[2] = {}
@@ -160,7 +161,6 @@ function onload(saveData)
     templateInfo.moveTemplate[2].shortBundle = "http://cloud-3.steamusercontent.com/ugc/1761462778009510155/77119B471FE3C51B06443F8ABE1C1B522431DF9B/"
     templateInfo.moveTemplate[2].longBundle = "http://cloud-3.steamusercontent.com/ugc/1761462778009510102/15B368A8D753AB35E1D60F7A377AE273EBEC0145/"
     templateInfo.moveTemplate[2].sharedBundle = "https://steamusercontent-a.akamaihd.net/ugc/10737538167305927398/637135B07177CA895B71593EB85563FEFD0567D7/"
-    
     templateInfo.moveTemplate[3] = {}
     templateInfo.moveTemplate[3].colorTint = {1,0.2,0.2}
     templateInfo.moveTemplate[3].shortBundle = "http://cloud-3.steamusercontent.com/ugc/1761462778009510243/26BA9DD7881AF63E1A19EB6BF9802630D792F836/"

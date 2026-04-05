@@ -4329,6 +4329,22 @@
         }
       }
     ],
+    "Squad Leader": [
+      {
+        "name": "Jedi Guardian",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/59215140638617630/9AB204944DB662D2D15FC2FA5E50F02138AD1FD6/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/16426912929621400/CC4D94EDC24D933D7333F5A35308606846A9B550/",
+          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/16426912929621469/4B200440B54994D37A5B3667E04769CD92DE4F32/"
+        },
+        "points": 22,
+        "restrictions": {
+          "include": {
+            "faction": ["Republic"]
+          }
+        }
+      }
+    ],
     "Training": [
       {
         "name": "Security Detail",

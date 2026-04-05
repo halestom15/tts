@@ -280,14 +280,17 @@
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133208061/787C79B49789528F2EF54F1668B0BF28EBD6635C/",
       "size": "small",
       "type": "Trooper",
-      "points": 70,
+      "points": 75,
       "speed": 2,
       "upgrades": {
-        "Training": 3
+        "Command": 1,
+        "Training": 1,
+        "Gear": 1
       },
       "minis": [
         {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/2023850162090106066/B6E661CAB8049A1B1CE975B53BB57B337E2C5DEE/"
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/951848302305475778/55B558E631655D0430BAF76E71C93899AAECA7A1/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/951848302305475871/06400240648CC39F933BE504C74DA9BEF4D006C4/"
         }
       ],
       "commands": [
@@ -314,15 +317,17 @@
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133207972/4E2F553BC1FBA06D841591067D3D5E2AED2BF4E5/",
       "size": "small",
       "type": "Trooper",
-      "points": 45,
+      "points": 90,
       "speed": 2,
       "upgrades": {
-        "Command": 1,
-        "Training": 3
+        "Training": 2,
+        "Gear": 1,
+        "Armament": 1
       },
       "minis": [
         {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/2008089545867129309/3D6C219F243BDE984C42BB3444B01DB09B522CBB/"
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/773996263556990389/C38E9CAD7E5BA5496E1A211CA799E9ACBAC51D00/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/770611701143191344/5CAA4F0CE9A3FBE89A81560221ADCDDB5A801CC3/"
         }
       ]
     },

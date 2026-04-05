@@ -787,7 +787,8 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/16432158164944196/4594ADE002844CEEB6FB9A75E17AA802FCAE89FF/"
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/16432158164944196/4594ADE002844CEEB6FB9A75E17AA802FCAE89FF/",
+          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2491139050708070994/E763691AC8C24925DA2CA117DE90A54BAC836230/"
         }
       ]
     },
