@@ -1560,8 +1560,7 @@
         "name": "Asajj Ventress",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15926262740421549818/7F23F097083233A0C9348C3215BF09DB072C58E6/",
         "mini": {
-          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234780869167436/AAA2C61A17BB43F2673AF16D30BD0478B9AAAD2A/",
-          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234780869167571/EF86CBDA5F361282AD077D61FA81ABF0FEE061A0/"
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/2022718494181455957/4BB3E42AA412A7ED2ED6F26BFDFA25414F127B71/"
         },
         "leader": true,
         "points": 26,
