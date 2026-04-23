@@ -326,6 +326,29 @@
   ],
   "Operative": [
     {
+      "name": "Savage Opress",
+      "title": "Dooku's Apprentice",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/13168414506047365764/A8CEC8BB31ACD5D20F2472F1FE2A1C0BE1179F34/",
+      "size": "small",
+      "type": "Trooper",
+      "points": 0,
+      "speed": 2,
+      "upgrades": {},
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/11082776058831308047/3A974FCF53960CCBBC537A4134AD12242D4DDF89/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/17875535680143582051/1C009264C71FD35359145238DFA2CBD5D1872CD4/"
+        }
+      ],
+      "commands": [
+        {
+          "name": "We Shall Start With Revenge",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/10750064270635517385/492A552BB4056A4CBF9CD01FB5195521104C9F9E/",
+          "pip": 1
+        }
+      ]
+    },
+    {
       "name": "Super Tactical Command Droid",
       "title": "Auxiliary Command Droid",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10135443330772450249/A16B4DBBA547E54B4E1769F8C886B6F51003ED1B/",
@@ -608,30 +631,6 @@
       ]
     },
     {
-      "name": "BX-Series Droid Commandos",
-      "title": "Strike Team",
-      "displayName": "BX-Series Commandos (Strike Team)",
-      "heavyWeaponTeam": true,
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131430807/F260EA4E79ACB29C3C635836A3EF7E7C632E4FB6/",
-      "size": "small",
-      "type": "Droid Trooper",
-      "points": 20,
-      "speed": 2,
-      "upgrades": {
-        "Heavy Weapon": 1,
-        "Training": 1,
-        "Comms": 1,
-        "Armament": 1,
-        "Grenades": 1
-      },
-      "minis": [
-        {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1009315641457847081/F7D4E8D3EC85BAEEB5C1B5B913B7F484CC28FC10/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/773995528924546789/8774CBBDC3C4F18B11A444CC96EA5FE7F00DB48F/"
-        }
-      ]
-    },
-    {
       "name": "DRK-1 Sith Probe Droids",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131432071/495850F5BE28D1D1551D13D5B86F473D8EB154EC/",
       "size": "small",
@@ -745,18 +744,38 @@
   ],
   "Support": [
     {
+      "name": "BX-Series Droid Commandos",
+      "title": "Strike Team",
+      "displayName": "BX-Series Commandos (Strike Team)",
+      "heavyWeaponTeam": true,
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/9315317574108774179/CDF58FFA2BD16DDB0B5DEFDBC073AF2AE2D91F65/",
+      "size": "small",
+      "type": "Droid Trooper",
+      "points": 20,
+      "speed": 2,
+      "upgrades": {
+        "Heavy Weapon": 1,
+        "Training": 1,
+        "Comms": 1,
+        "Armament": 1,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/1009315641457847081/F7D4E8D3EC85BAEEB5C1B5B913B7F484CC28FC10/",
+          "secondary": "http://cloud-3.steamusercontent.com/ugc/773995528924546789/8774CBBDC3C4F18B11A444CC96EA5FE7F00DB48F/"
+        }
+      ]
+    },
+    {
       "name": "Droidekas",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131432109/A0B45534B85F46D38A4F372B04041A5193B31426/",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/17494420314363813844/3FE04FCFAF3815AA2DE9E9C52101B5038AB6F892/",
       "size": "medium",
-      "type": "Ground Vehicle",
-      "points": 60,
+      "type": "Emplacement Trooper",
+      "points": 67,
       "speed": 1,
       "upgrades": {
         "Comms": 1
-      },
-      "silhouette": {
-        "height": 1.85,
-        "offset": 0.0
       },
       "minis": [
         {
@@ -914,18 +933,14 @@
     },
     {
       "name": "Aqua Droids",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/1794100632571587/D3308B09BB6167322BFFB83C1A7E420C431D2396/",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/15835541998063761576/AFCAE9EC6C8FD26B11D7E2D3391F8242C7D4CFF0/",
       "size": "medium",
-      "type": "Ground Vehicle",
+      "type": "Emplacement Trooper",
       "points": 65,
       "speed": 1,
       "upgrades": {
         "Heavy Weapon": 1,
         "Comms": 1
-      },
-      "silhouette": {
-        "height": 1.85,
-        "offset": 0.0
       },
       "minis": [
         {

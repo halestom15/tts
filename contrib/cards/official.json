@@ -1557,6 +1557,36 @@
     ],
     "Heavy Weapon": [
       {
+        "name": "Assajj Ventress",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15926262740421549818/7F23F097083233A0C9348C3215BF09DB072C58E6/",
+        "mini": {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234780869167436/AAA2C61A17BB43F2673AF16D30BD0478B9AAAD2A/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234780869167571/EF86CBDA5F361282AD077D61FA81ABF0FEE061A0/"
+        },
+        "leader": true,
+        "points": 26,
+        "restrictions": {
+          "include": {
+            "unit": ["B1 Battle Droids", "BX-Series Droid Commandos"]
+          }
+        }
+      },
+      {
+        "name": "General Grievous",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13889602850013621809/37188B84F5B6D6E49F5A9C62942D33562B65CF9E/",
+        "mini": {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234780869167436/AAA2C61A17BB43F2673AF16D30BD0478B9AAAD2A/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234780869167571/EF86CBDA5F361282AD077D61FA81ABF0FEE061A0/"
+        },
+        "leader": true,
+        "points": 36,
+        "restrictions": {
+          "include": {
+            "unit": ["B1 Battle Droids", "IG-100 MagnaGuard"]
+          }
+        }
+      },
+      {
         "name": "Luke Skywalker",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10466047961901782395/2898B46094ACFC7D44564F3E1B650BC01D8FA0C9/",
         "mini": {
@@ -1830,12 +1860,12 @@
       },
       {
         "name": "BX-Series Droid Sniper",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139927410/552314F29830D4A8A63F5B8238699336F17ECD92/",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11012640175296329862/0E3952E994DB7BDA80F0614E3539909EAEC0049D/",
         "mini": {
           "bundle": "http://cloud-3.steamusercontent.com/ugc/1009315641457847963/0EA6BE014DA494689FF32F9570C6A73CD88F1894/",
           "secondary": "http://cloud-3.steamusercontent.com/ugc/773995528924546789/8774CBBDC3C4F18B11A444CC96EA5FE7F00DB48F/"
         },
-        "points": 40,
+        "points": 20,
         "restrictions": {
           "include": {
             "unit": ["BX-Series Droid Commandos"]
@@ -2073,12 +2103,12 @@
       },
       {
         "name": "Dioxis Mine Saboteur",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139927460/BE9022FA696C172E68110895A9DDCDDD635E2AB3/",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16211846897932945944/4A7D6789318AB8E685AF487F02231CC291248FAB/",
         "mini": {
           "bundle": "http://cloud-3.steamusercontent.com/ugc/1009315641457847567/079157D001A1520085C6A30620750817C6C01BFF/",
           "secondary": "http://cloud-3.steamusercontent.com/ugc/773995528924546789/8774CBBDC3C4F18B11A444CC96EA5FE7F00DB48F/"
         },
-        "points": 28,
+        "points": 20,
         "restrictions": {
           "include": {
             "unit": ["BX-Series Droid Commandos"]
