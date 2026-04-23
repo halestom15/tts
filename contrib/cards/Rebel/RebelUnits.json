@@ -530,7 +530,8 @@
       },
       "minis": [
         {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/2174736446809186599/4B154E18EF2C0ADE6C347FC4B15AD856D00546DF/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14052244614810856390/56285EFFD6CBC4799ADAA95830EB2F10E4120F69/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15565584712668003223/F742EEF3DC4CAE87C9E9D5974891C2A445C48649/"
         }
       ],
       "commands": [
