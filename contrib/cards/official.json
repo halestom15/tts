@@ -1557,6 +1557,51 @@
     ],
     "Heavy Weapon": [
       {
+        "name": "Luke Skywalker",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10466047961901782395/2898B46094ACFC7D44564F3E1B650BC01D8FA0C9/",
+        "mini": {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540537100371/0B15B2810ABEBE5429E4A24852D96BAC2DC28BF7/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540537079134/11A17263AD81DC9D4271B7C6BD809B69141DCB61/"
+        },
+        "leader": true,
+        "points": 25,
+        "restrictions": {
+          "include": {
+            "unit": ["Rebel Veterans", "Rebel Troopers"]
+          }
+        }
+      },
+      {
+        "name": "Jyn Erso",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16079811724149638991/B0AED05E50E5EC32550F8970C8F7C6AA412ADB18/",
+        "mini": {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/951848302305475778/55B558E631655D0430BAF76E71C93899AAECA7A1/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/951848302305475871/06400240648CC39F933BE504C74DA9BEF4D006C4/"
+        },
+        "leader": true,
+        "points": 22,
+        "restrictions": {
+          "include": {
+            "unit": ["Rebel Commandos", "Rebel Troopers", "Guerilla Troopers"]
+          }
+        }
+      },
+      {
+        "name": "Chewbacca",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15050970341342733786/8231EFDD964C904D2B3F2B170525EA2B5AECE9AC/",
+        "mini": {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540540669973/90DD9EA44756CCF9B2473302DC644F3AEEED07B4/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540540670117/5AA04499FC8CC467864F9F335601E6335C03326D/"
+        },
+        "leader": true,
+        "points": 40,
+        "restrictions": {
+          "include": {
+            "type": ["Wookiee Trooper"]
+          }
+        }
+      },
+      {
         "name": "Imperial Probe Droid",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12096037766204385743/C1C46E710472C45972A1CA308269B91EE9E691B0/",
         "mini": {
@@ -1896,12 +1941,12 @@
       },
       {
         "name": "DH-447 Sniper",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140084953/59EB5B5BADDFEACF7BA997C247F16A54080A6E31/",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16916821861583515066/6783DCC4833EAE22DCA9EDB9C8F585AE29BA13A3/",
         "mini": {
           "mesh": "http://cloud-3.steamusercontent.com/ugc/785234780862776611/B8222AA4A3B680E969DC106C8A281D11845994EB/",
           "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234780862776974/21649563BC0CB84E12C0B249C720919F528596D3/"
         },
-        "points": 38,
+        "points": 20,
         "restrictions": {
           "include": {
             "unit": ["Rebel Commandos"]
@@ -2233,12 +2278,12 @@
       },
       {
         "name": "Proton Charge Saboteur",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384857685/BBFA286A722F4FD50AB0DADDBF343A6CBC9EB79F/",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11476891187215628852/91F18B14DEB61395ADFE0900F2CB5C658414C7F6/",
         "mini": {
           "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541173465/8193FD1F0862270CD23BA9243679840BE6324DC6/",
           "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540541173570/3C100E92F0DEDEF117D3A0392D3271951BC90DD0/"
         },
-        "points": 20,
+        "points": 14,
         "restrictions": {
           "include": {
             "unit": ["Rebel Commandos"]
@@ -2342,8 +2387,7 @@
           "include": {
             "unit": ["Scout Troopers"]
           }
-        },
-        "additionalObjects": ["Proton Charge Token"]
+        }
       },
       {
         "name": "T-21 Stormtrooper",

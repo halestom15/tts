@@ -958,7 +958,7 @@
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133198280/BA9DB93D2D168B835C95075E8B1C52C79E044286/",
       "size": "small",
       "type": "Trooper",
-      "points": 48,
+      "points": 42,
       "speed": 2,
       "upgrades": {
         "Heavy Weapon": 1,
@@ -983,30 +983,6 @@
         {
           "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541173354/3483C6FB73C66481BC6CCC398BAB8E796F7EC076/",
           "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540541188141/6E23E29BB42963B94A0B7DFE01C4C49D776D9657/"
-        }
-      ]
-    },
-    {
-      "name": "Rebel Commandos",
-      "displayName": "Rebel Commandos (Strike Team)",
-      "title": "Strike Team",
-      "heavyWeaponTeam": true,
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133197589/A51BFFE52ED2FAE9DACE45BF774C7F5FE12CBC07/",
-      "size": "small",
-      "type": "Trooper",
-      "points": 20,
-      "speed": 2,
-      "upgrades": {
-        "Heavy Weapon": 1,
-        "Training": 1,
-        "Comms": 1,
-        "Gear": 1,
-        "Grenades": 1
-      },
-      "minis": [
-        {
-          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541173156/D637683F992DD0C4488252BE266EEEA1F26006B0/",
-          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540541172655/B10522A40482843AF69A3F321BD091B0ECF52C6B/"
         }
       ]
     },
@@ -1271,6 +1247,30 @@
         {
           "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541267781/BE163E2112B28E8C7C5E536B037D3115103F9642/",
           "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540541269701/797EACA86E0FB799D16DC8FE907A70C4B976C5EE/"
+        }
+      ]
+    },
+    {
+      "name": "Rebel Commandos",
+      "displayName": "Rebel Commandos (Strike Team)",
+      "title": "Strike Team",
+      "heavyWeaponTeam": true,
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/15391478724315537430/D37281FE62D2FB944EF610EB01C66232CA9BB8EA/",
+      "size": "small",
+      "type": "Trooper",
+      "points": 20,
+      "speed": 2,
+      "upgrades": {
+        "Heavy Weapon": 1,
+        "Training": 1,
+        "Comms": 1,
+        "Gear": 1,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541173156/D637683F992DD0C4488252BE266EEEA1F26006B0/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540541172655/B10522A40482843AF69A3F321BD091B0ECF52C6B/"
         }
       ]
     },
