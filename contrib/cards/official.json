@@ -1650,7 +1650,7 @@
         "name": "Seventh Sister",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12786414084835381664/A059896EB0382A23E79AC5B4A93BB1B80CB47DA8/",
         "mini": {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/10804385137011773/5377A3D119B96061C7EFAF2F8469BD5E889F3F13/"
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2446090001278329724/E8E229E0E3FB6230D9F5A1823C71032A0FC9F2D0/"
         },
         "leader": true,
         "points": 30,
@@ -1664,7 +1664,7 @@
         "name": "Fifth Brother",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14099995001149120961/E9E1ACB414FFC071E6B08B9F268040166D5D5C35/",
         "mini": {
-          "bundle": "steamusercontent-a.akamaihd.net/ugc/2456221571853672166/B86F663B609267644D837B4F18C59614C6785229/"
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2456221571853672166/B86F663B609267644D837B4F18C59614C6785229/"
         },
         "leader": true,
         "points": 32,
@@ -4947,6 +4947,11 @@
         "name": "Sneak Attack",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/17800273845434794252/84425184A9FA3237F85342B84FD168824FBF90C8/",
         "pip": 1
+      },
+      {
+        "name": "A Disturbance in the Force",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15573825798028976140/1303767C2A7775954093FE0105F0E9B2985AA64B/",
+        "pip": 2
       },
       {
         "name": "Air Support",
