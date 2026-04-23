@@ -1926,13 +1926,27 @@
         }
       },
       {
-        "name": "DC-15X ARC Trooper",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/9724672671096889082/B22903B590FA5B6D2AAEC2988AA0F9826C9D1EB2/",
+        "name": "DC-15X ARC Trooper Sniper",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9340306715371279306/77343FF20A60FEBDE4596D9E73806219B98BFB74/",
         "mini": {
           "bundle": "http://cloud-3.steamusercontent.com/ugc/1009315641457800878/34EC84D7ECD99E073417866A9BEC4288E00F5359/",
           "secondary": "http://cloud-3.steamusercontent.com/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
         },
-        "points": 37,
+        "points": 26,
+        "restrictions": {
+          "include": {
+            "unit": ["ARC Troopers"]
+          }
+        }
+      },
+      {
+        "name": "DC-15X ARC Trooper Gunner",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15700525996033034674/C04F340906CF0532B3825D5C67357C094FA10B29/",
+        "mini": {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/1009315641457800878/34EC84D7ECD99E073417866A9BEC4288E00F5359/",
+          "secondary": "http://cloud-3.steamusercontent.com/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+        },
+        "points": 26,
         "restrictions": {
           "include": {
             "unit": ["ARC Troopers"]
@@ -2813,6 +2827,35 @@
     ],
     "Squad Leader": [
       {
+        "name": "Obi-Wan Kenobi",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16739187061396312294/0BFA142DE447B3EAFC7447BBDBE40BB10C51A844/",
+        "mini": {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785236717873394134/94407058FBA842AD0FDCC0BBB8AB613EA9A739C2/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785236717873394267/272C1C9A8C15C36DC5C10DD62D5EFCEF9BFF4496/"
+        },
+        "points": 25,
+        "leader": true,
+        "restrictions": {
+          "include": {
+            "unit": ["ARF Troopers"]
+          }
+        }
+      },
+      {
+        "name": "Clone Commander Cody",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16353428824806788196/B2AEE50E55B08A53411690988BCE579A7EBFE4A8/",
+        "mini": {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/2174736446813135529/6A6C874DBCA77E800A77C20FD36C2F223661CD10/"
+        },
+        "points": 28,
+        "leader": true,
+        "restrictions": {
+          "include": {
+            "unit": ["ARF Troopers", "Clone Trooper Marksmen"]
+          }
+        }
+      },
+      {
         "name": "Clone Captain Rex",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/17837568269244781354/A462DDBE46166711CD3E69DD3F6F6947D25AEF3F/",
         "mini": {
@@ -2963,6 +3006,21 @@
       }
     ],
     "Personnel": [
+      {
+        "name": "Shaak Ti",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12779783962834644042/1D8FF74F712A51FB40C0B25B0EE6DC5183FD8D60/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/18026057114183857483/0D959FB4A356818AA1FA6D8034166916BB6EA84B/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9607653251760381402/E7F70FBA0C514FFA35DB2213F1F958835192D473/"
+        },
+        "points": 22,
+        "restrictions": {
+          "include": {
+            "faction": ["Republic"]
+          }
+        },
+        "leader": true
+      },
       {
         "name": "Weequay Pirate Squad",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/17099305818157449093/AB25320EE6C23F1CFA10608400AA0881A83EFCB4/",

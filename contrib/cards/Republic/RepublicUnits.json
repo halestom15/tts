@@ -1,6 +1,56 @@
 {
   "Commander": [
     {
+      "name": "Ki Adi Mundi",
+      "title": "Jedi Council",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/11929402197203734988/9CF2A7578A3EB20BA278864950D163A26901C4F5/",
+      "size": "small",
+      "type": "Trooper",
+      "points": 0,
+      "speed": 2,
+      "upgrades": {},
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12461470789103203864/DACD5524454E91F35C586DDEABAD420ED4E1FF46/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/17297173129004280551/384F67D13FCA3EBA539BD8D3818F5A0E5A8F2A0B/"
+        }
+      ],
+      "commands": [
+        {
+          "name": "Force of Will",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/18170241117176866803/0C12349B15161AD068F2BFD1AB13681EB31255FD/",
+          "pip": 3
+        }
+      ]
+    },
+    {
+      "name": "Mace Windu",
+      "title": "Jedi Council",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/12731488793753419264/4F069455F4652D7D87B92F26C1EB7C0888C7D48E/",
+      "size": "small",
+      "type": "Trooper",
+      "points": 165,
+      "speed": 2,
+      "upgrades": {
+        "Command": 1,
+        "Force": 3,
+        "Training": 2
+      },
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12925628276853873664/6E5E101942F74FC183F7154481D3EB5CFEAAAD65/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/18287494378041429592/02BB80E1E8A06309E2424A0AD83A7A68E9A42FD6/"
+        }
+      ],
+      "commands": [
+        {
+          "name": "This Party's Over",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/11977462417526561880/68CB1C0EABB464F67AF434BE84666B6FF126E6CD/",
+          "pip": 1
+        }
+      ]
+    },
+    {
       "name": "Ahsoka Tano",
       "title": "Padawan Commander",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59217531459831840/7BAA676E59D56B62D2E11FB77DD5B0E5BC387437/",
@@ -324,6 +374,52 @@
       "content": "contrib/cards/ShadowCollective/HondoUnit.json"
     },
     {
+      "name": "Shaak Ti",
+      "title": "Jedi Council",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/17555033359148455110/D2F1B99C8AB43C8B73071DAED15D378AC38F65C5/",
+      "size": "small",
+      "type": "Trooper",
+      "points": 0,
+      "speed": 2,
+      "upgrades": {},
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/18026057114183857483/0D959FB4A356818AA1FA6D8034166916BB6EA84B/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9607653251760381402/E7F70FBA0C514FFA35DB2213F1F958835192D473/"
+        }
+      ],
+      "commands": [
+        {
+          "name": "Unity Wins Wars",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/17101391156956704931/3299D62F86B634A6850085F40EA1DD60DC3BDEDE/",
+          "pip": 3
+        }
+      ]
+    },
+    {
+      "name": "Plo Koon",
+      "title": "Jedi Council",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/11338358295243396609/72E584709E6C16445AFBDB6820E58449092839EF/",
+      "size": "small",
+      "type": "Trooper",
+      "points": 0,
+      "speed": 2,
+      "upgrades": {},
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10428072234539757120/3154697B7EB8A5076E1CB4C312068560C7B3DE19/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16082411658181568841/AC55908D9B799DAEE652A7505DD8E06857464614/"
+        }
+      ],
+      "commands": [
+        {
+          "name": "I Don't Believe in Chance",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/15864173543972429126/27FCE434351A715B9DDDC4B033C3DE79B0260000/",
+          "pip": 2
+        }
+      ]
+    },
+    {
       "name": "Jedi Knight",
       "title": "Keeper of the Peace",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/13594361265103809816/D89855FDE478BF889E57C33B14C702991FAB2A45/",
@@ -564,30 +660,6 @@
       ]
     },
     {
-      "name": "Arc Troopers",
-      "title": "Strike Team",
-      "displayName": "Arc Troopers (Strike Team)",
-      "heavyWeaponTeam": true,
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384861099/0BF691267928341734741CDF04AAE59A41E5E20B/",
-      "size": "small",
-      "type": "Clone Trooper",
-      "points": 24,
-      "speed": 2,
-      "upgrades": {
-        "Heavy Weapon": 1,
-        "Training": 1,
-        "Comms": 1,
-        "Gear": 2,
-        "Grenades": 1
-      },
-      "minis": [
-        {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1009315641457802621/01F605D855048F823A0ECA6C46D2A62B56C04124/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
-        }
-      ]
-    },
-    {
       "name": "ARF Troopers",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59215140638617511/EF41D3B9F89F86EC4E803863C17D1549052C8B55/",
       "size": "small",
@@ -714,6 +786,30 @@
     }
   ],
   "Support": [
+    {
+      "name": "Arc Troopers",
+      "title": "Strike Team",
+      "displayName": "Arc Troopers (Strike Team)",
+      "heavyWeaponTeam": true,
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/11640734367175082150/31600D0C168D48D5E353E7E0A6D60C4935531D62/",
+      "size": "small",
+      "type": "Clone Trooper",
+      "points": 23,
+      "speed": 2,
+      "upgrades": {
+        "Heavy Weapon": 1,
+        "Training": 1,
+        "Comms": 1,
+        "Gear": 2,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/1009315641457802621/01F605D855048F823A0ECA6C46D2A62B56C04124/",
+          "secondary": "http://cloud-3.steamusercontent.com/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+        }
+      ]
+    },
     {
       "name": "BARC Speeder",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135357592/ED3AA636CBB456AA395C1694D27B84A296DD406B/",
