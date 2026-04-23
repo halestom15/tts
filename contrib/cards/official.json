@@ -1557,6 +1557,49 @@
     ],
     "Heavy Weapon": [
       {
+        "name": "Imperial Probe Droid",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12096037766204385743/C1C46E710472C45972A1CA308269B91EE9E691B0/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14972533488140369423/D390682F502B9999AE930DA6A78817DDE5D97027/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15762532285823663057/2254B8B0FBA723C3F840CDB6DB639404B0DA9DB1/"
+        },
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "faction": ["Empire"],
+            "rank": ["Corps", "Special Forces", "Support"]
+          }
+        }
+      },
+      {
+        "name": "Seventh Sister",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12786414084835381664/A059896EB0382A23E79AC5B4A93BB1B80CB47DA8/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/10804385137011773/5377A3D119B96061C7EFAF2F8469BD5E889F3F13/"
+        },
+        "leader": true,
+        "points": 30,
+        "restrictions": {
+          "include": {
+            "unit": ["Imperial Special Forces"]
+          }
+        }
+      },
+      {
+        "name": "Fifth Brother",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14099995001149120961/E9E1ACB414FFC071E6B08B9F268040166D5D5C35/",
+        "mini": {
+          "bundle": "steamusercontent-a.akamaihd.net/ugc/2456221571853672166/B86F663B609267644D837B4F18C59614C6785229/"
+        },
+        "leader": true,
+        "points": 32,
+        "restrictions": {
+          "include": {
+            "unit": ["Stormtrooper Riot Squad"]
+          }
+        }
+      },
+      {
         "name": "Long Rifle Pirate",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12069676993247554413/429E3382BCE4E5FB5A38F8E4E43DAE97DD7C3587/",
         "mini": {
@@ -1895,12 +1938,12 @@
       },
       {
         "name": "DLT-19X Sniper",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140103101/607C9BEDEB2C3780F1AE58D72DEE649F941A7CAD/",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15525633462179263891/86D8A2EF8EBA4D9BF3DD245487375FB807A7E8B3/",
         "mini": {
           "mesh": "http://cloud-3.steamusercontent.com/ugc/770610077943667377/92306C3BFB675310563691C3C582BF5B9FC9ACD4/",
           "diffuse": "http://cloud-3.steamusercontent.com/ugc/770610077943667167/66F3188269E49FE5DAD649E771D799F2593263FF/"
         },
-        "points": 28,
+        "points": 20,
         "restrictions": {
           "include": {
             "unit": ["Scout Troopers"]
@@ -2289,12 +2332,12 @@
 
       {
         "name": "Sonic Charge Saboteur",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140103507/922568C5FAACC25FCE80574BE5459CB511022824/",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15530089580724049994/20B4C2D6907EBDEC74CEF88C5B10B71ED016F94B/",
         "mini": {
           "mesh": "http://cloud-3.steamusercontent.com/ugc/950714557093539716/6A0D63306F505A074395AFA61EB990280DB8995D/",
           "diffuse": "http://cloud-3.steamusercontent.com/ugc/950714557093539899/FF7A535E91BF79D4C3E0D55E874C1ACEB6FBF434/"
         },
-        "points": 23,
+        "points": 17,
         "restrictions": {
           "include": {
             "unit": ["Scout Troopers"]
