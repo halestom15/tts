@@ -10,121 +10,11 @@
   "upgrades": {
     "Armament": [
       {
-        "name": "Heavy Arm Cannon",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/9491942057538415219/C158C02B7135405F2EC1E5B21BC2FB09876E21F8/",
-        "points": 20,
-        "restrictions": {
-          "include": {
-            "unit": ["Super Tactical Command Droid"]
-          }
-        }
-      },
-      {
-        "name": "Electrostaff",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/18437389315593431740/A0F53051C57B1167C6C2A631755BD8D4F0AFCB9B/",
-        "points": 10,
-        "restrictions": {
-          "include": {
-            "unit": ["Super Tactical Command Droid"]
-          }
-        }
-      },
-      {
-        "name": "Twin Lightsabers",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10644823733316041135/289BDD492BB3E295276192F60944E251986DAAAF/",
-        "points": 0,
-        "restrictions": {
-          "include": {
-            "unit": ["Jedi Knight Genral", "Jedi Knight"]
-          }
-        }
-      },
-      {
-        "name": "Lightsaber",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/9358476422022162198/D59B90B25355B223E8D91DF23E233DFCB591B3F7/",
-        "points": 0,
-        "restrictions": {
-          "include": {
-            "unit": ["Jedi Knight Genral", "Jedi Knight"]
-          }
-        }
-      },
-      {
-        "name": "Double-Bladed Lightsaber",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10386689818644119201/B5A0C4C02D76641FFCF96A105E27DFE48C9DEDA9/",
-        "points": 0,
-        "restrictions": {
-          "include": {
-            "unit": ["Jedi Knight Genral", "Jedi Knight"]
-          }
-        }
-      },
-      {
-        "name": "Heavy Blaster Pistol (Rebel)",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/16982319690732285379/8FA680F434D4EF30BB0DCDB8835BABFB8C90B16F/",
-        "points": 5,
-        "restrictions": {
-          "include": {
-            "unit": ["Rebel Officer", "Rebel Agent"]
-          }
-        }
-      },
-      {
-        "name": "Repeating Blaster",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/13484211657005252288/0AFB1BBC7DA74BA6713EDCA6869C28E2522C7128/",
-        "points": 25,
-        "restrictions": {
-          "include": {
-            "unit": ["Rebel Officer", "Rebel Agent"]
-          }
-        }
-      },
-      {
-        "name": "Vibro Axe",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/12824619755788191989/83D29D8C052D145897BAEF171074D066C4CB143A/",
-        "points": 8,
-        "restrictions": {
-          "include": {
-            "unit": ["Rebel Officer", "Rebel Agent"]
-          }
-        }
-      },
-      {
-        "name": "Heavy Blaster Pistol (Empire)",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/16148048905111619924/4146F9FBD1CE36B93A82B0403DB3E956510A7271/",
-        "points": 5,
-        "restrictions": {
-          "include": {
-            "unit": ["Imperial Officer", "Imperial Agent"]
-          }
-        }
-      },
-      {
-        "name": "Stun Baton",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/11788115204668483271/6494041D37500BD80CE8CB640CC058D4CDB7C5DD/",
-        "points": 8,
-        "restrictions": {
-          "include": {
-            "unit": ["Imperial Officer", "Imperial Agent"]
-          }
-        }
-      },
-      {
-        "name": "Z-6 Riot Baton",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/11921155978538693026/3426025D9984B223902084BA7DA742C27DEC0D63/",
-        "points": 8,
-        "restrictions": {
-          "include": {
-            "unit": ["Imperial Officer", "Imperial Agent"]
-          }
-        }
-      },
-      {
-        "name": "A-180 Rifle Config",
-        "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568137807/208481F3DC8BE18ED10D2A17F12F35869213235C/",
+        "name": "A-180 Pistol Config",
+        "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568137779/795B34FF0E53DA5355EA7952A034C6A4CFD003D0/",
         "flip": {
-          "name": "A-180 Pistol Config",
-          "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568137779/795B34FF0E53DA5355EA7952A034C6A4CFD003D0/"
+          "name": "A-180 Rifle Config",
+          "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568137807/208481F3DC8BE18ED10D2A17F12F35869213235C/"
         },
         "points": 0,
         "restrictions": {
@@ -148,16 +38,46 @@
         }
       },
       {
-        "name": "A280, Rifle Config",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140081159/19C93D73F4F86E9D7531E2CD784F5492772ED28F/",
+        "name": "A280, Pistol Config",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140081077/A5B040BCD34352C6E5375640DE539E526067DBFE/",
         "flip": {
-          "name": "A280, Pistol Config",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140081077/A5B040BCD34352C6E5375640DE539E526067DBFE/"
+          "name": "A280, Rifle Config",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140081159/19C93D73F4F86E9D7531E2CD784F5492772ED28F/"
         },
         "points": 0,
         "restrictions": {
           "include": {
             "unit": ["Cassian Andor"]
+          }
+        }
+      },
+      {
+        "name": "Beskar Spear",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639488/EDE8AA68D0589BFB956D68E2A08B31715C5F9D61/",
+        "points": 15,
+        "restrictions": {
+          "include": {
+            "unit": ["Din Djarin"]
+          }
+        }
+      },
+      {
+        "name": "BX Deflector Shields",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139927385/CD3E586656B39D35246C84BAFD6ADB12B665E5E5/",
+        "points": 18,
+        "restrictions": {
+          "include": {
+            "unit": ["BX-Series Droid Commandos"]
+          }
+        }
+      },
+      {
+        "name": "BX Vibroswords",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139927392/0B4491CA615FAA34F7EFEDCE08BAD5A06571BE90/",
+        "points": 6,
+        "restrictions": {
+          "include": {
+            "unit": ["BX-Series Droid Commandos"]
           }
         }
       },
@@ -172,12 +92,56 @@
         }
       },
       {
-        "name": "BX Deflector Shields",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139927385/CD3E586656B39D35246C84BAFD6ADB12B665E5E5/",
-        "points": 18,
+        "name": "DC-17m ICWS Config",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135385953/007D0426E485963714BCBE0B74B2B8AE5B7F1869/",
+        "flip": {
+          "name": "DC-17m ICWS Config",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135386003/EB0729A53546B70CB9054BAF5306E3F5368FC9DF/"
+        },
+        "points": 0,
         "restrictions": {
           "include": {
-            "unit": ["BX-Series Droid Commandos"]
+            "unit": ["Clone Commandos", "Clone Commandos Delta Squad"]
+          }
+        }
+      },
+      {
+        "name": "Double-Bladed Lightsaber",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10386689818644119201/B5A0C4C02D76641FFCF96A105E27DFE48C9DEDA9/",
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "unit": ["Jedi Knight Genral", "Jedi Knight"]
+          }
+        }
+      },
+      {
+        "name": "Din's Amban Rifle",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639183/C2D75F184A5F66EA154C4DF44AADA7A9443A9468/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "unit": ["Din Djarin"]
+          }
+        }
+      },
+      {
+        "name": "Electro Gauntlets",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639059/89380FD599DD6819950BB21C5F940A9074C34A51/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "unit": ["Cad Bane"]
+          }
+        }
+      },
+      {
+        "name": "Electrostaff",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/18437389315593431740/A0F53051C57B1167C6C2A631755BD8D4F0AFCB9B/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "unit": ["Super Tactical Command Droid"]
           }
         }
       },
@@ -196,18 +160,48 @@
         }
       },
       {
-        "name": "Electro Gauntlets",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639059/89380FD599DD6819950BB21C5F940A9074C34A51/",
-        "points": 10,
+        "name": "Heavy Arm Cannon",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9491942057538415219/C158C02B7135405F2EC1E5B21BC2FB09876E21F8/",
+        "points": 20,
         "restrictions": {
           "include": {
-            "unit": ["Cad Bane"]
+            "unit": ["Super Tactical Command Droid"]
+          }
+        }
+      },
+      {
+        "name": "Heavy Blaster Pistol (Empire)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16148048905111619924/4146F9FBD1CE36B93A82B0403DB3E956510A7271/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Imperial Officer", "Imperial Agent"]
+          }
+        }
+      },
+      {
+        "name": "Heavy Blaster Pistol (Rebel)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16982319690732285379/8FA680F434D4EF30BB0DCDB8835BABFB8C90B16F/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Rebel Officer", "Rebel Agent"]
           }
         }
       },
       {
         "name": "Iden's DLT-20A Rifle",
         "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568142679/5583B4B2E96BA55F3A4D2DE46EBF31B130AAA757/",
+        "points": 15,
+        "restrictions": {
+          "include": {
+            "unit": ["Iden Versio"]
+          }
+        }
+      },
+      {
+        "name": "Iden's TL-50 Repeater",
+        "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568142734/E13169C3DF9153C7196A29DB82578DE1FD659F6D/",
         "points": 15,
         "restrictions": {
           "include": {
@@ -250,12 +244,32 @@
         }
       },
       {
+        "name": "Lightsaber",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9358476422022162198/D59B90B25355B223E8D91DF23E233DFCB591B3F7/",
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "unit": ["Jedi Knight Genral", "Jedi Knight"]
+          }
+        }
+      },
+      {
         "name": "Looted E-5 Blaster",
         "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568143554/AAE0C21ACF5E130BCCD15B21BDC1027613DC26BA/",
         "points": 5,
         "restrictions": {
           "include": {
             "unit": ["Padme Amidala"]
+          }
+        }
+      },
+      {
+        "name": "Repeating Blaster",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13484211657005252288/0AFB1BBC7DA74BA6713EDCA6869C28E2522C7128/",
+        "points": 25,
+        "restrictions": {
+          "include": {
+            "unit": ["Rebel Officer", "Rebel Agent"]
           }
         }
       },
@@ -270,49 +284,9 @@
         }
       },
       {
-        "name": "T-21 Blaster Rifle",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140107073/9B787B4695966A18D0659B28A979EBEFFA1C29BD/",
-        "points": 5,
-        "restrictions": {
-          "include": {
-            "unit": ["Dewback Rider"]
-          }
-        }
-      },
-      {
-        "name": "Iden's TL-50 Repeater",
-        "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568142734/E13169C3DF9153C7196A29DB82578DE1FD659F6D/",
+        "name": "Saxon's Galar-90 Rifle",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638360/9640DCEEFC8C952C5828F120F9527886B6AD1AEB/",
         "points": 15,
-        "restrictions": {
-          "include": {
-            "unit": ["Iden Versio"]
-          }
-        }
-      },
-      {
-        "name": "The Darksaber",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140090412/816EE4F5B469EC8334D0E84042E5C008FC67B04B/",
-        "points": 15,
-        "restrictions": {
-          "include": {
-            "unit": ["Sabine Wren"]
-          }
-        }
-      },
-      {
-        "name": "BX Vibroswords",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139927392/0B4491CA615FAA34F7EFEDCE08BAD5A06571BE90/",
-        "points": 6,
-        "restrictions": {
-          "include": {
-            "unit": ["BX-Series Droid Commandos"]
-          }
-        }
-      },
-      {
-        "name": "Saxon's Jetpack Rockets",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638324/2B2554057A17324B946ADF61B44CFB94081A770D/",
-        "points": 10,
         "restrictions": {
           "include": {
             "unit": ["Gar Saxon"]
@@ -320,9 +294,9 @@
         }
       },
       {
-        "name": "Saxon's Galar-90 Rifle",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638360/9640DCEEFC8C952C5828F120F9527886B6AD1AEB/",
-        "points": 15,
+        "name": "Saxon's Jetpack Rockets",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638324/2B2554057A17324B946ADF61B44CFB94081A770D/",
+        "points": 10,
         "restrictions": {
           "include": {
             "unit": ["Gar Saxon"]
@@ -340,12 +314,12 @@
         }
       },
       {
-        "name": "The Darksaber (Maul)",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148637945/3B49E86E68EBCB65154B12ECD4336463F7400B95/",
-        "points": 10,
+        "name": "Stun Baton",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11788115204668483271/6494041D37500BD80CE8CB640CC058D4CDB7C5DD/",
+        "points": 8,
         "restrictions": {
           "include": {
-            "unit": ["Maul"]
+            "unit": ["Imperial Officer", "Imperial Agent"]
           }
         }
       },
@@ -360,22 +334,22 @@
         }
       },
       {
-        "name": "Din's Amban Rifle",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639183/C2D75F184A5F66EA154C4DF44AADA7A9443A9468/",
-        "points": 10,
+        "name": "T-21 Blaster Rifle",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140107073/9B787B4695966A18D0659B28A979EBEFFA1C29BD/",
+        "points": 5,
         "restrictions": {
           "include": {
-            "unit": ["Din Djarin"]
+            "unit": ["Dewback Rider"]
           }
         }
       },
       {
-        "name": "Beskar Spear",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639488/EDE8AA68D0589BFB956D68E2A08B31715C5F9D61/",
+        "name": "The Darksaber",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140090412/816EE4F5B469EC8334D0E84042E5C008FC67B04B/",
         "points": 15,
         "restrictions": {
           "include": {
-            "unit": ["Din Djarin"]
+            "unit": ["Sabine Wren"]
           }
         }
       },
@@ -390,16 +364,42 @@
         }
       },
       {
-        "name": "DC-17m ICWS Config",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135385953/007D0426E485963714BCBE0B74B2B8AE5B7F1869/",
-        "flip": {
-          "name": "DC-17m ICWS Config",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135386003/EB0729A53546B70CB9054BAF5306E3F5368FC9DF/"
-        },
+        "name": "The Darksaber (Maul)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148637945/3B49E86E68EBCB65154B12ECD4336463F7400B95/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "unit": ["Maul"]
+          }
+        }
+      },
+      {
+        "name": "Twin Lightsabers",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10644823733316041135/289BDD492BB3E295276192F60944E251986DAAAF/",
         "points": 0,
         "restrictions": {
           "include": {
-            "unit": ["Clone Commandos", "Clone Commandos Delta Squad"]
+            "unit": ["Jedi Knight Genral", "Jedi Knight"]
+          }
+        }
+      },
+      {
+        "name": "Vibro Axe",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12824619755788191989/83D29D8C052D145897BAEF171074D066C4CB143A/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "unit": ["Rebel Officer", "Rebel Agent"]
+          }
+        }
+      },
+      {
+        "name": "Z-6 Riot Baton",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11921155978538693026/3426025D9984B223902084BA7DA742C27DEC0D63/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "unit": ["Imperial Officer", "Imperial Agent"]
           }
         }
       }
@@ -422,7 +422,7 @@
       },
       {
         "name": "Improvised Orders",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/9869682046426627943/152512DE2EE5592159A7D5A4E9BB7111A0C729B5/",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16226117530699489950/0082F67676066542C5BA5DA1D970DD18CFAFCCA1/",
         "points": 5
       },
       {
