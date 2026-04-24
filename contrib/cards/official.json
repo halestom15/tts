@@ -2631,8 +2631,8 @@
         "name": "Mag-Det Enforcer",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638823/D41C1DD1A9B63A173D667167C2CA1E79D0BA2F1E/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143649/BBBA0D26FB46EAD96421C4B77FE779B5F0F848AA/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/1856061112420143328/3D6F3C2E8DFB78B9B748FFC8F339B9C568D7408E/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12110813277322191269/AD4182EA4619D0E4B9DA7F6F12F70BEAFD8D6D02/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11212068194581458113/33DF944B89A6B7DBC0DE2141A800CCF5950553E6/"
         },
         "points": 16,
         "restrictions": {
@@ -2645,8 +2645,8 @@
         "name": "Scatter Gun Enforcer",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638229/542B7031B727D74585CE7FA38EEA086252152001/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143685/C75388115AFCF42ACC79E2C16FEF36755C975AA0/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/1856061112420143328/3D6F3C2E8DFB78B9B748FFC8F339B9C568D7408E/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13391993677710573883/836E63E52F681D338B1DBCF19D7EB431E0491BCD/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15016334003745601497/65BF4564688C26E8ECC5EE615C195320B0BFA978/"
         },
         "points": 28,
         "restrictions": {
@@ -3989,8 +3989,8 @@
         "name": "Black Sun Enforcer",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639440/31A3527F3D9D8579BDBD433D5F30F1EF973A47C8/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143724/48B5A35E10B4977E255D889A8FCAEA8C980A11A9/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/1856061112420143328/3D6F3C2E8DFB78B9B748FFC8F339B9C568D7408E/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13538216675182514309/80D3D2926D6723131723E027151D80E807BA1FF4/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15549057142882936018/8E3A2116FFD18C5122767F9038D43FF549248278/"
         },
         "points": 11,
         "restrictions": {
@@ -4003,7 +4003,8 @@
         "name": "Black Sun Vigo",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639389/E73718337CFAD8FD65CD341B6CF649BA181707AD/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143763/E93BA6716A05CA95AE2EA3B7C0DFD8AF145D5C22/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13653552510521459623/B060AC4F7AE0132A573CF92984494FDF2C4640F2/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9553158029415913253/8761E25E4B155BE4124E8B1A5B922C6941A153A3/"
         },
         "leader": true,
         "points": 20,
