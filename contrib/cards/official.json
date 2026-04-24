@@ -1986,8 +1986,8 @@
         "name": "DH-447 Sniper",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16916821861583515066/6783DCC4833EAE22DCA9EDB9C8F585AE29BA13A3/",
         "mini": {
-          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234780862776611/B8222AA4A3B680E969DC106C8A281D11845994EB/",
-          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234780862776974/21649563BC0CB84E12C0B249C720919F528596D3/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16764529609771011077/213762EEF0A83B94E394EC2F3F0C200D5A335C58/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11792523840308175523/31EE56B2C0FEE8CE25150EADE79C5AA483182889/"
         },
         "points": 20,
         "restrictions": {
@@ -2323,8 +2323,8 @@
         "name": "Proton Charge Saboteur",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/11476891187215628852/91F18B14DEB61395ADFE0900F2CB5C658414C7F6/",
         "mini": {
-          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541173465/8193FD1F0862270CD23BA9243679840BE6324DC6/",
-          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540541173570/3C100E92F0DEDEF117D3A0392D3271951BC90DD0/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10169115375508355169/2616D215477E25CD2E74B2F11C39CB911461A989/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14732946777135222961/B81F98352131D2B5ED40D18272103E8E127C9964/"
         },
         "points": 14,
         "restrictions": {
