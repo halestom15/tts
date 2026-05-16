@@ -1,4 +1,4 @@
--- MacFallback.ttslua — Mac fallback for the TTS Unity 6 Projector magenta bug.
+-- MacFallback.ttslua  -  Mac fallback for the TTS Unity 6 Projector magenta bug.
 -- Replaces every Custom_AssetBundle Projector overlay (Cohesion / Range /
 -- Maximum Move / Deployment Boundary) with a vector-lines + decal hybrid
 -- rendered via Global.setVectorLines / Global.setDecals. Per-seat toggle so
@@ -50,7 +50,7 @@ local RANGE_MAX_RADIUS = {
 }
 
 -- Range band colors (RGBA) extracted from BB_RangeProjector material defaults
--- + demi-portée blanche pour SWL Range 0.5 (3 inches)
+-- + demi-portee blanche pour SWL Range 0.5 (3 inches)
 local RANGE_COLORS = {
     half  = {1.0,   1.0,   1.0,   0.6},   -- 0.5 = 3" white
     one   = {1.0,   0.764, 0.0,   0.7},   -- R1 yellow
@@ -104,7 +104,7 @@ local function macFigBaseRadius(fig)
     return FIG_BASE_RADIUS_IN[data.baseSize] or 0.5315
 end
 
--- Token base radii (inches) — measured from token edge for range bands
+-- Token base radii (inches)  -  measured from token edge for range bands
 local TOKEN_BASE_RADIUS = {
     smokeToken    = 18.8 / 2 / 25.4,   -- 0.370"
     token         = 25.1 / 2 / 25.4,   -- 0.494"
@@ -127,7 +127,7 @@ local MAX_MOVE_RADIUS = {
 }
 
 -- Deployment cell dimensions (width X, depth Z, inches).
--- All cells live on a 6"×6" grid; sub-cells are halves/quarters of that cell.
+-- All cells live on a 6"x6" grid; sub-cells are halves/quarters of that cell.
 local DEPLOYMENT_CELL_SIZES = {
     r   = {6, 6}, b   = {6, 6},   -- full cell
     rl  = {6, 6}, bl  = {6, 6},   -- large variant (also full cell)
@@ -228,7 +228,7 @@ macBuilders.range = function(fig, params)
         table.insert(lines, macBuildRing(pos, band.r + br, RANGE_COLORS[band.c], 0.1, fig))
     end
 
-    -- Decal halo (filled bands) — flat on the ground under the fig
+    -- Decal halo (filled bands)  -  flat on the ground under the fig
     local hits = Physics.cast({
         origin       = {pos.x, pos.y + 10, pos.z},
         direction    = {0, -1, 0},
@@ -391,7 +391,7 @@ function macRedrawAll()
         local b = macBuilders[entry.type]
         if b then
             -- Deployment entries have no fig (params-driven). Others need a
-            -- live Object — drop them silently if destroyed/invalid.
+            -- live Object  -  drop them silently if destroyed/invalid.
             local needsFig = (entry.type ~= "deployment")
             if needsFig and (not entry.fig
                              or type(entry.fig.getPosition) ~= "function") then
@@ -445,7 +445,7 @@ end
 
 -- Range polling: a slow timer (5 frames = ~12 fps) that re-draws active
 -- range rulers so they follow figures in real-time. Stops automatically when
--- no range overlay is active anymore — avoids the overnight memory leak.
+-- no range overlay is active anymore  -  avoids the overnight memory leak.
 macRangePollingActive = macRangePollingActive or false
 
 function macRangePoll()
@@ -606,7 +606,7 @@ end
 -- is visible to everyone (TTS engine limitation).
 -- ============================================
 
-playerOverlayMode = playerOverlayMode or {}  -- color → "mac" | "windows"
+playerOverlayMode = playerOverlayMode or {}  -- color -> "mac" | "windows"
 deploymentMode    = deploymentMode    or "mac"   -- table-wide setting
 
 function gGetMode(params)
@@ -653,7 +653,7 @@ end
 
 -- UI: floating panel with one toggle button per seated player
 function macModeClick(player, _, id)
-    local color = id:sub(9)  -- "macmode_Red" → "Red"
+    local color = id:sub(9)  -- "macmode_Red" -> "Red"
     if player.color ~= color then
         broadcastToColor("Only the player at this seat can toggle their mode.",
                          player.color, {1, 0.5, 0.5})
@@ -869,7 +869,7 @@ Wait.time(macRefreshModeUI, 2)
 
 -- Override hotkey init functions to capture playerColor and route through
 -- the per-seat trigger. Defining initCohesionHotkeys/initRangebandHotkeys
--- here SHADOWS the originals — when the original onLoad runs init*(), our
+-- here SHADOWS the originals  -  when the original onLoad runs init*(), our
 -- versions register the hotkey instead.
 
 function initCohesionHotkeys()
