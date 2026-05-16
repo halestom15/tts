@@ -4,6 +4,7 @@ require('!/common/SHA256')
 require('!/data/ListBuilder')
 require('!/generated/cards')
 require('!/UI')
+require('!/Overlays')
 require('!/RangeRulers')
 require('!/Cohesion')
 
