@@ -941,7 +941,7 @@ function gToggleDeploymentMode()
     deploymentMode = (deploymentMode == "mac") and "windows" or "mac"
     -- Wipe any active deployment zones so the next setup uses the new mode.
     gClearAllDeployment()
-    macRefreshModeUI()
+    macDeferRefresh()
 end
 
 -- Replicates the original showRangeOnHoveredModel toggle, calling the
@@ -1032,7 +1032,7 @@ function macModeClick(player, _, id)
             pcall(function() obj.call("clearRangeRulersOriginal", obj) end)
         end
     end
-    macRefreshModeUI()
+    macDeferRefresh()
 end
 
 local function macFindNodeById(tree, id)
@@ -1053,14 +1053,21 @@ macModePanelActive = (macModePanelActive == nil) and false or macModePanelActive
 
 function macModeToggleVisibility()
     macModePanelActive = not macModePanelActive
-    local tree = UI.getXmlTable() or {}
-    local panel = macFindNodeById(tree, "macModePanel")
-    if panel then
-        panel.attributes.active = macModePanelActive and "true" or "false"
-        UI.setXmlTable(tree)
-    else
-        macRefreshModeUI()
-    end
+    -- Defer the XML rebuild: TTS occasionally throws a UTF-8 byte-buffer
+    -- encoding error if UI.setXmlTable runs synchronously inside a UI
+    -- click handler. Deferring one frame + pcall has been reliable.
+    Wait.frames(function()
+        pcall(function()
+            local tree = UI.getXmlTable() or {}
+            local panel = macFindNodeById(tree, "macModePanel")
+            if panel then
+                panel.attributes.active = macModePanelActive and "true" or "false"
+                UI.setXmlTable(tree)
+            else
+                macRefreshModeUI()
+            end
+        end)
+    end, 1)
 end
 
 function macRefreshModeUI()
@@ -1231,17 +1238,20 @@ function macDeploymentClick(_, _, _)
     gToggleDeploymentMode()
 end
 
--- Defer one frame: TTS throws a UTF-8 buffer encoding error if we rebuild
--- the XML synchronously inside these handlers (engine race during seat
--- change finalization). pcall guards against any residual issue.
-local function macDeferRefresh()
+-- Defer one frame: TTS throws a UTF-8 byte-buffer encoding error if we
+-- rebuild the UI XML synchronously inside a click handler / seat change.
+-- pcall guards against any residual race. Promoted to a global function
+-- so macModeClick / macModeToggleVisibility / gToggleDeploymentMode (all
+-- defined before this point) can call it via name lookup at call time.
+function macDeferRefresh()
     Wait.frames(function() pcall(macRefreshModeUI) end, 1)
 end
 function onPlayerChangeColor(_)    macDeferRefresh() end
 function onPlayerConnect(_)        macDeferRefresh() end
 function onPlayerDisconnect(_)     macDeferRefresh() end
 
-Wait.time(macRefreshModeUI, 2)
+-- Initial UI build, deferred + pcalled like the rest.
+Wait.time(function() pcall(macRefreshModeUI) end, 2)
 
 -- Override hotkey init functions to capture playerColor and route through
 -- the per-seat trigger. Defining initCohesionHotkeys/initRangebandHotkeys
