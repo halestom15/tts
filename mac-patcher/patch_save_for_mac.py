@@ -1826,6 +1826,20 @@ TOKEN_BUTTON_WRAPPER_RE = re.compile(
     re.DOTALL
 )
 
+# List Builder _loadArmyFromJson nil-guard. Stock SWL never nil-checks the
+# result of JSON.decode(text) inside importFromText, so any blur of the
+# import InputField with empty/invalid text crashes _loadArmyFromJson at
+# `data.armyFaction`. The guard is upstream-able. Idempotent via the
+# negative lookahead on the marker comment.
+LIST_BUILDER_GUARD_RE = re.compile(
+    r"(function _loadArmyFromJson\(data\)\r?\n)(?!  -- MAC PATCH: guard )"
+)
+LIST_BUILDER_GUARD_REPLACEMENT = (
+    r"\1"
+    "  -- MAC PATCH: guard nil/invalid JSON from onEndEdit blur (upstream bug)\r\n"
+    "  if not data then return end\r\n"
+)
+
 # Idempotent marker  -  used to detect and remove an existing Mac patch in the
 # Global LuaScript before applying a fresh one.
 GLOBAL_PATCH_MARKER_RE = re.compile(
@@ -2008,6 +2022,20 @@ def patch_object_scripts(data: dict) -> tuple:
                     ls = new_ls
                     n_rng += 1
                     changed = True
+
+                # List Builder import guard. Applies to BLUE/RED LIST
+                # BUILDER (any object that defines _loadArmyFromJson).
+                # Fixes a pre-existing upstream crash where blurring the
+                # import InputField with empty/invalid text fires
+                # onEndEdit -> importFromText -> JSON.decode("") -> nil ->
+                # data.armyFaction crash. Idempotent.
+                if "function _loadArmyFromJson(data)" in ls:
+                    new_ls, n = LIST_BUILDER_GUARD_RE.subn(
+                        LIST_BUILDER_GUARD_REPLACEMENT, ls, count=1
+                    )
+                    if n > 0:
+                        ls = new_ls
+                        changed = True
 
                 # Maximum Move spawn (only in Order_Token a57c41)  -  Mac only
                 if guid == "a57c41":
