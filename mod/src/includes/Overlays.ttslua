@@ -36,8 +36,8 @@ local RANGE_DECAL_URLS = {
         huge   = ASSETS_BASE .. "range_fig_leader_huge.png",
         laat   = ASSETS_BASE .. "range_fig_leader_laat.png",
         epic   = ASSETS_BASE .. "range_fig_leader_epic.png",
-        long   = ASSETS_BASE .. "range_fig_leader_long.png",
-        snail  = ASSETS_BASE .. "range_fig_leader_snail.png",
+        long   = ASSETS_BASE .. "range_fig_leader_long_stadium.png",
+        snail  = ASSETS_BASE .. "range_fig_leader_snail_stadium.png",
     },
 }
 local RANGE_MAX_RADIUS = {
