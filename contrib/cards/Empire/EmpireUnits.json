@@ -331,10 +331,10 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/PykeSyndicateCapoUnit.json"
+      "content": "contrib/cards/Mercenary/PykeSyndicateCapoUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/BlackSunVigoUnit.json"
+      "content": "contrib/cards/Mercenary/BlackSunVigoUnit.json"
     }
   ],
   "Operative": [
@@ -387,10 +387,10 @@
       "additionalObjects": ["Victory Token"]
     },
     {
-      "content": "contrib/cards/ShadowCollective/BosskUnit.json"
+      "content": "contrib/cards/Mercenary/BosskUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/CadBaneUnit.json"
+      "content": "contrib/cards/Mercenary/CadBaneUnit.json"
     },
     {
       "name": "Darth Vader",
@@ -481,13 +481,13 @@
       "additionalObjects": ["Victory Token"]
     },
     {
-      "content": "contrib/cards/ShadowCollective/DinUnit.json"
+      "content": "contrib/cards/Mercenary/DinUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/IG11Unit.json"
+      "content": "contrib/cards/Mercenary/IG11Unit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/HondoUnit.json"
+      "content": "contrib/cards/Mercenary/HondoUnit.json"
     },
     {
       "name": "Fifth Brother",
@@ -790,13 +790,13 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/PykeSyndicateFootSoldiersUnit.json"
+      "content": "contrib/cards/Mercenary/PykeSyndicateFootSoldiersUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/BlackSunEnforcersUnit.json"
+      "content": "contrib/cards/Mercenary/BlackSunEnforcersUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/WeequayPiratesUnit.json"
+      "content": "contrib/cards/Mercenary/WeequayPiratesUnit.json"
     }
   ],
   "Special Forces": [
@@ -829,30 +829,6 @@
         },
         {
           "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541911689/42647324CBDBF25155498DF1FFDDDC2EC04FB5EC/",
-          "diffuse": "http://cloud-3.steamusercontent.com/ugc/950714557093539603/6584D58DCD3135C901F302599C304E2D7044AD4B/"
-        }
-      ]
-    },
-    {
-      "name": "Scout Troopers",
-      "title": "Strike Team",
-      "displayName": "Scout Troopers (Strike Team)",
-      "heavyWeaponTeam": true,
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384863628/C90F310AB2FFFFB744B68B2A0D3B0C657FA8ABA4/",
-      "size": "small",
-      "type": "Trooper",
-      "points": 20,
-      "speed": 2,
-      "upgrades": {
-        "Heavy Weapon": 1,
-        "Training": 1,
-        "Comms": 1,
-        "Gear": 1,
-        "Grenades": 1
-      },
-      "minis": [
-        {
-          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541911155/36E8C01A67E5E7A4188FC619261E0BAB0DF438C1/",
           "diffuse": "http://cloud-3.steamusercontent.com/ugc/950714557093539603/6584D58DCD3135C901F302599C304E2D7044AD4B/"
         }
       ]
@@ -1028,6 +1004,30 @@
       ]
     },
     {
+      "name": "Scout Troopers",
+      "title": "Strike Team",
+      "displayName": "Scout Troopers (Strike Team)",
+      "heavyWeaponTeam": true,
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/11473212592953545707/1E52D2488DA72C302214A5A1B55D64D36BFFE757/",
+      "size": "small",
+      "type": "Trooper",
+      "points": 22,
+      "speed": 2,
+      "upgrades": {
+        "Heavy Weapon": 1,
+        "Training": 1,
+        "Comms": 1,
+        "Gear": 1,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541911155/36E8C01A67E5E7A4188FC619261E0BAB0DF438C1/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/950714557093539603/6584D58DCD3135C901F302599C304E2D7044AD4B/"
+        }
+      ]
+    },
+    {
       "name": "Range Troopers",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139672651/467BD8F23216F7AE5274DC84837483AE40571B02/",
       "size": "small",
@@ -1197,7 +1197,7 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/WLO5SpeederTankUnit.json"
+      "content": "contrib/cards/Mercenary/WLO5SpeederTankUnit.json"
     }
   ]
 }
