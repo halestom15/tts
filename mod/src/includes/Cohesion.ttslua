@@ -59,3 +59,29 @@ function clearCohesionRuler()
         cohesionRuler = nil
     end
 end
+-- ============================================
+-- Mac fallback per-seat router (appended).
+-- Alias the original spawn/clear so Windows-mode players still get their
+-- bundle Projector, while routing default calls through Global Overlays.
+-- See !/Overlays for the manager. The `*Original` aliases are called by
+-- gCohesionTrigger when the active player has chosen "windows" mode.
+-- ============================================
+spawnCohesionRulerOriginal = spawnCohesionRuler
+clearCohesionRulerOriginal = clearCohesionRuler
+
+function spawnCohesionRuler(cohesionSourceObject)
+    if not cohesionSourceObject then return end
+    Global.call("gCohesionTrigger", {
+        figGUID     = cohesionSourceObject.getGUID(),
+        playerColor = nil,
+    })
+end
+
+function clearCohesionRuler()
+    if self and self.getGUID and self.getGUID() ~= "-1" then
+        Global.call("gClearCohesion", { figGUID = self.getGUID() })
+    end
+    if cohesionRuler ~= nil then
+        pcall(clearCohesionRulerOriginal)
+    end
+end

@@ -80,3 +80,33 @@ function spawnRangeRuler(rangeSourceObject, projectorBundleOverride)
 
   noRulers = false
 end
+
+-- ============================================
+-- Mac fallback per-seat router (appended).
+-- Mirrors the Cohesion pattern. See !/Overlays for the manager.
+-- ============================================
+spawnRangeRulerOriginal  = spawnRangeRuler
+clearRangeRulersOriginal = clearRangeRulers
+
+function spawnRangeRuler(rangeSourceObject, _)
+    if not rangeSourceObject then return end
+    Global.call("gRangeTrigger", {
+        figGUID     = rangeSourceObject.getGUID(),
+        playerColor = nil,
+    })
+end
+
+function clearRangeRulers()
+    Global.call("gClearAllRange", {})
+    -- Also run the original (destroys the bundle Object spawned in Windows
+    -- mode). Skip if rangeRuler was never set (pure-Mac session).
+    if rangeRuler ~= nil then
+        pcall(clearRangeRulersOriginal)
+    end
+end
+
+function clearRangeRuler()
+    if self and self.getGUID and self.getGUID() ~= "-1" then
+        Global.call("gClearRange", { figGUID = self.getGUID() })
+    end
+end
