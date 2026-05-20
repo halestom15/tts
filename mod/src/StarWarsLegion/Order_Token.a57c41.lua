@@ -366,20 +366,15 @@ function resetButtons()
     end
 end
 
-function toggleCohesionRuler(_, playerColor)
-    -- Mac fallback: capture playerColor (TTS passes it as 2nd arg on click)
-    -- and route through gCohesionTrigger so the per-seat router picks the
-    -- right renderer for the clicking player.
+function toggleCohesionRuler()
     if not rulerOn then
-        Global.call("gCohesionTrigger", {
-            figGUID     = selectedUnitObj.getGUID(),
-            playerColor = playerColor,
-        })
+        selectedUnitObj.call("spawnCohesionRuler", selectedUnitObj)
         rulerOn = true
     else
         selectedUnitObj.call("clearCohesionRuler")
         rulerOn = false
     end
+
 end
 
 ------------------------------------------------- NEXTUNIT ------------------------------------------------------------
@@ -556,37 +551,26 @@ function moveUnit(isDeploy)
 
     local maxMoveBundles = getMovementLinks()
     local baseSizeMoveBundles = maxMoveBundles[unitData.baseSize]
-    local maxMoveTemplateBundleToSpawn = baseSizeMoveBundles and baseSizeMoveBundles[unitData.selectedSpeed]
+    local maxMoveTemplateBundleToSpawn = baseSizeMoveBundles[unitData.selectedSpeed]
 
-    -- Mac fallback: permissive condition (covers nil + false) so the overlay
-    -- also fires when changeSpeed2/3 calls moveUnit() with no isDeploy arg.
-    if isDeploy ~= true then
+    if isDeploy == false then
+        --max movement ring projector
         if maxMoveTemplateBundleToSpawn ~= nil then
-            local _macMode = Global.call("gGetMode", {color = macActivePlayerForMove})
-            if _macMode == "windows" then
-                -- WINDOWS ORIGINAL: spawn Custom_AssetBundle Projector
-                maxMoveTemplate = spawnObject({
-                    type = "Custom_AssetBundle",
-                    position = {basePos.x, basePos.y + 20, basePos.z},
-                    rotation = {0, basePos.y, 0},
-                    scale = {0,0,0}
-                })
-                maxMoveTemplate.setCustomObject({
-                    type = 0,
-                    assetbundle = maxMoveTemplateBundleToSpawn
-                })
-                maxMoveTemplate.setLock(true)
-                maxMoveTemplate.use_gravity = false
-                maxMoveTemplate.setName("Maximum Move")
-            else
-                -- MAC FALLBACK: route through the Global Overlays manager
-                Global.call("gSpawnMaxMove", {
-                    figGUID  = selectedUnitObj.getGUID(),
-                    baseSize = unitData.baseSize,
-                    speed    = unitData.selectedSpeed,
-                })
-                maxMoveTemplate = nil
-            end
+            maxMoveTemplate = spawnObject({
+                type = "Custom_AssetBundle",
+                position = {basePos.x, basePos.y + 20, basePos.z},
+                rotation = {0, basePos.y, 0},
+                scale = {0,0,0} -- 0 scale will hide TTS default box and won't impact projector
+            })
+
+            maxMoveTemplate.setCustomObject({
+                type = 0,
+                assetbundle = maxMoveTemplateBundleToSpawn
+            })
+
+            maxMoveTemplate.setLock(true)
+            maxMoveTemplate.use_gravity = false
+            maxMoveTemplate.setName("Maximum Move")
         end
     end
     ------------------------------------------- SPAWN BUTTON -------------------------------------------
@@ -738,8 +722,7 @@ function moveStart()
     end)
 end
 
-function moveBackwards(_, playerColor)
-    macActivePlayerForMove = playerColor  -- Mac fallback per-seat capture
+function moveBackwards()
     self.editButton({
         index = 11,
         click_function = "moveForward",
@@ -750,8 +733,7 @@ function moveBackwards(_, playerColor)
     moveUnit()
 end
 
-function moveForward(_, playerColor)
-    macActivePlayerForMove = playerColor  -- Mac fallback per-seat capture
+function moveForward()
     self.editButton({
         index = 11,
         click_function = "moveBackwards",
@@ -762,14 +744,12 @@ function moveForward(_, playerColor)
     moveUnit()
 end
 
-function moveLeft(_, playerColor)
-    macActivePlayerForMove = playerColor  -- Mac fallback per-seat capture
+function moveLeft()
     moveDirection = "left"
     moveUnit()
 end
 
-function moveRight(_, playerColor)
-    macActivePlayerForMove = playerColor  -- Mac fallback per-seat capture
+function moveRight()
     moveDirection = "right"
     moveUnit()
 end
@@ -800,14 +780,9 @@ function clearMovementTemplates()
     if templateB ~= nil then
         destroyObject(templateB)
     end
-    -- Mac fallback dual-path: destroy bundle if Windows-mode spawn produced
-    -- one, AND clear the Global Overlays manager entry (Mac fallback). Either
-    -- may be set depending on the active player's mode at spawn time.
     if maxMoveTemplate ~= nil then
-        pcall(destroyObject, maxMoveTemplate)
+        destroyObject(maxMoveTemplate)
     end
-    Global.call("gClearAllMaxMove", {})
-    maxMoveTemplate = nil
 end
 
 function clearCohesionRulers()
@@ -828,27 +803,21 @@ end
 
 
 ------------------------------------------------- CHANGESPEED------------------------------------------------------------
--- Mac fallback per-seat capture: each speed button stashes the clicking
--- player's color so the dual-path branch in moveUnit() can pick the right
--- renderer for the Maximum Move overlay.
-function changeSpeed1(_, playerColor)
-    macActivePlayerForMove = playerColor
+function changeSpeed1()
     unitData.selectedSpeed = 1
     setTemplateVariables()
     clearTemplates()
     moveUnit()
 end
 
-function changeSpeed2(_, playerColor)
-    macActivePlayerForMove = playerColor
+function changeSpeed2()
     unitData.selectedSpeed = 2
     setTemplateVariables()
     clearTemplates()
     moveUnit()
 end
 
-function changeSpeed3(_, playerColor)
-    macActivePlayerForMove = playerColor
+function changeSpeed3()
     unitData.selectedSpeed = 3
     setTemplateVariables()
     clearTemplates()
@@ -950,15 +919,11 @@ function attack()
     attackMode()
 end
 
-function targetingMode(_, playerColor)
-    -- Mac fallback: capture playerColor and route through gRangeTrigger.
+function targetingMode()
     if not enemyHighlighted then
         exitAttackMode()
         highlightEnemies()
-        Global.call("gRangeTrigger", {
-            figGUID     = selectedUnitObj.getGUID(),
-            playerColor = playerColor,
-        })
+        spawnRangeRuler(selectedUnitObj)
         enemyHighlighted = true
         resetRangeButtons()
     else
