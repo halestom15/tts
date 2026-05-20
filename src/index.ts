@@ -103,31 +103,25 @@ export async function compileSaveFile(
   }
 }
 
-function defaultTTSHomeDir(): string {
-  const platform = os.platform();
-  if (platform === 'win32') {
-    return steam.homeDir.win32(process.env);
-  }
-  if (platform === 'darwin') {
-    return path.join(os.homedir(), 'Library', 'Tabletop Simulator');
-  }
-  if (platform === 'linux') {
-    return path.join(os.homedir(), '.local', 'share', 'Tabletop Simulator');
-  }
-  throw new Error(`Unsupported platform: ${platform}`);
-}
-
 export async function destroySymlink(homeDir?: string): Promise<void> {
+  // TODO: Add non-win32 support.
   if (!homeDir) {
-    homeDir = defaultTTSHomeDir();
+    if (os.platform() !== 'win32') {
+      throw new Error(`Unsupported platform: ${os.platform()}`);
+    }
+    homeDir = steam.homeDir.win32(process.env);
   }
   const from = path.join(homeDir, 'Saves', 'TTSDevLink');
   return fs.remove(from);
 }
 
 export async function createSymlink(homeDir?: string): Promise<string> {
+  // TODO: Add non-win32 support.
   if (!homeDir) {
-    homeDir = defaultTTSHomeDir();
+    if (os.platform() !== 'win32') {
+      throw new Error(`Unsupported platform: ${os.platform()}`);
+    }
+    homeDir = steam.homeDir.win32(process.env);
   }
   await destroySymlink(homeDir);
   const from = path.join(homeDir, 'Saves', 'TTSDevLink');
