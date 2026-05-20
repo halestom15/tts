@@ -4,7 +4,7 @@
     "Empire": "Empire/EmpireUnits.json",
     "Republic": "Republic/RepublicUnits.json",
     "Separatist": "Separatist/SeparatistUnits.json",
-    "ShadowCollective": "ShadowCollective/ShadowCollectiveUnits.json"
+    "Mercenary": "Mercenary/MercenaryUnits.json"
   },
 
   "upgrades": {
@@ -437,7 +437,7 @@
       },
       {
         "name": "Trusted Agent",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/17954061666704112600/9401A70D88A98BA9FC5B5D8E56B0FA7F3B95961B/",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13647228434712340827/31340C9F16017CEC33FF34C97256BFBEE7AB7AAF/",
         "points": 5
       },
       {
@@ -4764,7 +4764,7 @@
       },
       {
         "name": "Insatiable Curiosity",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140100414/E3E6C5563CD533DC0560C50590B8A989E382E7BC/",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/17077726437706151926/A1FAE61CD17F3A228082987AF90699FBEDF7F7E3/",
         "points": 8,
         "restrictions": {
           "include": {
@@ -5038,6 +5038,23 @@
       {
         "name": "Unstoppable Advance",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131527719/02ACE80E8D14CF7DC017156A128F34A09F725CF2/",
+        "pip": 3
+      }
+    ],
+    "Mercenary": [
+      {
+        "name": "Insolence?! We are Pirates!",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/17838958063167701144/B10D335A59FFE4CEB954585E0DB0E42DB67DE339/",
+        "pip": 1
+      },
+      {
+        "name": "Speak Softly and Drive a Big Tank",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10689439603598113404/87E51EEC4B2D75528FA0277BA78C5F52DAF9886A/",
+        "pip": 2
+      },
+      {
+        "name": "I Smell Profit",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11974419819645442132/21863ABAA56F91ACFBEDC358ECC81A9D01D80BAE/",
         "pip": 3
       }
     ]

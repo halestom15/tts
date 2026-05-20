@@ -242,7 +242,7 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/PykeSyndicateCapoUnit.json"
+      "content": "contrib/cards/Mercenary/PykeSyndicateCapoUnit.json"
     },
     {
       "name": "Rebel Officer",
@@ -345,7 +345,7 @@
   ],
   "Operative": [
     {
-      "content": "contrib/cards/ShadowCollective/HondoUnit.json"
+      "content": "contrib/cards/Mercenary/HondoUnit.json"
     },
     {
       "name": "Han Solo",
@@ -721,10 +721,10 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/DinUnit.json"
+      "content": "contrib/cards/Mercenary/DinUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/IG11Unit.json"
+      "content": "contrib/cards/Mercenary/IG11Unit.json"
     },
     {
       "name": "Ahsoka Tano",
@@ -908,10 +908,10 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/PykeSyndicateFootSoldiersUnit.json"
+      "content": "contrib/cards/Mercenary/PykeSyndicateFootSoldiersUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/WeequayPiratesUnit.json"
+      "content": "contrib/cards/Mercenary/WeequayPiratesUnit.json"
     },
     {
       "name": "Ewok Skirmishers",
@@ -1298,7 +1298,7 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/SwoopBikeRidersUnit.json"
+      "content": "contrib/cards/Mercenary/SwoopBikeRidersUnit.json"
     }
   ],
   "Heavy": [
@@ -1410,7 +1410,7 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/WLO5SpeederTankUnit.json"
+      "content": "contrib/cards/Mercenary/WLO5SpeederTankUnit.json"
     }
   ]
 }

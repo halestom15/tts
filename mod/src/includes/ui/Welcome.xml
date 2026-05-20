@@ -46,11 +46,7 @@
           <b>CHANGELOG</b>
           (Since last <i>Beta</i>)
           <!--(Since last <i>Stable</i>)-->
-          - Add: Jedi Council
-          - Add: New April Upgrades
-          - Add: Strike Team Changes 
-          - Add: Savage Opress
-          - Fix: Logray, Sabine, Wicket Models
+          - Merc Test 1
         </Text>
       </VerticalLayout>
     </VerticalScrollView>

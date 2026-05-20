@@ -331,10 +331,10 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/PykeSyndicateCapoUnit.json"
+      "content": "contrib/cards/Mercenary/PykeSyndicateCapoUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/BlackSunVigoUnit.json"
+      "content": "contrib/cards/Mercenary/BlackSunVigoUnit.json"
     }
   ],
   "Operative": [
@@ -387,10 +387,10 @@
       "additionalObjects": ["Victory Token"]
     },
     {
-      "content": "contrib/cards/ShadowCollective/BosskUnit.json"
+      "content": "contrib/cards/Mercenary/BosskUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/CadBaneUnit.json"
+      "content": "contrib/cards/Mercenary/CadBaneUnit.json"
     },
     {
       "name": "Darth Vader",
@@ -481,13 +481,13 @@
       "additionalObjects": ["Victory Token"]
     },
     {
-      "content": "contrib/cards/ShadowCollective/DinUnit.json"
+      "content": "contrib/cards/Mercenary/DinUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/IG11Unit.json"
+      "content": "contrib/cards/Mercenary/IG11Unit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/HondoUnit.json"
+      "content": "contrib/cards/Mercenary/HondoUnit.json"
     },
     {
       "name": "Fifth Brother",
@@ -790,13 +790,13 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/PykeSyndicateFootSoldiersUnit.json"
+      "content": "contrib/cards/Mercenary/PykeSyndicateFootSoldiersUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/BlackSunEnforcersUnit.json"
+      "content": "contrib/cards/Mercenary/BlackSunEnforcersUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/WeequayPiratesUnit.json"
+      "content": "contrib/cards/Mercenary/WeequayPiratesUnit.json"
     }
   ],
   "Special Forces": [
@@ -1197,7 +1197,7 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/WLO5SpeederTankUnit.json"
+      "content": "contrib/cards/Mercenary/WLO5SpeederTankUnit.json"
     }
   ]
 }

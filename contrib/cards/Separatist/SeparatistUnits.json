@@ -282,10 +282,10 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/PykeSyndicateCapoUnit.json"
+      "content": "contrib/cards/Mercenary/PykeSyndicateCapoUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/BlackSunVigoUnit.json"
+      "content": "contrib/cards/Mercenary/BlackSunVigoUnit.json"
     },
     {
       "name": "Poggle the Lesser",
@@ -383,13 +383,13 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/HondoUnit.json"
+      "content": "contrib/cards/Mercenary/HondoUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/CadBaneUnit.json"
+      "content": "contrib/cards/Mercenary/CadBaneUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/BosskUnit.json"
+      "content": "contrib/cards/Mercenary/BosskUnit.json"
     },
     {
       "name": "Maul",
@@ -556,13 +556,13 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/PykeSyndicateFootSoldiersUnit.json"
+      "content": "contrib/cards/Mercenary/PykeSyndicateFootSoldiersUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/BlackSunEnforcersUnit.json"
+      "content": "contrib/cards/Mercenary/BlackSunEnforcersUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/WeequayPiratesUnit.json"
+      "content": "contrib/cards/Mercenary/WeequayPiratesUnit.json"
     },
     {
       "name": "Geonosian Warriors",
@@ -576,6 +576,34 @@
         "Heavy Weapon": 1,
         "Personnel": 1
       },
+      "minis": [
+        {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/2058763770177202081/37F68E146C49B315AA46E15BE88DDB56AE97646C/",
+          "secondary": "http://cloud-3.steamusercontent.com/ugc/2058763770177195881/84020A8311904050DC9309FE9109D47BC41FE4AA/"
+        },
+        {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/2058763770177201554/7AEA5B0A98A298731F6BE51591401BBF095A5797/",
+          "secondary": "http://cloud-3.steamusercontent.com/ugc/2058763770177195881/84020A8311904050DC9309FE9109D47BC41FE4AA/"
+        },
+        {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/2058763770177201933/E0DBF0D812FFF4F7F3A77CF1E4EAB84F78B8C49E/",
+          "secondary": "http://cloud-3.steamusercontent.com/ugc/2058763770177195881/84020A8311904050DC9309FE9109D47BC41FE4AA/"
+        },
+        {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/2058763770177202012/76CB0371503304D5AAF562E5E2F04961CD206090/",
+          "secondary": "http://cloud-3.steamusercontent.com/ugc/2058763770177195881/84020A8311904050DC9309FE9109D47BC41FE4AA/"
+        }
+      ]
+    },
+    {
+      "name": "Geonosian Warriors",
+      "title": "Geonosian Engineers",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/11895799947387687406/705B68582845528AF5FD5EEED97415BB9B36F748/",
+      "size": "small",
+      "type": "Trooper",
+      "points": 45,
+      "speed": 2,
+      "upgrades": {},
       "minis": [
         {
           "bundle": "http://cloud-3.steamusercontent.com/ugc/2058763770177202081/37F68E146C49B315AA46E15BE88DDB56AE97646C/",
@@ -769,7 +797,7 @@
     },
     {
       "name": "Droidekas",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/17494420314363813844/3FE04FCFAF3815AA2DE9E9C52101B5038AB6F892/",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/15998077387230471508/D99F8B4E4B7AF5FE30C23F4528F776797333B602/",
       "size": "medium",
       "type": "Emplacement Trooper",
       "points": 67,
@@ -813,7 +841,7 @@
     },
     {
       "name": "STAP Riders",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131433789/32FE5B587A5DD8D208101FCE74CD2BE690483F37/",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/15661631464886192384/E464BADECADC111B8100A6E02301597C467FDD72/",
       "size": "medium",
       "type": "Repulsor Vehicle",
       "points": 80,
@@ -958,7 +986,7 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/WLO5SpeederTankUnit.json"
+      "content": "contrib/cards/Mercenary/WLO5SpeederTankUnit.json"
     }
   ]
 }

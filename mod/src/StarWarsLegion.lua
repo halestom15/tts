@@ -435,12 +435,12 @@ function onload(saveData)
     commandTokenData.red.republicSupport = commandTokenData.red.sup
     commandTokenData.red.republicHeavy = commandTokenData.red.heavy
 
-    commandTokenData.red.shadowcollectiveCommander = commandTokenData.red.com
-    commandTokenData.red.shadowcollectiveOperative = commandTokenData.red.op
-    commandTokenData.red.shadowcollectiveCorps = commandTokenData.red.corps
-    commandTokenData.red.shadowcollectiveSpecialforces = commandTokenData.red.sf
-    commandTokenData.red.shadowcollectiveSupport = commandTokenData.red.sup
-    commandTokenData.red.shadowcollectiveHeavy = commandTokenData.red.heavy
+    commandTokenData.red.mercenaryCommander = commandTokenData.red.com
+    commandTokenData.red.mercenaryOperative = commandTokenData.red.op
+    commandTokenData.red.mercenaryCorps = commandTokenData.red.corps
+    commandTokenData.red.mercenarySpecialforces = commandTokenData.red.sf
+    commandTokenData.red.mercenarySupport = commandTokenData.red.sup
+    commandTokenData.red.mercenaryHeavy = commandTokenData.red.heavy
 
     commandTokenData.blue = {}
 
@@ -479,12 +479,12 @@ function onload(saveData)
     commandTokenData.blue.republicSupport = commandTokenData.blue.sup
     commandTokenData.blue.republicHeavy = commandTokenData.blue.heavy
 
-    commandTokenData.blue.shadowcollectiveCommander = commandTokenData.blue.com
-    commandTokenData.blue.shadowcollectiveOperative = commandTokenData.blue.op
-    commandTokenData.blue.shadowcollectiveCorps = commandTokenData.blue.corps
-    commandTokenData.blue.shadowcollectiveSpecialforces = commandTokenData.blue.sf
-    commandTokenData.blue.shadowcollectiveSupport = commandTokenData.blue.sup
-    commandTokenData.blue.shadowcollectiveHeavy = commandTokenData.blue.heavy
+    commandTokenData.blue.mercenaryCommander = commandTokenData.blue.com
+    commandTokenData.blue.mercenaryOperative = commandTokenData.blue.op
+    commandTokenData.blue.mercenaryCorps = commandTokenData.blue.corps
+    commandTokenData.blue.mercenarySpecialforces = commandTokenData.blue.sf
+    commandTokenData.blue.mercenarySupport = commandTokenData.blue.sup
+    commandTokenData.blue.mercenaryHeavy = commandTokenData.blue.heavy
 
     commandTokenTrayData = {}
     commandTokenTrayData.red = {}
@@ -513,12 +513,12 @@ function onload(saveData)
     commandTokenTrayData.red.separatistSpecialforces = "abb909"
     commandTokenTrayData.red.separatistSupport = "ce9be9"
     commandTokenTrayData.red.separatistHeavy = "f68963"
-    commandTokenTrayData.red.shadowcollectiveCommander = "071592"
-    commandTokenTrayData.red.shadowcollectiveOperative = "369fa9"
-    commandTokenTrayData.red.shadowcollectiveCorps = "af4c28"
-    commandTokenTrayData.red.shadowcollectiveSpecialforces = "abb909"
-    commandTokenTrayData.red.shadowcollectiveSupport = "ce9be9"
-    commandTokenTrayData.red.shadowcollectiveHeavy = "f68963"
+    commandTokenTrayData.red.mercenaryCommander = "071592"
+    commandTokenTrayData.red.mercenaryOperative = "369fa9"
+    commandTokenTrayData.red.mercenaryCorps = "af4c28"
+    commandTokenTrayData.red.mercenarySpecialforces = "abb909"
+    commandTokenTrayData.red.mercenarySupport = "ce9be9"
+    commandTokenTrayData.red.mercenaryHeavy = "f68963"
     commandTokenTrayData.red.stack = "e2202d"
 
     commandTokenTrayData.blue = {}
@@ -547,12 +547,12 @@ function onload(saveData)
     commandTokenTrayData.blue.separatistSpecialforces = "3832c6"
     commandTokenTrayData.blue.separatistSupport = "d2c857"
     commandTokenTrayData.blue.separatistHeavy = "6d221d"
-    commandTokenTrayData.blue.shadowcollectiveCommander = "57ab78"
-    commandTokenTrayData.blue.shadowcollectiveOperative = "b30914"
-    commandTokenTrayData.blue.shadowcollectiveCorps = "e5e8df"
-    commandTokenTrayData.blue.shadowcollectiveSpecialforces = "3832c6"
-    commandTokenTrayData.blue.shadowcollectiveSupport = "d2c857"
-    commandTokenTrayData.blue.shadowcollectiveHeavy = "6d221d"
+    commandTokenTrayData.blue.mercenaryCommander = "57ab78"
+    commandTokenTrayData.blue.mercenaryOperative = "b30914"
+    commandTokenTrayData.blue.mercenaryCorps = "e5e8df"
+    commandTokenTrayData.blue.mercenarySpecialforces = "3832c6"
+    commandTokenTrayData.blue.mercenarySupport = "d2c857"
+    commandTokenTrayData.blue.mercenaryHeavy = "6d221d"
     commandTokenTrayData.blue.stack = "c9f9d0"
 
     -- standby tokens

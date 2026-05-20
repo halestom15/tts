@@ -330,7 +330,7 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/PykeSyndicateCapoUnit.json"
+      "content": "contrib/cards/Mercenary/PykeSyndicateCapoUnit.json"
     },
     {
       "name": "Clone Commander Cody",
@@ -371,7 +371,7 @@
   ],
   "Operative": [
     {
-      "content": "contrib/cards/ShadowCollective/HondoUnit.json"
+      "content": "contrib/cards/Mercenary/HondoUnit.json"
     },
     {
       "name": "Shaak Ti",
@@ -618,10 +618,10 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/PykeSyndicateFootSoldiersUnit.json"
+      "content": "contrib/cards/Mercenary/PykeSyndicateFootSoldiersUnit.json"
     },
     {
-      "content": "contrib/cards/ShadowCollective/WeequayPiratesUnit.json"
+      "content": "contrib/cards/Mercenary/WeequayPiratesUnit.json"
     }
   ],
   "Special Forces": [
@@ -876,7 +876,7 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/SwoopBikeRidersUnit.json"
+      "content": "contrib/cards/Mercenary/SwoopBikeRidersUnit.json"
     },
     {
       "name": "Raddaugh Gnasp Fluttercraft",
@@ -1042,7 +1042,7 @@
       ]
     },
     {
-      "content": "contrib/cards/ShadowCollective/WLO5SpeederTankUnit.json"
+      "content": "contrib/cards/Mercenary/WLO5SpeederTankUnit.json"
     }
   ]
 }
