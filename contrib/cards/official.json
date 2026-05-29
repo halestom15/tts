@@ -5292,7 +5292,7 @@
         },
         {
           "name": "Align the Relay",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/14491977904273934664/881FE4169E463AB25699171975636C18E2957251/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/11438028241391995288/7360C9E6D366EBD0FFB76C95355BA596242CE3C4/",
           "type": "vertical",
           "additionalObjects": [
             "Objective Token",
@@ -5304,13 +5304,13 @@
         },
         {
           "name": "Failed Negotiations",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/15810516017228580607/C88C46C8188C2175C572E511FCBF7DA0C3A3C38D/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/14397967932869568037/48E4CD3D0D89AD9562F68BE5244104719D16FEE3/",
           "type": "vertical",
           "additionalObjects": ["Objective Token", "Objective Token"]
         },
         {
           "name": "Retrieve the Data",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/12099398395755541092/779E148B5ECFEE495D3C1652FB31A10482C694B7/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/14161890504865635873/3D40D9AA8622DE6EEBAC0871C2F53AA2D8DCCA3E/",
           "type": "vertical",
           "additionalObjects": [
             "Objective Token",
@@ -5622,7 +5622,7 @@
         },
         {
           "name": "Cauldron",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/15627037991188349167/2271D8A45AA921E7FCB81C124DC41F2C46D247ED/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/15260471502859210781/7A5E5CF45F63E6C01CE464088333B92710CBFFC0/",
           "type": "vertical",
           "zone": [
             ["r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"],
@@ -5670,7 +5670,7 @@
         },
         {
           "name": "Contact, Contact!",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/12700346236472029468/7D62CD68C323798CA715971917CF33F42E3B118B/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/14605710456646611725/57501BC3A2BABC78E18B8356090BA5C5B090047C/",
           "type": "vertical",
           "zone": [
             [" ", " ", " ", " ", " ", " ", "r", "r", "r", "r", "r", "r"],
@@ -5691,7 +5691,7 @@
         },
         {
           "name": "Payload",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/16906983444643756097/831C0FCBF977904A6E0D99980AA93894BCC64917/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/12138513353999914227/1C73D99A4EE18B3D5C91CDAA0106D7C2AA587719/",
           "type": "vertical",
           "zone": [
             ["r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"],
@@ -5794,22 +5794,22 @@
         },
         {
           "name": "Armored Assault",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/10425618194745828599/81AA48C3F07BB313B7A3CA7E76F88F0CC2167E9F/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/11348069841969932104/7EB7A109593D17C65616170AB3FD4A3BE2D873FB/",
           "type": "vertical"
         },
         {
           "name": "Extreme Discipline",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/9721205986412257000/CC9C2007345D883D9D1287E44D74CAE089114D29/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/17744313577112863613/B00B1CB336908F254E22446B574D239B863B3155/",
           "type": "vertical"
         },
         {
           "name": "Rapid Deployment",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/14859786331088523291/F2ECDE4D7BB7F3260A049D627C9801BB32093B0B/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/10222436715191269889/0119C5081465AF42858A98DB27473C5AA37E37FA/",
           "type": "vertical"
         },
         {
           "name": "Scrambled Orders",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/12845531429756028876/8BAA1BF01969CACC268BDC0847D316A2E96DFD48/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/16764821721786435723/BFC16BC7BEFB09E29D6A4FD990C4D262E1E550CD/",
           "type": "vertical"
         }
       ]
