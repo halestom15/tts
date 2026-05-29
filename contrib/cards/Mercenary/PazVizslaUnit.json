@@ -1,0 +1,26 @@
+{
+  "name": "Paz Viszla",
+  "title": "Proud Warrior",
+  "image": "https://steamusercontent-a.akamaihd.net/ugc/14588482113130914283/A9A101C348B7B6ADC7E7F10D2A6499984CD4E77A/",
+  "size": "small",
+  "type": "Trooper",
+  "points": 105,
+  "speed": 2,
+  "upgrades": {
+    "Training": 2,
+    "Gear": 2
+  },
+  "minis": [
+    {
+      "mesh": "https://steamusercontent-a.akamaihd.net/ugc/11039880641158132822/212B194B9DEA519089B7E81ACA39A3E3877AB30F/",
+      "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9244269861549776864/1CEBFFAA51B3A4934DEDE553E35BF3E45B3BD558/"
+    }
+  ],
+  "commands": [
+    {
+      "name": "Go, There are Too Many...",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/17111513574639896571/F49CF2B140D47616B1081CB8E7519E98BD1DB88C/",
+      "pip": 1
+    }
+  ]
+}

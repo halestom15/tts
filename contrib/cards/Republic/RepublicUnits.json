@@ -333,6 +333,9 @@
       "content": "contrib/cards/Mercenary/PykeSyndicateCapoUnit.json"
     },
     {
+      "content": "contrib/cards/Mercenary/Bo-KatanKryzeUnit.json"
+    },
+    {
       "name": "Clone Commander Cody",
       "title": "Leader of the 212th",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134025861/02F5F0A5209FE1F7F3315632CBDA187666A0258A/",
@@ -372,6 +375,9 @@
   "Operative": [
     {
       "content": "contrib/cards/Mercenary/HondoUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/AxeWovesUnit.json"
     },
     {
       "name": "Shaak Ti",
@@ -783,6 +789,9 @@
           "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16878666503580557369/B40D13895E52917BE6CE9AA85CDD755EFB0A0D4A/"
         }
       ]
+    },
+    {
+      "content": "contrib/cards/Mercenary/ClanKryzeVetsUnits.json"
     }
   ],
   "Support": [

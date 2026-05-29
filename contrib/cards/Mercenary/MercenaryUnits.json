@@ -42,6 +42,15 @@
     },
     {
       "content": "contrib/cards/Mercenary/PykeSyndicateCapoUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/Bo-KatanKryzeUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/MandalorianLeaderUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/TheArmorerUnit.json"
     }
   ],
   "Operative": [
@@ -128,6 +137,15 @@
     },
     {
       "content": "contrib/cards/Mercenary/HondoUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/AxeWovesUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/MandalorianHunterUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/PazVizslaUnit.json"
     }
   ],
   "Corps": [
@@ -139,6 +157,12 @@
     },
     {
       "content": "contrib/cards/Mercenary/WeequayPiratesUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/MandalorianInitiateUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/MandalorianWarriorsUnit.json"
     }
   ],
   "Special Forces": [
@@ -171,11 +195,17 @@
           "secondary": "http://cloud-3.steamusercontent.com/ugc/1789640371717200823/B886D3157AA2F2528F4E5F76F26DF44A41496615/"
         }
       ]
+    },
+    {
+      "content": "contrib/cards/Mercenary/ClanKryzeVetsUnits.json"
     }
   ],
   "Support": [
     {
       "content": "contrib/cards/Mercenary/SwoopBikeRidersUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/MandalorianWarriorsFireSupportUnit.json"
     }
   ],
   "Heavy": [

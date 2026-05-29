@@ -245,6 +245,9 @@
       "content": "contrib/cards/Mercenary/PykeSyndicateCapoUnit.json"
     },
     {
+      "content": "contrib/cards/Mercenary/Bo-KatanKryzeUnit.json"
+    },
+    {
       "name": "Rebel Officer",
       "title": "Fighting for Freedom",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/9534714757713439013/F1243488529E029C17CAC7745960E27861F6F13E/",
@@ -346,6 +349,9 @@
   "Operative": [
     {
       "content": "contrib/cards/Mercenary/HondoUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/AxeWovesUnit.json"
     },
     {
       "name": "Han Solo",
@@ -1208,6 +1214,9 @@
           "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16421205180302457/F03D8E6C9A5B1B5CBC243E606B28B506815A0A11/"
         }
       ]
+    },
+    {
+      "content": "contrib/cards/Mercenary/ClanKryzeVetsUnits.json"
     }
   ],
   "Support": [

@@ -1,0 +1,33 @@
+{
+  "name": "Mandalorian Initiates",
+  "image": "https://steamusercontent-a.akamaihd.net/ugc/17140081470582038406/B8348FFDB629CAB77B586180CC0FB021616F3040/",
+  "size": "small",
+  "type": "Trooper",
+  "points": 56,
+  "speed": 2,
+  "upgrades": {
+    "Clan": 1,
+    "Heavy Weapon": 1,
+    "Personnel": 1,
+    "Training": 1,
+    "Grenades": 1
+  },
+  "minis": [
+    {
+      "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13091570657693001914/0A9473062D4541427F7F0C420D4DB70F956A0D77/",
+      "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16172751673972442471/49DCBDF3DA76723378074D003013E2414474847E/"
+    },
+    {
+      "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12829165613699604130/ACFD113C9EF5143F25D7104F8A12E5E65C22402A/",
+      "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14976067264307686923/77A867E0F87953D7E59C32DCB4F08C0B5D933382/"
+    },
+    {
+      "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10680605348509759394/769B0BEF4F7ADFB55F8B035321670AD3D1AF7DE4/",
+      "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11988870757654059062/CCFAF37DA839B57F15DCA8D3833ACCCD0EDDD6D5/"
+    },
+    {
+      "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16817385244726495238/C5F454328A5A2A2AD4E7965951B24B267A24D5D1/",
+      "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16817385244726495238/C5F454328A5A2A2AD4E7965951B24B267A24D5D1/"
+    }
+  ]
+}

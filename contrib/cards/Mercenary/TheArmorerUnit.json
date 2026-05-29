@@ -1,0 +1,32 @@
+{
+  "name": "The Armorer",
+  "title": "Forging the Future",
+  "image": "https://steamusercontent-a.akamaihd.net/ugc/13691200642246777104/043A0542943AA6A21B4301957A68E4642EB7BCDC/",
+  "size": "small",
+  "type": "Trooper",
+  "points": 120,
+  "speed": 2,
+  "upgrades": {
+    "Command": 2,
+    "Training": 1,
+    "Gear": 2
+  },
+  "minis": [
+    {
+      "mesh": "https://steamusercontent-a.akamaihd.net/ugc/17641737324658687075/A887CA0E955E649C12388052501D81A920DA434C/",
+      "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11671212796153379355/8F3D794C289A3D50BE05C24A686E49DD7E29F86A/"
+    }
+  ],
+  "commands": [
+    {
+      "name": "Both Hunter and Prey",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/16994067437948840339/36A3687ED811F315C2DE2533375462E8EBA6023F/",
+      "pip": 2
+    },
+    {
+      "name": "We Shape Ourselves",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/12384092018803434755/783754ED55F3759CE27A2E75517731D46430873E/",
+      "pip": 3
+    }
+  ]
+}

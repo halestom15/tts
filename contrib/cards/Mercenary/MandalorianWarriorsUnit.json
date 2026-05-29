@@ -1,0 +1,39 @@
+{
+  "name": "Mandalorian Warriors",
+  "image": "https://steamusercontent-a.akamaihd.net/ugc/17617828242157069112/A3D8AB16C4CF032ED45E904E35C6686893412667/",
+  "size": "small",
+  "type": "Trooper",
+  "points": 64,
+  "speed": 2,
+  "upgrades": {
+    "Clan": 1,
+    "Heavy Weapon": 1,
+    "Personnel": 1,
+    "Training": 1,
+    "Gear": 1,
+    "Armament": 1,
+    "Grenades": 1
+  },
+  "minis": [
+    {
+      "mesh": "https://steamusercontent-a.akamaihd.net/ugc/17862709112439738411/560C5B6EF0D19A4E9CDD90B5DE664FFDE0CACBA7/",
+      "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14400448142244542944/5BAA6507664040CA5435D4B8A3E5FCDC59AAF94B/"
+    },
+    {
+      "mesh": "https://steamusercontent-a.akamaihd.net/ugc/15985179892244607323/87D0097AD48152F9AF7DE02D9620BBF05A5706F3/",
+      "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11509037225128559257/3774DE95A7498182FF070051BBBF4B0A4AD67398/"
+    },
+    {
+      "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10678585501595506612/9FCC323FD356D28007C0E9841D80FB6BAB6AFCB9/",
+      "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/13271685426445398789/1E2D302C5125B5BEA515DF2F69611933A56FBF67/"
+    },
+    {
+      "mesh": "https://steamusercontent-a.akamaihd.net/ugc/9932581724048103550/DBF81293CA70EDED9BE885AC0C7B3B5FD32645BD/",
+      "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10741186223177016984/202B3452154144F9FB4660958F3148A95234E54D/"
+    },
+    {
+      "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12172602061322334799/8D2BFF9961B140796ADAA3813DD8CD64BA61D79A/",
+      "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11488794917898839461/A0BDD9E60C484E65C8330F7987DE2082148E8682/"
+    }
+  ]
+}
