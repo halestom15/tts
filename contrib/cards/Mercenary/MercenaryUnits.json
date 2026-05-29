@@ -197,7 +197,10 @@
       ]
     },
     {
-      "content": "contrib/cards/Mercenary/ClanKryzeVetsUnits.json"
+      "content": "contrib/cards/Mercenary/ClanKryzeVetsUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/ClanWrenVetsUnit.json"
     }
   ],
   "Support": [

@@ -380,6 +380,9 @@
       "content": "contrib/cards/Mercenary/AxeWovesUnit.json"
     },
     {
+      "content": "contrib/cards/Mercenary/MandalorianHunterUnit.json"
+    },
+    {
       "name": "Shaak Ti",
       "title": "Jedi Council",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/17555033359148455110/D2F1B99C8AB43C8B73071DAED15D378AC38F65C5/",
@@ -791,7 +794,7 @@
       ]
     },
     {
-      "content": "contrib/cards/Mercenary/ClanKryzeVetsUnits.json"
+      "content": "contrib/cards/Mercenary/ClanKryzeVetsUnit.json"
     }
   ],
   "Support": [

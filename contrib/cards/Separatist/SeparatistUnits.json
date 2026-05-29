@@ -392,6 +392,9 @@
       "content": "contrib/cards/Mercenary/BosskUnit.json"
     },
     {
+      "content": "contrib/cards/Mercenary/MandalorianHunterUnit.json"
+    },
+    {
       "name": "Maul",
       "title": "Impatient Apprentice",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131433136/F385AC355EF21CEED5446F6BB6DEB590B4341000/",

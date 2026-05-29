@@ -354,6 +354,9 @@
       "content": "contrib/cards/Mercenary/AxeWovesUnit.json"
     },
     {
+      "content": "contrib/cards/Mercenary/MandalorianHunterUnit.json"
+    },
+    {
       "name": "Han Solo",
       "title": "Reluctant Hero",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/15311985354658964881/F8E81D8263D5350BE0AB94FF7A83706B7B5734A8/",
@@ -1216,7 +1219,10 @@
       ]
     },
     {
-      "content": "contrib/cards/Mercenary/ClanKryzeVetsUnits.json"
+      "content": "contrib/cards/Mercenary/ClanKryzeVetsUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/ClanWrenVetsUnit.json"
     }
   ],
   "Support": [
