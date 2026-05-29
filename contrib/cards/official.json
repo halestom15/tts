@@ -160,6 +160,16 @@
         }
       },
       {
+        "name": "GALAAR-15 Carbines",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14826834852996456696/2B37B47DBB22C51D5A890CCCACB09E814980DD6E/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"]
+          }
+        }
+      },
+      {
         "name": "Heavy Arm Cannon",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/9491942057538415219/C158C02B7135405F2EC1E5B21BC2FB09876E21F8/",
         "points": 20,
@@ -1556,6 +1566,49 @@
       }
     ],
     "Heavy Weapon": [
+      {
+        "name": "GALAAR-90 Sniper Rifle",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14286505737493256811/5CA12F4005544739905B4836681081C02116B771/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10077047996982839474/B79B13FD4F6CC60AD365C09218A39EFD518C5EA8/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/12511243417488752052/5211A0257233C92685A1DABF53B64ECDBB3A63D5/"
+        },
+        "points": 35,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"],
+            "rank": ["Special Forces", "Support"]
+          }
+        }
+      },
+      {
+        "name": "Micro-Grenade Launcher",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14308805919270873874/883753E4CF3105C1792248C0A5403BB237AA1C79/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/11809584924809235334/6376D37F4EB529346B14B4E001C46A46F8B66566/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/18378815295433025320/E01DC16366B19E0CC8132ED76DBD4D72BA3DE0E9/"
+        },
+        "points": 22,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"]
+          }
+        }
+      },
+      {
+        "name": "SHUKUR-05 Repeater",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13515479539073612476/34814E175879AE4C67E05396B0F697693204FD78/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/9371738744803284674/3060DF75E5800302007E8390989513F6D4730055/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/13652128887976675417/87F862E8E1B167C68561F0FC6D876B6A007C1772/"
+        },
+        "points": 28,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"]
+          }
+        }
+      },
       {
         "name": "Asajj Ventress",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15926262740421549818/7F23F097083233A0C9348C3215BF09DB072C58E6/",
@@ -3035,6 +3088,116 @@
       }
     ],
     "Personnel": [
+      {
+        "name": "Axe Woves",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10633368996876989745/1616F6487C23122B95661E2A906A5FB09046CCA0/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/15456045015424850337/D269ECEBFECBDEA3B3F4B405B2BEC8C06551AD98/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16254551774572830806/9905BFCFE2D213CC3DB5E2EAA9465441644165EF/"
+        },
+        "points": 30,
+        "restrictions": {
+          "include": {
+            "unit": [
+              "Mandalorian Initiates",
+              "Mandalorian Warriors",
+              "Clan Kryze Veterans"
+            ]
+          }
+        },
+        "leader": true
+      },
+      {
+        "name": "Bo-Katan Kryze",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12039615463469992826/D61ED1F9A88AA57049CBB0059C288E37D0AB9384/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16894386141573354751/7814FD95A32E41A5A0F2791526D0B11DC74210AB/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9745807212729852797/70C17560AEF1C6D0CF2B87E5893B3C6FD6B30DE1/"
+        },
+        "points": 30,
+        "restrictions": {
+          "include": {
+            "unit": [
+              "Mandalorian Initiates",
+              "Mandalorian Warriors",
+              "Clan Kryze Veterans"
+            ]
+          }
+        },
+        "leader": true
+      },
+      {
+        "name": "Din Djarin",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10822832093571585485/501DC01CF9CF6E3CF23335C01820CE49D4215B5F/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2446089105226763008/9B5002BC5C049F340FF7CDBC875F5053A5DB2574/"
+        },
+        "points": 30,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Initiates", "Mandalorian Warriors"]
+          }
+        },
+        "leader": true
+      },
+      {
+        "name": "Paz Vizsla",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11643885006019144436/BD7FB7514FD825D9D8C496AEA509D39D5DEE7F95/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/11039880641158132822/212B194B9DEA519089B7E81ACA39A3E3877AB30F/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9244269861549776864/1CEBFFAA51B3A4934DEDE553E35BF3E45B3BD558/"
+        },
+        "points": 40,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Initiates", "Mandalorian Warriors"]
+          }
+        },
+        "leader": true
+      },
+      {
+        "name": "The Armorer",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10873906444999637566/BF1B9D12BC49E6489411F3D94014A49B31A3EA11/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/17641737324658687075/A887CA0E955E649C12388052501D81A920DA434C/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11671212796153379355/8F3D794C289A3D50BE05C24A686E49DD7E29F86A/"
+        },
+        "points": 40,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Initiates", "Mandalorian Warriors"]
+          }
+        },
+        "leader": true
+      },
+      {
+        "name": "Mandalorian Initiate Squad",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15446133953309183436/A37A4FC1581C17F4CDC56596CCCDAD870EF69CC6/",
+        "minis": [
+          {
+            "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14078036557343586796/9E5B68645B20A0A1DF7B353B83A09EA2966F315C/",
+            "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10181577464555378504/4C99C393381869F31EBD88B85872B62E879310FB/"
+          },
+          {
+            "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14959242420070239926/BC8CF71B9D02003FE6EC3D2F330AE3F7F0FEDB62/",
+            "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/18308156149862184111/540FF3FE6908A5A57B0211A9F4E43BF0841E61E5/"
+          },
+          {
+            "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14078036557343586796/9E5B68645B20A0A1DF7B353B83A09EA2966F315C/",
+            "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10181577464555378504/4C99C393381869F31EBD88B85872B62E879310FB/"
+          },
+          {
+            "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14959242420070239926/BC8CF71B9D02003FE6EC3D2F330AE3F7F0FEDB62/",
+            "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/18308156149862184111/540FF3FE6908A5A57B0211A9F4E43BF0841E61E5/"
+          }
+        ],
+        "points": 45,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Initiates"]
+          }
+        }
+      },
       {
         "name": "Pyke Syndicate Foot Soldier Squad",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14983704573819999353/9B2E64176C2D5134C74D77CBC58E19E05B68481C/",
