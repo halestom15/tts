@@ -2,10 +2,10 @@
   "Commander": [
     {
       "name": "Gar Saxon",
-      "title": "Militant Commando",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139719525/A5642D0B10D7426AD751D9428A0C249D5F4BAF2F/",
+      "title": "Head of Clan Saxon",
+      "image": "",
       "size": "small",
-      "type": "Trooper",
+      "type": "Mandalorian Trooper",
       "points": 100,
       "speed": 3,
       "upgrades": {
@@ -38,6 +38,96 @@
       ]
     },
     {
+      "name": "Gar Saxon",
+      "title": "Militant Commando",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139719525/A5642D0B10D7426AD751D9428A0C249D5F4BAF2F/",
+      "size": "small",
+      "type": "Mandalorian Trooper",
+      "points": 100,
+      "speed": 3,
+      "upgrades": {
+        "Training": 2,
+        "Comms": 1,
+        "Gear": 2,
+        "Armament": 2
+      },
+      "minis": [
+        {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143862/CF491C11176E40BD786A89E1D0C20D3316448188/"
+        }
+      ],
+      "commands": [
+        {
+          "name": "Marked for Elimination",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139734189/BFD230D0FDCC337658C60B4254D6718684F4EF21/",
+          "pip": 1
+        },
+        {
+          "name": "Fight Another Day",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139727495/1DCDC03996549F05C8D84E79CCAAC22F9F22CA17/",
+          "pip": 2
+        },
+        {
+          "name": "Victory or Death!",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139734267/BE465B62B232B7E2F2992497221C565D00B19CCF/",
+          "pip": 3
+        }
+      ]
+    },
+    {
+      "name": "Mandalorian Leader",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/14759794515683497758/2CC03B40600F9302A13770808A294AB908CF3202/",
+      "size": "small",
+      "type": "Mandalorian Trooper",
+      "points": 90,
+      "speed": 3,
+      "upgrades": {
+        "Doctrine": 1,
+        "Command": 1,
+        "Training": 1,
+        "Gear": 2,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10500316828645976341/579A5DB7F881125EB7391C8A48D15919CCBD0E8E/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10602863397452048802/1978A79686277BCAFDDBD72892FE25CCC86E2ED4/"
+        }
+      ]
+    },
+    {
+      "name": "The Armorer",
+      "title": "Forging the Future",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/13691200642246777104/043A0542943AA6A21B4301957A68E4642EB7BCDC/",
+      "size": "small",
+      "type": "Mandalorian Trooper",
+      "points": 120,
+      "speed": 2,
+      "upgrades": {
+        "Command": 2,
+        "Training": 1,
+        "Gear": 2
+      },
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/17641737324658687075/A887CA0E955E649C12388052501D81A920DA434C/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11671212796153379355/8F3D794C289A3D50BE05C24A686E49DD7E29F86A/"
+        }
+      ],
+      "commands": [
+        {
+          "name": "Both Hunter and Prey",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/16994067437948840339/36A3687ED811F315C2DE2533375462E8EBA6023F/",
+          "pip": 2
+        },
+        {
+          "name": "We Shape Ourselves",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/12384092018803434755/783754ED55F3759CE27A2E75517731D46430873E/",
+          "pip": 3
+        }
+      ]
+    },
+    {
       "content": "contrib/cards/Mercenary/BlackSunVigoUnit.json"
     },
     {
@@ -45,12 +135,6 @@
     },
     {
       "content": "contrib/cards/Mercenary/Bo-KatanKryzeUnit.json"
-    },
-    {
-      "content": "contrib/cards/Mercenary/MandalorianLeaderUnit.json"
-    },
-    {
-      "content": "contrib/cards/Mercenary/TheArmorerUnit.json"
     }
   ],
   "Operative": [
@@ -130,6 +214,32 @@
       ]
     },
     {
+      "name": "Paz Viszla",
+      "title": "Proud Warrior",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/14588482113130914283/A9A101C348B7B6ADC7E7F10D2A6499984CD4E77A/",
+      "size": "small",
+      "type": "Mandalorian Trooper",
+      "points": 105,
+      "speed": 2,
+      "upgrades": {
+        "Training": 2,
+        "Gear": 2
+      },
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/11039880641158132822/212B194B9DEA519089B7E81ACA39A3E3877AB30F/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9244269861549776864/1CEBFFAA51B3A4934DEDE553E35BF3E45B3BD558/"
+        }
+      ],
+      "commands": [
+        {
+          "name": "Go, There are Too Many...",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/17111513574639896571/F49CF2B140D47616B1081CB8E7519E98BD1DB88C/",
+          "pip": 1
+        }
+      ]
+    },
+    {
       "content": "contrib/cards/Mercenary/CadBaneUnit.json"
     },
     {
@@ -143,9 +253,6 @@
     },
     {
       "content": "contrib/cards/Mercenary/MandalorianHunterUnit.json"
-    },
-    {
-      "content": "contrib/cards/Mercenary/PazVizslaUnit.json"
     }
   ],
   "Corps": [
@@ -159,10 +266,76 @@
       "content": "contrib/cards/Mercenary/WeequayPiratesUnit.json"
     },
     {
-      "content": "contrib/cards/Mercenary/MandalorianInitiateUnit.json"
+      "name": "Mandalorian Warriors",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/17617828242157069112/A3D8AB16C4CF032ED45E904E35C6686893412667/",
+      "size": "small",
+      "type": "Mandalorian Trooper",
+      "points": 64,
+      "speed": 2,
+      "upgrades": {
+        "Clan": 1,
+        "Heavy Weapon": 1,
+        "Personnel": 1,
+        "Training": 1,
+        "Gear": 1,
+        "Armament": 1,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/17862709112439738411/560C5B6EF0D19A4E9CDD90B5DE664FFDE0CACBA7/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14400448142244542944/5BAA6507664040CA5435D4B8A3E5FCDC59AAF94B/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/15985179892244607323/87D0097AD48152F9AF7DE02D9620BBF05A5706F3/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11509037225128559257/3774DE95A7498182FF070051BBBF4B0A4AD67398/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10678585501595506612/9FCC323FD356D28007C0E9841D80FB6BAB6AFCB9/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/13271685426445398789/1E2D302C5125B5BEA515DF2F69611933A56FBF67/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/9932581724048103550/DBF81293CA70EDED9BE885AC0C7B3B5FD32645BD/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10741186223177016984/202B3452154144F9FB4660958F3148A95234E54D/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12172602061322334799/8D2BFF9961B140796ADAA3813DD8CD64BA61D79A/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11488794917898839461/A0BDD9E60C484E65C8330F7987DE2082148E8682/"
+        }
+      ]
     },
     {
-      "content": "contrib/cards/Mercenary/MandalorianWarriorsUnit.json"
+      "name": "Mandalorian Initiates",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/17140081470582038406/B8348FFDB629CAB77B586180CC0FB021616F3040/",
+      "size": "small",
+      "type": "Mandalorian Trooper",
+      "points": 56,
+      "speed": 2,
+      "upgrades": {
+        "Clan": 1,
+        "Heavy Weapon": 1,
+        "Personnel": 1,
+        "Training": 1,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13091570657693001914/0A9473062D4541427F7F0C420D4DB70F956A0D77/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16172751673972442471/49DCBDF3DA76723378074D003013E2414474847E/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12829165613699604130/ACFD113C9EF5143F25D7104F8A12E5E65C22402A/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14976067264307686923/77A867E0F87953D7E59C32DCB4F08C0B5D933382/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10680605348509759394/769B0BEF4F7ADFB55F8B035321670AD3D1AF7DE4/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11988870757654059062/CCFAF37DA839B57F15DCA8D3833ACCCD0EDDD6D5/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16817385244726495238/C5F454328A5A2A2AD4E7965951B24B267A24D5D1/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16817385244726495238/C5F454328A5A2A2AD4E7965951B24B267A24D5D1/"
+        }
+      ]
     }
   ],
   "Special Forces": [
@@ -208,7 +381,41 @@
       "content": "contrib/cards/Mercenary/SwoopBikeRidersUnit.json"
     },
     {
-      "content": "contrib/cards/Mercenary/MandalorianWarriorsFireSupportUnit.json"
+      "name": "Mandalorian Warriors",
+      "title": "Fire Support",
+      "displayName": "Mandalorian Warriors (Fire Support)",
+      "heavyWeaponTeam": true,
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/11635611432120938109/4F50CC6763B5F3BD7AD452A6A74CE5E9CB881638/",
+      "size": "small",
+      "type": "Mandalorian Trooper",
+      "points": 55,
+      "speed": 2,
+      "upgrades": {
+        "Clan": 1,
+        "Heavy Weapon": 1,
+        "Personnel": 1,
+        "Training": 1,
+        "Gear": 1,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14212039020589520419/2A6E76CA637A424F8A325C680C8D91AE956FA5BE/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14592134825721641928/3CA67F8E84D101E2C7B594F4057375EDA65652B8/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16079083884491316519/F055370D2CAE1254B88C0C01ED6DA3E76DA64B9A/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/12198944252530301347/C5B58D5EBFEE38DB54E5B6BBCA11FEDA0337A8E8/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10678585501595506612/9FCC323FD356D28007C0E9841D80FB6BAB6AFCB9/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/13271685426445398789/1E2D302C5125B5BEA515DF2F69611933A56FBF67/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/9932581724048103550/DBF81293CA70EDED9BE885AC0C7B3B5FD32645BD/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10741186223177016984/202B3452154144F9FB4660958F3148A95234E54D/"
+        }
+      ]
     }
   ],
   "Heavy": [
