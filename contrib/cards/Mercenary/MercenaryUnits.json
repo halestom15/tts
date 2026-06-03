@@ -3,16 +3,17 @@
     {
       "name": "Gar Saxon",
       "title": "Head of Clan Saxon",
-      "image": "",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/14464163344535301954/DA386F6684BDB764CC62DD162084A2151FB6DA95/",
       "size": "small",
       "type": "Mandalorian Trooper",
-      "points": 100,
+      "points": 115,
       "speed": 3,
       "upgrades": {
+        "Command": 1,
         "Training": 2,
-        "Comms": 1,
+        "Grenades": 1,
         "Gear": 2,
-        "Armament": 2
+        "Armament": 1
       },
       "minis": [
         {
@@ -33,6 +34,11 @@
         {
           "name": "Victory or Death!",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139734267/BE465B62B232B7E2F2992497221C565D00B19CCF/",
+          "pip": 3
+        },
+        {
+          "name": "Death Before Defeat",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/9403914900224633725/523A7608466832A100A89AF9BF33D45CC4497C11/",
           "pip": 3
         }
       ]
@@ -135,6 +141,9 @@
     },
     {
       "content": "contrib/cards/Mercenary/Bo-KatanKryzeUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/UrsaWrenUnit.json"
     }
   ],
   "Operative": [
@@ -240,6 +249,82 @@
       ]
     },
     {
+      "name": "Rook Kast",
+      "title": "Devoted to the Cause",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/11213828633936445069/1C17E8A0C9F450CB2A659A6C43D6E680BED20C97/",
+      "size": "small",
+      "type": "Mandalorian Trooper",
+      "points": 85,
+      "speed": 3,
+      "upgrades": {
+        "Command": 1,
+        "Training": 1,
+        "Comms": 1,
+        "Gear": 1,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/1789640371719006177/3A456EB29012BFBE4322E020CBC08CF6F915BBF3/"
+        }
+      ],
+      "commands": [
+        {
+          "name": "Vengeful Strike",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/17829725380249601079/9AD8A4E3C7C4DE75A495A775E803A87411A514AD/",
+          "pip": 1
+        }
+      ]
+    },
+    {
+      "name": "Sabine Wren",
+      "title": "Back in the Fold",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/14530622595566755791/0A820D4ABB25BBD1242F56994582536D364641E6/",
+      "size": "small",
+      "type": "Mandalorian Trooper",
+      "points": 110,
+      "speed": 3,
+      "upgrades": {
+        "Armament": 1,
+        "Training": 1,
+        "Gear": 2,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14052244614810856390/56285EFFD6CBC4799ADAA95830EB2F10E4120F69/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15565584712668003223/F742EEF3DC4CAE87C9E9D5974891C2A445C48649/"
+        }
+      ],
+      "commands": [
+        {
+          "name": "Explosions!",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133709550/FD7BD543D5672320D01B8CB84960B07D13BFF009/",
+          "pip": 1
+        },
+        {
+          "name": "Symbol Of Rebellion",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133714045/1B46D54400840D3F7B1C5DC9E65757945FD482C9/",
+          "pip": 2
+        },
+        {
+          "name": "Make the Impossible Possible",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/14652954959646674723/CCA44E3D5AB71A2D11870B3690C881AFEA9E9C6A/",
+          "pip": 2
+        },
+        {
+          "name": "Legacy Of Mandalore",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133711283/D9F6D219F5B6DA873D7D366B31BC6EC667478368/",
+          "pip": 3
+        }
+      ],
+      "additionalObjects": [
+        "Proton Charge Token",
+        "Proton Charge Token",
+        "Graffiti Token"
+      ]
+    },
+    {
       "content": "contrib/cards/Mercenary/CadBaneUnit.json"
     },
     {
@@ -253,6 +338,9 @@
     },
     {
       "content": "contrib/cards/Mercenary/MandalorianHunterUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/DinCoTWUnit.json"
     }
   ],
   "Corps": [
@@ -366,6 +454,39 @@
         {
           "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143285/F206D67AFF9379B68AD0795767DA378CE80D44AE/",
           "secondary": "http://cloud-3.steamusercontent.com/ugc/1789640371717200823/B886D3157AA2F2528F4E5F76F26DF44A41496615/"
+        }
+      ]
+    },
+    {
+      "name": "Super Commandos",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/12946889637054477547/3FEB886FCC4F2BAFB45F709F6A5AB5CDE47308FB/",
+      "size": "small",
+      "type": "Mandalorian Trooper",
+      "points": 92,
+      "speed": 3,
+      "upgrades": {
+        "Heavy Weapon": 1,
+        "Personnel": 1,
+        "Training": 1,
+        "Gear": 1,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12486450550746077154/9DEFA5B9D320CF4580B09CB9E23EA0AB650A7881/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/17785341533537022640/58129AF41E3F045F215ECD8AE90F461F0E233F99/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13550347945679086628/6544E2EDF038F035B4123F51CB14ECB1FE9C85F1/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10431971194673280570/774601FD402FD530EA5A90B6CC060631B932C9A9/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/9399608274814486456/84FCBAFBA65591EE567615C937708DDFE07CB745/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15465560935080965275/51B20DB87881109334B2B737C2439519B1D0C7E3/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16794366385632235430/E0D50D5D2D5156D81FCB453FBDE691CFF2BABA21/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9449469097394226467/531F077189A60B529985DEFFD6A82DD12CA2A76E/"
         }
       ]
     },

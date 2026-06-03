@@ -364,6 +364,36 @@
         }
       },
       {
+        "name": "The Darksaber (Bo-Katan)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11531932335258232733/BB9B4E59470F66ECFEB81A3FDE9D8AA0BAABCEEF/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "unit": ["Bo-Katan Kryze"]
+          }
+        }
+      },
+      {
+        "name": "The Darksaber (Din)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12848023000922849127/1D046B1AB822D5C2A0627EF6747FC4CCF95127AA/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "unit": ["Din Djarin", "Din Djarin (CoTW)"]
+          }
+        }
+      },
+      {
+        "name": "The Darksaber (Gar)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16716142355230057404/A34FFFC834302FB248493FDE3081E78C559E9740/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "unit": ["Gar Saxon"]
+          }
+        }
+      },
+      {
         "name": "The Darksaber (Gideon)",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16625983135926386325/491ADB4AF793015C774CBB05E327DFBB53A59E7B/",
         "points": 15,
@@ -410,6 +440,59 @@
         "restrictions": {
           "include": {
             "unit": ["Imperial Officer", "Imperial Agent"]
+          }
+        }
+      }
+    ],
+    "Clan": [
+      {
+        "name": "Champion of the Watch",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13947909514186902657/6B86E225D7E23990696269AC04E01AA28C07FD65/",
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"],
+            "rank": ["Commander", "Operative"]
+          }
+        }
+      },
+      {
+        "name": "Children of the Watch",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12936247987816405115/4DF43A9D984E360841F1F6092A1814D5B44DB24F/",
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Clan Kryze",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16959382656728268903/8DD0170491E7EDD4C1457FA64ABDEEBF00AC6092/",
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Clan Saxon",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14723653129724842638/BA5ECFB31E527D809FF6E128228F7CCEAA1F1F95/",
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Clan Wren",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13807551486576270965/C5F4F1374A9F85DBD3CF187191936E018D109DCD/",
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"]
           }
         }
       }
@@ -606,8 +689,21 @@
         }
       },
       {
-        "name": "Grogu",
+        "name": "Grogu The Child",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10193011638909819730/8D53047BE6DF276528CA0FD2BB8283DF4AAD1377/",
+        "points": 17,
+        "mini": {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/1785135165610974498/47B1C8B92A0E945388F7773EAB2F73B0A81E761E/"
+        },
+        "restrictions": {
+          "include": {
+            "unit": ["Din Djarin"]
+          }
+        }
+      },
+      {
+        "name": "Grogu The Child (CoTW)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15880609003828953108/A4588794A1894B2FDB13FA1B27B5163C9E01E038/",
         "points": 17,
         "mini": {
           "bundle": "http://cloud-3.steamusercontent.com/ugc/1785135165610974498/47B1C8B92A0E945388F7773EAB2F73B0A81E761E/"
@@ -1054,6 +1150,39 @@
     ],
     "Gear": [
       {
+        "name": "Combat Shields",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15297964044192032111/239C44E818AF20735C3623AA12C5D446FCDADB1D/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"],
+            "rank": ["Corps", "Special Forces", "Support"]
+          }
+        }
+      },
+      {
+        "name": "Personal Combat Shield",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10919651733091245797/2D7552947B13BF3AC962DDFE8D5DC1EE2CFCAFDC/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"],
+            "rank": ["Commander", "Operative"]
+          }
+        }
+      },
+      {
+        "name": "Whipcord Launcher",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13974698591356938367/714D35185B9023A414954DF88BA5AA40C99C8746/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"],
+            "rank": ["Commander", "Operative"]
+          }
+        }
+      },
+      {
         "name": "Mobility Upgrade",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14801533200544358775/281DF96809B1A4DD8B0CC08C1654B7EC8C85DAF3/",
         "points": 8,
@@ -1301,6 +1430,16 @@
         "name": "Impact Grenades",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/13262048397259590169/3F4068C180970A83C3676C515AADEDC561B243CA/",
         "points": 3
+      },
+      {
+        "name": "Jetpack Rockets",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14483811880237185189/DF8123098E5672B166F8D463B888A4AC9A099B7F/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"]
+          }
+        }
       },
       {
         "name": "Thermal Detonator",
@@ -1566,6 +1705,20 @@
       }
     ],
     "Heavy Weapon": [
+      {
+        "name": "Super Commando Marksman (Saxon)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14904466049016745132/C47E52C83B45976B8436DD5D78BD153D8AC455C5/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/15482397845425325945/1F7FC37427E240C6969B02DA44D9095E16EE045A/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14812121724387025260/81352CE6FB94DEBDBE4F01CA97BEB2337BCCDCAE/"
+        },
+        "points": 30,
+        "restrictions": {
+          "include": {
+            "unit": ["Super Commandos"]
+          }
+        }
+      },
       {
         "name": "GALAAR-90 Sniper Rifle",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14286505737493256811/5CA12F4005544739905B4836681081C02116B771/",
@@ -1940,14 +2093,15 @@
       },
       {
         "name": "Beskad Duelist",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140084887/6AE6E148D79D03A2A4C1B9B8D22DC0B9816222E0/",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12330499222683301226/55446A24DD0D69ADA6E1426F179A8CD2F2D2ABD1/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/2174736446809252570/7F009B812ED06B7E45CFCE48142293A4B9C77991/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/18067897982526662175/BEE2D8D6FF7FE9B19062E83F5541F4C87EE54F76/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/17594273128817383686/12115D9C222BFF034684901FE7CC394C2BC7601B/"
         },
-        "points": 24,
+        "points": 30,
         "restrictions": {
           "include": {
-            "unit": ["Mandalorian Resistance"]
+            "unit": ["Clan Wren Veterans"]
           }
         }
       },
@@ -2542,33 +2696,6 @@
         }
       },
       {
-        "name": "Tristan Wren",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140090454/E3ADEFEA3EA70EEA160F391208AA8EE822DF1278/",
-        "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/2174736446809185988/83F7A4664576B192905C6393A6D9A5DAA776E01A/"
-        },
-        "points": 34,
-        "restrictions": {
-          "include": {
-            "unit": ["Mandalorian Resistance"]
-          }
-        }
-      },
-      {
-        "name": "Ursa Wren",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140090523/750235F212F45721D81F9776FD957A26D40B3AC5/",
-        "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/2174736446809186071/A6DB57CF6BA2EEDAB6EB8A719DB8D0702708C759/"
-        },
-        "leader": true,
-        "points": 34,
-        "restrictions": {
-          "include": {
-            "unit": ["Mandalorian Resistance"]
-          }
-        }
-      },
-      {
         "name": "Z-6 Trooper",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140091094/420B06E5C9EB605F3CF37DB609BE1961F8861B66/",
         "mini": {
@@ -3089,6 +3216,81 @@
     ],
     "Personnel": [
       {
+        "name": "Rook Kast (Saxon)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12834237972750748762/A58D104B13D7E69A71D308EB317E08599291D488/",
+        "mini": {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/1789640371719006177/3A456EB29012BFBE4322E020CBC08CF6F915BBF3/"
+        },
+        "points": 25,
+        "restrictions": {
+          "include": {
+            "unit": [
+              "Mandalorian Initiates",
+              "Mandalorian Warriors",
+              "Super Commandos"
+            ]
+          }
+        },
+        "leader": true
+      },
+      {
+        "name": "Tristan Wren",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16753424507388441628/DC0E9874C32C4D0EE47F355A5A8F5BDE6E575768/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13368550727722046696/41C73941619C199B01EF1921E70390FD2964FDAE/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/13368550727722046696/41C73941619C199B01EF1921E70390FD2964FDAE/"
+        },
+        "points": 25,
+        "restrictions": {
+          "include": {
+            "unit": [
+              "Mandalorian Initiates",
+              "Mandalorian Warriors",
+              "Clan Wren Veterans",
+              "Super Commandos"
+            ]
+          }
+        },
+        "leader": true
+      },
+      {
+        "name": "Sabine Wren",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9431830573704772274/B39649CA71989D58A65B8DC9150A6EEC814DE943/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14052244614810856390/56285EFFD6CBC4799ADAA95830EB2F10E4120F69/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15565584712668003223/F742EEF3DC4CAE87C9E9D5974891C2A445C48649/"
+        },
+        "points": 25,
+        "restrictions": {
+          "include": {
+            "unit": [
+              "Mandalorian Initiates",
+              "Mandalorian Warriors",
+              "Clan Wren Veterans"
+            ]
+          }
+        },
+        "leader": true
+      },
+      {
+        "name": "Gar Saxon",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11344979242992117133/3F957B487A042F238928C41A307A741F034404BE/",
+        "mini": {
+          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143862/CF491C11176E40BD786A89E1D0C20D3316448188/"
+        },
+        "points": 45,
+        "restrictions": {
+          "include": {
+            "unit": [
+              "Mandalorian Initiates",
+              "Mandalorian Warriors",
+              "Super Commandos"
+            ]
+          }
+        },
+        "leader": true
+      },
+      {
         "name": "Axe Woves",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10633368996876989745/1616F6487C23122B95661E2A906A5FB09046CCA0/",
         "mini": {
@@ -3128,7 +3330,7 @@
       },
       {
         "name": "Din Djarin",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10822832093571585485/501DC01CF9CF6E3CF23335C01820CE49D4215B5F/",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11799763703660518906/F9326C5F724B1D59ABBA6EE084FF6DAC0B3C8EE3/",
         "mini": {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2446089105226763008/9B5002BC5C049F340FF7CDBC875F5053A5DB2574/"
         },

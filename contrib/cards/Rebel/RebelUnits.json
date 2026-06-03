@@ -248,6 +248,9 @@
       "content": "contrib/cards/Mercenary/Bo-KatanKryzeUnit.json"
     },
     {
+      "content": "contrib/cards/Mercenary/UrsaWrenUnit.json"
+    },
+    {
       "name": "Rebel Officer",
       "title": "Fighting for Freedom",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/9534714757713439013/F1243488529E029C17CAC7745960E27861F6F13E/",
@@ -731,6 +734,9 @@
     },
     {
       "content": "contrib/cards/Mercenary/DinUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/DinCoTWUnit.json"
     },
     {
       "content": "contrib/cards/Mercenary/IG11Unit.json"

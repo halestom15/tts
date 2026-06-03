@@ -484,6 +484,9 @@
       "content": "contrib/cards/Mercenary/DinUnit.json"
     },
     {
+      "content": "contrib/cards/Mercenary/DinCoTWUnit.json"
+    },
+    {
       "content": "contrib/cards/Mercenary/IG11Unit.json"
     },
     {
