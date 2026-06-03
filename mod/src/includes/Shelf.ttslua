@@ -74,41 +74,65 @@ function Shelf:spawnUnitModels(params)
     return {}
   end
 local result = {}
-local leaderUpgrade = nil
-local heavyWeaponUpgrade = nil
-
+local leaderModel = nil
+-- Pass 1: explicit leaders
 for _, upgradeName in ipairs(upgrades) do
-  local upgrade = self:_fetchUpgradeByName(upgradeName)
+    local upgrade = self:_fetchUpgradeByName(upgradeName)
 
-  if upgrade ~= nil then
-    if additional and upgrade.additionalObjects then
-      for _, name in ipairs(upgrade.additionalObjects) do
-        table.insert(additionalObjects, name)
-      end
-    end
-
-    if upgrade.mini ~= nil then
-      if upgrade.leader == true then
-        leaderUpgrade = upgrade
+    if upgrade and upgrade.mini and upgrade.leader == true then
+        leaderModel = upgrade
         break
-      elseif card.heavyWeaponTeam == true and heavyWeaponUpgrade == nil then
-        heavyWeaponUpgrade = upgrade
-      end
+    end
+end
+
+-- Pass 2: heavy weapon fallback
+if leaderModel == nil and card.heavyWeaponTeam == true then
+    for _, upgradeName in ipairs(upgrades) do
+        local upgrade = self:_fetchUpgradeByName(upgradeName)
+
+        if upgrade and upgrade.mini then
+            leaderModel = upgrade
+            break
+        end
+    end
+end
+
+if leaderModel then
+    local model = self:_spawnModel(card.size, leaderModel.mini)
+    model.setName(leaderModel.name .. " (Unit Leader)")
+    table.insert(result, model)
+
+    if callback then
+        callback(model, #result, size)
+    end
+end
+  if additional and additional.position then
+    for _, name in ipairs(card.additionalObjects or {}) do
+      table.insert(additionalObjects, name)
+    end
+    -- Spawn additional objects attached to unit or upgrade cards.
+    if #additionalObjects > 0 or additional.callback then
+      self:spawnAdditionalObjects({
+        name     = card.name .. "'s Objects",
+        position = additional.position,
+        rotation = additional.rotation,
+        callback = additional.callback,
+        objects  = additionalObjects,
+        -- TODO: Make this global somehow instead.
+        scripts  = params.scripts,
+      })
     end
   end
+  return {
+    rank   = card.rank,
+    speed  = card.speed,
+    size   = card.size,
+    height = card.height or 2,
+    models = result,
+    tokens = card.tokens
+  }
 end
 
-local leaderCandidate = leaderUpgrade or heavyWeaponUpgrade
-
-if leaderCandidate ~= nil then
-  local model = self:_spawnModel(card.size, leaderCandidate.mini)
-  model.setName(leaderCandidate.name .. " (Unit Leader)")
-  table.insert(result, model)
-
-  if callback ~= nil then
-    callback(model, #result, size)
-  end
-end
 function Shelf:spawnAdditionalObjects(params)
   local name     = params.name or "Additional Objects"
   local position = params.position
