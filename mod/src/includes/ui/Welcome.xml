@@ -37,7 +37,7 @@
       <VerticalLayout padding="5">
         <Text alignment="UpperLeft" color="#ffffff" fontSize="12">
           <!--Welcome to Star Wars: Legion for TTS, <b>v8.0.0</b>.-->
-          Welcome to Star Wars: Legion for TTS, <b>v8.0.18-beta</b>.
+          Welcome to Star Wars: Legion for TTS, <b>v8.0.19-beta</b>.
 
           This is a <b>beta release</b> <textcolor color="#f03333"><b></b></textcolor>.
 
@@ -46,9 +46,8 @@
           <b>CHANGELOG</b>
           (Since last <i>Beta</i>)
           <!--(Since last <i>Stable</i>)-->
-          - Add: Ohnaka Gang including New CCs
-          - Add: Droideka, Stap, Trusted Agent, Insatiable Curiousity Errata
-          - Add: Geonosian Engineers
+          - Add: Mandalorian Drop
+          - Fix: Most recent battle deck images clearer
         </Text>
       </VerticalLayout>
     </VerticalScrollView>
