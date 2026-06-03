@@ -73,27 +73,42 @@ function Shelf:spawnUnitModels(params)
     print("Spawning placeholder minis is not yet implemented (" .. name .. ": " .. tostring(minis) .. ")")
     return {}
   end
-  local result = {}
-  for _, upgradeName in ipairs(upgrades) do
-    local upgrade = self:_fetchUpgradeByName(upgradeName)
-    -- TODO: Handle missing upgrade more gracefully.
-    if upgrade ~= nil then
-      if additional and upgrade.additionalObjects then
-        for _, name in ipairs(upgrade.additionalObjects) do
-          table.insert(additionalObjects, name)
-        end
+local result = {}
+local leaderUpgrade = nil
+local heavyWeaponUpgrade = nil
+
+for _, upgradeName in ipairs(upgrades) do
+  local upgrade = self:_fetchUpgradeByName(upgradeName)
+
+  if upgrade ~= nil then
+    if additional and upgrade.additionalObjects then
+      for _, name in ipairs(upgrade.additionalObjects) do
+        table.insert(additionalObjects, name)
       end
-      if upgrade.mini ~= nil and (upgrade.leader == true or card.heavyWeaponTeam == true) then
-        local model = self:_spawnModel(card.size, upgrade.mini)
-        model.setName(upgrade.name .. " (Unit Leader)")
-        table.insert(result, model)
-        if callback ~= nil then
-          callback(model, #result, size)
-        end
+    end
+
+    if upgrade.mini ~= nil then
+      if upgrade.leader == true then
+        leaderUpgrade = upgrade
         break
-      end     
+      elseif card.heavyWeaponTeam == true and heavyWeaponUpgrade == nil then
+        heavyWeaponUpgrade = upgrade
+      end
     end
   end
+end
+
+local leaderCandidate = leaderUpgrade or heavyWeaponUpgrade
+
+if leaderCandidate ~= nil then
+  local model = self:_spawnModel(card.size, leaderCandidate.mini)
+  model.setName(leaderCandidate.name .. " (Unit Leader)")
+  table.insert(result, model)
+
+  if callback ~= nil then
+    callback(model, #result, size)
+  end
+end
   for _, config in pairs(minis) do
     local model = self:_spawnModel(card.size, config)
     table.insert(result, model)
