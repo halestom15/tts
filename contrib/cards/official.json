@@ -689,7 +689,7 @@
         }
       },
       {
-        "name": "Grogu The Child",
+        "name": "Grogu the Child",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10193011638909819730/8D53047BE6DF276528CA0FD2BB8283DF4AAD1377/",
         "points": 17,
         "mini": {
@@ -702,7 +702,7 @@
         }
       },
       {
-        "name": "Grogu The Child (CoTW)",
+        "name": "Grogu the Child (CotW)",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15880609003828953108/A4588794A1894B2FDB13FA1B27B5163C9E01E038/",
         "points": 17,
         "mini": {
@@ -1149,6 +1149,16 @@
       }
     ],
     "Gear": [
+      {
+        "name": "Flame Projector",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10609844131251620584/4B8108E69F8E6883C42DB08C550901244FF54F65/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Trooper"]
+          }
+        }
+      },
       {
         "name": "Combat Shields",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15297964044192032111/239C44E818AF20735C3623AA12C5D446FCDADB1D/",
@@ -1705,6 +1715,20 @@
       }
     ],
     "Heavy Weapon": [
+      {
+        "name": "Super Commando Gunslinger (Saxon)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15694515457995026743/79DBD04052ADF8764C4603B053BF534AF06EE35E/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13932107938978692205/7FA9187B12AA2E29A4A62B2E89D5678D6C86C428/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/18291930967378700481/22AFE30CCA03ACC28CC24BB8A59AA8CCEE32BA4A/"
+        },
+        "points": 30,
+        "restrictions": {
+          "include": {
+            "unit": ["Super Commandos"]
+          }
+        }
+      },
       {
         "name": "Super Commando Marksman (Saxon)",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14904466049016745132/C47E52C83B45976B8436DD5D78BD153D8AC455C5/",
