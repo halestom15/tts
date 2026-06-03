@@ -427,6 +427,10 @@
         {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/17298407810915259550/B79BCB6E0898D3056BA76E79B639D5441A5773A7/",
           "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9460218315884646406/ED383ECFB152CDF284229AD049030B30CD30EA88/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14078036557343586796/9E5B68645B20A0A1DF7B353B83A09EA2966F315C/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10181577464555378504/4C99C393381869F31EBD88B85872B62E879310FB/"
         }
       ]
     }
