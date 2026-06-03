@@ -122,6 +122,19 @@ end
       callback(model, #result, size)
     end
   end
+for _, upgradeName in ipairs(upgrades) do
+  local upgrade = self:_fetchUpgradeByName(upgradeName)
+
+  if upgrade ~= nil then
+    if upgrade.mini ~= nil and upgrade.leader ~= true and card.heavyWeaponTeam ~= true then
+      -- spawn upgrade mini
+    end
+
+    if upgrade.minis ~= nil then
+      -- spawn upgrade minis
+    end
+  end
+end
   if additional and additional.position then
     for _, name in ipairs(card.additionalObjects or {}) do
       table.insert(additionalObjects, name)
