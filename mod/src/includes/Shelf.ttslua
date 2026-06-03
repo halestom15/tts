@@ -74,66 +74,92 @@ function Shelf:spawnUnitModels(params)
     return {}
   end
   local result = {}
+-- 1. find leader / heavy weapon candidate
 local leaderUpgrade = nil
 local heavyWeaponUpgrade = nil
+local spawnedLeaderUpgrade = nil
 
 for _, upgradeName in ipairs(upgrades) do
-  local upgrade = self:_fetchUpgradeByName(upgradeName)
+    local upgrade = self:_fetchUpgradeByName(upgradeName)
 
-  if upgrade ~= nil then
-    if additional and upgrade.additionalObjects then
-      for _, name in ipairs(upgrade.additionalObjects) do
-        table.insert(additionalObjects, name)
-      end
+    if upgrade ~= nil then
+        if upgrade.additionalObjects then
+            for _, name in ipairs(upgrade.additionalObjects) do
+                table.insert(additionalObjects, name)
+            end
+        end
+
+        if upgrade.mini ~= nil then
+            if upgrade.leader == true and leaderUpgrade == nil then
+                leaderUpgrade = upgrade
+            end
+
+            if card.heavyWeaponTeam == true and heavyWeaponUpgrade == nil then
+                heavyWeaponUpgrade = upgrade
+            end
+        end
     end
-
-    if upgrade.mini ~= nil then
-      if upgrade.leader == true and leaderUpgrade == nil then
-        leaderUpgrade = upgrade
-      end
-
-      if card.heavyWeaponTeam == true and heavyWeaponUpgrade == nil then
-        heavyWeaponUpgrade = upgrade
-      end
-    end
-  end
 end
 
+-- 2. spawn leader FIRST
 local leaderCandidate = leaderUpgrade or heavyWeaponUpgrade
 
 if leaderCandidate ~= nil then
-  local model = self:_spawnModel(card.size, leaderCandidate.mini)
-  model.setName(leaderCandidate.name .. " (Unit Leader)")
-  table.insert(result, model)
+    spawnedLeaderUpgrade = leaderCandidate
 
-  if callback ~= nil then
-    callback(model, #result, size)
-  end
+    local model = self:_spawnModel(card.size, leaderCandidate.mini)
+    model.setName(leaderCandidate.name .. " (Unit Leader)")
+    table.insert(result, model)
+
+    if callback ~= nil then
+        callback(model, #result, size)
+    end
 end
-  for _, config in pairs(minis) do
+
+-- 3. spawn base minis
+for _, config in ipairs(minis) do
     local model = self:_spawnModel(card.size, config)
     table.insert(result, model)
+
     if #result == 1 then
-      model.setName(name .. " (Unit Leader)")
+        model.setName(name .. " (Unit Leader)")
     else
-      model.setName(name)
+        model.setName(name)
     end
+
     if callback ~= nil then
-      callback(model, #result, size)
+        callback(model, #result, size)
     end
-  end
+end
+
+-- 4. spawn remaining upgrades (excluding leader)
 for _, upgradeName in ipairs(upgrades) do
-  local upgrade = self:_fetchUpgradeByName(upgradeName)
+    local upgrade = self:_fetchUpgradeByName(upgradeName)
 
-  if upgrade ~= nil then
-    if upgrade.mini ~= nil and upgrade.leader ~= true and card.heavyWeaponTeam ~= true then
-      -- spawn upgrade mini
-    end
+    if upgrade ~= nil and upgrade ~= spawnedLeaderUpgrade then
 
-    if upgrade.minis ~= nil then
-      -- spawn upgrade minis
+        if upgrade.mini ~= nil and not upgrade.leader and not card.heavyWeaponTeam then
+            local model = self:_spawnModel(card.size, upgrade.mini)
+            model.setName(upgrade.name)
+            table.insert(result, model)
+
+            if callback ~= nil then
+                callback(model, #result, size)
+            end
+        end
+
+        if upgrade.minis ~= nil then
+            for _, mini in ipairs(upgrade.minis) do
+                local model = self:_spawnModel(card.size, mini)
+                model.setName(upgrade.name)
+                table.insert(result, model)
+
+                if callback ~= nil then
+                    callback(model, #result, size)
+                end
+            end
+        end
     end
-  end
 end
   if additional and additional.position then
     for _, name in ipairs(card.additionalObjects or {}) do
