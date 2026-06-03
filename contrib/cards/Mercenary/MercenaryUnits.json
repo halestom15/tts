@@ -127,6 +127,11 @@
           "pip": 2
         },
         {
+          "name": "Out of the Shadows",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/12773341789278789106/400E7EB0111D3F6CC6E3C7B3086213CD94115D93/",
+          "pip": 2
+        },
+        {
           "name": "We Shape Ourselves",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/12384092018803434755/783754ED55F3759CE27A2E75517731D46430873E/",
           "pip": 3
@@ -223,9 +228,9 @@
       ]
     },
     {
-      "name": "Paz Viszla",
+      "name": "Paz Vizsla",
       "title": "Proud Warrior",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/14588482113130914283/A9A101C348B7B6ADC7E7F10D2A6499984CD4E77A/",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/17132704657661882029/E2087AD66D26A94A02D3C133BD3CE49FD7336B5C/",
       "size": "small",
       "type": "Mandalorian Trooper",
       "points": 105,
@@ -420,8 +425,8 @@
           "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11988870757654059062/CCFAF37DA839B57F15DCA8D3833ACCCD0EDDD6D5/"
         },
         {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16817385244726495238/C5F454328A5A2A2AD4E7965951B24B267A24D5D1/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16817385244726495238/C5F454328A5A2A2AD4E7965951B24B267A24D5D1/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/17298407810915259550/B79BCB6E0898D3056BA76E79B639D5441A5773A7/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9460218315884646406/ED383ECFB152CDF284229AD049030B30CD30EA88/"
         }
       ]
     }
