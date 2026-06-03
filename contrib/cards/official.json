@@ -2107,7 +2107,7 @@
       },
       {
         "name": "Beskad Duelist",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/12330499222683301226/55446A24DD0D69ADA6E1426F179A8CD2F2D2ABD1/",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9607019850327265879/06E0C7782047A55684FF376E6E6BE1761EC5F0CA/",
         "mini": {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/18067897982526662175/BEE2D8D6FF7FE9B19062E83F5541F4C87EE54F76/",
           "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/17594273128817383686/12115D9C222BFF034684901FE7CC394C2BC7601B/"
@@ -3241,6 +3241,26 @@
             "unit": [
               "Mandalorian Initiates",
               "Mandalorian Warriors",
+              "Super Commandos"
+            ]
+          }
+        },
+        "leader": true
+      },
+      {
+        "name": "Ursa Wren",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9432002261811117170/A554AD266F4261305084E53D3E82DC85B179B6FD/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/18327442408986749290/6275D7DEAFA256108CAD50E5AC126044CAB54B59/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11456646202545531015/D264416FCAF7BAA9D149DEFDA377702864B30FD2/"
+        },
+        "points": 25,
+        "restrictions": {
+          "include": {
+            "unit": [
+              "Mandalorian Initiates",
+              "Mandalorian Warriors",
+              "Clan Wren Veterans",
               "Super Commandos"
             ]
           }
