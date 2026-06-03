@@ -138,7 +138,7 @@ for _, upgradeName in ipairs(upgrades) do
 
     if upgrade ~= nil and upgrade ~= spawnedLeaderUpgrade then
 
-        if upgrade.mini ~= nil and not upgrade.leader and not card.heavyWeaponTeam then
+        if upgrade.mini ~= nil and upgrade ~= spawnedLeaderUpgrade then
             local model = self:_spawnModel(card.size, upgrade.mini)
             model.setName(upgrade.name)
             table.insert(result, model)
