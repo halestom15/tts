@@ -3260,8 +3260,7 @@
             "unit": [
               "Mandalorian Initiates",
               "Mandalorian Warriors",
-              "Clan Wren Veterans",
-              "Super Commandos"
+              "Clan Wren Veterans"
             ]
           }
         },
@@ -3411,12 +3410,12 @@
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15446133953309183436/A37A4FC1581C17F4CDC56596CCCDAD870EF69CC6/",
         "minis": [
           {
-            "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14078036557343586796/9E5B68645B20A0A1DF7B353B83A09EA2966F315C/",
-            "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10181577464555378504/4C99C393381869F31EBD88B85872B62E879310FB/"
+            "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12829165613699604130/ACFD113C9EF5143F25D7104F8A12E5E65C22402A/",
+            "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14976067264307686923/77A867E0F87953D7E59C32DCB4F08C0B5D933382/"
           },
           {
-            "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14959242420070239926/BC8CF71B9D02003FE6EC3D2F330AE3F7F0FEDB62/",
-            "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/18308156149862184111/540FF3FE6908A5A57B0211A9F4E43BF0841E61E5/"
+            "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10680605348509759394/769B0BEF4F7ADFB55F8B035321670AD3D1AF7DE4/",
+            "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11988870757654059062/CCFAF37DA839B57F15DCA8D3833ACCCD0EDDD6D5/"
           },
           {
             "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14078036557343586796/9E5B68645B20A0A1DF7B353B83A09EA2966F315C/",
