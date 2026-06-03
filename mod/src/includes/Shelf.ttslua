@@ -74,6 +74,7 @@ function Shelf:spawnUnitModels(params)
     return {}
   end
   local result = {}
+local skip = {}
 -- 1. find leader / heavy weapon candidate
 local leaderUpgrade = nil
 local heavyWeaponUpgrade = nil
@@ -106,6 +107,7 @@ local leaderCandidate = leaderUpgrade or heavyWeaponUpgrade
 
 if leaderCandidate ~= nil then
     spawnedLeaderUpgrade = leaderCandidate
+    skip[leaderCandidate.name] = true
 
     local model = self:_spawnModel(card.size, leaderCandidate.mini)
     model.setName(leaderCandidate.name .. " (Unit Leader)")
@@ -136,12 +138,13 @@ end
 for _, upgradeName in ipairs(upgrades) do
     local upgrade = self:_fetchUpgradeByName(upgradeName)
 
-    if upgrade ~= nil and upgrade ~= spawnedLeaderUpgrade then
+    if upgrade ~= nil and not skip[upgrade.name] then
 
         if upgrade.mini ~= nil and upgrade ~= spawnedLeaderUpgrade then
             local model = self:_spawnModel(card.size, upgrade.mini)
             model.setName(upgrade.name)
             table.insert(result, model)
+            skip[upgrade.name] = true
 
             if callback ~= nil then
                 callback(model, #result, size)
@@ -153,6 +156,7 @@ for _, upgradeName in ipairs(upgrades) do
                 local model = self:_spawnModel(card.size, mini)
                 model.setName(upgrade.name)
                 table.insert(result, model)
+                skip[upgrade.name] = true
 
                 if callback ~= nil then
                     callback(model, #result, size)
