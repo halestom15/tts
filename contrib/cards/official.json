@@ -5413,6 +5413,16 @@
         "pip": 1
       },
       {
+        "name": "We Are Mandalorians",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/18293411803880529131/E4C4FA3BFFA3E1E4A087259F32E107FFE463258E/",
+        "pip": 1
+      },
+      {
+        "name": "Aerial Assault",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12857234212551171680/7688263AFC525D3F5094B73549512D869BC87D5F/",
+        "pip": 2
+      },
+      {
         "name": "Speak Softly and Drive a Big Tank",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10689439603598113404/87E51EEC4B2D75528FA0277BA78C5F52DAF9886A/",
         "pip": 2
@@ -5420,6 +5430,11 @@
       {
         "name": "I Smell Profit",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/11974419819645442132/21863ABAA56F91ACFBEDC358ECC81A9D01D80BAE/",
+        "pip": 3
+      },
+      {
+        "name": "Weapons Are Our Religion",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14288655848922673774/D1654AA07CC25055AAB12B3E3B65D98F3592C8DC/",
         "pip": 3
       }
     ]
