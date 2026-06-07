@@ -126,6 +126,26 @@
         }
       },
       {
+        "name": "Dual Armaments",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15383106681652424645/13A9D76ABAB49D3533662601851B17B309F7B178/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
+          }
+        }
+      },
+      {
+        "name": "EE-3 Carbine Rifle",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14154240411543659362/35FA2EEA3E0C7C8E0B7270639AF5CF311EAB2306/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
+          }
+        }
+      },
+      {
         "name": "Electro Gauntlets",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639059/89380FD599DD6819950BB21C5F940A9074C34A51/",
         "points": 10,
@@ -160,12 +180,32 @@
         }
       },
       {
+        "name": "GALAAR-15 Carbine",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12458484896452493690/2A81DABD1DC96B92349A67A1ABC5962EC5D19898/",
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
+          }
+        }
+      },
+      {
         "name": "GALAAR-15 Carbines",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14826834852996456696/2B37B47DBB22C51D5A890CCCACB09E814980DD6E/",
         "points": 5,
         "restrictions": {
           "include": {
             "type": ["Mandalorian Trooper"]
+          }
+        }
+      },
+      {
+        "name": "GALAAR-90 Sniper Rifle (Armament)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13111967417942725266/E6D98CAA98E36C8750704413EB7DCAA1F05E0AFB/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
           }
         }
       },
@@ -420,6 +460,16 @@
         "restrictions": {
           "include": {
             "unit": ["Rebel Officer", "Rebel Agent"]
+          }
+        }
+      },
+      {
+        "name": "Vibrosword",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10319682741949254430/F855F7B46E30A17E5571FA5D020ED59E8E4B74E9/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
           }
         }
       },
@@ -868,6 +918,46 @@
     ],
     "Doctrine": [
       {
+        "name": "Battlemaster",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12771660125697568011/9F60B274A5440ABFA056F6C96A6171596B0397C9/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
+          }
+        }
+      },
+      {
+        "name": "Deadeye",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13367178318589775831/0457F96FEE9B635DA1FCF89F633B83DB33906F44/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
+          }
+        }
+      },
+      {
+        "name": "Guild Member",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16299650346430265484/BD1BE7C71A15B220FE4D5C2B1E076C5EE3CFEE77/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Hunter"]
+          }
+        }
+      },
+      {
+        "name": "War Party Leader",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16295165203471720670/4CCE00A3E8809D02A0FECFA321FDE95BE894BD9F/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader"]
+          }
+        }
+      },
+      {
         "name": "Tyrannical Taskmaster",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/11179625379357754651/6A6C0FBE6E379AADAD32AB5E1EEDD59125FDBDC0/",
         "points": 8,
@@ -1139,6 +1229,16 @@
       }
     ],
     "Gear": [
+      {
+        "name": "Full Beskar Armor",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15487917071921528655/C573E37E3752AD3140468BDE6E841AFB4B3CA7F3/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Hunter"]
+          }
+        }
+      },
       {
         "name": "Flame Projector",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10609844131251620584/4B8108E69F8E6883C42DB08C550901244FF54F65/",
@@ -5872,7 +5972,7 @@
         },
         {
           "name": "Cauldron",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/10797932102881883680/1D79E4E632BB4C723467FD7A72933464A45798E3/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/15202510808993607071/E926687AE8607950057DD4EFBCE615C742C57A1B/",
           "type": "vertical",
           "zone": [
             ["r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"],

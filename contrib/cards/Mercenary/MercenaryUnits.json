@@ -92,7 +92,9 @@
         "Command": 1,
         "Training": 1,
         "Gear": 2,
-        "Grenades": 1
+        "Armament": 1,
+        "Grenades": 1,
+        "Clan": 1
       },
       "minis": [
         {
