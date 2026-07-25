@@ -587,6 +587,11 @@
         "name": "Underworld Connections",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/13075491375596331661/7404D8A06A3E978E3729E9D32EE0EBA855FA18FF/",
         "points": 5
+      },
+      {
+        "name": "You're Not All the Same to Me",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15370805566231514237/94E51F351864193F16FF1B238842FC86F198C286/",
+        "points": 5
       }
     ],
     "Comms": [
@@ -3150,6 +3155,51 @@
     ],
     "Squad Leader": [
       {
+        "name": "Ki-Adi-Mundi",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11942287930523896080/D76CFC23E0B5B42C6128F4D138EE0632AABFFAFE/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12461470789103203864/DACD5524454E91F35C586DDEABAD420ED4E1FF46/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/17297173129004280551/384F67D13FCA3EBA539BD8D3818F5A0E5A8F2A0B/"
+        },
+        "points": 25,
+        "leader": true,
+        "restrictions": {
+          "include": {
+            "type": ["Clone Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Mace Windu",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11054699631738298760/F4A004C7D56F228645F23CD774166A3DADD137CC/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12925628276853873664/6E5E101942F74FC183F7154481D3EB5CFEAAAD65/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/18287494378041429592/02BB80E1E8A06309E2424A0AD83A7A68E9A42FD6/"
+        },
+        "points": 35,
+        "leader": true,
+        "restrictions": {
+          "include": {
+            "type": ["Clone Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Plo Koon (Squad Leader)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14970446310415322356/3617D61451009B533943FF1A47D657C56B28FB48/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10428072234539757120/3154697B7EB8A5076E1CB4C312068560C7B3DE19/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16082411658181568841/AC55908D9B799DAEE652A7505DD8E06857464614/"
+        },
+        "points": 22,
+        "leader": true,
+        "restrictions": {
+          "include": {
+            "type": ["Clone Trooper"]
+          }
+        }
+      },
+      {
         "name": "Obi-Wan Kenobi",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16739187061396312294/0BFA142DE447B3EAFC7447BBDBE40BB10C51A844/",
         "mini": {
@@ -5444,6 +5494,11 @@
       {
         "name": "Sneak Attack",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/17800273845434794252/84425184A9FA3237F85342B84FD168824FBF90C8/",
+        "pip": 1
+      },
+      {
+        "name": "Wisdom of the Council",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15019723583884053183/9DB670A1A3C67885DBABEC3321FDA6CE40737E68/",
         "pip": 1
       },
       {
