@@ -554,6 +554,11 @@
         "points": 5
       },
       {
+        "name": "Fire Control",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/18198943695068594795/92D4DD28AAA6936E97C23CEB0ED8DA8B40B3B138/",
+        "points": 5
+      },
+      {
         "name": "Improvised Orders",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16226117530699489950/0082F67676066542C5BA5DA1D970DD18CFAFCCA1/",
         "points": 5
@@ -596,6 +601,16 @@
     ],
     "Comms": [
       {
+        "name": "Adaptive Combat Network",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12747669721959267055/18E66C3214736C5A7E5E4430484E5F5F0549D1D8/",
+        "points": 4,
+        "restrictions": {
+          "include": {
+            "unit": ["Droid Trooper"]
+          }
+        }
+      },
+      {
         "name": "Command Control Array",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/13152173042783439846/9068A2E707EA6AD6B201273F43B7A275E41ED1C0/",
         "points": 2,
@@ -629,6 +644,16 @@
         "name": "Hacked Comms Unit",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16875746628328702203/66EFD3995E6C5DDB8B687B86323884DFA50E767D/",
         "points": 5
+      },
+      {
+        "name": "Infantry Support",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/18316493360640646809/A2E08DF45F9DC1C97D3F66F50D2F53584D7D8A3F/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "type": ["Vehicle"]
+          }
+        }
       },
       {
         "name": "Integrated Comms Antenna",
@@ -674,6 +699,16 @@
         "name": "Spotter Uplink",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14924322567155862762/F2A27A192FD49D879842AF20650351B03ACB0AFB/",
         "points": 3
+      },
+      {
+        "name": "Squadron Leader",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12636219336015554477/57D5BA27413134A10B30D188DD785E924D525264/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "type": ["Vehicle"]
+          }
+        }
       }
     ],
     "Counterpart": [
@@ -1132,6 +1167,16 @@
         }
       },
       {
+        "name": "Annul",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13039134873400486823/9CA9AE5DAE1840E5F6E9DBA8F5896A45D4056212/",
+        "points": 12
+      },
+      {
+        "name": "Battlemind",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12434883397260467490/EF5E1EEA7995AE65E44BFA3D032F8F58AB774B66/",
+        "points": 8
+      },
+      {
         "name": "Battle Meditation",
         "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568138926/6CA76E020914829864896AC19CB9532DDED05558/",
         "points": 5
@@ -1147,6 +1192,16 @@
         "points": 10
       },
       {
+        "name": "Despair",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12088173990954982038/D9C8027900AAF45CA1E58DA224712ABFA7E568E5/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "alignment": ["Dark"]
+          }
+        }
+      },
+      {
         "name": "Fear",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/9673306764281530635/A29BF04A277C5491400B32B97D8FEA512722A7B3/",
         "points": 3,
@@ -1155,6 +1210,21 @@
             "alignment": ["Dark"]
           }
         }
+      },
+      {
+        "name": "Force Absorb",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15840046545526065098/01C122DBFD570A11DA0D957295AF5C38CDE5D5C7/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "alignment": ["Light"]
+          }
+        }
+      },
+      {
+        "name": "Force Agility",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14961122563602180292/B4EE99604975F90351059BE01612D0398BF257BB/",
+        "points": 8
       },
       {
         "name": "Force Barrier",
@@ -1170,6 +1240,21 @@
             "alignment": ["Dark"]
           }
         }
+      },
+      {
+        "name": "Force Drain",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12928108812106231713/AED8C5793B210DFA257D5D4058BE477FBAC50BF4/",
+        "points": 14,
+        "restrictions": {
+          "include": {
+            "alignment": ["Dark"]
+          }
+        }
+      },
+      {
+        "name": "Force Enhanced Defense",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11291805294552051436/0A7A06BA992A9C01C2E3D41A3A068A9BF919DD60/",
+        "points": 5
       },
       {
         "name": "Force Guidance",
@@ -1191,6 +1276,26 @@
         "name": "Force Reflexes",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16096715596179885171/664DA23B337498B297143163C2B92A87EF60F515/",
         "points": 5
+      },
+      {
+        "name": "Hatred",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16895897896759420436/A2DC6768E12116A6D5E234B0AAC722BAEA59D2A4/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "alignment": ["Dark"]
+          }
+        }
+      },
+      {
+        "name": "Helping Hand",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10796382668911716728/3FECEAC8990685BBD6355419F7263BF2803D6A0D/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "alignment": ["Light"]
+          }
+        }
       },
       {
         "name": "Hope",
@@ -1234,6 +1339,21 @@
       }
     ],
     "Gear": [
+      {
+        "name": "High Speed Tracking",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9694194129386529255/2578A8BA698467D7A38C919869D7BB656CBB0B3F/",
+        "points": 3
+      },
+      {
+        "name": "Overcharged Blaster Packs",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9459050577866768390/40269497C077CBA375F9CB783D12EBEBD33CA15F/",
+        "points": 3
+      },
+      {
+        "name": "Tank Hunting Munitions",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16865623468525966409/64F2A7D8E6EC3711BF7072F0F681C4036A14E7B3/",
+        "points": 3
+      },
       {
         "name": "Full Beskar Armor",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15487917071921528655/C573E37E3752AD3140468BDE6E841AFB4B3CA7F3/",
@@ -5085,6 +5205,56 @@
       }
     ],
     "Training": [
+      {
+        "name": "Stuck In",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9920570282586854750/9D655EB01D4D8BBCF8739BA076D8300C69A7B173/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "type": ["Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Strong in the Force",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10536929120995788903/E88185F23830DD0EEC6F33F5DBB2C6809D206B5A/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "slot": ["Force"]
+          }
+        }
+      },
+      {
+        "name": "Hit the Dirt",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9314695132399729706/939457E2E0646CF43305DA36AC35BC1995B99C1B/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "type": ["Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Go for Broke",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12895134279705796265/311401A8B412C871CFFD26ABBC26DD13DF3CBCA8/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "type": ["Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Agile Climber",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10141164197510858693/08B159FCF002C9511B772F8B8FFF3908616607A5/",
+        "points": 3,
+        "restrictions": {
+          "include": {
+            "type": ["Trooper"]
+          }
+        }
+      },
       {
         "name": "Security Detail",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12222061891853555901/CD168A0212E4D0E6D145E0802870606F91B35F68/",
