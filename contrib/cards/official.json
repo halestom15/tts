@@ -1340,6 +1340,14 @@
     ],
     "Gear": [
       {
+        "name": "Superior Equipment",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13978585535035849617/705A89F3595683D28C048AC9E04DD1E6B3F6BF63/",
+        "points": 15,
+        "restrictions": {
+          "type": ["Commander", "Operative"]
+        }
+      },
+      {
         "name": "High Speed Tracking",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/9694194129386529255/2578A8BA698467D7A38C919869D7BB656CBB0B3F/",
         "points": 3
@@ -5205,6 +5213,16 @@
       }
     ],
     "Training": [
+      {
+        "name": "Lying in Wait",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/18063525339174644743/A735711E50A767331DE924A1DFFC3C52E632A09A/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "type": ["Trooper"]
+          }
+        }
+      },
       {
         "name": "Stuck In",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/9920570282586854750/9D655EB01D4D8BBCF8739BA076D8300C69A7B173/",
