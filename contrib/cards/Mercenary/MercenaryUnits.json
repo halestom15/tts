@@ -17,7 +17,8 @@
       },
       "minis": [
         {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143862/CF491C11176E40BD786A89E1D0C20D3316448188/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14436064754089284584/95BA954F4E47428F9C0022704047A74D74BD2186/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14436064754089284584/95BA954F4E47428F9C0022704047A74D74BD2186/"
         }
       ],
       "commands": [
