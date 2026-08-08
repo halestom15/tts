@@ -544,6 +544,16 @@
         "points": 15
       },
       {
+        "name": "Caught in a Web",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11838331827405158510/1F55450A403C54B6CA2D0D45F85F29153411B66E/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Admiral Trench"]
+          }
+        }
+      },
+      {
         "name": "Commanding Presence",
         "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568139512/84EE686E19B56453386F3929C01D0B71687488E4/",
         "points": 5
@@ -596,7 +606,12 @@
       {
         "name": "You're Not All the Same to Me",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15370805566231514237/94E51F351864193F16FF1B238842FC86F198C286/",
-        "points": 5
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Plo Koon"]
+          }
+        }
       }
     ],
     "Comms": [
@@ -1938,6 +1953,38 @@
       }
     ],
     "Heavy Weapon": [
+      {
+        "name": "B2-HA Rocket Droid",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14481177409828935621/616A668B2DBC6F06F0E395DA8F23AFE94B08B8A5/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/11993998747845382830/D3FCC0E5C71EEC955A5565301737BC69976309B8/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/12199368484869338390/D8C03A91B7551742F3376C73A8816363812B5726/"
+        },
+        "points": 30,
+        "restrictions": {
+          "include": {
+            "unit": ["B2 Super Battle Rocket Droids"]
+          }
+        }
+      },
+      {
+        "name": "Anti-Infantry Missile Pods Rocket Droid",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/18092846818600646440/C9F00A52A3BD29EDA03B7C92B5C37350EC2D0778/",
+        "flip": {
+          "name": "Anti-Armor Missile Pods Rocket Droid",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/16501527007025144375/516EFB62AC4069878F9B2F269543291C4A8E751B/"
+        },
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14198368847980106687/9C1F89910D899A8DBD08368E2F1B4FF06AFB4081/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/17201161655117853432/6E226B22540661AFA02A5D280DFCAFB27B8697A4/"
+        },
+        "points": 24,
+        "restrictions": {
+          "include": {
+            "unit": ["B2 Super Battle Rocket Droids"]
+          }
+        }
+      },
       {
         "name": "Super Commando Gunslinger (Saxon)",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15694515457995026743/79DBD04052ADF8764C4603B053BF534AF06EE35E/",
@@ -3507,6 +3554,20 @@
       }
     ],
     "Personnel": [
+      {
+        "name": "B2 Super Rocket Battle Droid",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12046890039399081772/0F0CC57666FEC4A737B5978D0369FDC34A92CD0E/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/17643173733829902036/9F0522C51E16AD0B6689028E265173598DC40090/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11157784104298856053/53AE2BE9E41C5FFF05E04719F9DD5C02EEA3C375/"
+        },
+        "points": 21,
+        "restrictions": {
+          "include": {
+            "unit": ["B2 Super Rocket Battle Droids"]
+          }
+        }
+      },
       {
         "name": "Rook Kast (Saxon)",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12834237972750748762/A58D104B13D7E69A71D308EB317E08599291D488/",
@@ -5751,6 +5812,11 @@
       }
     ],
     "Separatist": [
+      {
+        "name": "For the Cause",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10076215953450451651/78E90846B5F9B1430416734F0E31978DC176F4C5/",
+        "pip": 1
+      },
       {
         "name": "Mechanized Incursion",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131525764/985E35D1F4C14B36C2DDE31CD8426CD3F9499744/",
