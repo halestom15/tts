@@ -1963,7 +1963,7 @@
         "points": 30,
         "restrictions": {
           "include": {
-            "unit": ["B2 Super Battle Rocket Droids"]
+            "unit": ["B2 Super Rocket Battle Droids"]
           }
         }
       },
@@ -1981,7 +1981,7 @@
         "points": 24,
         "restrictions": {
           "include": {
-            "unit": ["B2 Super Battle Rocket Droids"]
+            "unit": ["B2 Super Rocket Battle Droids"]
           }
         }
       },
