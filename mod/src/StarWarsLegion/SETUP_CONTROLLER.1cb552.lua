@@ -251,7 +251,7 @@ function spawnBoundaryCell(cell, x, z)
 
   pos = AddVectors(pos, offset)
 
-  -- Mac fallback dual-path: branch on the table-wide deploymentMode toggle.
+  -- Mac fallback dual-path: branch on the table-wide mode toggle (gGetDeploymentMode).
   local _macDeployMode = Global.call("gGetDeploymentMode")
   local projector = nil
   if _macDeployMode == "windows" then

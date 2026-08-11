@@ -368,9 +368,12 @@ end
 
 function toggleCohesionRuler(_, playerColor)
     -- Mac fallback: capture playerColor (TTS passes it as 2nd arg on click)
-    -- and route through gCohesionTrigger so the per-seat router picks the
-    -- right renderer for the clicking player.
+    -- and route through gCohesionTrigger (the mode router).
+    if not selectedUnitObj then return end
     if not rulerOn then
+        -- Deterministic ON: gCohesionTrigger toggles by GUID, so clear any
+        -- stale Mac overlay first (e.g., drawn via the hover hotkey).
+        Global.call("gClearCohesion", { figGUID = selectedUnitObj.getGUID() })
         Global.call("gCohesionTrigger", {
             figGUID     = selectedUnitObj.getGUID(),
             playerColor = playerColor,
@@ -952,9 +955,13 @@ end
 
 function targetingMode(_, playerColor)
     -- Mac fallback: capture playerColor and route through gRangeTrigger.
+    if not selectedUnitObj then return end
     if not enemyHighlighted then
         exitAttackMode()
         highlightEnemies()
+        -- Deterministic ON: gRangeTrigger toggles by GUID, so clear any
+        -- stale Mac overlay first to guarantee this click draws.
+        Global.call("gClearRange", { figGUID = selectedUnitObj.getGUID() })
         Global.call("gRangeTrigger", {
             figGUID     = selectedUnitObj.getGUID(),
             playerColor = playerColor,
@@ -962,6 +969,9 @@ function targetingMode(_, playerColor)
         enemyHighlighted = true
         resetRangeButtons()
     else
+        -- exitTargetingMode/clearRangeRulers only clears the vanilla bundle
+        -- ruler; clear the Mac overlay too so OFF really hides the rings.
+        Global.call("gClearRange", { figGUID = selectedUnitObj.getGUID() })
         exitTargetingMode()
     end
 end
