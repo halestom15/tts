@@ -43,7 +43,6 @@ spawnCohesionRulerOriginalGlobal  = spawnCohesionRuler
 clearCohesionRulerOriginalGlobal  = clearCohesionRuler
 
 activeOverlays = activeOverlays or {}
-hiddenWhilePickedUp = hiddenWhilePickedUp or {}
 
 local ASSETS_BASE = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/mac-projector-fallback/mod/data/mac-fallback-assets/"
 local COHESION_HALO_URL = ASSETS_BASE .. "cohesion_halo.png"
@@ -212,7 +211,24 @@ local DEPLOYMENT_CELL_SIZES = {
     rcc = {3, 3}, bcc = {3, 3},   -- opposite corner quarter
 }
 
-local function macRayGroundY(x, z, offset)
+-- A ray hit counts as "ground" only if it is not the ignored object and not
+-- a transient object: anything still in motion (e.g. a movement template
+-- falling into place the frame the overlay spawns) or the hovering
+-- "Maximum Move" Windows bundle would otherwise catch the center ray and
+-- float the fill decal above its border ring.
+local function macHitIsGround(h, ignoreObj)
+    local obj = h.hit_object
+    if obj == nil then return true end
+    if obj == ignoreObj then return false end
+    if obj.getName and obj.getName() == "Maximum Move" then return false end
+    local ok, v = pcall(function() return obj.getVelocity() end)
+    if ok and v and (math.abs(v.x) + math.abs(v.y) + math.abs(v.z)) > 0.05 then
+        return false
+    end
+    return true
+end
+
+local function macRayGroundY(x, z, offset, ignoreObj)
     local hits = Physics.cast({
         origin       = {x, 30, z},
         direction    = {0, -1, 0},
@@ -220,7 +236,9 @@ local function macRayGroundY(x, z, offset)
         max_distance = 50,
     })
     for _, h in ipairs(hits) do
-        return h.point.y + (offset or 0.05)
+        if macHitIsGround(h, ignoreObj) then
+            return h.point.y + (offset or 0.05)
+        end
     end
     return offset or 0.05
 end
@@ -262,7 +280,7 @@ local function macBuildRing(centerPos, radius, color, thickness, ignoreObj)
         })
         local y = centerPos.y + 0.05
         for _, h in ipairs(hits) do
-            if h.hit_object ~= ignoreObj then
+            if macHitIsGround(h, ignoreObj) then
                 y = h.point.y + 0.05
                 break
             end
@@ -298,7 +316,7 @@ local function macBuildStadium(centerPos, halfLen, halfWid, rotYdeg, dist, color
         })
         local y = centerPos.y + 0.05
         for _, h in ipairs(hits) do
-            if h.hit_object ~= ignoreObj then
+            if macHitIsGround(h, ignoreObj) then
                 y = h.point.y + 0.05
                 break
             end
@@ -448,7 +466,7 @@ macBuilders.range = function(fig, params)
     })
     local groundY = pos.y
     for _, h in ipairs(hits) do
-        if h.hit_object ~= fig then groundY = h.point.y; break end
+        if macHitIsGround(h, fig) then groundY = h.point.y; break end
     end
 
     if oblong then
@@ -521,7 +539,7 @@ macBuilders.maxmove = function(fig, params)
     })
     local groundY = pos.y
     for _, h in ipairs(hits) do
-        if h.hit_object ~= fig then groundY = h.point.y; break end
+        if macHitIsGround(h, fig) then groundY = h.point.y; break end
     end
 
     if oblong then
@@ -624,7 +642,7 @@ macBuilders.cohesion = function(fig, params)
     })
     local groundY = pos.y
     for _, h in ipairs(hits) do
-        if h.hit_object ~= fig then
+        if macHitIsGround(h, fig) then
             groundY = h.point.y
             break
         end
@@ -668,7 +686,34 @@ macBuilders.cohesion = function(fig, params)
     }
 end
 
-function macRedrawAll()
+-- Redraws are deferred one frame and coalesced, then skipped outright when
+-- the rebuilt result is identical to what is already applied. Rationale: a
+-- click that clears and respawns the same overlay (e.g. re-picking the same
+-- speed) would otherwise call Global.setDecals twice in one click, and every
+-- setDecals re-projects every decal on the table, visibly shifting the
+-- shading/shadows on scene objects.
+macRedrawPending = false
+macLastDrawSig = nil
+
+local function macDrawSignature(lines, decals)
+    local parts = {}
+    for _, l in ipairs(lines) do
+        local p0 = l.points and l.points[1]
+        parts[#parts + 1] = string.format("L%d:%s", #(l.points or {}),
+            p0 and string.format("%.3f,%.3f,%.3f", p0[1], p0[2], p0[3]) or "")
+    end
+    for _, d in ipairs(decals) do
+        parts[#parts + 1] = string.format("D%s:%.3f,%.3f,%.3f:%.2f",
+            d.name or "", d.position[1], d.position[2], d.position[3],
+            (d.scale and d.scale[1]) or 0)
+    end
+    -- pairs() iteration order over activeOverlays is not stable across
+    -- rebuilds; sort so identical content always yields an identical key.
+    table.sort(parts)
+    return table.concat(parts, "|")
+end
+
+function macRedrawNow()
     local lines, decals = {}, {}
     -- Preload all texture URLs (invisible decals far below the table) so TTS
     -- keeps them cached and we never get the white-square flash on respawn.
@@ -704,7 +749,20 @@ function macRedrawAll()
                              or type(entry.fig.getPosition) ~= "function") then
                 stale[#stale + 1] = key
             else
-                local ok, out = pcall(b, entry.fig, entry.params)
+                -- Per-entry cache: only the entry whose fig moved since the
+                -- last poll is rebuilt (65 raycasts per ring); every other
+                -- overlay reuses its cached geometry. This is what keeps the
+                -- framerate up while dragging a fig with several overlays on.
+                local ok, out
+                if entry._cache and not entry._dirty then
+                    ok, out = true, entry._cache
+                else
+                    ok, out = pcall(b, entry.fig, entry.params)
+                    if ok and out then
+                        entry._cache = out
+                        entry._dirty = nil
+                    end
+                end
                 if ok and out then
                     for _, l in ipairs(out.lines or {}) do
                         table.insert(lines, l)
@@ -719,8 +777,20 @@ function macRedrawAll()
         end
     end
     for _, k in ipairs(stale) do activeOverlays[k] = nil end
+    local sig = macDrawSignature(lines, decals)
+    if sig == macLastDrawSig then return end
+    macLastDrawSig = sig
     Global.setVectorLines(lines)
     Global.setDecals(decals)
+end
+
+function macRedrawAll()
+    if macRedrawPending then return end
+    macRedrawPending = true
+    Wait.frames(function()
+        macRedrawPending = false
+        pcall(macRedrawNow)
+    end, 1)
 end
 
 function gSpawnCohesion(params)
@@ -730,11 +800,22 @@ function gSpawnCohesion(params)
         type = "cohesion", fig = fig, params = params or {}
     }
     macRedrawAll()
+    -- Cohesion follows its fig through the same lazy poll as Range (it used
+    -- to tag along only as a side effect of full-rebuild polling).
+    if not macRangePollingActive then
+        macRangePollingActive = true
+        Wait.frames(macRangePoll, 5)
+    end
 end
 
 function gClearCohesion(params)
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
+    -- Vanilla fig scripts clear cohesion from onPickedUp. Design choice
+    -- (11 aug): the Mac overlay stays visible and FOLLOWS the fig during
+    -- the drag, like Range does  -  so clears on a held fig are ignored
+    -- (the vanilla onPickedUp clear is the only caller in that state).
+    if fig.held_by_color then return end
     activeOverlays[fig.getGUID() .. ":cohesion"] = nil
     macRedrawAll()
 end
@@ -750,18 +831,51 @@ function gToggleCohesion(params)
     end
 end
 
--- Range polling: a slow timer (5 frames = ~12 fps) that re-draws active
--- range rulers so they follow figures in real-time. Stops automatically when
--- no range overlay is active anymore  -  avoids the overnight memory leak.
+-- Overlay polling: a slow timer (5 frames = ~12 fps) that re-draws active
+-- range AND cohesion overlays so they follow figures in real-time. Stops
+-- automatically when none is active anymore  -  avoids the memory leak.
 macRangePollingActive = macRangePollingActive or false
 
 function macRangePoll()
-    local hasRange = false
+    -- Rebuild ONLY when a tracked fig actually moved: a full redraw re-runs
+    -- every builder (65 raycasts per ring, up to 6 rings per fig), and doing
+    -- that every 5 frames for static figs is what made Range/POI overlays
+    -- tank the framerate while Cohesion (no polling) stayed fluid.
+    local hasTracked = false
+    local moved = false
     for _, e in pairs(activeOverlays) do
-        if e.type == "range" then hasRange = true; break end
+        if e.type == "range" or e.type == "cohesion" then
+            hasTracked = true
+            local fig = e.fig
+            if not fig or type(fig.getPosition) ~= "function" then
+                moved = true  -- stale entry: the redraw prunes it
+            else
+                local ok, p = pcall(function() return fig.getPosition() end)
+                local okr, r = pcall(function() return fig.getRotation() end)
+                if not ok or not p then
+                    moved = true
+                elseif not e._lastPos then
+                    -- First poll after spawn: prime the cache, the spawn
+                    -- already drew this overlay.
+                    e._lastPos = p
+                    e._lastRot = okr and r or nil
+                else
+                    local lp, lr = e._lastPos, e._lastRot
+                    if math.abs(p.x - lp.x) > 0.01
+                       or math.abs(p.y - lp.y) > 0.01
+                       or math.abs(p.z - lp.z) > 0.01
+                       or (okr and lr and math.abs(r.y - lr.y) > 0.5) then
+                        moved = true
+                        e._dirty = true
+                    end
+                    e._lastPos = p
+                    e._lastRot = okr and r or lr
+                end
+            end
+        end
     end
-    if hasRange then
-        macRedrawAll()
+    if hasTracked then
+        if moved then macRedrawAll() end
         Wait.frames(macRangePoll, 5)
     else
         macRangePollingActive = false
@@ -785,6 +899,13 @@ function gClearRange(params)
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
     activeOverlays[fig.getGUID() .. ":range"] = nil
+    -- Windows mode: also destroy the vanilla bundle this fig owns. It was
+    -- spawned in the Global scope by gRangeTrigger, so the token's own
+    -- exitTargetingMode/clearRangeRulers cannot reach it.
+    if macWinRangeGUID == params.figGUID then
+        pcall(clearRangeRulersOriginalGlobal)
+        macWinRangeGUID = nil
+    end
     macRedrawAll()
 end
 
@@ -838,60 +959,10 @@ function gClearMaxMove(params)
     macRedrawAll()
 end
 
-function onObjectPickUp(player_color, obj)
-    if not obj or not obj.getGUID then return end
-    local guid = obj.getGUID()
-    local prefix = guid .. ":"
-    local plen = #prefix
-    local changed = false
-    for key, entry in pairs(activeOverlays) do
-        if key:sub(1, plen) == prefix then
-            -- Cohesion: static, hide during pickup, restore on drop.
-            -- Range: keep visible; the polling timer redraws each tick so
-            -- the ruler follows the figure in real-time during the drag.
-            if entry.type == "cohesion" then
-                hiddenWhilePickedUp[key] = entry
-                activeOverlays[key] = nil
-                changed = true
-            end
-        end
-    end
-    if changed then macRedrawAll() end
-end
-
-function onObjectDrop(player_color, obj)
-    if not obj or not obj.getGUID then return end
-    local guid = obj.getGUID()
-    local prefix = guid .. ":"
-    local plen = #prefix
-
-    -- Defer the overlay restore until the fig has come to rest. Without this,
-    -- a flick-drop with residual inertia leaves the overlay anchored at the
-    -- release position while the fig continues to slide across the table.
-    local function tryRestore()
-        local fig = getObjectFromGUID(guid)
-        if not fig then return end  -- destroyed during slide
-        if fig.held_by_color then return end  -- picked up again, hold off
-        local v = fig.getVelocity and fig.getVelocity()
-        if v then
-            local speed = math.sqrt((v.x or 0)^2 + (v.y or 0)^2 + (v.z or 0)^2)
-            if speed > 0.05 then
-                Wait.frames(tryRestore, 3)
-                return
-            end
-        end
-        local changed = false
-        for key, entry in pairs(hiddenWhilePickedUp) do
-            if key:sub(1, plen) == prefix then
-                activeOverlays[key] = entry
-                hiddenWhilePickedUp[key] = nil
-                changed = true
-            end
-        end
-        if changed then macRedrawAll() end
-    end
-    tryRestore()
-end
+-- Note: no onObjectPickUp/onObjectDrop handlers (the vanilla Global defines
+-- none either). Cohesion, like Range, stays visible during a drag and
+-- follows via the poll; the vanilla onPickedUp clear is neutralized in
+-- gClearCohesion while the fig is held.
 
 function onObjectDestroy(obj)
     if not obj or not obj.getGUID then return end
@@ -905,11 +976,6 @@ function onObjectDestroy(obj)
             changed = true
         end
     end
-    for key in pairs(hiddenWhilePickedUp) do
-        if key:sub(1, plen) == prefix then
-            hiddenWhilePickedUp[key] = nil
-        end
-    end
     if changed then macRedrawAll() end
 end
 
@@ -917,107 +983,82 @@ end
 -- URLs as invisible decals far below the table. No separate preload needed.
 
 -- ============================================
--- PER-SEAT MODE TOGGLE (Cohesion + Range)
--- Each seated player picks their renderer: "mac" (this patch) or
--- "windows" (original bundle Projector). When a player triggers an overlay,
--- the router checks THEIR mode and uses that renderer. The rendered overlay
--- is visible to everyone (TTS engine limitation).
+-- TABLE-WIDE MODE TOGGLE (Cohesion + Range + Deployment)
+-- One switch for the whole table: "windows" (original bundle Projectors) or
+-- "mac" (this patch). Per-seat modes were dropped on purpose: any rendered
+-- overlay is visible to every player (TTS engine limitation), so a Windows
+-- player triggering an original Projector still shows magenta to Mac
+-- players. The switch is the Apple-logo button in the bottom-right menu:
+-- default grey = off (originals), green = on (Mac-safe fallback).
 -- ============================================
 
-playerOverlayMode = playerOverlayMode or {}  -- color -> "mac" | "windows"
--- Default = "windows" (majority of TTS users). Mac users toggle their seat
--- via the floating panel. Same for deployment (table-wide setting).
-deploymentMode    = deploymentMode    or "windows"
+overlayMode = overlayMode or "windows"  -- "windows" | "mac", table-wide
 
-function gGetMode(params)
-    return playerOverlayMode[params.color] or "windows"
-end
-
-function gGetDeploymentMode()
-    return deploymentMode
-end
-
-function gToggleDeploymentMode()
-    deploymentMode = (deploymentMode == "mac") and "windows" or "mac"
-    -- Wipe any active deployment zones so the next setup uses the new mode.
-    gClearAllDeployment()
-    macDeferRefresh()
-end
-
--- Replicates the original showRangeOnHoveredModel toggle, calling the
--- aliased Global originals so our Mac overrides don't recapture the path.
-function gWindowsRangeToggle(fig)
-    if not fig then return end
-    if rangeRuler ~= nil then
-        pcall(clearRangeRulersOriginalGlobal)
-        if selectedUnitObj == fig then
-            selectedUnitObj = nil
-            return
-        end
-    end
-    if fig.interactable then
-        pcall(function() spawnRangeRulerOriginalGlobal(fig) end)
-        selectedUnitObj = fig
-    end
-end
-
--- Replicates the original showCohesionOnHoveredModel toggle. Uses Global
--- aliased originals + Global cohesionRuler state (set by the original).
-function gWindowsCohesionToggle(fig)
-    if not fig then return end
-    if fig.interactable and selectedUnitObj == fig and cohesionRuler ~= nil then
-        pcall(clearCohesionRulerOriginalGlobal)
-        selectedUnitObj = nil
-        return
-    end
-    pcall(clearCohesionRulerOriginalGlobal)
-    pcall(function() spawnCohesionRulerOriginalGlobal(fig) end)
-    selectedUnitObj = fig
-end
+function gGetMode(_)          return overlayMode end
+function gGetDeploymentMode() return overlayMode end
 
 function gCohesionTrigger(params)
     if not params or not params.figGUID then return end
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
-    local mode = playerOverlayMode[params.playerColor] or "windows"
-    if mode == "windows" then
-        gWindowsCohesionToggle(fig)
-    else
+    if overlayMode ~= "windows" then
+        gToggleCohesion({figGUID = params.figGUID})
+        return
+    end
+    -- Windows mode: the vanilla Projector lives in the FIG scope (every fig
+    -- requires !/Cohesion), so read and clear it there. Vanilla
+    -- spawnCohesionRuler RESPAWNS instead of toggling, so without this a
+    -- second click just redrew the ruler and it could never be turned off.
+    -- pcall guards objects that carry no such function (e.g. a hovered
+    -- non-fig object), which fall back to the Mac renderer.
+    local ok, isOn = pcall(function() return fig.getVar("cohesionRuler") ~= nil end)
+    if not ok then
+        gToggleCohesion({figGUID = params.figGUID})
+        return
+    end
+    if isOn then
+        pcall(function() fig.call("clearCohesionRulerOriginal", fig) end)
+    elseif not pcall(function() fig.call("spawnCohesionRulerOriginal", fig) end) then
         gToggleCohesion({figGUID = params.figGUID})
     end
 end
+
+-- Which fig currently owns the vanilla (Windows-mode) Range bundle, so a
+-- second trigger on the same fig turns it off like vanilla
+-- showRangeOnHoveredModel does.
+macWinRangeGUID = macWinRangeGUID or nil
 
 function gRangeTrigger(params)
     if not params or not params.figGUID then return end
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
-    local mode = playerOverlayMode[params.playerColor] or "windows"
-    if mode == "windows" then
-        gWindowsRangeToggle(fig)
-    else
-        gToggleRange({
-            figGUID      = params.figGUID,
-            forceFigMode = params.forceFigMode,
-            rangeKey     = params.rangeKey,
-        })
+    if overlayMode ~= "windows" then
+        gToggleRange({figGUID = params.figGUID})
+        return
+    end
+    -- The vanilla bundle Range lives in the GLOBAL scope: !/RangeRulers is
+    -- required by Global, while figs only require !/Cohesion. Calling
+    -- fig.call("spawnRangeRulerOriginal", fig) therefore ALWAYS raised
+    -- "no such function"; the pcall swallowed it and we fell through to the
+    -- Mac renderer, so Windows mode silently drew Mac overlays instead of
+    -- the original Projector. Route through the Global aliases captured at
+    -- the top of this block instead.
+    local wasOn = (macWinRangeGUID == params.figGUID)
+    pcall(clearRangeRulersOriginalGlobal)
+    macWinRangeGUID = nil
+    if not wasOn then
+        if pcall(function() spawnRangeRulerOriginalGlobal(fig) end) then
+            macWinRangeGUID = params.figGUID
+        else
+            gToggleRange({figGUID = params.figGUID})
+        end
     end
 end
 
--- UI: floating panel with one toggle button per seated player
-function macModeClick(player, _, id)
-    local color = id:sub(9)  -- "macmode_Red" -> "Red"
-    if player.color ~= color then
-        broadcastToColor("Only the player at this seat can toggle their mode.",
-                         player.color, {1, 0.5, 0.5})
-        return
-    end
-    local cur = playerOverlayMode[color] or "windows"
-    playerOverlayMode[color] = (cur == "mac") and "windows" or "mac"
-    -- Wipe Mac-side overlays so stale visuals don't linger after the toggle.
-    -- We don't track per-color ownership, so this clears Cohesion+Range for
-    -- everyone  -  acceptable since each player can re-trigger their hotkey.
-    -- Windows-side overlays (fig-scoped cohesionRuler/rangeRuler) are
-    -- cleared by iterating objects with active state.
+function macModeToggle(_, _, _)
+    overlayMode = (overlayMode == "mac") and "windows" or "mac"
+    -- Wipe both renderers' overlays so stale visuals don't linger after the
+    -- toggle; each player just re-triggers their hotkey.
     for k, e in pairs(activeOverlays) do
         if e.type == "cohesion" or e.type == "range" then
             activeOverlays[k] = nil
@@ -1032,6 +1073,14 @@ function macModeClick(player, _, id)
             pcall(function() obj.call("clearRangeRulersOriginal", obj) end)
         end
     end
+    -- The Windows-mode Range bundle is spawned from the Global scope, which
+    -- getAllObjects() above does not cover.
+    pcall(clearRangeRulersOriginalGlobal)
+    macWinRangeGUID = nil
+    broadcastToAll(
+        (overlayMode == "mac") and "Mac patch ON: Mac-safe overlays for the whole table."
+                                or "Mac patch OFF: original Windows overlays.",
+        (overlayMode == "mac") and {0.55, 0.9, 0.6} or {0.9, 0.75, 0.55})
     macDeferRefresh()
 end
 
@@ -1046,215 +1095,171 @@ local function macFindNodeById(tree, id)
     return nil, nil
 end
 
--- Tracks the panel's desired active state across refreshes. Persists so a
--- click on the close X before the initial refresh is honored. Hidden at first
--- load (default = false); the floating "Mac Patch" menu button reveals it.
-macModePanelActive = (macModePanelActive == nil) and false or macModePanelActive
-
-function macModeToggleVisibility()
-    macModePanelActive = not macModePanelActive
-    -- Defer the XML rebuild: TTS occasionally throws a UTF-8 byte-buffer
-    -- encoding error if UI.setXmlTable runs synchronously inside a UI
-    -- click handler. Deferring one frame + pcall has been reliable.
-    Wait.frames(function()
-        pcall(function()
-            local tree = UI.getXmlTable() or {}
-            local panel = macFindNodeById(tree, "macModePanel")
-            if panel then
-                panel.attributes.active = macModePanelActive and "true" or "false"
-                UI.setXmlTable(tree)
-            else
-                macRefreshModeUI()
-            end
-        end)
-    end, 1)
-end
-
+-- UI: single Apple-logo toggle button in the bottom-right legionFloatingMenu.
 function macRefreshModeUI()
-    local seated = Player.getPlayers()
-    local rows = {{
-        tag = "Panel",
-        attributes = {
-            color = "transparent",
-            preferredHeight = "24",
-        },
-        children = {
-            {
-                tag = "Text",
-                attributes = {
-                    text = "Mac TTS U6 Patch",
-                    fontSize = "16",
-                    color = "white",
-                    alignment = "MiddleLeft",
-                    rectAlignment = "MiddleLeft",
-                },
-            },
-            {
-                tag = "Button",
-                attributes = {
-                    id = "macModePanelClose",
-                    text = "X",
-                    onClick = "macModeToggleVisibility",
-                    color = "#3a1e1e",
-                    textColor = "white",
-                    fontSize = "12",
-                    width = "24",
-                    height = "20",
-                    rectAlignment = "MiddleRight",
-                },
-            },
-        },
-    }, {
-        tag = "Text",
-        attributes = {
-            text = "Cohesion & Range: pick your renderer",
-            fontSize = "12",
-            color = "#bbbbbb",
-            alignment = "MiddleCenter",
-        },
-    }}
-    if #seated == 0 then
-        table.insert(rows, {
-            tag = "Text",
-            attributes = {
-                text = "(no seated players)",
-                fontSize = "12",
-                color = "#888888",
-                alignment = "MiddleCenter",
-            },
-        })
-    end
-    for _, p in ipairs(seated) do
-        local mode = playerOverlayMode[p.color] or "windows"
-        local label = p.color .. " - " ..
-                      (mode == "mac" and "MAC FALLBACK" or "WINDOWS ORIGINAL")
-        local bg = (mode == "mac") and "#1e7a3a" or "#7a3a1e"
-        table.insert(rows, {
-            tag = "Button",
-            attributes = {
-                id = "macmode_" .. p.color,
-                text = label,
-                onClick = "macModeClick",
-                color = bg,
-                fontSize = "13",
-                textColor = "white",
-                preferredHeight = "28",
-            },
-        })
-    end
-    -- Deployment is table-wide (everyone sees the same zones); use a single
-    -- global toggle rather than per-seat.
-    table.insert(rows, {
-        tag = "Text",
-        attributes = {
-            text = "Deployment (table-wide)",
-            fontSize = "12",
-            color = "#bbbbbb",
-            alignment = "MiddleCenter",
-        },
-    })
-    table.insert(rows, {
-        tag = "Button",
-        attributes = {
-            id   = "macmode_deployment",
-            text = (deploymentMode == "mac") and "DEPLOYMENT: MAC FALLBACK"
-                                              or "DEPLOYMENT: WINDOWS ORIGINAL",
-            onClick = "macDeploymentClick",
-            color   = (deploymentMode == "mac") and "#1e3a7a" or "#7a3a1e",
-            fontSize = "13",
-            textColor = "white",
-            preferredHeight = "28",
-        },
-    })
-    -- Build my panel (will be merged into the existing UI tree below so we
-    -- don't clobber legionFloatingMenu / Welcome / Chess Clocks etc.).
-    local panel = {
-        tag = "Panel",
-        attributes = {
-            id = "macModePanel",
-            active = macModePanelActive and "true" or "false",
-            rectAlignment = "MiddleRight",
-            offsetXY = "-10 80",
-            width = "260",
-            height = "320",
-            color = "rgba(0.06,0.06,0.06,0.9)",
-            padding = "8 8 8 8",
-            outlineSize = "1 1",
-            outline = "#303030",
-        },
-        children = {{
-            tag = "VerticalLayout",
-            attributes = {
-                spacing = "4",
-                childForceExpandHeight = "false",
-                childForceExpandWidth = "true",
-            },
-            children = rows,
-        }},
-    }
-
     local tree = UI.getXmlTable() or {}
-    -- Remove any stale macModePanel before reinserting the fresh one.
+    -- Drop the legacy mode-picker panel if this save still carries one.
     for i = #tree, 1, -1 do
         if tree[i].attributes and tree[i].attributes.id == "macModePanel" then
             table.remove(tree, i)
         end
     end
-    table.insert(tree, panel)
-
-    -- Inject a "Mac Patch" button into the bottom-right legionFloatingMenu
-    -- (replaces the first interactable=false placeholder button).
     local menu = macFindNodeById(tree, "legionFloatingMenu")
     if menu and menu.children then
-        local hasMine = false
-        for _, c in ipairs(menu.children) do
+        local isMac = (overlayMode == "mac")
+        local attrs = {
+            id = "macModeMenuButton",
+            onClick = "macModeToggle",
+            tooltip = isMac
+                and "Mac TTS U6 patch ON (table-wide). Click for original overlays."
+                or  "Mac TTS U6 patch OFF. Click for Mac-safe overlays (table-wide).",
+        }
+        -- OFF keeps the sibling buttons' default light-grey look (Welcome,
+        -- Chess Clocks); ON switches to green.
+        if isMac then attrs.color = "#1e7a3a" end
+        local button = {
+            tag = "Button",
+            attributes = attrs,
+            children = {{
+                -- White PNG sprite (CustomUIAssets "macAppleLogo"), tinted
+                -- per state: dark on the grey button, white on green. A text
+                -- U+F8FF glyph would render as a missing-glyph box on
+                -- Windows clients.
+                tag = "Image",
+                attributes = {
+                    image = "macAppleLogo",
+                    color = isMac and "#FFFFFF" or "#2b2b2b",
+                    preserveAspect = "true",
+                    raycastTarget = "false",
+                },
+            }},
+        }
+        local placed = false
+        for i, c in ipairs(menu.children) do
             if c.attributes and c.attributes.id == "macModeMenuButton" then
-                hasMine = true; break
+                menu.children[i] = button
+                placed = true
+                break
             end
         end
-        if not hasMine then
+        if not placed then
             for i, c in ipairs(menu.children) do
                 if c.attributes and c.attributes.interactable == "false" then
-                    menu.children[i] = {
-                        tag = "Button",
-                        attributes = {
-                            id = "macModeMenuButton",
-                            fontSize = "10",
-                            onClick = "macModeToggleVisibility",
-                            tooltip = "Toggle Mac TTS U6 Patch panel",
-                        },
-                        value = "Mac Patch",
-                    }
+                    menu.children[i] = button
+                    placed = true
                     break
                 end
             end
         end
     end
-
     UI.setXmlTable(tree)
 end
 
-function macDeploymentClick(_, _, _)
-    gToggleDeploymentMode()
-end
-
 -- Defer one frame: TTS throws a UTF-8 byte-buffer encoding error if we
--- rebuild the UI XML synchronously inside a click handler / seat change.
--- pcall guards against any residual race. Promoted to a global function
--- so macModeClick / macModeToggleVisibility / gToggleDeploymentMode (all
--- defined before this point) can call it via name lookup at call time.
+-- rebuild the UI XML synchronously inside a click handler. pcall guards
+-- against any residual race.
 function macDeferRefresh()
     Wait.frames(function() pcall(macRefreshModeUI) end, 1)
 end
-function onPlayerChangeColor(_)    macDeferRefresh() end
-function onPlayerConnect(_)        macDeferRefresh() end
-function onPlayerDisconnect(_)     macDeferRefresh() end
 
 -- Initial UI build, deferred + pcalled like the rest.
 Wait.time(function() pcall(macRefreshModeUI) end, 2)
 
+-- ============================================
+-- UNIT ID TOKEN NUMBERS (Mac)
+-- The ID token bundle paints its number via custom materials
+-- (unitIDtoken_N) that TTS U6 on Mac refuses to load ("Shader didn't load
+-- correctly ... Assigning Standard shader"), so tokens go blank. Unlike the
+-- Projector magenta case there is no error shader involved: TTS substitutes
+-- Standard, which simply ignores the number texture slots. In mac mode we
+-- attach a plain object-UI number instead (native Unity UI, no shaders);
+-- the token state id IS the number (state 1..10).
+-- ============================================
+
+-- Empirically calibrated (diagnostics of 11 aug): the top face reads
+-- correctly with rotation "0 0 180", the bottom face with "180 0 0".
+-- Offsets found by ladder diagnostic (panels at z -12..+12 each showing
+-- its own z): top face reads at z = -12, bottom face at z = +1.
+MAC_UNITID_UI = {
+    zTop     = -12,
+    zBottom  = 1,
+    fontSize = 72,
+    panel    = 110,
+    rotTop    = "0 0 180",
+    rotBottom = "180 0 0",
+}
+
+local function macUnitIDPanel(text, x, z, rot)
+    return {
+        tag = "Panel",
+        attributes = {
+            position = tostring(x) .. " 0 " .. tostring(z),
+            rotation = rot,
+            width    = tostring(MAC_UNITID_UI.panel),
+            height   = tostring(MAC_UNITID_UI.panel),
+        },
+        children = {{
+            tag = "Text",
+            attributes = {
+                text        = text,
+                fontSize    = tostring(MAC_UNITID_UI.fontSize),
+                fontStyle   = "Bold",
+                color       = "#FFFFFF",
+                outline     = "#000000",
+                outlineSize = "4 4",
+                alignment   = "MiddleCenter",
+            },
+        }},
+    }
+end
+
+local function macUnitIDXml(n)
+    return {
+        macUnitIDPanel(tostring(n), 0, MAC_UNITID_UI.zTop,    MAC_UNITID_UI.rotTop),
+        macUnitIDPanel(tostring(n), 0, MAC_UNITID_UI.zBottom, MAC_UNITID_UI.rotBottom),
+    }
+end
+
+local function macApplyUnitIDUI(obj)
+    if not (obj and obj.getName and obj.getName() == "Unit ID Token") then return end
+    if overlayMode == "mac" then
+        local n = 1
+        pcall(function() n = obj.getStateId() end)
+        if not n or n < 1 then n = 1 end
+        pcall(function() obj.UI.setXmlTable(macUnitIDXml(n)) end)
+    else
+        pcall(function() obj.UI.setXml("") end)
+    end
+end
+
+function macRefreshUnitIDTokens()
+    for _, obj in ipairs(getAllObjects()) do
+        macApplyUnitIDUI(obj)
+    end
+end
+
+-- New tokens from the infinite bag and number changes (a TTS state switch
+-- spawns a fresh object) both arrive through onObjectSpawn. The live mod
+-- defines no onObjectSpawn handler (verified), so defining it here is safe.
+function onObjectSpawn(obj)
+    if overlayMode ~= "mac" then return end
+    if not (obj and obj.getName and obj.getName() == "Unit ID Token") then return end
+    Wait.frames(function() macApplyUnitIDUI(obj) end, 2)
+end
+
+-- Numbers follow the table-wide toggle: wrap the toggle handler (defined in
+-- the shared mode-toggle block above, which must stay byte-identical with
+-- the mod source copy, hence the wrap instead of an inline edit).
+local _macModeToggleBeforeUnitID = macModeToggle
+function macModeToggle(a, b, c)
+    _macModeToggleBeforeUnitID(a, b, c)
+    Wait.frames(function() pcall(macRefreshUnitIDTokens) end, 1)
+end
+
+Wait.time(function() pcall(macRefreshUnitIDTokens) end, 3)
+
 -- Override hotkey init functions to capture playerColor and route through
--- the per-seat trigger. Defining initCohesionHotkeys/initRangebandHotkeys
+-- the mode router. Defining initCohesionHotkeys/initRangebandHotkeys
 -- here SHADOWS the originals  -  when the original onLoad runs init*(), our
 -- versions register the hotkey instead.
 
@@ -1487,7 +1492,7 @@ DEPLOYMENT_SPAWN_RE = re.compile(
     re.DOTALL
 )
 
-DEPLOYMENT_SPAWN_REPLACEMENT = r"""-- MAC PATCH dual-path: branch on the table-wide deploymentMode toggle.
+DEPLOYMENT_SPAWN_REPLACEMENT = r"""-- MAC PATCH dual-path: branch on the table-wide mode toggle (gGetDeploymentMode).
   local _macDeployMode = Global.call("gGetDeploymentMode")
   local projector = nil
   if _macDeployMode == "windows" then
@@ -1543,8 +1548,105 @@ end"""
 SILHOUETTE_BUNDLE_URL = (
     "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/"
     "mac-projector-fallback/mod/data/mac-fallback-assets/"
-    "silhouette_mac_fallback.unity3d"
+    "silhouette_mac_fallback_v2.unity3d"
 )
+# Silhouette spawn rebuilt as a Custom_Model that clones the Silhouette
+# Marker's recipe (same mesh family, TTS-native shader): correct translucency
+# on Mac with the exact marker look, instead of an AssetBundle whose shader
+# can't load. Mesh is 1.062 wide x 1.485 tall (base pivot) vs the bundle's
+# 1x1 unit cylinder, hence the scale factors that preserve vanilla sizing.
+# Collider = degenerate 1mm triangle so the attachment can't shove minis.
+SILHOUETTE_MODEL_RE = re.compile(
+    r"local silhouette = spawnObject\(\{\s*"
+    r"type = \"Custom_AssetBundle\",\s*"
+    r"position = pos,\s*"
+    r"rotation = rot,\s*"
+    r"scale = \{scale,height,scale\}\s*"
+    r"\}\)\s*"
+    r"silhouette\.setCustomObject\(\{\s*"
+    r"assetbundle = silhouetteData,\s*"
+    r"material = 3\s*"
+    r"\}\)\s*"
+    r"silhouette\.setColorTint\(\{([0-9., ]+)\}\)"
+)
+SILHOUETTE_MODEL_REPLACEMENT = r"""-- MAC PATCH silhouette dual-path: branch on the table-wide mode toggle.
+  local silhouette
+  if Global.call("gGetMode") == "windows" then
+    -- Original AssetBundle Projector, untouched. Opaque on Mac: that is the
+    -- vanilla behaviour the toggle is there to switch away from.
+    silhouette = spawnObject({
+      type = "Custom_AssetBundle",
+      position = pos,
+      rotation = rot,
+      scale = {scale,height,scale}
+    })
+    silhouette.setCustomObject({
+        assetbundle = silhouetteData,
+        material = 3
+    })
+  else
+    -- Silhouette-as-model (marker recipe). Oblong bases reuse the ORIGINAL
+    -- mesh, extracted from the vanilla bundles (silh_new_long_1in /
+    -- silh_new_snail_1in), so the Mac path changes the rendering and
+    -- nothing else: same outline as Windows, at the vanilla scale
+    -- ({scale,height,scale} with scale = 1 for both oblong sizes). Round
+    -- bases keep the marker mesh with the unit-normalizing factors.
+    local _macMesh = "https://steamusercontent-a.akamaihd.net/ugc/1003681898505457098/962BED032738C4448CCD4B737E82876715459FE8/"
+    local _macSx, _macSy, _macSz = scale * 0.9416, height * 0.6734, scale * 0.9416
+    local _macObl = ({
+      long  = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/mac-projector-fallback/mod/data/mac-fallback-assets/silh_exact_long_1.obj",
+      snail = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/mac-projector-fallback/mod/data/mac-fallback-assets/silh_exact_snail_1.obj",
+    })[(unitData and unitData.baseSize) or ""]
+    if _macObl then
+      _macMesh = _macObl
+      _macSx, _macSy, _macSz = scale, height, scale
+    end
+    silhouette = spawnObject({
+      type = "Custom_Model",
+      position = pos,
+      rotation = rot,
+      scale = {_macSx, _macSy, _macSz}
+    })
+    silhouette.setCustomObject({
+        mesh = _macMesh,
+        collider = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/mac-projector-fallback/mod/data/mac-fallback-assets/collider_null.obj",
+        convex = true,
+        material = 0,
+        type = 1
+    })
+  end
+  silhouette.setColorTint({\g<1>})"""
+
+
+# SIL/LCK button placement on oblong bases (upstream bug, both OSes): the
+# vanilla offset is baseRadius/2 + 0.1 with a single per-size radius and no
+# axis handling, so on long/snail bases the buttons land on top of the
+# model. Raise the offset to the model's actual half-depth when bigger.
+BUTTON_OFFSET_RE = re.compile(
+    r"(local buttonOffset = calculateButtonZOffset\(templateInfo\.baseRadius\[unitData\.baseSize\]\))"
+    r"(?! -- MAC PATCH)"
+)
+BUTTON_OFFSET_REPLACEMENT = r"""\1 -- MAC PATCH oblong
+  -- Deferred: at onLoad the custom mesh is not loaded yet, so bounds read
+  -- as zero. Re-place SIL/LCK once the model is in, oblong bases only.
+  if unitData and (unitData.baseSize == "long" or unitData.baseSize == "snail") then
+    Wait.time(function()
+      if self == nil then return end
+      local okB, b = pcall(function() return self.getBoundsNormalized() end)
+      local okS, sc = pcall(function() return self.getScale() end)
+      if not (okB and okS and b and sc and sc.z ~= 0) then return end
+      local half = (b.size.z / sc.z) * 0.5 + 0.15
+      for _, btn in ipairs(self.getButtons() or {}) do
+        if (btn.label == "SIL" or btn.label == "LCK")
+           and (btn.position.z or 0) < half then
+          self.editButton({index = btn.index,
+            position = {btn.position.x, btn.position.y, half}})
+        end
+      end
+    end, 3)
+  end"""
+
+
 SILHOUETTE_URL_RE = re.compile(
     r'(silhouetteData\s*=\s*)"https?://[^"]*/ugc/[^"]+"'
 )
@@ -1657,7 +1759,7 @@ RANGE_WRAPPER = r"""
 -- (magenta on Mac, native on Windows) until a per-token Mac fallback
 -- ships  -  see TOKEN_BUTTON_WRAPPER for the per-token override path.
 --
--- The single alias below is REQUIRED: Global macModeClick calls
+-- The single alias below is REQUIRED: Global macModeToggle calls
 -- obj.call("clearRangeRulersOriginal", obj) on every object holding a
 -- rangeRuler state, to wipe the vanilla ruler when toggling modes.
 clearRangeRulersOriginal = clearRangeRulers
@@ -1670,7 +1772,11 @@ clearRangeRulersOriginal = clearRangeRulers
 ORDER_TOKEN_BUTTON_OVERRIDES = r"""
 -- MAC PATCH per-seat router (Order_Token button click overrides)
 function toggleCohesionRuler(_, playerColor)
+    if not selectedUnitObj then return end
     if not rulerOn then
+        -- Deterministic ON: gCohesionTrigger toggles by GUID, so clear any
+        -- stale Mac overlay first (e.g., drawn via the hover hotkey).
+        Global.call("gClearCohesion", { figGUID = selectedUnitObj.getGUID() })
         Global.call("gCohesionTrigger", {
             figGUID     = selectedUnitObj.getGUID(),
             playerColor = playerColor,
@@ -1683,9 +1789,13 @@ function toggleCohesionRuler(_, playerColor)
 end
 
 function targetingMode(_, playerColor)
+    if not selectedUnitObj then return end
     if not enemyHighlighted then
         exitAttackMode()
         highlightEnemies()
+        -- Deterministic ON: gRangeTrigger toggles by GUID, so clear any
+        -- stale Mac overlay first to guarantee this click draws.
+        Global.call("gClearRange", { figGUID = selectedUnitObj.getGUID() })
         Global.call("gRangeTrigger", {
             figGUID     = selectedUnitObj.getGUID(),
             playerColor = playerColor,
@@ -1693,6 +1803,9 @@ function targetingMode(_, playerColor)
         enemyHighlighted = true
         resetRangeButtons()
     else
+        -- exitTargetingMode/clearRangeRulers only clears the vanilla bundle
+        -- ruler; clear the Mac overlay too so OFF really hides the rings.
+        Global.call("gClearRange", { figGUID = selectedUnitObj.getGUID() })
         exitTargetingMode()
     end
 end
@@ -1968,10 +2081,19 @@ def patch_object_scripts(data: dict) -> tuple:
                 # (Unit_Leader 99f1c8, Bomb Cart b497e1, POI Token 761483).
                 # Idempotent: the regex only matches Steam UGC URLs (/ugc/),
                 # not our fork URL, so re-runs are no-ops.
-                new_ls, n = SILHOUETTE_URL_RE.subn(SILHOUETTE_URL_REPLACEMENT, ls)
+                new_ls, n = SILHOUETTE_MODEL_RE.subn(SILHOUETTE_MODEL_REPLACEMENT, ls)
                 if n > 0:
                     ls = new_ls
                     changed = True
+                new_ls, n = BUTTON_OFFSET_RE.subn(BUTTON_OFFSET_REPLACEMENT, ls)
+                if n > 0:
+                    ls = new_ls
+                    changed = True
+                # NOTE: the silhouetteData URL is deliberately left alone. It
+                # used to be swapped for our Unity-6 bundle, but the marker
+                # recipe above supplanted that bundle, and rewriting the URL
+                # would leave Windows mode spawning our asset instead of the
+                # original one.
 
                 # SIL button rename + forwarder. Bypasses the TTS engine
                 # bug where the click_function name "toggleSilhouettes" is
@@ -2085,6 +2207,13 @@ def patch_object_scripts(data: dict) -> tuple:
     return n_coh, n_rng, n_dep
 
 
+ASSETS_BASE_URL = ("https://raw.githubusercontent.com/ironsquadronfr-hub/tts/"
+                   "mac-projector-fallback/mod/data/mac-fallback-assets/")
+# Flip to https://raw.githubusercontent.com/swlegion/tts/main/mod/data/
+# mac-fallback-assets/ right before upstream merge, together with the Lua
+# ASSETS_BASE copies (Overlays.ttslua + the inline copy in this file).
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     flags = [a for a in sys.argv[1:] if a.startswith("--")]
@@ -2098,8 +2227,20 @@ def main():
     with src.open("r") as f:
         data = json.load(f)
 
-    # Rename so the patched save is recognizable in TTS load list.
-    data["SaveName"] = "SWL BETA - MAC PATCH"
+    # Leave SaveName alone: the working save is regenerated from its clean
+    # backup on every iteration, and a "[MAC PATCH]" suffix reappeared in the
+    # TTS load list each time. Strip a suffix left by an earlier run.
+    name = data.get("SaveName") or ""
+    if name.endswith("[MAC PATCH]"):
+        data["SaveName"] = name[: -len("[MAC PATCH]")].rstrip()
+
+    # Register the apple-logo UI sprite for the toggle button (idempotent
+    # by Name).
+    assets = [a for a in (data.get("CustomUIAssets") or [])
+              if a.get("Name") != "macAppleLogo"]
+    assets.append({"Type": 0, "Name": "macAppleLogo",
+                   "URL": ASSETS_BASE_URL + "apple_logo.png"})
+    data["CustomUIAssets"] = assets
 
     # 1. Append manager + handlers to Global LuaScript (idempotent: remove
     # any previous Mac patch block first, then append fresh).
@@ -2128,33 +2269,6 @@ def main():
     print(f"  Save Name: {data.get('SaveName', '?').strip()}")
     print(f"  Version: {data.get('VersionNumber', '?')}")
 
-    # Mirror to TTS Saves folder so it appears in Games -> Save & Load.
-    # Picks the next free TS_Save_N.json slot (TTS scans these on load).
-    saves_dir = Path.home() / "Library" / "Tabletop Simulator" / "Saves"
-    if saves_dir.exists():
-        existing = sorted(
-            int(p.stem.split("_")[-1])
-            for p in saves_dir.glob("TS_Save_*.json")
-            if p.stem.split("_")[-1].isdigit()
-        )
-        # Reuse the highest existing slot if its content matches the prefix
-        # "SWL BETA - MAC PATCH"; else pick next free number.
-        target = None
-        for n in reversed(existing):
-            p = saves_dir / f"TS_Save_{n}.json"
-            try:
-                with p.open("r") as f:
-                    if '"SWL BETA - MAC PATCH"' in f.read(512):
-                        target = p
-                        break
-            except OSError:
-                continue
-        if target is None:
-            next_n = (existing[-1] if existing else 0) + 1
-            target = saves_dir / f"TS_Save_{next_n}.json"
-        with target.open("w") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-        print(f"  Mirrored to: {target}")
 
     if reload_tts:
         print()
