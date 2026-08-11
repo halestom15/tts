@@ -497,6 +497,13 @@ function gClearRange(params)
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
     activeOverlays[fig.getGUID() .. ":range"] = nil
+    -- Windows mode: also destroy the vanilla bundle this fig owns. It was
+    -- spawned in the Global scope by gRangeTrigger, so the token's own
+    -- exitTargetingMode/clearRangeRulers cannot reach it.
+    if macWinRangeGUID == params.figGUID then
+        pcall(clearRangeRulersOriginal)
+        macWinRangeGUID = nil
+    end
     macRedrawAll()
 end
 
@@ -618,71 +625,105 @@ end
 -- URLs as invisible decals far below the table. No separate preload needed.
 
 -- ============================================
--- PER-SEAT MODE TOGGLE (Cohesion + Range)
--- Each seated player picks their renderer: "mac" (this patch) or
--- "windows" (original bundle Projector). When a player triggers an overlay,
--- the router checks THEIR mode and uses that renderer. The rendered overlay
--- is visible to everyone (TTS engine limitation).
+-- TABLE-WIDE MODE TOGGLE (Cohesion + Range + Deployment)
+-- One switch for the whole table: "windows" (original bundle Projectors) or
+-- "mac" (this patch). Per-seat modes were dropped on purpose: any rendered
+-- overlay is visible to every player (TTS engine limitation), so a Windows
+-- player triggering an original Projector still shows magenta to Mac
+-- players. The switch is the Apple-logo button in the bottom-right menu:
+-- default grey = off (originals), green = on (Mac-safe fallback).
 -- ============================================
 
-playerOverlayMode = playerOverlayMode or {}  -- color -> "mac" | "windows"
-deploymentMode    = deploymentMode    or "mac"   -- table-wide setting
+overlayMode = overlayMode or "windows"  -- "windows" | "mac", table-wide
 
-function gGetMode(params)
-    return playerOverlayMode[params.color] or "mac"
-end
-
-function gGetDeploymentMode()
-    return deploymentMode
-end
-
-function gToggleDeploymentMode()
-    deploymentMode = (deploymentMode == "mac") and "windows" or "mac"
-    macRefreshModeUI()
-end
+function gGetMode(_)          return overlayMode end
+function gGetDeploymentMode() return overlayMode end
 
 function gCohesionTrigger(params)
     if not params or not params.figGUID then return end
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
-    local mode = playerOverlayMode[params.playerColor] or "mac"
-    if mode == "windows" then
-        -- Object may not have the original alias (e.g., hovered non-fig object).
-        -- pcall guards against "no such function" errors that would otherwise
-        -- propagate out of the hotkey/button callback.
-        local ok = pcall(function() fig.call("spawnCohesionRulerOriginal", fig) end)
-        if not ok then gToggleCohesion({figGUID = params.figGUID}) end
-    else
+    if overlayMode ~= "windows" then
+        gToggleCohesion({figGUID = params.figGUID})
+        return
+    end
+    -- Windows mode: the vanilla Projector lives in the FIG scope (every fig
+    -- requires !/Cohesion), so read and clear it there. Vanilla
+    -- spawnCohesionRuler RESPAWNS instead of toggling, so without this a
+    -- second click just redrew the ruler and it could never be turned off.
+    -- pcall guards objects that carry no such function (e.g. a hovered
+    -- non-fig object), which fall back to the Mac renderer.
+    local ok, isOn = pcall(function() return fig.getVar("cohesionRuler") ~= nil end)
+    if not ok then
+        gToggleCohesion({figGUID = params.figGUID})
+        return
+    end
+    if isOn then
+        pcall(function() fig.call("clearCohesionRulerOriginal", fig) end)
+    elseif not pcall(function() fig.call("spawnCohesionRulerOriginal", fig) end) then
         gToggleCohesion({figGUID = params.figGUID})
     end
 end
+
+-- Which fig currently owns the vanilla (Windows-mode) Range bundle, so a
+-- second trigger on the same fig turns it off like vanilla
+-- showRangeOnHoveredModel does.
+macWinRangeGUID = macWinRangeGUID or nil
 
 function gRangeTrigger(params)
     if not params or not params.figGUID then return end
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
-    local mode = playerOverlayMode[params.playerColor] or "mac"
-    if mode == "windows" then
-        local ok = pcall(function() fig.call("spawnRangeRulerOriginal", fig) end)
-        if not ok then gToggleRange({figGUID = params.figGUID}) end
-    else
+    if overlayMode ~= "windows" then
         gToggleRange({figGUID = params.figGUID})
+        return
+    end
+    -- The vanilla bundle Range lives in the GLOBAL scope: !/RangeRulers is
+    -- required by Global, while figs only require !/Cohesion. Calling
+    -- fig.call("spawnRangeRulerOriginal", fig) therefore ALWAYS raised
+    -- "no such function"; the pcall swallowed it and we fell through to the
+    -- Mac renderer, so Windows mode silently drew Mac overlays instead of
+    -- the original Projector. spawnRangeRulerOriginal is the Global alias
+    -- set by !/RangeRulers, resolved at call time (it loads after us).
+    local wasOn = (macWinRangeGUID == params.figGUID)
+    pcall(clearRangeRulersOriginal)
+    macWinRangeGUID = nil
+    if not wasOn then
+        if pcall(function() spawnRangeRulerOriginal(fig) end) then
+            macWinRangeGUID = params.figGUID
+        else
+            gToggleRange({figGUID = params.figGUID})
+        end
     end
 end
 
--- UI: floating panel with one toggle button per seated player
-function macModeClick(player, _, id)
-    local color = id:sub(9)  -- "macmode_Red" -> "Red"
-    if player.color ~= color then
-        broadcastToColor("Only the player at this seat can toggle their mode.",
-                         player.color, {1, 0.5, 0.5})
-        return
+function macModeToggle(_, _, _)
+    overlayMode = (overlayMode == "mac") and "windows" or "mac"
+    -- Wipe both renderers' overlays so stale visuals don't linger after the
+    -- toggle; each player just re-triggers their hotkey.
+    for k, e in pairs(activeOverlays) do
+        if e.type == "cohesion" or e.type == "range" then
+            activeOverlays[k] = nil
+        end
     end
-    local cur = playerOverlayMode[color] or "mac"
-    playerOverlayMode[color] = (cur == "mac") and "windows" or "mac"
-    -- Wipe any active Cohesion/Range overlays for this player so the next
-    -- trigger redraws in the chosen mode without stale visuals.
-    macRefreshModeUI()
+    macRedrawAll()
+    for _, obj in ipairs(getAllObjects()) do
+        if obj.getVar and obj.getVar("cohesionRuler") then
+            pcall(function() obj.call("clearCohesionRulerOriginal", obj) end)
+        end
+        if obj.getVar and obj.getVar("rangeRuler") then
+            pcall(function() obj.call("clearRangeRulersOriginal", obj) end)
+        end
+    end
+    -- The Windows-mode Range bundle is spawned from the Global scope, which
+    -- getAllObjects() above does not cover.
+    pcall(clearRangeRulersOriginal)
+    macWinRangeGUID = nil
+    broadcastToAll(
+        (overlayMode == "mac") and "Mac patch ON: Mac-safe overlays for the whole table."
+                                or "Mac patch OFF: original Windows overlays.",
+        (overlayMode == "mac") and {0.55, 0.9, 0.6} or {0.9, 0.75, 0.55})
+    macDeferRefresh()
 end
 
 local function macFindNodeById(tree, id)
@@ -696,198 +737,78 @@ local function macFindNodeById(tree, id)
     return nil, nil
 end
 
--- Tracks the panel's desired active state across refreshes. Persists so a
--- click on the close X before the initial refresh is honored.
-macModePanelActive = (macModePanelActive == nil) and true or macModePanelActive
-
-function macModeToggleVisibility()
-    macModePanelActive = not macModePanelActive
-    local tree = UI.getXmlTable() or {}
-    local panel = macFindNodeById(tree, "macModePanel")
-    if panel then
-        panel.attributes.active = macModePanelActive and "true" or "false"
-        UI.setXmlTable(tree)
-    else
-        macRefreshModeUI()
-    end
-end
-
+-- UI: single Apple-logo toggle button in the bottom-right legionFloatingMenu.
 function macRefreshModeUI()
-    local seated = Player.getPlayers()
-    local rows = {{
-        tag = "Panel",
-        attributes = {
-            color = "transparent",
-            preferredHeight = "24",
-        },
-        children = {
-            {
-                tag = "Text",
-                attributes = {
-                    text = "Mac TTS U6 Patch",
-                    fontSize = "16",
-                    color = "white",
-                    alignment = "MiddleLeft",
-                    rectAlignment = "MiddleLeft",
-                },
-            },
-            {
-                tag = "Button",
-                attributes = {
-                    id = "macModePanelClose",
-                    text = "X",
-                    onClick = "macModeToggleVisibility",
-                    color = "#3a1e1e",
-                    textColor = "white",
-                    fontSize = "12",
-                    width = "24",
-                    height = "20",
-                    rectAlignment = "MiddleRight",
-                },
-            },
-        },
-    }, {
-        tag = "Text",
-        attributes = {
-            text = "Cohesion & Range: pick your renderer",
-            fontSize = "12",
-            color = "#bbbbbb",
-            alignment = "MiddleCenter",
-        },
-    }}
-    if #seated == 0 then
-        table.insert(rows, {
-            tag = "Text",
-            attributes = {
-                text = "(no seated players)",
-                fontSize = "12",
-                color = "#888888",
-                alignment = "MiddleCenter",
-            },
-        })
-    end
-    for _, p in ipairs(seated) do
-        local mode = playerOverlayMode[p.color] or "mac"
-        local label = p.color .. " - " ..
-                      (mode == "mac" and "MAC FALLBACK" or "WINDOWS ORIGINAL")
-        local bg = (mode == "mac") and "#1e7a3a" or "#7a3a1e"
-        table.insert(rows, {
-            tag = "Button",
-            attributes = {
-                id = "macmode_" .. p.color,
-                text = label,
-                onClick = "macModeClick",
-                color = bg,
-                fontSize = "13",
-                textColor = "white",
-                preferredHeight = "28",
-            },
-        })
-    end
-    -- Deployment is table-wide (everyone sees the same zones); use a single
-    -- global toggle rather than per-seat.
-    table.insert(rows, {
-        tag = "Text",
-        attributes = {
-            text = "Deployment (table-wide)",
-            fontSize = "12",
-            color = "#bbbbbb",
-            alignment = "MiddleCenter",
-        },
-    })
-    table.insert(rows, {
-        tag = "Button",
-        attributes = {
-            id   = "macmode_deployment",
-            text = (deploymentMode == "mac") and "DEPLOYMENT: MAC FALLBACK"
-                                              or "DEPLOYMENT: WINDOWS ORIGINAL",
-            onClick = "macDeploymentClick",
-            color   = (deploymentMode == "mac") and "#1e3a7a" or "#7a3a1e",
-            fontSize = "13",
-            textColor = "white",
-            preferredHeight = "28",
-        },
-    })
-    -- Build my panel (will be merged into the existing UI tree below so we
-    -- don't clobber legionFloatingMenu / Welcome / Chess Clocks etc.).
-    local panel = {
-        tag = "Panel",
-        attributes = {
-            id = "macModePanel",
-            active = macModePanelActive and "true" or "false",
-            rectAlignment = "MiddleRight",
-            offsetXY = "-10 80",
-            width = "260",
-            height = "320",
-            color = "rgba(0.06,0.06,0.06,0.9)",
-            padding = "8 8 8 8",
-            outlineSize = "1 1",
-            outline = "#303030",
-        },
-        children = {{
-            tag = "VerticalLayout",
-            attributes = {
-                spacing = "4",
-                childForceExpandHeight = "false",
-                childForceExpandWidth = "true",
-            },
-            children = rows,
-        }},
-    }
-
     local tree = UI.getXmlTable() or {}
-    -- Remove any stale macModePanel before reinserting the fresh one.
+    -- Drop the legacy mode-picker panel if this save still carries one.
     for i = #tree, 1, -1 do
         if tree[i].attributes and tree[i].attributes.id == "macModePanel" then
             table.remove(tree, i)
         end
     end
-    table.insert(tree, panel)
-
-    -- Inject a "Mac Patch" button into the bottom-right legionFloatingMenu
-    -- (replaces the first interactable=false placeholder button).
     local menu = macFindNodeById(tree, "legionFloatingMenu")
     if menu and menu.children then
-        local hasMine = false
-        for _, c in ipairs(menu.children) do
+        local isMac = (overlayMode == "mac")
+        local attrs = {
+            id = "macModeMenuButton",
+            onClick = "macModeToggle",
+            tooltip = isMac
+                and "Mac TTS U6 patch ON (table-wide). Click for original overlays."
+                or  "Mac TTS U6 patch OFF. Click for Mac-safe overlays (table-wide).",
+        }
+        -- OFF keeps the sibling buttons' default light-grey look (Welcome,
+        -- Chess Clocks); ON switches to green.
+        if isMac then attrs.color = "#1e7a3a" end
+        local button = {
+            tag = "Button",
+            attributes = attrs,
+            children = {{
+                -- White PNG sprite (CustomUIAssets "macAppleLogo"), tinted
+                -- per state: dark on the grey button, white on green. A text
+                -- U+F8FF glyph would render as a missing-glyph box on
+                -- Windows clients.
+                tag = "Image",
+                attributes = {
+                    image = "macAppleLogo",
+                    color = isMac and "#FFFFFF" or "#2b2b2b",
+                    preserveAspect = "true",
+                    raycastTarget = "false",
+                },
+            }},
+        }
+        local placed = false
+        for i, c in ipairs(menu.children) do
             if c.attributes and c.attributes.id == "macModeMenuButton" then
-                hasMine = true; break
+                menu.children[i] = button
+                placed = true
+                break
             end
         end
-        if not hasMine then
+        if not placed then
             for i, c in ipairs(menu.children) do
                 if c.attributes and c.attributes.interactable == "false" then
-                    menu.children[i] = {
-                        tag = "Button",
-                        attributes = {
-                            id = "macModeMenuButton",
-                            fontSize = "10",
-                            onClick = "macModeToggleVisibility",
-                            tooltip = "Toggle Mac TTS U6 Patch panel",
-                        },
-                        value = "Mac Patch",
-                    }
+                    menu.children[i] = button
+                    placed = true
                     break
                 end
             end
         end
     end
-
     UI.setXmlTable(tree)
 end
 
-function macDeploymentClick(_, _, _)
-    gToggleDeploymentMode()
+-- Defer one frame: TTS throws a UTF-8 byte-buffer encoding error if we
+-- rebuild the UI XML synchronously inside a click handler. pcall guards
+-- against any residual race.
+function macDeferRefresh()
+    Wait.frames(function() pcall(macRefreshModeUI) end, 1)
 end
 
-function onPlayerChangeColor(_)    macRefreshModeUI() end
-function onPlayerConnect(_)        macRefreshModeUI() end
-function onPlayerDisconnect(_)     macRefreshModeUI() end
-
-Wait.time(macRefreshModeUI, 2)
+-- Initial UI build, deferred + pcalled like the rest.
+Wait.time(function() pcall(macRefreshModeUI) end, 2)
 
 -- Override hotkey init functions to capture playerColor and route through
--- the per-seat trigger. Defining initCohesionHotkeys/initRangebandHotkeys
+-- the mode router. Defining initCohesionHotkeys/initRangebandHotkeys
 -- here SHADOWS the originals  -  when the original onLoad runs init*(), our
 -- versions register the hotkey instead.
 
