@@ -138,7 +138,24 @@ local DEPLOYMENT_CELL_SIZES = {
     rcc = {3, 3}, bcc = {3, 3},   -- opposite corner quarter
 }
 
-local function macRayGroundY(x, z, offset)
+-- A ray hit counts as "ground" only if it is not the ignored object and not
+-- a transient object: anything still in motion (e.g. a movement template
+-- falling into place the frame the overlay spawns) or the hovering
+-- "Maximum Move" Windows bundle would otherwise catch the center ray and
+-- float the fill decal above its border ring.
+local function macHitIsGround(h, ignoreObj)
+    local obj = h.hit_object
+    if obj == nil then return true end
+    if obj == ignoreObj then return false end
+    if obj.getName and obj.getName() == "Maximum Move" then return false end
+    local ok, v = pcall(function() return obj.getVelocity() end)
+    if ok and v and (math.abs(v.x) + math.abs(v.y) + math.abs(v.z)) > 0.05 then
+        return false
+    end
+    return true
+end
+
+local function macRayGroundY(x, z, offset, ignoreObj)
     local hits = Physics.cast({
         origin       = {x, 30, z},
         direction    = {0, -1, 0},
@@ -146,7 +163,9 @@ local function macRayGroundY(x, z, offset)
         max_distance = 50,
     })
     for _, h in ipairs(hits) do
-        return h.point.y + (offset or 0.05)
+        if macHitIsGround(h, ignoreObj) then
+            return h.point.y + (offset or 0.05)
+        end
     end
     return offset or 0.05
 end
@@ -188,7 +207,7 @@ local function macBuildRing(centerPos, radius, color, thickness, ignoreObj)
         })
         local y = centerPos.y + 0.05
         for _, h in ipairs(hits) do
-            if h.hit_object ~= ignoreObj then
+            if macHitIsGround(h, ignoreObj) then
                 y = h.point.y + 0.05
                 break
             end
@@ -237,7 +256,7 @@ macBuilders.range = function(fig, params)
     })
     local groundY = pos.y
     for _, h in ipairs(hits) do
-        if h.hit_object ~= fig then groundY = h.point.y; break end
+        if macHitIsGround(h, fig) then groundY = h.point.y; break end
     end
 
     local effectiveMaxR = maxR + br
@@ -276,7 +295,7 @@ macBuilders.maxmove = function(fig, params)
     })
     local groundY = pos.y
     for _, h in ipairs(hits) do
-        if h.hit_object ~= fig then groundY = h.point.y; break end
+        if macHitIsGround(h, fig) then groundY = h.point.y; break end
     end
 
     return {
