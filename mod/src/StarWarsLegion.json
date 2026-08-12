@@ -319,8 +319,8 @@
         "URL": "http://cloud-3.steamusercontent.com/ugc/966480765118137238/1157F7217EB80F31A92427567B377F857576DAE9/"
       },
       {
-        "Name": "macAppleLogo",
-        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/mac-projector-fallback/mod/data/mac-fallback-assets/apple_logo.png"
+        "Name": "isqLogo",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/mac-projector-fallback/mod/data/mac-fallback-assets/iron_squadron_logo.png"
       }
     ],
     "ObjectStates": []

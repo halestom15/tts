@@ -625,13 +625,13 @@ end
 -- URLs as invisible decals far below the table. No separate preload needed.
 
 -- ============================================
--- TABLE-WIDE MODE TOGGLE (Cohesion + Range + Deployment)
--- One switch for the whole table: "windows" (original bundle Projectors) or
--- "mac" (this patch). Per-seat modes were dropped on purpose: any rendered
--- overlay is visible to every player (TTS engine limitation), so a Windows
--- player triggering an original Projector still shows magenta to Mac
--- players. The switch is the Apple-logo button in the bottom-right menu:
--- default grey = off (originals), green = on (Mac-safe fallback).
+-- TABLE-WIDE OVERLAY TOGGLE (Cohesion + Range + Deployment)
+-- One switch for the whole table: "windows" (the mod's original Projectors)
+-- or "mac" (the Iron Squadron overlays). Per-seat modes were dropped on
+-- purpose: any rendered overlay is visible to every player (TTS engine
+-- limitation), so one player triggering an original Projector shows it to
+-- the whole table anyway. The switch is the Iron Squadron button in the
+-- bottom-right menu: default grey = off (originals, untouched), green = on.
 -- ============================================
 
 overlayMode = overlayMode or "windows"  -- "windows" | "mac", table-wide
@@ -700,9 +700,12 @@ end
 function macModeToggle(_, _, _)
     overlayMode = (overlayMode == "mac") and "windows" or "mac"
     -- Wipe both renderers' overlays so stale visuals don't linger after the
-    -- toggle; each player just re-triggers their hotkey.
+    -- toggle; each player just re-triggers their hotkey. Deployment is
+    -- deliberately spared: those zones are laid out once at setup and only
+    -- SETUP_CONTROLLER can put them back, so wiping them on a toggle click
+    -- would cost the table its board for a cosmetic reason.
     for k, e in pairs(activeOverlays) do
-        if e.type == "cohesion" or e.type == "range" then
+        if e.type == "cohesion" or e.type == "range" or e.type == "maxmove" then
             activeOverlays[k] = nil
         end
     end
@@ -720,8 +723,8 @@ function macModeToggle(_, _, _)
     pcall(clearRangeRulersOriginal)
     macWinRangeGUID = nil
     broadcastToAll(
-        (overlayMode == "mac") and "Mac patch ON: Mac-safe overlays for the whole table."
-                                or "Mac patch OFF: original Windows overlays.",
+        (overlayMode == "mac") and "Iron Squadron overlays ON for the whole table."
+                                or "Iron Squadron overlays OFF: the mod's original overlays are back.",
         (overlayMode == "mac") and {0.55, 0.9, 0.6} or {0.9, 0.75, 0.55})
     macDeferRefresh()
 end
@@ -737,7 +740,8 @@ local function macFindNodeById(tree, id)
     return nil, nil
 end
 
--- UI: single Apple-logo toggle button in the bottom-right legionFloatingMenu.
+-- UI: single Iron Squadron toggle button in the bottom-right
+-- legionFloatingMenu.
 function macRefreshModeUI()
     local tree = UI.getXmlTable() or {}
     -- Drop the legacy mode-picker panel if this save still carries one.
@@ -753,8 +757,8 @@ function macRefreshModeUI()
             id = "macModeMenuButton",
             onClick = "macModeToggle",
             tooltip = isMac
-                and "Mac TTS U6 patch ON (table-wide). Click for original overlays."
-                or  "Mac TTS U6 patch OFF. Click for Mac-safe overlays (table-wide).",
+                and "Iron Squadron overlays: ON for the whole table. Click to go back to the mod's original overlays."
+                or  "Iron Squadron overlays: OFF, the mod's original overlays are in use. Click to turn them on for the whole table.",
         }
         -- OFF keeps the sibling buttons' default light-grey look (Welcome,
         -- Chess Clocks); ON switches to green.
@@ -763,13 +767,13 @@ function macRefreshModeUI()
             tag = "Button",
             attributes = attrs,
             children = {{
-                -- White PNG sprite (CustomUIAssets "macAppleLogo"), tinted
-                -- per state: dark on the grey button, white on green. A text
-                -- U+F8FF glyph would render as a missing-glyph box on
-                -- Windows clients.
+                -- White PNG sprite (CustomUIAssets "isqLogo"), tinted per
+                -- state: dark on the grey button, white on green. The shape
+                -- lives in the alpha channel, which is what makes the tint
+                -- work.
                 tag = "Image",
                 attributes = {
-                    image = "macAppleLogo",
+                    image = "isqLogo",
                     color = isMac and "#FFFFFF" or "#2b2b2b",
                     preserveAspect = "true",
                     raycastTarget = "false",
