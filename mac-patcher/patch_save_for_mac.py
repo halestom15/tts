@@ -44,113 +44,25 @@ clearCohesionRulerOriginalGlobal  = clearCohesionRuler
 
 activeOverlays = activeOverlays or {}
 
-local ASSETS_BASE = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/mac-projector-fallback/mod/data/mac-fallback-assets/"
-local COHESION_HALO_URL = ASSETS_BASE .. "cohesion_halo.png"
-local MAX_MOVE_CYAN_URL = ASSETS_BASE .. "max_move_cyan.png"
-local DEPLOYMENT_RED_URL = ASSETS_BASE .. "deployment_red.png"
-local DEPLOYMENT_BLUE_URL = ASSETS_BASE .. "deployment_blue.png"
-local RANGE_DECAL_URLS = {
-    smokeToken    = ASSETS_BASE .. "range_smokeToken.png",
-    token         = ASSETS_BASE .. "range_token.png",
-    tokenRangeTwo = ASSETS_BASE .. "range_tokenRangeTwo.png",
-    poi           = ASSETS_BASE .. "range_poi.png",
-    bombCart      = ASSETS_BASE .. "range_bombCart.png",
-    -- Fig leaders: per-base-size PNGs (bands pre-offset by the base radius so
-    -- the decal bands line up with the vector-line rings).
-    fig_leader = {
-        small  = ASSETS_BASE .. "range_fig_leader_small.png",
-        medium = ASSETS_BASE .. "range_fig_leader_medium.png",
-        large  = ASSETS_BASE .. "range_fig_leader_large.png",
-        huge   = ASSETS_BASE .. "range_fig_leader_huge.png",
-        laat   = ASSETS_BASE .. "range_fig_leader_laat.png",
-        epic   = ASSETS_BASE .. "range_fig_leader_epic.png",
-        long   = ASSETS_BASE .. "range_fig_leader_long_stadium.png",
-        snail  = ASSETS_BASE .. "range_fig_leader_snail_stadium.png",
-    },
-}
-local RANGE_MAX_RADIUS = {
-    fig_leader    = 30,  -- R5 max
-    -- SWL: Range 1 = 6", Range 2 = 12", Range 0.5 = 3".
-    smokeToken    = 6,
-    token         = 6,
-    tokenRangeTwo = 12,
-    poi           = 3,
-    bombCart      = 12,
-}
-
--- Range band colors (RGBA) extracted from BB_RangeProjector material defaults
--- + demi-portee blanche pour SWL Range 0.5 (3 inches)
-local RANGE_COLORS = {
-    half  = {1.0,   1.0,   1.0,   0.6},   -- 0.5 = 3" white
-    one   = {1.0,   0.764, 0.0,   0.7},   -- R1 yellow
-    two   = {1.0,   0.459, 0.0,   0.7},   -- R2 orange
-    three = {1.0,   0.079, 0.0,   0.7},   -- R3 red
-    four  = {0.764, 0.0,   0.259, 0.7},   -- R4 magenta
-    five  = {0.528, 0.0,   0.443, 0.7},   -- R5 violet
-}
-
--- Per-rangeKey configurations: list of {radius_inches, color_name}
-local RANGE_CONFIGS = {
-    -- Fig leaders: half + 4 bands at SWL standard ranges 3/6/12/18/24"
-    small  = {{r=3,c="half"},{r=6,c="one"},{r=12,c="two"},{r=18,c="three"},{r=24,c="four"},{r=30,c="five"}},
-    medium = {{r=3,c="half"},{r=6,c="one"},{r=12,c="two"},{r=18,c="three"},{r=24,c="four"},{r=30,c="five"}},
-    large  = {{r=3,c="half"},{r=6,c="one"},{r=12,c="two"},{r=18,c="three"},{r=24,c="four"},{r=30,c="five"}},
-    huge   = {{r=3,c="half"},{r=6,c="one"},{r=12,c="two"},{r=18,c="three"},{r=24,c="four"},{r=30,c="five"}},
-    laat   = {{r=3,c="half"},{r=6,c="one"},{r=12,c="two"},{r=18,c="three"},{r=24,c="four"},{r=30,c="five"}},
-    epic   = {{r=3,c="half"},{r=6,c="one"},{r=12,c="two"},{r=18,c="three"},{r=24,c="four"},{r=30,c="five"}},
-    long   = {{r=3,c="half"},{r=6,c="one"},{r=12,c="two"},{r=18,c="three"},{r=24,c="four"},{r=30,c="five"}},
-    snail  = {{r=3,c="half"},{r=6,c="one"},{r=12,c="two"},{r=18,c="three"},{r=24,c="four"},{r=30,c="five"}},
-    -- Token rangeKeys (1 to 2 bands depending on use). SWL ranges in inches:
-    -- Range 1 = 6", Range 2 = 12", Range 0.5 (poi) = 3".
-    smokeToken    = {{r=6,c="one"}},
-    token         = {{r=6,c="one"}},
-    tokenRangeTwo = {{r=6,c="one"},{r=12,c="two"}},
-    poi           = {{r=3,c="one"}},
-    bombCart      = {{r=6,c="one"},{r=12,c="two"}},
-}
-
--- Base footprint dimensions in mm. width <= length; equal means round.
--- Used to drive round vs stadium overlay shape.
-local BASE_DIMENSIONS = {
-    small  = {width =  27, length =  27},
-    medium = {width =  50, length =  50},
-    large  = {width =  70, length =  70},
-    huge   = {width = 100, length = 100},
-    laat   = {width = 120, length = 120},
-    epic   = {width = 150, length = 150},
-    long   = {width = 100, length = 175},  -- oblong
-    snail  = {width = 100, length = 200},  -- oblong
-}
-
--- Base radius (inches) for round overlays. For oblong bases we use a
--- stadium shape instead (see macBuildStadium), so the radius here is the
--- half-width that drives the cap arcs.
-local FIG_BASE_RADIUS_IN = {}
-for k, d in pairs(BASE_DIMENSIONS) do
-    FIG_BASE_RADIUS_IN[k] = (d.width / 2) / 25.4
-end
-
-local function macIsOblong(baseSize)
-    local d = BASE_DIMENSIONS[baseSize]
-    return d ~= nil and d.length > d.width
-end
-
--- Returns the stadium half-dimensions (inches) and yaw for an oblong base,
--- or nil if the fig's base is round. Callers should branch on the return.
-local function macOblongDims(fig, baseSize)
-    if not macIsOblong(baseSize) then return nil end
-    local d = BASE_DIMENSIONS[baseSize]
-    return {
-        halfLen = (d.length / 2) / 25.4,
-        halfWid = (d.width  / 2) / 25.4,
-        rotY    = fig.getRotation().y,
-    }
-end
+-- ============================================
+-- RENDERER: one real Unity Projector per active overlay.
+--
+-- Replaces the flat-decal renderer. A Projector drapes over table relief and
+-- tracks its figure natively, so the ground raycasts, the hand-built
+-- ring/rect/stadium geometry, the per-entry geometry cache, the coalesced
+-- redraw signature and the PNG preload all went away with it.
+--
+-- What this layer still owns, and the vanilla mod does not:
+--   * cohesion stays visible and FOLLOWS the figure during a drag;
+--   * toggles are deterministic (see gRangeTrigger / gCohesionTrigger);
+--   * MaxMove is anchored where the move STARTED and never follows.
+-- Spec: mac-patcher/cahier-des-charges-overlays.md
+-- ============================================
 
 -- Resolve baseSize for a fig. The mod stores it as a script-local Var on the
 -- fig itself (set at spawn from the unit's container). unitData.baseSize is
--- only populated on the Unit Leader, not on minis/vehicles  -  so getVar is
--- the canonical read, with unitData as fallback for safety.
+-- only populated on the Unit Leader, not on minis/vehicles, so getVar is the
+-- canonical read with unitData as a fallback.
 local function macGetBaseSize(fig)
     if not fig then return nil end
     local ok, bs = pcall(function() return fig.getVar("baseSize") end)
@@ -160,24 +72,9 @@ local function macGetBaseSize(fig)
     return nil
 end
 
-local function macFigBaseRadius(fig)
-    if not fig then return 0.5315 end
-    local bs = macGetBaseSize(fig)
-    return (bs and FIG_BASE_RADIUS_IN[bs]) or 0.5315
-end
-
--- Token base radii (inches)  -  measured from token edge for range bands
-local TOKEN_BASE_RADIUS = {
-    smokeToken    = 18.8 / 2 / 25.4,   -- 0.370"
-    token         = 25.1 / 2 / 25.4,   -- 0.494"
-    tokenRangeTwo = 25.1 / 2 / 25.4,   -- 0.494"
-    poi           = 50.8 / 2 / 25.4,   -- 1.000"
-    bombCart      = 50.0 / 2 / 25.4,   -- 0.984"
-}
-
--- Hotkey-driven range on tokens renders fig-leader-style bands using the
--- closest equivalent base size (so the visual matches what a unit of that
--- footprint would see). Token R button keeps the single ring (token-spec).
+-- A token has no baseSize of its own. When the hover hotkey asks for the full
+-- fig-leader bands on a token, size them with the closest equivalent
+-- footprint. The token's own R button keeps its single-ring bundle.
 local TOKEN_TO_BASESIZE = {
     smokeToken    = "small",
     token         = "small",
@@ -186,604 +83,169 @@ local TOKEN_TO_BASESIZE = {
     bombCart      = "medium",
 }
 
--- Maximum Move radii (inches), indexed by baseSize then speed 1..3
--- Source: ProjectorRadius from BB_MovementProjector materials (single variants)
-local MAX_MOVE_RADIUS = {
-    small  = { 4.547244,  6.515748,  8.484252},   -- 27mm
-    medium = { 5.669292,  7.637795,  9.606299},   -- 50mm
-    large  = { 6.850394,  8.818897, 10.787401},   -- 70mm
-    huge   = { 8.622047, 10.590551, 12.559055},   -- 100mm
-    laat   = { 9.803149, 11.771653, 13.740157},   -- 120mm
-    epic   = {11.574803, 13.543307, 15.511811},   -- 150mm
-    long   = {13.051181, 15.019685, 16.988190},   -- oblong
-    snail  = {14.527559, 16.496063, 18.464567},   -- snail
+-- Per family: the name TTS gives the spawned object, whether it tracks its
+-- figure, and the pitch the vanilla spawn uses.
+--
+-- The names are deliberately the vanilla ones. standbyTokens (Global) and
+-- removeLockedRulers (GAME_CONTROLLER) sweep by name, so our Projectors
+-- inherit the mod's own cleanup; the decal renderer had no objects at all and
+-- was invisible to both.
+local PROJECTOR_SPEC = {
+    range      = {name = "Range Ruler",         follows = true,  pitch = 90},
+    cohesion   = {name = "Cohesion Ruler",      follows = true,  pitch = 0},
+    maxmove    = {name = "Maximum Move",        follows = false, pitch = 0},
 }
 
--- Deployment cell dimensions (width X, depth Z, inches).
--- All cells live on a 6"x6" grid; sub-cells are halves/quarters of that cell.
-local DEPLOYMENT_CELL_SIZES = {
-    r   = {6, 6}, b   = {6, 6},   -- full cell
-    rl  = {6, 6}, bl  = {6, 6},   -- large variant (also full cell)
-    rh  = {6, 3}, bh  = {6, 3},   -- horizontal half (3" deep)
-    rs  = {3, 6}, bs  = {3, 6},   -- vertical half (3" wide), x-offset +1.5
-    rss = {3, 6}, bss = {3, 6},   -- vertical half (3" wide), x-offset -1.5
-    rc  = {3, 3}, bc  = {3, 3},   -- corner quarter
-    rcc = {3, 3}, bcc = {3, 3},   -- opposite corner quarter
-}
-
--- A ray hit counts as "ground" only if it is not the ignored object and not
--- a transient object: anything still in motion (e.g. a movement template
--- falling into place the frame the overlay spawns) or the hovering
--- "Maximum Move" Windows bundle would otherwise catch the center ray and
--- float the fill decal above its border ring.
-local function macHitIsGround(h, ignoreObj)
-    local obj = h.hit_object
-    if obj == nil then return true end
-    if obj == ignoreObj then return false end
-    if obj.getName and obj.getName() == "Maximum Move" then return false end
-    local ok, v = pcall(function() return obj.getVelocity() end)
-    if ok and v and (math.abs(v.x) + math.abs(v.y) + math.abs(v.z)) > 0.05 then
-        return false
-    end
-    return true
+-- Vanilla injects this into its Range ruler so it tracks the figure. Reusing
+-- it for cohesion is what makes cohesion follow during a drag. Guarded
+-- against a destroyed target, which the vanilla one is not.
+local function macFollowScript(targetGUID)
+    return "targetGUID = '" .. targetGUID .. "'\n"
+        .. "function onFixedUpdate()\n"
+        .. "  local t = getObjectFromGUID(targetGUID)\n"
+        .. "  if t == nil then return end\n"
+        .. "  local p = t.getPosition()\n"
+        .. "  self.setPosition({p.x, p.y + 20, p.z})\n"
+        .. "  self.setRotation({0, t.getRotation().y, 0})\n"
+        .. "end"
 end
 
-local function macRayGroundY(x, z, offset, ignoreObj)
-    local hits = Physics.cast({
-        origin       = {x, 30, z},
-        direction    = {0, -1, 0},
-        type         = 1,
-        max_distance = 50,
-    })
-    for _, h in ipairs(hits) do
-        if macHitIsGround(h, ignoreObj) then
-            return h.point.y + (offset or 0.05)
+local function macIsLive(obj)
+    if obj == nil then return false end
+    local ok, dead = pcall(function() return obj.isDestroyed() end)
+    return ok and not dead
+end
+
+-- Which bundle this overlay shows. MaxMove carries its own in params:
+-- getMovementLinks lives in the Order Token's scope, not reachable from
+-- Global.
+local function macResolveBundle(kind, fig, params)
+    params = params or {}
+    if params.bundle then return params.bundle end
+
+    if kind == "cohesion" then
+        if not getCohesionLinks then return nil end
+        local links = getCohesionLinks()
+        local bs = macGetBaseSize(fig)
+        return (links and bs) and links[bs] or nil
+    end
+
+    if kind == "range" then
+        if not getRangeRulerLinks then return nil end
+        local links = getRangeRulerLinks()
+        if not links then return nil end
+
+        local key = params.rangeKey
+        if not key and fig then
+            local ok, v = pcall(function() return fig.getVar("rangeKey") end)
+            if ok then key = v end
         end
-    end
-    return offset or 0.05
-end
-
-local function macBuildRect(cx, cz, hw, hd, color, thickness)
-    local segPerSide = 8
-    local pts = {}
-    local corners = {
-        {cx - hw, cz + hd}, {cx + hw, cz + hd},
-        {cx + hw, cz - hd}, {cx - hw, cz - hd},
-    }
-    for i = 1, 4 do
-        local a = corners[i]
-        local b = corners[i % 4 + 1]
-        for s = 0, segPerSide - 1 do
-            local t = s / segPerSide
-            local x = a[1] + (b[1] - a[1]) * t
-            local z = a[2] + (b[2] - a[2]) * t
-            table.insert(pts, {x, macRayGroundY(x, z), z})
+        -- Token R button: its own single-ring bundle. Hover hotkey
+        -- (forceFigMode): the full fig-leader bands instead.
+        if key and not params.forceFigMode and links[key] then
+            return links[key]
         end
+        local bs = macGetBaseSize(fig) or (key and TOKEN_TO_BASESIZE[key])
+        return bs and links[bs] or nil
     end
-    local c1 = corners[1]
-    table.insert(pts, {c1[1], macRayGroundY(c1[1], c1[2]), c1[2]})
-    return {points = pts, color = color, thickness = thickness or 0.06}
+
+    return nil
 end
 
-local function macBuildRing(centerPos, radius, color, thickness, ignoreObj)
-    local nSeg = 64
-    local pts = {}
-    for i = 0, nSeg do
-        local a = (i / nSeg) * 2 * math.pi
-        local x = centerPos.x + radius * math.cos(a)
-        local z = centerPos.z + radius * math.sin(a)
-        local hits = Physics.cast({
-            origin       = {x, centerPos.y + 10, z},
-            direction    = {0, -1, 0},
-            type         = 1,
-            max_distance = 20,
-        })
-        local y = centerPos.y + 0.05
-        for _, h in ipairs(hits) do
-            if macHitIsGround(h, ignoreObj) then
-                y = h.point.y + 0.05
-                break
-            end
-        end
-        table.insert(pts, {x, y, z})
-    end
-    return {points = pts, color = color, thickness = thickness or 0.05}
-end
+local function macSpawnProjector(kind, fig, params)
+    local spec = PROJECTOR_SPEC[kind]
+    if not spec then return nil end
+    local bundle = macResolveBundle(kind, fig, params)
+    if not bundle then return nil end
+    params = params or {}
 
--- Stadium = rectangle with two semicircular caps on the long-axis ends.
--- halfLen, halfWid in inches (halfLen >= halfWid). dist = expansion outwards
--- from the base edge in inches (so the overlay sits at dist outside the base).
--- rotYdeg rotates the stadium around Y to match the fig's orientation; the
--- long axis is local Z (front-to-back of the model).
-local function macBuildStadium(centerPos, halfLen, halfWid, rotYdeg, dist, color, thickness, ignoreObj)
-    local rotRad = math.rad(rotYdeg or 0)
-    local cosR, sinR = math.cos(rotRad), math.sin(rotRad)
-
-    local capCenter = halfLen - halfWid   -- distance from center to cap arc center, along long axis
-    local capR      = halfWid + dist      -- cap arc radius (= straight-side offset from long axis)
-
-    local nSegArc = 32   -- segments per semicircle cap
-    local pts     = {}
-
-    local function addLocal(lx, lz)
-        local wx = centerPos.x + lx * cosR + lz * sinR
-        local wz = centerPos.z - lx * sinR + lz * cosR
-        local hits = Physics.cast({
-            origin       = {wx, centerPos.y + 10, wz},
-            direction    = {0, -1, 0},
-            type         = 1,
-            max_distance = 20,
-        })
-        local y = centerPos.y + 0.05
-        for _, h in ipairs(hits) do
-            if macHitIsGround(h, ignoreObj) then
-                y = h.point.y + 0.05
-                break
-            end
-        end
-        table.insert(pts, {wx, y, wz})
-    end
-
-    -- Top cap: angle 0 to pi (right edge -> top -> left edge), centered at z=+capCenter
-    for i = 0, nSegArc do
-        local a = (i / nSegArc) * math.pi
-        addLocal(capR * math.cos(a), capCenter + capR * math.sin(a))
-    end
-    -- The straight left side is implicit: the polyline jumps from
-    -- (-capR, +capCenter) directly to (-capR, -capCenter)  -  TTS draws a
-    -- straight segment between consecutive points.
-    -- Bottom cap: angle pi to 2pi, centered at z=-capCenter
-    for i = 0, nSegArc do
-        local a = math.pi + (i / nSegArc) * math.pi
-        addLocal(capR * math.cos(a), -capCenter + capR * math.sin(a))
-    end
-    -- Close the loop back to the top-cap start point.
-    addLocal(capR, capCenter)
-
-    return {points = pts, color = color, thickness = thickness or 0.05}
-end
-
-local macBuilders = {}
-
-macBuilders.range = function(fig, params)
-    local pos = fig.getPosition()
-    -- Resolve rangeKey for token-specific single-ring rendering (R button on
-    -- a token). The hotkey path sets params.forceFigMode = true to bypass
-    -- this and always render the fig-leader 6-band overlay, using the token's
-    -- equivalent baseSize for sizing.
-    local forceFig = params and params.forceFigMode
-    local rangeKey = (not forceFig) and ((params and params.rangeKey) or fig.getVar("rangeKey")) or nil
-    local config, decalURL, maxR, br
-    local oblong, halfLen, halfWid, rotY
-    local baseSize  -- hoisted: used below for firing-arc decision
-    if rangeKey and RANGE_CONFIGS[rangeKey] then
-        config   = RANGE_CONFIGS[rangeKey]
-        decalURL = RANGE_DECAL_URLS[rangeKey]
-        maxR     = RANGE_MAX_RADIUS[rangeKey]
-        br       = TOKEN_BASE_RADIUS[rangeKey] or 0
+    local pos, yaw
+    if kind == "maxmove" then
+        -- Anchored: position and yaw captured when the move STARTED, so the
+        -- template stays where it was while the figure slides away from it.
+        local a = params.anchorPos
+        if not a then return nil end
+        pos = {a.x, a.y + 20, a.z}
+        yaw = params.anchorRot or 0
     else
-        baseSize = macGetBaseSize(fig)
-        local hasBaseSize = baseSize ~= nil
-        if not hasBaseSize then
-            -- Token hit from hotkey: map rangeKey to base size for sizing.
-            local tk = fig.getVar("rangeKey")
-            baseSize = (tk and TOKEN_TO_BASESIZE[tk]) or "small"
-        end
-        config   = RANGE_CONFIGS[baseSize] or RANGE_CONFIGS.small
-        decalURL = RANGE_DECAL_URLS.fig_leader[baseSize]
-                   or RANGE_DECAL_URLS.fig_leader.small
-        maxR     = RANGE_MAX_RADIUS.fig_leader
-        if hasBaseSize then
-            br = macFigBaseRadius(fig)
-            local od = macOblongDims(fig, baseSize)
-            if od then
-                oblong, halfLen, halfWid, rotY = true, od.halfLen, od.halfWid, od.rotY
-            end
-        else
-            -- Token in forceFig mode: use token's measured radius for offset.
-            local tk = fig.getVar("rangeKey")
-            br = (tk and TOKEN_BASE_RADIUS[tk]) or FIG_BASE_RADIUS_IN[baseSize] or 0.5315
-        end
+        if not fig then return nil end
+        local p = fig.getPosition()
+        pos = {p.x, p.y + 20, p.z}
+        yaw = fig.getRotation().y
     end
+    if not pos then return nil end
 
-    -- SWL convention: all distances are measured from the base/token edge.
-
-    -- Vector contours: 6 concentric rings for round bases, 6 concentric
-    -- stadium outlines for oblong bases (each band sits at band.r outwards
-    -- from the base edge  -  same rule, just a different shape).
-    local lines = {}
-    for _, band in ipairs(config) do
-        if oblong then
-            table.insert(lines, macBuildStadium(pos, halfLen, halfWid, rotY, band.r,
-                                                 RANGE_COLORS[band.c], 0.1, fig))
-        else
-            table.insert(lines, macBuildRing(pos, band.r + br, RANGE_COLORS[band.c], 0.1, fig))
-        end
-    end
-
-    -- Firing arc lines (4 radial lines dividing into Front/R/Rear/L quadrants).
-    -- Mirrors the vanilla Projector shader: ProjectorMaterial_<size> sets
-    -- _Arc=1 / shader keyword _ARC_ON for every non-27mm base (medium, large,
-    -- huge, laat, epic, long, snail). 27mm sets _Arc=0.
-    -- Round bases : lines emanate from the base edge, radial from center.
-    -- Oblong bases: lines emanate from the centers of the two end
-    -- semicircles (front cap + rear cap), front lines at +/-45 from the
-    -- long-axis forward, rear lines at +/-135.
-    local arcColor = {1, 1, 1, 0.6}
-    if baseSize and baseSize ~= "small" then
-        if oblong then
-            local capOffset = (halfLen or 0) - (halfWid or 0)
-            local rad = math.rad(rotY)
-            local fwdX, fwdZ = math.sin(rad), math.cos(rad)
-            local frontX = pos.x + capOffset * fwdX
-            local frontZ = pos.z + capOffset * fwdZ
-            local rearX  = pos.x - capOffset * fwdX
-            local rearZ  = pos.z - capOffset * fwdZ
-            local reach  = (halfWid or 0) + (maxR or 6)
-            local arcs = {
-                {frontX, frontZ,  45},  -- front-right boundary
-                {frontX, frontZ, -45},  -- front-left boundary
-                {rearX,  rearZ,  135},  -- rear-right boundary
-                {rearX,  rearZ, -135},  -- rear-left boundary
-            }
-            for _, e in ipairs(arcs) do
-                local cx, cz, deg = e[1], e[2], e[3]
-                local a = math.rad(rotY + deg)
-                local sinA, cosA = math.sin(a), math.cos(a)
-                table.insert(lines, {
-                    points = {
-                        {cx,                 pos.y + 0.1, cz},
-                        {cx + reach * sinA,  pos.y + 0.1, cz + reach * cosA},
-                    },
-                    color = arcColor,
-                    thickness = 0.05,
-                })
-            end
-        else
-            local figRotY = fig.getRotation().y
-            local outerR  = (maxR or 6) + br
-            for _, deg in ipairs({45, 135, 225, 315}) do
-                local a = math.rad(deg + figRotY)
-                local sinA, cosA = math.sin(a), math.cos(a)
-                table.insert(lines, {
-                    points = {
-                        {pos.x + br * sinA,     pos.y + 0.1, pos.z + br * cosA},
-                        {pos.x + outerR * sinA, pos.y + 0.1, pos.z + outerR * cosA},
-                    },
-                    color = arcColor,
-                    thickness = 0.05,
-                })
-            end
-        end
-    end
-
-    -- Decal halo (filled bands)  -  flat on the ground under the fig
-    local hits = Physics.cast({
-        origin       = {pos.x, pos.y + 10, pos.z},
-        direction    = {0, -1, 0},
-        type         = 1,
-        max_distance = 20,
+    local obj = spawnObject({
+        type     = "Custom_AssetBundle",
+        position = pos,
+        rotation = {spec.pitch, yaw, 0},
+        -- Scale 0 hides the TTS placeholder box without touching the
+        -- Projector itself, exactly as the vanilla spawns do.
+        scale    = {0, 0, 0},
     })
-    local groundY = pos.y
-    for _, h in ipairs(hits) do
-        if macHitIsGround(h, fig) then groundY = h.point.y; break end
+    obj.setCustomObject({type = 0, assetbundle = bundle})
+    obj.setLock(true)
+    obj.use_gravity = false
+    obj.setName(spec.name)
+    if spec.follows and fig then
+        obj.setLuaScript(macFollowScript(fig.getGUID()))
     end
-
-    if oblong then
-        -- Stadium-shape PNGs are authored per oblong base size: the 6 bands
-        -- inside the PNG already match the stadium vector outlines because
-        -- the PNG was generated with the same halfWid/halfLen + dist math.
-        -- Decal scale = footprint of the outermost band (2*(half + maxR))
-        -- in each axis, so the PNG stretches to exactly the right size.
-        local longSpan  = 2 * (halfLen + maxR)
-        local shortSpan = 2 * (halfWid + maxR)
-        return {
-            lines  = lines,
-            decals = {
-                {
-                    name     = "range_decal_" .. fig.getGUID(),
-                    url      = decalURL,
-                    position = {pos.x, groundY + 0.02, pos.z},
-                    rotation = {90, rotY, 0},
-                    scale    = {shortSpan, longSpan, 1},
-                }
-            },
-        }
-    end
-
-    local effectiveMaxR = maxR + br
-    return {
-        lines  = lines,
-        decals = {
-            {
-                name     = "range_decal_" .. fig.getGUID(),
-                url      = decalURL,
-                position = {pos.x, groundY + 0.02, pos.z},  -- below cohesion halo
-                rotation = {90, 0, 0},
-                scale    = {effectiveMaxR * 2, effectiveMaxR * 2, effectiveMaxR * 2},
-            }
-        },
-    }
+    return obj
 end
 
-macBuilders.maxmove = function(fig, params)
-    -- Use the anchor position stored at spawn time so the ring stays put
-    -- when the fig slides toward the destination, instead of tracking it.
-    local pos = (params and params.anchorPos) or fig.getPosition()
-    local baseSize = (params and params.baseSize) or "small"
-    local speed = (params and params.speed) or 1
-    local radii = MAX_MOVE_RADIUS[baseSize] or MAX_MOVE_RADIUS.small
-    local r = radii[speed] or radii[1]
-    local color = {0.333, 0.800, 1.000, 0.7}
-    -- Base ring: small white outline matching the figure's base
-    -- (BB_MovementProjector renders a base ring on top of the cyan max-move).
-    local br = FIG_BASE_RADIUS_IN[baseSize] or FIG_BASE_RADIUS_IN.small
-    local baseColor = {1, 1, 1, 0.8}
-    -- Oblong base dimensions for the stadium base ring. Use the rotation
-    -- captured at spawn-time so the ring keeps its orientation even after
-    -- the fig pivots toward its destination.
-    local od = macOblongDims(fig, baseSize)
-    local oblong = od ~= nil
-    local halfLen, halfWid, rotY
-    if oblong then
-        halfLen, halfWid = od.halfLen, od.halfWid
-        rotY = (params and params.anchorRot) or od.rotY
+-- Destroy the Projector an entry owns, then forget the entry. EVERY removal
+-- must go through here: dropping the entry alone leaks the object.
+function macRemove(key)
+    local entry = activeOverlays[key]
+    if entry == nil then return end
+    if macIsLive(entry.obj) then
+        pcall(function() entry.obj.destruct() end)
     end
-
-    -- Ground raycast for decal position
-    local hits = Physics.cast({
-        origin       = {pos.x, pos.y + 10, pos.z},
-        direction    = {0, -1, 0},
-        type         = 1,
-        max_distance = 20,
-    })
-    local groundY = pos.y
-    for _, h in ipairs(hits) do
-        if macHitIsGround(h, fig) then groundY = h.point.y; break end
-    end
-
-    if oblong then
-        -- Oblong base: the cyan max-move envelope stays a round ring (isotropic
-        --  -  any rotation reaches the same radius from the pivot), but the
-        -- inner white base ring follows the rectangular footprint as a
-        -- stadium hugging the actual base edge.
-        return {
-            lines = {
-                macBuildRing(pos, r, color, 0.1, fig),
-                macBuildStadium(pos, halfLen, halfWid, rotY, 0,
-                                 baseColor, 0.06, fig),
-            },
-            decals = {
-                {
-                    name     = "maxmove_decal_" .. fig.getGUID(),
-                    url      = MAX_MOVE_CYAN_URL,
-                    position = {pos.x, groundY + 0.025, pos.z},
-                    rotation = {90, 0, 0},
-                    scale    = {r * 2, r * 2, r * 2},
-                }
-            },
-        }
-    end
-
-    return {
-        lines  = {
-            macBuildRing(pos, r,  color,     0.1,  fig),  -- outer cyan max-move
-            macBuildRing(pos, br, baseColor, 0.06, fig),  -- inner white base ring
-        },
-        decals = {
-            {
-                name     = "maxmove_decal_" .. fig.getGUID(),
-                url      = MAX_MOVE_CYAN_URL,
-                position = {pos.x, groundY + 0.025, pos.z},
-                rotation = {90, 0, 0},
-                scale    = {r * 2, r * 2, r * 2},
-            }
-        },
-    }
+    activeOverlays[key] = nil
 end
 
-macBuilders.deployment = function(_, params)
-    local pos  = params.pos          -- {x, y, z} cell center (after offset)
-    local cell = params.cell         -- "r"/"b"/"rh"/... key
-    local size = DEPLOYMENT_CELL_SIZES[cell] or {6, 6}
-    local w, d = size[1], size[2]
-    local cx, cz = pos[1], pos[3]
-    local hw, hd = w / 2, d / 2
-
-    local isRed = cell:sub(1, 1) == "r"
-    local lineColor = isRed and {1, 0.15, 0.15, 0.9} or {0.15, 0.4, 1, 0.9}
-    local url = isRed and DEPLOYMENT_RED_URL or DEPLOYMENT_BLUE_URL
-
-    local groundY = macRayGroundY(cx, cz, 0)
-
-    return {
-        lines = { macBuildRect(cx, cz, hw, hd, lineColor, 0.08) },
-        decals = {
-            {
-                name     = "deployment_decal_" .. cell .. "_" .. tostring(cx) .. "_" .. tostring(cz),
-                url      = url,
-                position = {cx, groundY + 0.03, cz},
-                rotation = {90, 0, 0},
-                scale    = {w, d, 1},
-            }
-        },
-    }
+function macRemoveAllOfType(kind)
+    local keys = {}
+    for key, entry in pairs(activeOverlays) do
+        if entry.type == kind then keys[#keys + 1] = key end
+    end
+    for _, key in ipairs(keys) do macRemove(key) end
 end
 
-macBuilders.cohesion = function(fig, params)
-    local pos      = fig.getPosition()
-    -- Cohesion overlay = base edge + 3 inches (half Range 1). Round bases get
-    -- a ring; oblong bases (long/snail) get a stadium-shape concentric to the
-    -- footprint so the offset stays a constant 3" from the edge.
-    local rangeKey = fig.getVar("rangeKey")
-    local oblong, halfLen, halfWid, rotY, r
-    if rangeKey and TOKEN_BASE_RADIUS[rangeKey] then
-        r = TOKEN_BASE_RADIUS[rangeKey] + 3.0
-    else
-        local baseSize = macGetBaseSize(fig) or "small"
-        local od = macOblongDims(fig, baseSize)
-        if od then
-            oblong, halfLen, halfWid, rotY = true, od.halfLen, od.halfWid, od.rotY
-        else
-            r = (FIG_BASE_RADIUS_IN[baseSize] or FIG_BASE_RADIUS_IN.small) + 3.0
-        end
-    end
-    if params and params.radius then
-        oblong, r = false, params.radius
-    end
-
-    -- Find ground level under the fig so the flat decal sits on the table,
-    -- not at the fig pivot (which is above the base).
-    local hits = Physics.cast({
-        origin       = {pos.x, pos.y + 10, pos.z},
-        direction    = {0, -1, 0},
-        type         = 1,
-        max_distance = 20,
-    })
-    local groundY = pos.y
-    for _, h in ipairs(hits) do
-        if macHitIsGround(h, fig) then
-            groundY = h.point.y
-            break
-        end
-    end
-
-    if oblong then
-        -- Halo decal: stretch the round halo PNG into an ellipse aligned with
-        -- the fig's long axis. Approximates the stadium fade (a true stadium
-        -- halo would need a custom PNG); good enough visually since the
-        -- vector stadium outline carries the precise boundary.
-        local longSpan  = 2 * (halfLen + 3.0)
-        local shortSpan = 2 * (halfWid + 3.0)
-        return {
-            lines  = { macBuildStadium(pos, halfLen, halfWid, rotY, 3.0,
-                                        {1, 1, 1, 0.8}, 0.06, fig) },
-            decals = {
-                {
-                    name     = "cohesion_halo_" .. fig.getGUID(),
-                    url      = COHESION_HALO_URL,
-                    position = {pos.x, groundY + 0.04, pos.z},
-                    -- 90 deg pitch lays the decal flat on the table; rotY (yaw)
-                    -- aligns its local Y with the fig's long axis.
-                    rotation = {90, rotY, 0},
-                    scale    = {shortSpan, longSpan, 1},
-                }
-            },
-        }
-    end
-
-    return {
-        lines  = { macBuildRing(pos, r, {1, 1, 1, 0.8}, 0.06, fig) },
-        decals = {
-            {
-                name     = "cohesion_halo_" .. fig.getGUID(),
-                url      = COHESION_HALO_URL,
-                position = {pos.x, groundY + 0.04, pos.z},
-                rotation = {90, 0, 0},
-                scale    = {r * 2, r * 2, r * 2},
-            }
-        },
-    }
+function macRemoveAll()
+    local keys = {}
+    for key in pairs(activeOverlays) do keys[#keys + 1] = key end
+    for _, key in ipairs(keys) do macRemove(key) end
 end
 
--- Redraws are deferred one frame and coalesced, then skipped outright when
--- the rebuilt result is identical to what is already applied. Rationale: a
--- click that clears and respawns the same overlay (e.g. re-picking the same
--- speed) would otherwise call Global.setDecals twice in one click, and every
--- setDecals re-projects every decal on the table, visibly shifting the
--- shading/shadows on scene objects.
-macRedrawPending = false
-macLastDrawSig = nil
-
-local function macDrawSignature(lines, decals)
-    local parts = {}
-    for _, l in ipairs(lines) do
-        local p0 = l.points and l.points[1]
-        parts[#parts + 1] = string.format("L%d:%s", #(l.points or {}),
-            p0 and string.format("%.3f,%.3f,%.3f", p0[1], p0[2], p0[3]) or "")
-    end
-    for _, d in ipairs(decals) do
-        parts[#parts + 1] = string.format("D%s:%.3f,%.3f,%.3f:%.2f",
-            d.name or "", d.position[1], d.position[2], d.position[3],
-            (d.scale and d.scale[1]) or 0)
-    end
-    -- pairs() iteration order over activeOverlays is not stable across
-    -- rebuilds; sort so identical content always yields an identical key.
-    table.sort(parts)
-    return table.concat(parts, "|")
-end
-
+-- Reconcile the scene with the registry: give a Projector to every entry that
+-- has never had one, and drop entries that lost theirs.
 function macRedrawNow()
-    local lines, decals = {}, {}
-    -- Preload all texture URLs (invisible decals far below the table) so TTS
-    -- keeps them cached and we never get the white-square flash on respawn.
-    local preloadURLs = {
-        COHESION_HALO_URL,
-        RANGE_DECAL_URLS.smokeToken,
-        RANGE_DECAL_URLS.token, RANGE_DECAL_URLS.tokenRangeTwo,
-        RANGE_DECAL_URLS.poi, RANGE_DECAL_URLS.bombCart,
-        RANGE_DECAL_URLS.fig_leader.small, RANGE_DECAL_URLS.fig_leader.medium,
-        RANGE_DECAL_URLS.fig_leader.large, RANGE_DECAL_URLS.fig_leader.huge,
-        RANGE_DECAL_URLS.fig_leader.laat,  RANGE_DECAL_URLS.fig_leader.epic,
-        RANGE_DECAL_URLS.fig_leader.long,  RANGE_DECAL_URLS.fig_leader.snail,
-        MAX_MOVE_CYAN_URL,
-        DEPLOYMENT_RED_URL, DEPLOYMENT_BLUE_URL,
-    }
-    for i, url in ipairs(preloadURLs) do
-        table.insert(decals, {
-            name     = "preload_" .. i,
-            url      = url,
-            position = {0, -200 - i * 0.01, 0},
-            rotation = {90, 0, 0},
-            scale    = {0.01, 0.01, 0.01},
-        })
-    end
     local stale = {}
     for key, entry in pairs(activeOverlays) do
-        local b = macBuilders[entry.type]
-        if b then
-            -- Deployment entries have no fig (params-driven). Others need a
-            -- live Object  -  drop them silently if destroyed/invalid.
-            local needsFig = (entry.type ~= "deployment")
-            if needsFig and (not entry.fig
-                             or type(entry.fig.getPosition) ~= "function") then
-                stale[#stale + 1] = key
+        if not entry.fig or type(entry.fig.getPosition) ~= "function" then
+            stale[#stale + 1] = key
+        elseif entry.objGUID == nil then
+            local ok, obj = pcall(macSpawnProjector, entry.type, entry.fig, entry.params)
+            if ok and obj then
+                entry.obj     = obj
+                entry.objGUID = obj.getGUID()
             else
-                -- Per-entry cache: only the entry whose fig moved since the
-                -- last poll is rebuilt (65 raycasts per ring); every other
-                -- overlay reuses its cached geometry. This is what keeps the
-                -- framerate up while dragging a fig with several overlays on.
-                local ok, out
-                if entry._cache and not entry._dirty then
-                    ok, out = true, entry._cache
-                else
-                    ok, out = pcall(b, entry.fig, entry.params)
-                    if ok and out then
-                        entry._cache = out
-                        entry._dirty = nil
-                    end
-                end
-                if ok and out then
-                    for _, l in ipairs(out.lines or {}) do
-                        table.insert(lines, l)
-                    end
-                    for _, d in ipairs(out.decals or {}) do
-                        table.insert(decals, d)
-                    end
-                else
-                    stale[#stale + 1] = key
-                end
+                stale[#stale + 1] = key
             end
+        elseif not macIsLive(entry.obj) then
+            -- The Projector is gone and we did not remove it, so a sweeper
+            -- did: standbyTokens, removeLockedRulers or Clear Map. Those are
+            -- explicit "wipe the table" commands, so treat it as the overlay
+            -- having been switched off rather than respawn behind them.
+            stale[#stale + 1] = key
         end
     end
-    for _, k in ipairs(stale) do activeOverlays[k] = nil end
-    local sig = macDrawSignature(lines, decals)
-    if sig == macLastDrawSig then return end
-    macLastDrawSig = sig
-    Global.setVectorLines(lines)
-    Global.setDecals(decals)
+    for _, k in ipairs(stale) do macRemove(k) end
 end
 
+-- Deferred by one frame so a single click touching several entries
+-- reconciles once.
 function macRedrawAll()
     if macRedrawPending then return end
     macRedrawPending = true
@@ -796,28 +258,25 @@ end
 function gSpawnCohesion(params)
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
-    activeOverlays[fig.getGUID() .. ":cohesion"] = {
+    -- macRemove first: re-spawning over a live entry would orphan its
+    -- Projector, which nothing would ever destroy.
+    local key = fig.getGUID() .. ":cohesion"
+    macRemove(key)
+    activeOverlays[key] = {
         type = "cohesion", fig = fig, params = params or {}
     }
     macRedrawAll()
-    -- Cohesion follows its fig through the same lazy poll as Range (it used
-    -- to tag along only as a side effect of full-rebuild polling).
-    if not macRangePollingActive then
-        macRangePollingActive = true
-        Wait.frames(macRangePoll, 5)
-    end
 end
 
 function gClearCohesion(params)
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
     -- Vanilla fig scripts clear cohesion from onPickedUp. Design choice
-    -- (11 aug): the Mac overlay stays visible and FOLLOWS the fig during
-    -- the drag, like Range does  -  so clears on a held fig are ignored
-    -- (the vanilla onPickedUp clear is the only caller in that state).
+    -- (11 aug): our cohesion stays visible and FOLLOWS the fig during the
+    -- drag, like Range does, so clears on a held fig are ignored (the
+    -- vanilla onPickedUp clear is the only caller in that state).
     if fig.held_by_color then return end
-    activeOverlays[fig.getGUID() .. ":cohesion"] = nil
-    macRedrawAll()
+    macRemove(fig.getGUID() .. ":cohesion")
 end
 
 function gToggleCohesion(params)
@@ -831,74 +290,21 @@ function gToggleCohesion(params)
     end
 end
 
--- Overlay polling: a slow timer (5 frames = ~12 fps) that re-draws active
--- range AND cohesion overlays so they follow figures in real-time. Stops
--- automatically when none is active anymore  -  avoids the memory leak.
-macRangePollingActive = macRangePollingActive or false
-
-function macRangePoll()
-    -- Rebuild ONLY when a tracked fig actually moved: a full redraw re-runs
-    -- every builder (65 raycasts per ring, up to 6 rings per fig), and doing
-    -- that every 5 frames for static figs is what made Range/POI overlays
-    -- tank the framerate while Cohesion (no polling) stayed fluid.
-    local hasTracked = false
-    local moved = false
-    for _, e in pairs(activeOverlays) do
-        if e.type == "range" or e.type == "cohesion" then
-            hasTracked = true
-            local fig = e.fig
-            if not fig or type(fig.getPosition) ~= "function" then
-                moved = true  -- stale entry: the redraw prunes it
-            else
-                local ok, p = pcall(function() return fig.getPosition() end)
-                local okr, r = pcall(function() return fig.getRotation() end)
-                if not ok or not p then
-                    moved = true
-                elseif not e._lastPos then
-                    -- First poll after spawn: prime the cache, the spawn
-                    -- already drew this overlay.
-                    e._lastPos = p
-                    e._lastRot = okr and r or nil
-                else
-                    local lp, lr = e._lastPos, e._lastRot
-                    if math.abs(p.x - lp.x) > 0.01
-                       or math.abs(p.y - lp.y) > 0.01
-                       or math.abs(p.z - lp.z) > 0.01
-                       or (okr and lr and math.abs(r.y - lr.y) > 0.5) then
-                        moved = true
-                        e._dirty = true
-                    end
-                    e._lastPos = p
-                    e._lastRot = okr and r or lr
-                end
-            end
-        end
-    end
-    if hasTracked then
-        if moved then macRedrawAll() end
-        Wait.frames(macRangePoll, 5)
-    else
-        macRangePollingActive = false
-    end
-end
-
 function gSpawnRange(params)
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
-    activeOverlays[fig.getGUID() .. ":range"] = {
+    local key = fig.getGUID() .. ":range"
+    macRemove(key)
+    activeOverlays[key] = {
         type = "range", fig = fig, params = params or {}
     }
     macRedrawAll()
-    if not macRangePollingActive then
-        macRangePollingActive = true
-        Wait.frames(macRangePoll, 5)
-    end
 end
 
 function gClearRange(params)
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
-    activeOverlays[fig.getGUID() .. ":range"] = nil
+    macRemove(fig.getGUID() .. ":range")
     -- Windows mode: also destroy the vanilla bundle this fig owns. It was
     -- spawned in the Global scope by gRangeTrigger, so the token's own
     -- exitTargetingMode/clearRangeRulers cannot reach it.
@@ -906,7 +312,6 @@ function gClearRange(params)
         pcall(clearRangeRulersOriginalGlobal)
         macWinRangeGUID = nil
     end
-    macRedrawAll()
 end
 
 function gToggleRange(params)
@@ -920,33 +325,19 @@ function gToggleRange(params)
     end
 end
 
-function gSpawnDeployment(params)
-    -- params: { cell = "r" | "b" | ..., pos = {x, y, z} }
-    if not params or not params.cell or not params.pos then return end
-    local key = "deploy:" .. params.cell .. ":"
-              .. tostring(params.pos[1]) .. ":" .. tostring(params.pos[3])
-    activeOverlays[key] = {type = "deployment", fig = nil, params = params}
-    macRedrawAll()
-end
-
-function gClearAllDeployment()
-    for k, e in pairs(activeOverlays) do
-        if e.type == "deployment" then activeOverlays[k] = nil end
-    end
-    macRedrawAll()
-end
-
 function gSpawnMaxMove(params)
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
-    -- Capture the spawn-time position + yaw. MaxMove is anchored to where
-    -- the move STARTED  -  it must not follow the fig as it slides toward
-    -- the destination. The yaw matters for oblong stadium overlays so the
-    -- white base ring keeps its orientation while the fig pivots.
+    -- Capture the spawn-time position and yaw. MaxMove is anchored to where
+    -- the move STARTED: it must not follow the fig as it slides toward the
+    -- destination. A Projector tracks its target by default, so this one is
+    -- deliberately spawned with no follow script (see PROJECTOR_SPEC).
     local p = (params and params.params) or params or {}
     p.anchorPos = fig.getPosition()
     p.anchorRot = fig.getRotation().y
-    activeOverlays[fig.getGUID() .. ":maxmove"] = {
+    local key = fig.getGUID() .. ":maxmove"
+    macRemove(key)
+    activeOverlays[key] = {
         type = "maxmove", fig = fig, params = p
     }
     macRedrawAll()
@@ -955,47 +346,44 @@ end
 function gClearMaxMove(params)
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
-    activeOverlays[fig.getGUID() .. ":maxmove"] = nil
-    macRedrawAll()
+    macRemove(fig.getGUID() .. ":maxmove")
 end
 
 -- Note: no onObjectPickUp/onObjectDrop handlers (the vanilla Global defines
--- none either). Cohesion, like Range, stays visible during a drag and
--- follows via the poll; the vanilla onPickedUp clear is neutralized in
--- gClearCohesion while the fig is held.
+-- none either). Cohesion, like Range, stays visible during a drag and follows
+-- because its Projector carries the tracking script; the vanilla onPickedUp
+-- clear is neutralized in gClearCohesion while the fig is held.
 
 function onObjectDestroy(obj)
     if not obj or not obj.getGUID then return end
     local guid = obj.getGUID()
     local prefix = guid .. ":"
     local plen = #prefix
-    local changed = false
-    for key in pairs(activeOverlays) do
-        if key:sub(1, plen) == prefix then
-            activeOverlays[key] = nil
-            changed = true
+    local doomed = {}
+    for key, entry in pairs(activeOverlays) do
+        -- The destroyed object is either the figure an overlay belongs to,
+        -- or the overlay's own Projector (a sweeper, or a player deleting it
+        -- by hand).
+        if key:sub(1, plen) == prefix or entry.objGUID == guid then
+            doomed[#doomed + 1] = key
         end
     end
-    if changed then macRedrawAll() end
+    for _, key in ipairs(doomed) do macRemove(key) end
 end
 
--- Texture preload is handled by macRedrawAll which always includes all PNG
--- URLs as invisible decals far below the table. No separate preload needed.
-
 -- ============================================
--- TABLE-WIDE MODE TOGGLE (Cohesion + Range + Deployment)
--- One switch for the whole table: "windows" (original bundle Projectors) or
--- "mac" (this patch). Per-seat modes were dropped on purpose: any rendered
--- overlay is visible to every player (TTS engine limitation), so a Windows
--- player triggering an original Projector still shows magenta to Mac
--- players. The switch is the Apple-logo button in the bottom-right menu:
--- default grey = off (originals), green = on (Mac-safe fallback).
+-- TABLE-WIDE OVERLAY TOGGLE (Range + Cohesion + MaxMove)
+-- One switch for the whole table: "windows" (the mod's original Projectors)
+-- or "mac" (the Iron Squadron overlays). Per-seat modes were dropped on
+-- purpose: any rendered overlay is visible to every player (TTS engine
+-- limitation), so one player triggering an original Projector shows it to
+-- the whole table anyway. The switch is the Iron Squadron button in the
+-- bottom-right menu: default grey = off (originals, untouched), green = on.
 -- ============================================
 
 overlayMode = overlayMode or "windows"  -- "windows" | "mac", table-wide
 
-function gGetMode(_)          return overlayMode end
-function gGetDeploymentMode() return overlayMode end
+function gGetMode(_) return overlayMode end
 
 function gCohesionTrigger(params)
     if not params or not params.figGUID then return end
@@ -1059,12 +447,9 @@ function macModeToggle(_, _, _)
     overlayMode = (overlayMode == "mac") and "windows" or "mac"
     -- Wipe both renderers' overlays so stale visuals don't linger after the
     -- toggle; each player just re-triggers their hotkey.
-    for k, e in pairs(activeOverlays) do
-        if e.type == "cohesion" or e.type == "range" then
-            activeOverlays[k] = nil
-        end
-    end
-    macRedrawAll()
+    macRemoveAllOfType("cohesion")
+    macRemoveAllOfType("range")
+    macRemoveAllOfType("maxmove")
     for _, obj in ipairs(getAllObjects()) do
         if obj.getVar and obj.getVar("cohesionRuler") then
             pcall(function() obj.call("clearCohesionRulerOriginal", obj) end)
@@ -1078,8 +463,8 @@ function macModeToggle(_, _, _)
     pcall(clearRangeRulersOriginalGlobal)
     macWinRangeGUID = nil
     broadcastToAll(
-        (overlayMode == "mac") and "Mac patch ON: Mac-safe overlays for the whole table."
-                                or "Mac patch OFF: original Windows overlays.",
+        (overlayMode == "mac") and "Iron Squadron overlays ON for the whole table."
+                                or "Iron Squadron overlays OFF: the mod's original overlays are back.",
         (overlayMode == "mac") and {0.55, 0.9, 0.6} or {0.9, 0.75, 0.55})
     macDeferRefresh()
 end
@@ -1095,7 +480,8 @@ local function macFindNodeById(tree, id)
     return nil, nil
 end
 
--- UI: single Apple-logo toggle button in the bottom-right legionFloatingMenu.
+-- UI: single Iron Squadron toggle button in the bottom-right
+-- legionFloatingMenu.
 function macRefreshModeUI()
     local tree = UI.getXmlTable() or {}
     -- Drop the legacy mode-picker panel if this save still carries one.
@@ -1111,8 +497,8 @@ function macRefreshModeUI()
             id = "macModeMenuButton",
             onClick = "macModeToggle",
             tooltip = isMac
-                and "Mac TTS U6 patch ON (table-wide). Click for original overlays."
-                or  "Mac TTS U6 patch OFF. Click for Mac-safe overlays (table-wide).",
+                and "Iron Squadron overlays: ON for the whole table. Click to go back to the mod's original overlays."
+                or  "Iron Squadron overlays: OFF, the mod's original overlays are in use. Click to turn them on for the whole table.",
         }
         -- OFF keeps the sibling buttons' default light-grey look (Welcome,
         -- Chess Clocks); ON switches to green.
@@ -1121,13 +507,13 @@ function macRefreshModeUI()
             tag = "Button",
             attributes = attrs,
             children = {{
-                -- White PNG sprite (CustomUIAssets "macAppleLogo"), tinted
-                -- per state: dark on the grey button, white on green. A text
-                -- U+F8FF glyph would render as a missing-glyph box on
-                -- Windows clients.
+                -- White PNG sprite (CustomUIAssets "isqLogo"), tinted per
+                -- state: dark on the grey button, white on green. The shape
+                -- lives in the alpha channel, which is what makes the tint
+                -- work.
                 tag = "Image",
                 attributes = {
-                    image = "macAppleLogo",
+                    image = "isqLogo",
                     color = isMac and "#FFFFFF" or "#2b2b2b",
                     preserveAspect = "true",
                     raycastTarget = "false",
@@ -1164,99 +550,6 @@ end
 
 -- Initial UI build, deferred + pcalled like the rest.
 Wait.time(function() pcall(macRefreshModeUI) end, 2)
-
--- ============================================
--- UNIT ID TOKEN NUMBERS (Mac)
--- The ID token bundle paints its number via custom materials
--- (unitIDtoken_N) that TTS U6 on Mac refuses to load ("Shader didn't load
--- correctly ... Assigning Standard shader"), so tokens go blank. Unlike the
--- Projector magenta case there is no error shader involved: TTS substitutes
--- Standard, which simply ignores the number texture slots. In mac mode we
--- attach a plain object-UI number instead (native Unity UI, no shaders);
--- the token state id IS the number (state 1..10).
--- ============================================
-
--- Empirically calibrated (diagnostics of 11 aug): the top face reads
--- correctly with rotation "0 0 180", the bottom face with "180 0 0".
--- Offsets found by ladder diagnostic (panels at z -12..+12 each showing
--- its own z): top face reads at z = -12, bottom face at z = +1.
-MAC_UNITID_UI = {
-    zTop     = -12,
-    zBottom  = 1,
-    fontSize = 72,
-    panel    = 110,
-    rotTop    = "0 0 180",
-    rotBottom = "180 0 0",
-}
-
-local function macUnitIDPanel(text, x, z, rot)
-    return {
-        tag = "Panel",
-        attributes = {
-            position = tostring(x) .. " 0 " .. tostring(z),
-            rotation = rot,
-            width    = tostring(MAC_UNITID_UI.panel),
-            height   = tostring(MAC_UNITID_UI.panel),
-        },
-        children = {{
-            tag = "Text",
-            attributes = {
-                text        = text,
-                fontSize    = tostring(MAC_UNITID_UI.fontSize),
-                fontStyle   = "Bold",
-                color       = "#FFFFFF",
-                outline     = "#000000",
-                outlineSize = "4 4",
-                alignment   = "MiddleCenter",
-            },
-        }},
-    }
-end
-
-local function macUnitIDXml(n)
-    return {
-        macUnitIDPanel(tostring(n), 0, MAC_UNITID_UI.zTop,    MAC_UNITID_UI.rotTop),
-        macUnitIDPanel(tostring(n), 0, MAC_UNITID_UI.zBottom, MAC_UNITID_UI.rotBottom),
-    }
-end
-
-local function macApplyUnitIDUI(obj)
-    if not (obj and obj.getName and obj.getName() == "Unit ID Token") then return end
-    if overlayMode == "mac" then
-        local n = 1
-        pcall(function() n = obj.getStateId() end)
-        if not n or n < 1 then n = 1 end
-        pcall(function() obj.UI.setXmlTable(macUnitIDXml(n)) end)
-    else
-        pcall(function() obj.UI.setXml("") end)
-    end
-end
-
-function macRefreshUnitIDTokens()
-    for _, obj in ipairs(getAllObjects()) do
-        macApplyUnitIDUI(obj)
-    end
-end
-
--- New tokens from the infinite bag and number changes (a TTS state switch
--- spawns a fresh object) both arrive through onObjectSpawn. The live mod
--- defines no onObjectSpawn handler (verified), so defining it here is safe.
-function onObjectSpawn(obj)
-    if overlayMode ~= "mac" then return end
-    if not (obj and obj.getName and obj.getName() == "Unit ID Token") then return end
-    Wait.frames(function() macApplyUnitIDUI(obj) end, 2)
-end
-
--- Numbers follow the table-wide toggle: wrap the toggle handler (defined in
--- the shared mode-toggle block above, which must stay byte-identical with
--- the mod source copy, hence the wrap instead of an inline edit).
-local _macModeToggleBeforeUnitID = macModeToggle
-function macModeToggle(a, b, c)
-    _macModeToggleBeforeUnitID(a, b, c)
-    Wait.frames(function() pcall(macRefreshUnitIDTokens) end, 1)
-end
-
-Wait.time(function() pcall(macRefreshUnitIDTokens) end, 3)
 
 -- Override hotkey init functions to capture playerColor and route through
 -- the mode router. Defining initCohesionHotkeys/initRangebandHotkeys
@@ -1431,11 +724,14 @@ MAXMOVE_SPAWN_REPLACEMENT = r"""local maxMoveBundles = getMovementLinks()
                 maxMoveTemplate.use_gravity = false
                 maxMoveTemplate.setName("Maximum Move")
             else
-                -- MAC FALLBACK: route through the Global Overlays manager
+                -- IRON SQUADRON: route through the Global Overlays manager.
+                -- The bundle travels with the call: getMovementLinks() is
+                -- required by this object, not by Global.
                 Global.call("gSpawnMaxMove", {
                     figGUID  = selectedUnitObj.getGUID(),
                     baseSize = unitData.baseSize,
                     speed    = unitData.selectedSpeed,
+                    bundle   = maxMoveTemplateBundleToSpawn,
                 })
                 maxMoveTemplate = nil
             end
@@ -1474,149 +770,6 @@ CLEAR_MOVEMENT_REPLACEMENT = r"""function clearMovementTemplates()
     maxMoveTemplate = nil
 end"""
 
-# Deployment Boundary: replace the Custom_AssetBundle Projector spawn inside
-# spawnBoundaryCell (SETUP_CONTROLLER 1cb552) with a Global.call to the manager.
-# Idempotent: matches both the vanilla form AND a previously-injected patched
-# form (between the MAC PATCH dual-path marker and the closing `  end`). The
-# patched alternative is listed first so re-runs prefer it.
-DEPLOYMENT_SPAWN_RE = re.compile(
-    r"(?:"
-    r"-- MAC PATCH dual-path:.*?\r?\n  end"
-    r"|"
-    r"local projector = spawnObject\(\{\r?\n"
-    r"    type        = \"Custom_AssetBundle\",.*?"
-    r"projector\.setCustomObject\(\{\r?\n"
-    r"    assetbundle = asset,\r?\n"
-    r"  \}\)"
-    r")",
-    re.DOTALL
-)
-
-DEPLOYMENT_SPAWN_REPLACEMENT = r"""-- MAC PATCH dual-path: branch on the table-wide mode toggle (gGetDeploymentMode).
-  local _macDeployMode = Global.call("gGetDeploymentMode")
-  local projector = nil
-  if _macDeployMode == "windows" then
-    projector = spawnObject({
-      type        = "Custom_AssetBundle",
-      position    = pos,
-      scale       = {0, 0, 0},
-      rotation    = {0, deployRotations[cell], 0}
-    })
-    projector.setName("Deployment Boundary")
-    projector.setLock(true)
-    projector.setCustomObject({
-      assetbundle = asset,
-    })
-  else
-    Global.call("gSpawnDeployment", { cell = cell, pos = pos })
-  end"""
-
-# clearDeploymentBoundary: also clear manager entries.
-CLEAR_DEPLOYMENT_RE = re.compile(
-    r"function clearDeploymentBoundary\(\)\r?\n"
-    r"    local battlefieldObjs = battlefieldZone\.getObjects\(\).*?\r?\n"
-    r"    end\r?\nend",
-    re.DOTALL
-)
-
-CLEAR_DEPLOYMENT_REPLACEMENT = r"""function clearDeploymentBoundary()
-    -- MAC PATCH: clear Global Overlays manager entries first.
-    Global.call("gClearAllDeployment", {})
-    local battlefieldObjs = battlefieldZone.getObjects()
-    for _, obj in pairs(battlefieldObjs) do
-        if obj.getName() == "Deployment Boundary" then
-            destroyObject(obj)
-        end
-    end
-end"""
-
-# Silhouette URL swap to our Unity-6-compiled bundle.
-#
-# The upstream BucketheadBits_Silhouette bundle uses Allen White's custom
-# Silhouette shader compiled under Unity 2019.4. TTS U6 on Mac fails to
-# load that shader at runtime (console: "Shader didn't load correctly for
-# AssetBundle material BucketheadBits_Silhouette. Assigning Standard
-# shader.") and falls back to Standard, which renders the cylinder opaque.
-#
-# Our fork-hosted bundle uses the SAME prefab + material + shader source
-# (Assets/Sihl/), only the compile target differs (Unity 6 instead of
-# Unity 2019.4). Path A from Dicewrench's analysis.
-#
-# We swap ALL silhouette URLs (default cylinder, snail, long) to the same
-# fork URL. Snail/long visual fidelity is acceptable for now (cylinder
-# placeholder); per-base meshes are a separate follow-up.
-SILHOUETTE_BUNDLE_URL = (
-    "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/"
-    "mac-projector-fallback/mod/data/mac-fallback-assets/"
-    "silhouette_mac_fallback_v2.unity3d"
-)
-# Silhouette spawn rebuilt as a Custom_Model that clones the Silhouette
-# Marker's recipe (same mesh family, TTS-native shader): correct translucency
-# on Mac with the exact marker look, instead of an AssetBundle whose shader
-# can't load. Mesh is 1.062 wide x 1.485 tall (base pivot) vs the bundle's
-# 1x1 unit cylinder, hence the scale factors that preserve vanilla sizing.
-# Collider = degenerate 1mm triangle so the attachment can't shove minis.
-SILHOUETTE_MODEL_RE = re.compile(
-    r"local silhouette = spawnObject\(\{\s*"
-    r"type = \"Custom_AssetBundle\",\s*"
-    r"position = pos,\s*"
-    r"rotation = rot,\s*"
-    r"scale = \{scale,height,scale\}\s*"
-    r"\}\)\s*"
-    r"silhouette\.setCustomObject\(\{\s*"
-    r"assetbundle = silhouetteData,\s*"
-    r"material = 3\s*"
-    r"\}\)\s*"
-    r"silhouette\.setColorTint\(\{([0-9., ]+)\}\)"
-)
-SILHOUETTE_MODEL_REPLACEMENT = r"""-- MAC PATCH silhouette dual-path: branch on the table-wide mode toggle.
-  local silhouette
-  if Global.call("gGetMode") == "windows" then
-    -- Original AssetBundle Projector, untouched. Opaque on Mac: that is the
-    -- vanilla behaviour the toggle is there to switch away from.
-    silhouette = spawnObject({
-      type = "Custom_AssetBundle",
-      position = pos,
-      rotation = rot,
-      scale = {scale,height,scale}
-    })
-    silhouette.setCustomObject({
-        assetbundle = silhouetteData,
-        material = 3
-    })
-  else
-    -- Silhouette-as-model (marker recipe). Oblong bases reuse the ORIGINAL
-    -- mesh, extracted from the vanilla bundles (silh_new_long_1in /
-    -- silh_new_snail_1in), so the Mac path changes the rendering and
-    -- nothing else: same outline as Windows, at the vanilla scale
-    -- ({scale,height,scale} with scale = 1 for both oblong sizes). Round
-    -- bases keep the marker mesh with the unit-normalizing factors.
-    local _macMesh = "https://steamusercontent-a.akamaihd.net/ugc/1003681898505457098/962BED032738C4448CCD4B737E82876715459FE8/"
-    local _macSx, _macSy, _macSz = scale * 0.9416, height * 0.6734, scale * 0.9416
-    local _macObl = ({
-      long  = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/mac-projector-fallback/mod/data/mac-fallback-assets/silh_exact_long_1.obj",
-      snail = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/mac-projector-fallback/mod/data/mac-fallback-assets/silh_exact_snail_1.obj",
-    })[(unitData and unitData.baseSize) or ""]
-    if _macObl then
-      _macMesh = _macObl
-      _macSx, _macSy, _macSz = scale, height, scale
-    end
-    silhouette = spawnObject({
-      type = "Custom_Model",
-      position = pos,
-      rotation = rot,
-      scale = {_macSx, _macSy, _macSz}
-    })
-    silhouette.setCustomObject({
-        mesh = _macMesh,
-        collider = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/mac-projector-fallback/mod/data/mac-fallback-assets/collider_null.obj",
-        convex = true,
-        material = 0,
-        type = 1
-    })
-  end
-  silhouette.setColorTint({\g<1>})"""
-
 
 # SIL/LCK button placement on oblong bases (upstream bug, both OSes): the
 # vanilla offset is baseRadius/2 + 0.1 with a single per-size radius and no
@@ -1646,35 +799,6 @@ BUTTON_OFFSET_REPLACEMENT = r"""\1 -- MAC PATCH oblong
     end, 3)
   end"""
 
-
-SILHOUETTE_URL_RE = re.compile(
-    r'(silhouetteData\s*=\s*)"https?://[^"]*/ugc/[^"]+"'
-)
-SILHOUETTE_URL_REPLACEMENT = r'\1"' + SILHOUETTE_BUNDLE_URL + '"'
-
-
-# Cleanup of debug prints and corrupted signatures from earlier sessions.
-# Safe no-op on a clean save. Matches both the legacy `print("[SIL DEBUG] ...)`
-# form AND the chat-visible `printToAll("[SIL] ...", {...})` form.
-SIL_DEBUG_STRIP_RE = re.compile(
-    # Match leading horizontal whitespace only (NOT \s* which would also eat
-    # the newline before, mashing the function signature against the next
-    # statement  -  that was a real bug we hit earlier this session).
-    r'[ \t]*(?:print\("\[SIL DEBUG\][^\n]*\)|'
-    r'printToAll\("\[SIL\][^"]*",\s*\{[^}]*\}\))\r?\n'
-)
-# Repair function signatures that were mashed by the previous \s*-glob bug.
-# Idempotent: target the specific mashed patterns; matches are zero on a
-# clean save.
-SIL_REPAIR_TOGGLE_RE = re.compile(
-    r'(function toggleSilhouettes\(\))(  if silhouetteState then)'
-)
-SIL_REPAIR_SHOW_RE = re.compile(
-    r'(function showSilhouette\(\))(  for k, guid in pairs\(miniGUIDs)'
-)
-SIL_REPAIR_SPAWN_RE = re.compile(
-    r'(function spawnSilhouette\(obj, pos, rot\))(  local globals)'
-)
 
 
 # Silhouette state-desync fix (upstream bug).
@@ -1722,23 +846,29 @@ SIL_ONLOAD_RESET_LINE = (
 ONLOAD_OPEN_RE = re.compile(r"function onload\(\)\r?\n")
 
 
-# SIL button rename (root cause: TTS engine intercepts the click_function
-# name "toggleSilhouettes" silently in Mac mode; LCK/R buttons unaffected
-# because their click_function names differ. Confirmed empirically 17 mai
-# 2026: renaming to "macToggleSil" + forwarder unblocks Mac mode entirely).
+# SIL button rename. On macOS the click_function name "toggleSilhouettes"
+# was silently swallowed by TTS: the button played its sound and animation
+# but the function was never called, while LCK and R (different names) kept
+# working. Renaming it + forwarding unblocked it, confirmed empirically on
+# 17 may 2026.
 #
-# We swap the click_function name on the SIL button definition AND inject a
-# forwarder function that simply calls toggleSilhouettes(). The original
-# toggleSilhouettes is untouched, so Windows mode behavior is identical.
+# KEPT even though silhouettes left the toggle's scope (12 aug). Reverting
+# our silhouette code to vanilla back then did NOT lift the mute, so the
+# leading suspect is a side effect of the Global patch itself, which we do
+# still inject. Behaviour is unchanged either way: the button calls the
+# untouched vanilla toggleSilhouettes through a one-line forwarder. Worth a
+# single in-game click to find out whether it can go: patch a save without
+# it and press SIL on a Unit Leader.
 # Idempotent: re-runs detect both markers and skip.
 SIL_BUTTON_CLICKFN_OLD = 'click_function = "toggleSilhouettes"'
 SIL_BUTTON_CLICKFN_NEW = 'click_function = "macToggleSil"'
 SIL_FORWARDER = '''
--- MAC PATCH: rebuilt SIL button click handler. The original click_function
--- name "toggleSilhouettes" is silently intercepted by TTS in Mac mode (the
--- SIL button plays its click sound/animation but the function is never
--- called). Renaming the click_function on the button definition + adding
--- this forwarder restores the routing.
+-- MAC PATCH: rebuilt SIL button click handler. On macOS the original
+-- click_function name "toggleSilhouettes" is silently intercepted by TTS
+-- (the SIL button plays its click sound and animation but the function is
+-- never called). Renaming the click_function on the button definition and
+-- adding this forwarder restores the routing. The silhouette code itself is
+-- vanilla.
 function macToggleSil()
   toggleSilhouettes()
 end
@@ -1923,6 +1053,12 @@ function toggleRangeRuler(_, playerColor)
         Global.call("gClearRange", { figGUID = self.getGUID() })
         rangeOn = false
     else
+        -- Clear BEFORE triggering, same rule as the Order Token's COHESION
+        -- and RANGE buttons. gRangeTrigger toggles by GUID, and the hover
+        -- hotkey writes to the very same key on this token, so without this
+        -- the first click on R would turn that overlay OFF while we set
+        -- rangeOn = true, leaving the button inverted from then on.
+        Global.call("gClearRange", { figGUID = self.getGUID() })
         Global.call("gRangeTrigger", {
             figGUID     = self.getGUID(),
             playerColor = playerColor,
@@ -2039,12 +1175,12 @@ def patch_object_scripts(data: dict) -> tuple:
     Range block: on every object containing the !/RangeRulers include
     (Order_Token, Tokens, POI, bomb_cart, etc.  -  ~20 objects).
 
-    Returns (n_cohesion_patched, n_range_patched, n_dep_patched).
+    Returns (n_cohesion_patched, n_range_patched).
     """
-    n_coh, n_rng, n_dep = 0, 0, 0
+    n_coh, n_rng = 0, 0
 
     def walk(o):
-        nonlocal n_coh, n_rng, n_dep
+        nonlocal n_coh, n_rng
         if isinstance(o, dict):
             guid = o.get("GUID", "").lower()
             if "LuaScript" in o:
@@ -2059,45 +1195,19 @@ def patch_object_scripts(data: dict) -> tuple:
                         ls = new_ls
                         changed = True
 
-                # Cleanup: strip stale debug prints + repair any signatures
-                # mashed by an earlier (overzealous) strip pass. Both are
-                # no-ops on a clean save.
-                new_ls, n = SIL_DEBUG_STRIP_RE.subn("", ls)
-                if n > 0:
-                    ls = new_ls
-                    changed = True
-                for rx in (SIL_REPAIR_TOGGLE_RE, SIL_REPAIR_SHOW_RE, SIL_REPAIR_SPAWN_RE):
-                    new_ls, n = rx.subn(r'\1\n\2', ls)
-                    if n > 0:
-                        ls = new_ls
-                        changed = True
-
-                # (Diagnostic SIL prints removed 17 mai 2026 once mute Mac
-                # mode confirmed. SIL_DEBUG_STRIP_RE above stays as a cleanup
-                # pass for older saves that still carry the prints.)
-
-                # Silhouette URL swap to our Unity-6-compiled bundle.
-                # Applies to any object that defines spawnSilhouette
-                # (Unit_Leader 99f1c8, Bomb Cart b497e1, POI Token 761483).
-                # Idempotent: the regex only matches Steam UGC URLs (/ugc/),
-                # not our fork URL, so re-runs are no-ops.
-                new_ls, n = SILHOUETTE_MODEL_RE.subn(SILHOUETTE_MODEL_REPLACEMENT, ls)
-                if n > 0:
-                    ls = new_ls
-                    changed = True
+                # Silhouettes are OUT of the toggle's scope (12 aug): their
+                # bundles are repaired, so vanilla renders them correctly on
+                # both platforms and the Lua fallback is gone. What stays
+                # below are fixes to upstream bugs that happen to live on the
+                # same objects, none of which branch on the mode.
                 new_ls, n = BUTTON_OFFSET_RE.subn(BUTTON_OFFSET_REPLACEMENT, ls)
                 if n > 0:
                     ls = new_ls
                     changed = True
-                # NOTE: the silhouetteData URL is deliberately left alone. It
-                # used to be swapped for our Unity-6 bundle, but the marker
-                # recipe above supplanted that bundle, and rewriting the URL
-                # would leave Windows mode spawning our asset instead of the
-                # original one.
 
-                # SIL button rename + forwarder. Bypasses the TTS engine
-                # bug where the click_function name "toggleSilhouettes" is
-                # silently muted in Mac mode. Idempotent: replace() is no-op
+                # SIL button rename + forwarder. Bypasses the TTS engine bug
+                # where the click_function name "toggleSilhouettes" is
+                # silently muted on macOS. Idempotent: replace() is no-op
                 # once swap is done, marker check prevents double-injection.
                 if SIL_BUTTON_CLICKFN_OLD in ls:
                     ls = ls.replace(SIL_BUTTON_CLICKFN_OLD, SIL_BUTTON_CLICKFN_NEW)
@@ -2182,18 +1292,6 @@ def patch_object_scripts(data: dict) -> tuple:
                     ls = ls + TOKEN_BUTTON_WRAPPER
                     changed = True
 
-                # Deployment Boundary (only in SETUP_CONTROLLER 1cb552)  -  Mac only
-                if guid == "1cb552":
-                    new_ls, n = DEPLOYMENT_SPAWN_RE.subn(DEPLOYMENT_SPAWN_REPLACEMENT, ls, count=1)
-                    if n > 0:
-                        ls = new_ls
-                        n_dep += 1
-                        changed = True
-                    new_ls, n = CLEAR_DEPLOYMENT_RE.subn(CLEAR_DEPLOYMENT_REPLACEMENT, ls, count=1)
-                    if n > 0:
-                        ls = new_ls
-                        changed = True
-
                 if changed:
                     o["LuaScript"] = ls
 
@@ -2204,7 +1302,7 @@ def patch_object_scripts(data: dict) -> tuple:
                 walk(x)
 
     walk(data)
-    return n_coh, n_rng, n_dep
+    return n_coh, n_rng
 
 
 ASSETS_BASE_URL = ("https://raw.githubusercontent.com/ironsquadronfr-hub/tts/"
@@ -2234,12 +1332,12 @@ def main():
     if name.endswith("[MAC PATCH]"):
         data["SaveName"] = name[: -len("[MAC PATCH]")].rstrip()
 
-    # Register the apple-logo UI sprite for the toggle button (idempotent
-    # by Name).
+    # Register the Iron Squadron UI sprite for the toggle button (idempotent
+    # by Name; macAppleLogo is the retired name and is dropped on the way).
     assets = [a for a in (data.get("CustomUIAssets") or [])
-              if a.get("Name") != "macAppleLogo"]
-    assets.append({"Type": 0, "Name": "macAppleLogo",
-                   "URL": ASSETS_BASE_URL + "apple_logo.png"})
+              if a.get("Name") not in ("isqLogo", "macAppleLogo")]
+    assets.append({"Type": 0, "Name": "isqLogo",
+                   "URL": ASSETS_BASE_URL + "iron_squadron_logo_v2.png"})
     data["CustomUIAssets"] = assets
 
     # 1. Append manager + handlers to Global LuaScript (idempotent: remove
@@ -2255,10 +1353,9 @@ def main():
 
     # 2. Replace Cohesion + Range + Deployment blocks in object scripts.
     print("Object script patches:")
-    n_coh, n_rng, n_dep = patch_object_scripts(data)
+    n_coh, n_rng = patch_object_scripts(data)
     print(f"  Cohesion blocks replaced:   {n_coh}")
     print(f"  Range blocks replaced:      {n_rng}")
-    print(f"  Deployment blocks replaced: {n_dep}")
     print()
 
     dst.parent.mkdir(parents=True, exist_ok=True)
