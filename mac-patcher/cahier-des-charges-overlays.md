@@ -6,10 +6,12 @@ module de confort, et on veut la reposer sur de vrais Projectors au lieu de déc
 Ce document décrit **ce que chaque objet doit faire**, pour que le changement de rendu ne
 perde rien en silence, et pour servir de liste de recette en jeu après.
 
-**Périmètre** : les quatre familles qui passent par le toggle, à savoir **Range**,
-**Cohésion**, **MaxMove** et **Déploiement**. Les silhouettes et les tokens de numéro
-d'unité sont **hors périmètre** (arbitrage Martin, 12/08) : leurs bundles sont réparés,
-donc le vanilla suffit et le contournement Lua n'a plus lieu d'être.
+**Périmètre** : les **trois** familles qui passent par le toggle, à savoir **Range**,
+**Cohésion** et **MaxMove**. Les silhouettes, les tokens de numéro d'unité et **les
+zones de déploiement** en sont **sortis** (arbitrage Martin, 12/08) : leurs bundles sont
+réparés, donc le vanilla suffit et le contournement Lua n'a plus lieu d'être. Le code
+correspondant a été retiré du patcher et de `mod/src` le soir même. **La section 5
+ci-dessous est donc caduque**, elle est conservée pour mémoire du comportement retiré.
 
 **Source** : lecture du code, pas de la mémoire. Branche `mac-projector-fallback` pour
 `mod/src`, et `mac-patcher/patch_save_for_mac.py` pour le moteur à jour. Les deux ne
@@ -187,7 +189,12 @@ d'une figurine posait la règle vanilla. Le routage de la range passe par Global
 les tokens. Le seul alias autorisé sur ces objets est `clearRangeRulersOriginal`, dont le
 basculement de mode a besoin.
 
-## 5. SETUP_CONTROLLER (`1cb552`), zones de déploiement
+## 5. SETUP_CONTROLLER (`1cb552`), zones de déploiement — CADUQUE
+
+⚠ **Sorti du toggle le 12/08 au soir.** `spawnBoundaryCell` et `clearDeploymentBoundary`
+sont revenus au vanilla exact dans `mod/src`, et le patcher n'injecte plus rien ici : les
+zones se posent comme dans le mod d'origine, sur les deux plateformes, leur bundle étant
+réparé. La section reste pour mémoire de ce que faisait le double chemin.
 
 **Rôle** : pose les cellules de la zone de déploiement d'une mission.
 

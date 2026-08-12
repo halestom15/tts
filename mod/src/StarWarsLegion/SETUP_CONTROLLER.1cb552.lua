@@ -251,24 +251,17 @@ function spawnBoundaryCell(cell, x, z)
 
   pos = AddVectors(pos, offset)
 
-  -- Mac fallback dual-path: branch on the table-wide mode toggle (gGetDeploymentMode).
-  local _macDeployMode = Global.call("gGetDeploymentMode")
-  local projector = nil
-  if _macDeployMode == "windows" then
-    projector = spawnObject({
-      type        = "Custom_AssetBundle",
-      position    = pos,
-      scale       = {0, 0, 0},
-      rotation    = {0, deployRotations[cell], 0}
-    })
-    projector.setName("Deployment Boundary")
-    projector.setLock(true)
-    projector.setCustomObject({
-      assetbundle = asset,
-    })
-  else
-    Global.call("gSpawnDeployment", { cell = cell, pos = pos })
-  end
+  local projector = spawnObject({
+    type        = "Custom_AssetBundle",
+    position    = pos,
+    scale       = {0, 0, 0},
+    rotation    = {0, deployRotations[cell], 0}
+  })
+  projector.setName("Deployment Boundary")
+  projector.setLock(true)
+  projector.setCustomObject({
+    assetbundle = asset,
+  })
 end
 
 function spawnDeploymentBoundary(matrix)
@@ -321,9 +314,6 @@ function spawnDeploymentBoundary(matrix)
 end
 
 function clearDeploymentBoundary()
-    -- Mac fallback: clear Global Overlays manager entries first (no-op if
-    -- deployment ran in Windows mode and no Mac entries exist).
-    Global.call("gClearAllDeployment", {})
     local battlefieldObjs = battlefieldZone.getObjects()
     for _, obj in pairs(battlefieldObjs) do
         if obj.getName() == "Deployment Boundary" then
