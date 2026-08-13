@@ -146,6 +146,15 @@ Projector, verrouillé, sans gravité, nommé « Cohesion Ruler ».
 | mode vanilla : toggle et non respawn | `spawnCohesionRuler` d'origine **respawne** au lieu de basculer. Sans interception, un deuxième clic la redessinait et elle ne s'éteignait jamais. On lit `fig.getVar("cohesionRuler")` pour connaître l'état réel |
 | garde | l'objet survolé peut ne pas être une figurine et n'avoir aucune de ces fonctions. Le `pcall` retombe alors sur notre moteur |
 
+**❓ Arbitrage ouvert, constaté au banc le 13/08 : les socles sans bundle de cohésion.**
+`getCohesionLinks()` ne connaît que `small`, `medium` et `large`. Pour `huge`, `long`,
+`laat`, `epic` et `snail`, le vanilla **ne dessine rien** et le moteur Projectors fait
+pareil, donc on est à parité. Mais l'ancien moteur à décals retombait sur le rayon
+`small` et dessinait quelque chose. Le trou compte surtout pour les **socles oblongs**,
+dont les unités ont plusieurs figurines et donc une vraie cohésion à mesurer. Trois
+issues : rester au vanilla, réétirer un bundle existant, ou refabriquer un anneau
+oblong. **Non tranché.**
+
 ## 4. Les tokens à `rangeKey`, et le Bomb Cart
 
 **Objets concernés**, 19 fichiers plus le Bomb Cart, tous via `!/TokenWithRangeRuler` ou

@@ -421,7 +421,13 @@ function gRangeTrigger(params)
     local fig = getObjectFromGUID(params.figGUID)
     if not fig then return end
     if overlayMode ~= "windows" then
-        gToggleRange({figGUID = params.figGUID})
+        -- Forward the WHOLE params table. Rebuilding it with figGUID alone
+        -- dropped forceFigMode, which the hover hotkey sets and
+        -- macResolveBundle reads: the fig-leader bands documented for a
+        -- hovered token never rendered, its own single ring did instead.
+        -- showRangeOnHoveredModel already forwards it, so the same gesture
+        -- gave two different results depending on which path it took.
+        gToggleRange(params)
         return
     end
     -- The vanilla bundle Range lives in the GLOBAL scope: !/RangeRulers is
@@ -438,7 +444,7 @@ function gRangeTrigger(params)
         if pcall(function() spawnRangeRulerOriginalGlobal(fig) end) then
             macWinRangeGUID = params.figGUID
         else
-            gToggleRange({figGUID = params.figGUID})
+            gToggleRange(params)
         end
     end
 end
