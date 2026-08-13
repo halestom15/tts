@@ -83,6 +83,32 @@ local TOKEN_TO_BASESIZE = {
     bombCart      = "medium",
 }
 
+-- The Iron Squadron range rulers. Same Projector, same geometry, same colours
+-- as the mod's, with one thing added: the range 0.5 band, white, from the base
+-- edge out to 3in, with range 1's orange starting at 3in instead of at the
+-- base. Built from the mod's own prefabs (see make_isq_range_prefabs.py), so
+-- they are bi-platform like everything else we rebuild.
+--
+-- These are NEW assets: they have no Steam UGC entry, so they cannot be served
+-- from the TTS cache like the 143 repaired bundles. They are served from the
+-- fork instead. That separation is the point: the repaired bundles sit under
+-- the mod's own URLs, so anything added to them would show in the mod's
+-- original mode too, and the toggle would stop meaning anything for Range.
+--
+-- Only the hover hotkey reaches this table (forceFigMode). A token's own R
+-- button keeps the mod's single-ring bundle, deliberately.
+local ISQ_ASSETS = "__ISQ_ASSETS_BASE__"
+local ISQ_RANGE_BUNDLES = {
+    small  = ISQ_ASSETS .. "projector_27mm_isq.unity3d",
+    medium = ISQ_ASSETS .. "projector_50mm_isq.unity3d",
+    large  = ISQ_ASSETS .. "projector_70mm_isq.unity3d",
+    huge   = ISQ_ASSETS .. "projector_100mm_isq.unity3d",
+    laat   = ISQ_ASSETS .. "projector_120mm_isq.unity3d",
+    epic   = ISQ_ASSETS .. "projector_150mm_isq.unity3d",
+    long   = ISQ_ASSETS .. "projector_100mm_oblong_isq.unity3d",
+    snail  = ISQ_ASSETS .. "projector_200mm_oblong_isq.unity3d",
+}
+
 -- Per family: the name TTS gives the spawned object, whether it tracks its
 -- figure, and the pitch the vanilla spawn uses.
 --
@@ -146,7 +172,11 @@ local function macResolveBundle(kind, fig, params)
             return links[key]
         end
         local bs = macGetBaseSize(fig) or (key and TOKEN_TO_BASESIZE[key])
-        return bs and links[bs] or nil
+        if not bs then return nil end
+        -- Iron Squadron rulers first: same geometry as the mod's, plus the
+        -- white range 0.5 band. Fall back to the mod's own bundle if a base
+        -- size ever appears that we have no ruler for.
+        return ISQ_RANGE_BUNDLES[bs] or links[bs]
     end
 
     return nil
@@ -1351,7 +1381,13 @@ def main():
     original_global_len = len(data.get("LuaScript", ""))
     existing = data.get("LuaScript", "")
     cleaned, n_removed = GLOBAL_PATCH_MARKER_RE.subn("", existing)
-    data["LuaScript"] = cleaned + GLOBAL_PATCH_LUA
+    # One source of truth for where our own assets live: the Lua block carries
+    # a placeholder, filled here from ASSETS_BASE_URL. Flipping to upstream
+    # before merge is then a one-line change.
+    global_block = GLOBAL_PATCH_LUA.replace("__ISQ_ASSETS_BASE__", ASSETS_BASE_URL)
+    if "__ISQ_ASSETS_BASE__" in global_block:
+        sys.exit("ASSETS_BASE placeholder left unfilled in the Global block")
+    data["LuaScript"] = cleaned + global_block
     new_global_len = len(data["LuaScript"])
     note = " (replaced existing patch)" if n_removed else ""
     print(f"Global LuaScript: {original_global_len} -> {new_global_len} bytes{note}")
