@@ -119,13 +119,17 @@ local ISQ_RANGE_BUNDLES = {
 -- (27mm -> 3.531496 = 0.53150 + 3, and so on). 3in is range 1/2, the distance
 -- cohesion is measured at -- the same one the white band marks on the rulers.
 --
--- long and snail are missing on purpose: the cohesion shader only knows
--- Circle(), it cannot draw a stadium. They need an oblong variant, built the
--- way BB_OblongRangeProjector is (oblongVert + Capsule).
+-- long and snail go through BB_OblongCohesionProjector, written for them: the
+-- mod's cohesion shader computes its gradient with Circle() and can only draw
+-- a disc. Their base geometry is not invented either -- it is read back out of
+-- the oblong RANGE materials, the only place in the project where those
+-- dimensions are written down.
 local ISQ_COHESION_BUNDLES = {
-    huge = ISQ_ASSETS .. "halfcohesion_100mm_isq_v1.unity3d",
-    laat = ISQ_ASSETS .. "halfcohesion_120mm_isq_v1.unity3d",
-    epic = ISQ_ASSETS .. "halfcohesion_150mm_isq_v1.unity3d",
+    huge  = ISQ_ASSETS .. "halfcohesion_100mm_isq_v2.unity3d",
+    laat  = ISQ_ASSETS .. "halfcohesion_120mm_isq_v2.unity3d",
+    epic  = ISQ_ASSETS .. "halfcohesion_150mm_isq_v2.unity3d",
+    long  = ISQ_ASSETS .. "halfcohesion_long_isq_v2.unity3d",
+    snail = ISQ_ASSETS .. "halfcohesion_snail_isq_v2.unity3d",
 }
 
 -- Per family: the name TTS gives the spawned object, whether it tracks its
