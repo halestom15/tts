@@ -132,6 +132,21 @@ local ISQ_COHESION_BUNDLES = {
     snail = ISQ_ASSETS .. "halfcohesion_snail_isq_v3.unity3d",
 }
 
+-- Range 1/2 rings for the tokens whose own R button should show range 1/2
+-- rather than the range 1 the mod gives them. Keyed by the object's name,
+-- because rangeKey cannot separate them: "token" is shared by Objective,
+-- Condition, Cad Bane, Proton Charge and Complete the Mission alike.
+--
+-- The mod already had exactly this object, and it is not a range ruler: the
+-- POI's 3in ring is BB_CohesionProjector with its orthographic size at 4,
+-- one inch of base radius plus three. Ours is the same build at the token's
+-- own base, and it keeps the ring's current amber so only the SIZE changes.
+--
+-- The hover hotkey is untouched: it still draws the fig-leader bands.
+local ISQ_TOKEN_RINGS = {
+    ["Objective Token"] = ISQ_ASSETS .. "token05_objective_isq_v1.unity3d",
+}
+
 -- Per family: the name TTS gives the spawned object, whether it tracks its
 -- figure, and the pitch the vanilla spawn uses.
 --
@@ -194,8 +209,10 @@ local function macResolveBundle(kind, fig, params)
         end
         -- Token R button: its own single-ring bundle. Hover hotkey
         -- (forceFigMode): the full fig-leader bands instead.
-        if key and not params.forceFigMode and links[key] then
-            return links[key]
+        if key and not params.forceFigMode then
+            local ok, nm = pcall(function() return fig.getName() end)
+            if ok and nm and ISQ_TOKEN_RINGS[nm] then return ISQ_TOKEN_RINGS[nm] end
+            if links[key] then return links[key] end
         end
         local bs = macGetBaseSize(fig) or (key and TOKEN_TO_BASESIZE[key])
         if not bs then return nil end
