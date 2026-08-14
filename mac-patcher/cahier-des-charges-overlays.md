@@ -107,6 +107,26 @@ L'objet le plus chargé : il porte trois des quatre familles.
 | extinction | `gClearRange` **puis** `exitTargetingMode` |
 | pourquoi le clear à l'extinction | `exitTargetingMode` et `clearRangeRulers` n'atteignent que la règle vanilla. Sans ce clear, nos anneaux restaient affichés en position OFF |
 
+### Chaîne d'attaque, `attackMode` — HORS PÉRIMÈTRE
+
+⚠ **Ne pas router, ne pas « réparer ». Arbitrage Martin, 14/08 : la fonctionnalité
+date de la V1 du jeu, elle a trois ans et elle n'est plus juste en V2.**
+
+Constat, pour que personne ne le redécouvre comme un bug : `ATTACK` mène à
+`attack()` puis `attackMode()`, qui appelle le `spawnRangeRuler` **vanilla** du
+scope de l'Order Token. En mode Iron Squadron, l'attaque pose donc quand même la
+règle d'origine. Et les cinq sorties de ce chemin — `exitTargetingMode`,
+`exitAttackMode`, `clearTemplates`, `attackMenu`, `stopAttack` — n'effacent que
+le vanilla, jamais `activeOverlays` : allumer RANGE puis attaquer laisse les deux
+règles à l'écran.
+
+C'est **connu et accepté**. Le seul déclencheur de range réellement routé côté
+Order Token est le bouton RANGE (`targetingMode`).
+
+Si un jour on y revient, ce sera pour **mettre le mode attaque à la V2 ou le
+retirer**, pas pour brancher l'existant — donc dans le lot « fine tuning V2 »,
+pas ici.
+
 ### Boutons de mouvement, famille MaxMove
 
 Chaînes : `MOVE` vers `initMove` vers `moveUnit(false)`, `DEPLOY` vers `initDeploy` vers
