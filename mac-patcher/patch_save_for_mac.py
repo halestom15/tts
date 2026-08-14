@@ -128,8 +128,8 @@ local ISQ_COHESION_BUNDLES = {
     huge  = ISQ_ASSETS .. "halfcohesion_100mm_isq_v2.unity3d",
     laat  = ISQ_ASSETS .. "halfcohesion_120mm_isq_v2.unity3d",
     epic  = ISQ_ASSETS .. "halfcohesion_150mm_isq_v2.unity3d",
-    long  = ISQ_ASSETS .. "halfcohesion_long_isq_v2.unity3d",
-    snail = ISQ_ASSETS .. "halfcohesion_snail_isq_v2.unity3d",
+    long  = ISQ_ASSETS .. "halfcohesion_long_isq_v3.unity3d",
+    snail = ISQ_ASSETS .. "halfcohesion_snail_isq_v3.unity3d",
 }
 
 -- Per family: the name TTS gives the spawned object, whether it tracks its
