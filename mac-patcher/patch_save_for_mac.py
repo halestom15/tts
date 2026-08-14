@@ -288,12 +288,6 @@ function macRemoveAllOfType(kind)
     for _, key in ipairs(keys) do macRemove(key) end
 end
 
-function macRemoveAll()
-    local keys = {}
-    for key in pairs(activeOverlays) do keys[#keys + 1] = key end
-    for _, key in ipairs(keys) do macRemove(key) end
-end
-
 -- Reconcile the scene with the registry: give a Projector to every entry that
 -- has never had one, and drop entries that lost theirs.
 function macRedrawNow()
@@ -789,7 +783,7 @@ MAXMOVE_SPAWN_REPLACEMENT = r"""local maxMoveBundles = getMovementLinks()
     -- also fires when changeSpeed2/3 calls moveUnit() with no isDeploy arg.
     if isDeploy ~= true then
         if maxMoveTemplateBundleToSpawn ~= nil then
-            local _macMode = Global.call("gGetMode", {color = macActivePlayerForMove})
+            local _macMode = Global.call("gGetMode", {})
             if _macMode == "windows" then
                 -- WINDOWS ORIGINAL: spawn Custom_AssetBundle Projector
                 maxMoveTemplate = spawnObject({
@@ -1081,10 +1075,6 @@ function targetingMode(_, playerColor)
     end
 end
 
--- Capture playerColor for Maximum Move per-seat routing. moveUnit() doesn't
--- receive the click color, so each entry-point button stashes it in a
--- script-global var that the spawn block reads. Defaults to nil -> Mac mode.
-
 -- initMove / initDeploy: redefine the body INLINE rather than wrap, because
 -- wrapping (capturing the original via a local + calling it) reproducibly
 -- broke every Order Token button click in testing (root cause unknown;
@@ -1093,7 +1083,6 @@ end
 -- capture so the MAXMOVE_SPAWN block can route to Mac/Windows per seat.
 function initMove(obj, playerColor)
     if not selectedUnitObj then return end
-    macActivePlayerForMove = playerColor
     initPos = selectedUnitObj.getPosition()
     initRot = selectedUnitObj.getRotation()
     selectedUnitObj.call("setStartPos")
@@ -1101,7 +1090,6 @@ function initMove(obj, playerColor)
 end
 function initDeploy(obj, playerColor)
     if not selectedUnitObj then return end
-    macActivePlayerForMove = playerColor
     initPos = selectedUnitObj.getPosition()
     initRot = selectedUnitObj.getRotation()
     selectedUnitObj.call("setStartPos")
@@ -1117,28 +1105,24 @@ end
 -- Tokens (helper fns setTemplateVariables/clearTemplates/moveUnit exist
 -- on both because they're part of the include set the List Builder emits).
 function changeSpeed1(_, playerColor)
-    macActivePlayerForMove = playerColor
     unitData.selectedSpeed = 1
     setTemplateVariables()
     clearTemplates()
     moveUnit()
 end
 function changeSpeed2(_, playerColor)
-    macActivePlayerForMove = playerColor
     unitData.selectedSpeed = 2
     setTemplateVariables()
     clearTemplates()
     moveUnit()
 end
 function changeSpeed3(_, playerColor)
-    macActivePlayerForMove = playerColor
     unitData.selectedSpeed = 3
     setTemplateVariables()
     clearTemplates()
     moveUnit()
 end
 function moveForward(_, playerColor)
-    macActivePlayerForMove = playerColor
     self.editButton({
         index = 11, click_function = "moveBackwards",
         label = "B", tooltip = "Move Backwards"
@@ -1147,7 +1131,6 @@ function moveForward(_, playerColor)
     moveUnit()
 end
 function moveBackwards(_, playerColor)
-    macActivePlayerForMove = playerColor
     self.editButton({
         index = 11, click_function = "moveForward",
         label = "F", tooltip = "Move Forward"
@@ -1156,12 +1139,10 @@ function moveBackwards(_, playerColor)
     moveUnit()
 end
 function moveLeft(_, playerColor)
-    macActivePlayerForMove = playerColor
     moveDirection = "left"
     moveUnit()
 end
 function moveRight(_, playerColor)
-    macActivePlayerForMove = playerColor
     moveDirection = "right"
     moveUnit()
 end
