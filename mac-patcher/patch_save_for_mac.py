@@ -143,8 +143,11 @@ local ISQ_COHESION_BUNDLES = {
 -- own base, and it keeps the ring's current amber so only the SIZE changes.
 --
 -- The hover hotkey is untouched: it still draws the fig-leader bands.
+-- Objective and Condition share the base and the colour, so one ring serves
+-- both. Condition is what the game calls the Advantage token (Martin, 14 Aug).
 local ISQ_TOKEN_RINGS = {
-    ["Objective Token"] = ISQ_ASSETS .. "token05_objective_isq_v1.unity3d",
+    ["Objective Token"] = ISQ_ASSETS .. "token05_27mm_isq_v1.unity3d",
+    ["Condition Token"] = ISQ_ASSETS .. "token05_27mm_isq_v1.unity3d",
 }
 
 -- Per family: the name TTS gives the spawned object, whether it tracks its
