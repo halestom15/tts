@@ -109,6 +109,25 @@ local ISQ_RANGE_BUNDLES = {
     snail  = ISQ_ASSETS .. "projector_200mm_oblong_isq_v6.unity3d",
 }
 
+-- Cohesion rings for the base sizes the mod has none for. getCohesionLinks()
+-- only knows small (27mm), medium (50mm) and large (70mm); on anything else
+-- vanilla spawnCohesionRuler returns without drawing. These fill the gap.
+--
+-- Nothing was invented: BB_CohesionProjector draws its ring at the projector's
+-- outer edge and reads nothing else, so the whole geometry is one number,
+-- ortho = half the base + 3in, which is what the mod's own three carry
+-- (27mm -> 3.531496 = 0.53150 + 3, and so on). 3in is range 1/2, the distance
+-- cohesion is measured at -- the same one the white band marks on the rulers.
+--
+-- long and snail are missing on purpose: the cohesion shader only knows
+-- Circle(), it cannot draw a stadium. They need an oblong variant, built the
+-- way BB_OblongRangeProjector is (oblongVert + Capsule).
+local ISQ_COHESION_BUNDLES = {
+    huge = ISQ_ASSETS .. "halfcohesion_100mm_isq_v1.unity3d",
+    laat = ISQ_ASSETS .. "halfcohesion_120mm_isq_v1.unity3d",
+    epic = ISQ_ASSETS .. "halfcohesion_150mm_isq_v1.unity3d",
+}
+
 -- Per family: the name TTS gives the spawned object, whether it tracks its
 -- figure, and the pitch the vanilla spawn uses.
 --
@@ -150,10 +169,13 @@ local function macResolveBundle(kind, fig, params)
     if params.bundle then return params.bundle end
 
     if kind == "cohesion" then
+        local bs = macGetBaseSize(fig)
+        if not bs then return nil end
+        -- Ours first, for the base sizes the mod has no ring for at all.
+        if ISQ_COHESION_BUNDLES[bs] then return ISQ_COHESION_BUNDLES[bs] end
         if not getCohesionLinks then return nil end
         local links = getCohesionLinks()
-        local bs = macGetBaseSize(fig)
-        return (links and bs) and links[bs] or nil
+        return links and links[bs] or nil
     end
 
     if kind == "range" then
