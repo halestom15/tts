@@ -99,14 +99,14 @@ local TOKEN_TO_BASESIZE = {
 -- button keeps the mod's single-ring bundle, deliberately.
 local ISQ_ASSETS = "__ISQ_ASSETS_BASE__"
 local ISQ_RANGE_BUNDLES = {
-    small  = ISQ_ASSETS .. "projector_27mm_isq_v5.unity3d",
-    medium = ISQ_ASSETS .. "projector_50mm_isq_v5.unity3d",
-    large  = ISQ_ASSETS .. "projector_70mm_isq_v5.unity3d",
-    huge   = ISQ_ASSETS .. "projector_100mm_isq_v5.unity3d",
-    laat   = ISQ_ASSETS .. "projector_120mm_isq_v5.unity3d",
-    epic   = ISQ_ASSETS .. "projector_150mm_isq_v5.unity3d",
-    long   = ISQ_ASSETS .. "projector_100mm_oblong_isq_v5.unity3d",
-    snail  = ISQ_ASSETS .. "projector_200mm_oblong_isq_v5.unity3d",
+    small  = ISQ_ASSETS .. "projector_27mm_isq_v6.unity3d",
+    medium = ISQ_ASSETS .. "projector_50mm_isq_v6.unity3d",
+    large  = ISQ_ASSETS .. "projector_70mm_isq_v6.unity3d",
+    huge   = ISQ_ASSETS .. "projector_100mm_isq_v6.unity3d",
+    laat   = ISQ_ASSETS .. "projector_120mm_isq_v6.unity3d",
+    epic   = ISQ_ASSETS .. "projector_150mm_isq_v6.unity3d",
+    long   = ISQ_ASSETS .. "projector_100mm_oblong_isq_v6.unity3d",
+    snail  = ISQ_ASSETS .. "projector_200mm_oblong_isq_v6.unity3d",
 }
 
 -- Per family: the name TTS gives the spawned object, whether it tracks its
