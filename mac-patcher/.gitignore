@@ -3,4 +3,3 @@ __pycache__/
 *.pyc
 *.bak
 *.bak-*
-scan_bundles_*.out

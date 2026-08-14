@@ -56,7 +56,7 @@ activeOverlays = activeOverlays or {}
 --   * cohesion stays visible and FOLLOWS the figure during a drag;
 --   * toggles are deterministic (see gRangeTrigger / gCohesionTrigger);
 --   * MaxMove is anchored where the move STARTED and never follows.
--- Spec: mac-patcher/cahier-des-charges-overlays.md
+-- Spec: the Iron Squadron overlay spec (kept internal, ask us for it).
 -- ============================================
 
 -- Resolve baseSize for a fig. The mod stores it as a script-local Var on the
@@ -1003,7 +1003,7 @@ end
 -- Arbitrage Martin : la fonctionnalite date de la V1 du jeu et n'est plus juste
 -- en V2. Ceci la branche en attendant qu'un outil V2 la remplace ; ce n'est pas
 -- une conception, c'est un bouchon. Le garder ennuyeux.
--- Spec : section "Chaine d'attaque" de cahier-des-charges-overlays.md.
+-- Spec : section "Chaine d'attaque" du cahier des charges Iron Squadron.
 --
 -- Defini ici et pas dans le bloc Cohesion parce que ce bloc-ci est ajoute EN
 -- DERNIER, donc c'est lui qui gagne. Le local vient avant les fonctions qui le

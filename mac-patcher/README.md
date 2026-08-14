@@ -47,9 +47,8 @@ pip install -r requirements.txt
 python3 patch_save_for_mac.py <vanilla_save.json> <output_path.json> [--reload]
 ```
 
-The patcher also mirrors the patched save into
-`~/Library/Tabletop Simulator/Saves/TS_Save_N.json` (next free slot, or the
-existing `SWL BETA - MAC PATCH` slot if present) so TTS picks it up in
+The patcher writes only to `<output_path.json>`. Point that at a slot under
+`~/Library/Tabletop Simulator/Saves/` if you want TTS to pick it up in
 Games -> Save & Load.
 
 `--reload` hot-pushes the patched scripts to a running TTS instance via the
@@ -64,11 +63,8 @@ fresh. Per-object wrappers are also stripped before re-injection.
 ## Files
 
 - `patch_save_for_mac.py` - main patcher
-- `scan_bundles.py` - UnityPy scanner for the local TTS bundle cache
-- `extract_projector_specs.py` - dump Projector material properties from a
-  bundle (used to discover the `_Arc` shader keyword for firing arc lines)
-- `generate_overlay_assets.py` - regenerate the range/cohesion/etc. PNG
-  decals from authoritative SWL geometry
-- `inspect_*.py` - debug helpers
-- `retro-*.md` - retrospective notes on each subsystem rewrite
-- `SHADER_INVENTORY.md` - list of custom shaders in the vanilla bundles
+- `proposals-upstream.md` - the work we offered to do, for the maintainers
+- `tools/` - the bundle repair chain, documented in `tools/README.md`:
+  build, merge the per-platform SubShaders, graft a Metal SubShader into a
+  2019.1 bundle, inventory the mod's bundles, install the result into the
+  local TTS cache
