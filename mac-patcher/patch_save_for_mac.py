@@ -1000,6 +1000,65 @@ function toggleCohesionRuler(_, playerColor)
     end
 end
 
+-- ⏳ CORRECTIF D'ATTENTE, 14 aout. La chaine d'attaque n'a jamais ete routee :
+-- attackMode() appelle le spawnRangeRuler vanilla du scope de l'Order Token,
+-- donc le mode Iron Squadron recevait quand meme la regle du mod, et aucune des
+-- sorties de ce chemin ne touchait activeOverlays -- RANGE puis ATTACK laissait
+-- deux regles a l'ecran.
+--
+-- Arbitrage Martin : la fonctionnalite date de la V1 du jeu et n'est plus juste
+-- en V2. Ceci la branche en attendant qu'un outil V2 la remplace ; ce n'est pas
+-- une conception, c'est un bouchon. Le garder ennuyeux.
+-- Spec : section "Chaine d'attaque" de cahier-des-charges-overlays.md.
+--
+-- Defini ici et pas dans le bloc Cohesion parce que ce bloc-ci est ajoute EN
+-- DERNIER, donc c'est lui qui gagne. Le local vient avant les fonctions qui le
+-- capturent.
+local function macClearSelectedRange()
+    if selectedUnitObj then
+        Global.call("gClearRange", { figGUID = selectedUnitObj.getGUID() })
+    end
+end
+
+function attackMode()
+    if not attackModeOn then
+        exitTargetingMode()
+        highlightEnemies()
+        if selectedUnitObj then
+            Global.call("gClearRange", { figGUID = selectedUnitObj.getGUID() })
+            Global.call("gRangeTrigger", { figGUID = selectedUnitObj.getGUID() })
+        end
+        attackModeOn = true
+        resetTargetingButtons()
+    else
+        exitTargetingMode()
+    end
+end
+
+function exitTargetingMode()
+    enemyHighlighted = false
+    attackModeOn = false
+    macClearSelectedRange()
+    pcall(clearRangeRulers)
+    pcall(unhighlightEnemies)
+    pcall(clearAttackLine)
+end
+
+function exitAttackMode()
+    enemyHighlighted = false
+    attackModeOn = false
+    macClearSelectedRange()
+    pcall(clearRangeRulers)
+    pcall(unhighlightEnemies)
+end
+
+function clearTemplates()
+    pcall(clearMovementTemplates)
+    macClearSelectedRange()
+    pcall(clearRangeRulers)
+    pcall(clearCohesionRulers)
+end
+
 function targetingMode(_, playerColor)
     if not selectedUnitObj then return end
     if not enemyHighlighted then

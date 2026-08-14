@@ -107,25 +107,31 @@ L'objet le plus chargé : il porte trois des quatre familles.
 | extinction | `gClearRange` **puis** `exitTargetingMode` |
 | pourquoi le clear à l'extinction | `exitTargetingMode` et `clearRangeRulers` n'atteignent que la règle vanilla. Sans ce clear, nos anneaux restaient affichés en position OFF |
 
-### Chaîne d'attaque, `attackMode` — HORS PÉRIMÈTRE
+### Chaîne d'attaque, `attackMode` — ROUTÉE, mais en attente de remplacement
 
-⚠ **Ne pas router, ne pas « réparer ». Arbitrage Martin, 14/08 : la fonctionnalité
-date de la V1 du jeu, elle a trois ans et elle n'est plus juste en V2.**
+⚠ **La fonctionnalité elle-même est périmée.** Arbitrage Martin, 14/08 : elle date
+de la V1 du jeu, elle a trois ans et elle n'est plus juste en V2. Ce qui suit est
+un **bouchon** posé le temps qu'un outil V2 la remplace, pas une conception. Si on
+y revient, ce sera pour la mettre à la V2 ou la retirer — lot « fine tuning V2 ».
 
-Constat, pour que personne ne le redécouvre comme un bug : `ATTACK` mène à
-`attack()` puis `attackMode()`, qui appelle le `spawnRangeRuler` **vanilla** du
-scope de l'Order Token. En mode Iron Squadron, l'attaque pose donc quand même la
-règle d'origine. Et les cinq sorties de ce chemin — `exitTargetingMode`,
-`exitAttackMode`, `clearTemplates`, `attackMenu`, `stopAttack` — n'effacent que
-le vanilla, jamais `activeOverlays` : allumer RANGE puis attaquer laisse les deux
-règles à l'écran.
+**Ce qui n'allait pas** : `ATTACK` mène à `attack()` puis `attackMode()`, qui
+appelait le `spawnRangeRuler` **vanilla** du scope de l'Order Token. En mode Iron
+Squadron l'attaque posait donc quand même la règle du mod. Et les sorties de ce
+chemin — `exitTargetingMode`, `exitAttackMode`, `clearTemplates` — n'effaçaient
+que le vanilla, jamais `activeOverlays` : allumer RANGE puis attaquer laissait
+**deux règles** à l'écran.
 
-C'est **connu et accepté**. Le seul déclencheur de range réellement routé côté
-Order Token est le bouton RANGE (`targetingMode`).
+| | comportement attendu |
+|---|---|
+| allumage | `exitTargetingMode`, `highlightEnemies`, puis `gClearRange` et `gRangeTrigger` sur `selectedUnitObj` — même schéma que le bouton RANGE |
+| extinction | `exitTargetingMode`, qui efface les deux moteurs |
+| les trois effaceurs | `exitTargetingMode`, `exitAttackMode` et `clearTemplates` appellent `gClearRange` en plus de leurs `pcall` d'origine |
+| où c'est défini | dans `ORDER_TOKEN_BUTTON_OVERRIDES`, **pas** dans le bloc Cohésion : celui-là est ajouté en dernier, donc c'est lui qui gagne |
+| ⚠ interdit maintenu | **on ne surcharge toujours pas** `spawnRangeRuler` / `clearRangeRulers` sur l'Order Token. On redéfinit les appelants, jamais l'API de portée |
 
-Si un jour on y revient, ce sera pour **mettre le mode attaque à la V2 ou le
-retirer**, pas pour brancher l'existant — donc dans le lot « fine tuning V2 »,
-pas ici.
+**Couverture** : scénario 5d du banc `harness_projectors.py`, qui charge le bloc
+du patcher dans un environnement bouchonné où `spawnRangeRuler` vanilla lève une
+erreur — si le routage régresse, le banc tombe au lieu de passer.
 
 ### Boutons de mouvement, famille MaxMove
 
