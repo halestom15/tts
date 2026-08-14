@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
 """
-Patch a TTS save JSON (SWL mod beta) to add Mac Cohesion fallback.
+Inject the optional Iron Squadron overlay module into a SWL TTS save JSON.
+
+It sits behind a single table-wide button, off by default, and adds what the
+vanilla mod does not have: cohesion on the five base sizes it skips, cohesion
+that follows a model while it is dragged, deterministic toggles instead of
+respawns, a maximum-move template anchored where the move started, and a range
+0.5 band on the range templates. Rendering goes through real Projectors, in
+bundles built like the repaired ones, so nothing is drawn in Lua.
+
+Not to be confused with the magenta fix: that one lives in the bundles, and is
+this branch's mergeable content. This module is the separate offer described in
+proposals-upstream.txt. The names below still say "mac" for historical reasons
+and because the injected markers are matched by regex on re-runs.
 
 Two-part patch:
 1. Append manager + event handlers to the Global LuaScript.
 2. Replace the inline Cohesion block in Unit_Leader (99f1c8) and Order_Token
    (a57c41) with delegated stubs that call the Global manager via Global.call.
-
-The native hotkey "Show Cohesion On Hovered Model" and the Order Token
-"COHESION" button automatically use the patched code afterwards  -  they
-spawn vector-lines rings instead of legacy Custom_AssetBundle Projectors.
 
 Usage:
     python3 patch_save_for_mac.py <input.json> <output.json>
