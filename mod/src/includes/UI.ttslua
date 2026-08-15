@@ -26,13 +26,21 @@ function toggleChessClockUI()
   end
 end
 
-local sideLoadUrl = "https://raw.githubusercontent.com/swlegion/tts/main/contrib/cards/homebrew.json"
+-- No default: the field starts empty and the player supplies the file. This used
+-- to point at contrib/cards/homebrew.json, whose card images and models were
+-- uploaded to individual contributors' Steam cloud and are almost all gone, so
+-- one click filled the army builder with units that spawn as nothing at all.
+local sideLoadUrl = ""
 
 function sideLoadUrlChanged(_player, newValue)
   sideLoadUrl = newValue
 end
 
 function experimentalSideLoad()
+  if sideLoadUrl == "" then
+    broadcastToAll("Side load: paste the URL of a cards file first.", {0.9, 0.4, 0.4})
+    return
+  end
   WebRequest.get(sideLoadUrl, function(data)
     local json = JSON.decode(data.text)
     if json.units then
