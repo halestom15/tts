@@ -367,6 +367,24 @@ function resetButtons()
 end
 
 function toggleCohesionRuler()
+    -- Iron Squadron overlays (see !/IsqOverlays): route this button to the
+    -- Projector renderer when they are on. Off by default, in which case
+    -- everything below runs unchanged.
+    if isqOverlaysOn() then
+        if not selectedUnitObj then return end
+        -- Clear before toggling on: the hover hotkey writes to the same key as
+        -- this unit, so without the clear the first click here would turn that
+        -- overlay off while we set rulerOn = true, leaving the button inverted
+        -- from then on.
+        isqClearCohesion({figGUID = selectedUnitObj.getGUID()})
+        if rulerOn then
+            rulerOn = false
+        else
+            isqToggleCohesion({figGUID = selectedUnitObj.getGUID()})
+            rulerOn = true
+        end
+        return
+    end
     if not rulerOn then
         selectedUnitObj.call("spawnCohesionRuler", selectedUnitObj)
         rulerOn = true
@@ -773,6 +791,10 @@ end
 ------------------------------------------------- Clear templates------------------------------------------------------------
 function clearTemplates()
     clearMovementTemplates()
+    -- Iron Squadron overlays (see !/IsqOverlays): clearRangeRulers only wipes
+    -- the vanilla ruler, so ours has to be cleared alongside it. No-op when the
+    -- overlays are off, which is the default.
+    isqOrderClearRange()
     clearRangeRulers()
     clearCohesionRulers()
 end
@@ -926,11 +948,39 @@ function attack()
     attackMode()
 end
 
+-- Iron Squadron overlays (see !/IsqOverlays): draw and clear this token's range
+-- with the Projector renderer when they are on. Both are no-ops when they are
+-- off, which is the default, so the vanilla calls around them are untouched.
+--
+-- These two only ever call into the module. The vanilla spawnRangeRuler and
+-- clearRangeRulers are deliberately NOT overridden on this object: doing so
+-- crashed Tabletop Simulator on macOS whenever a figure hotkey spawned a range
+-- bundle, so only their callers are adapted.
+function isqOrderSpawnRange()
+    if not selectedUnitObj then return end
+    if not isqOverlaysOn() then return end
+    -- Clear before triggering: the module toggles by GUID and the hover hotkey
+    -- writes to this same unit, so without the clear a click meant to draw
+    -- could erase instead.
+    isqClearRange({figGUID = selectedUnitObj.getGUID()})
+    isqRangeTrigger({figGUID = selectedUnitObj.getGUID()})
+end
+
+function isqOrderClearRange()
+    if not selectedUnitObj then return end
+    if not isqOverlaysOn() then return end
+    isqClearRange({figGUID = selectedUnitObj.getGUID()})
+end
+
 function targetingMode()
     if not enemyHighlighted then
         exitAttackMode()
         highlightEnemies()
-        spawnRangeRuler(selectedUnitObj)
+        if isqOverlaysOn() then
+            isqOrderSpawnRange()
+        else
+            spawnRangeRuler(selectedUnitObj)
+        end
         enemyHighlighted = true
         resetRangeButtons()
     else
@@ -942,7 +992,11 @@ function attackMode()
     if not attackModeOn then
         exitTargetingMode()
         highlightEnemies()
-        spawnRangeRuler(selectedUnitObj)
+        if isqOverlaysOn() then
+            isqOrderSpawnRange()
+        else
+            spawnRangeRuler(selectedUnitObj)
+        end
         attackModeOn = true
         resetTargetingButtons()
     else
@@ -953,6 +1007,7 @@ end
 function exitTargetingMode()
     enemyHighlighted = false
     attackModeOn = false
+    isqOrderClearRange()
     clearRangeRulers()
     unhighlightEnemies()
     clearAttackLine()
@@ -961,6 +1016,7 @@ end
 function exitAttackMode()
     enemyHighlighted = false
     attackModeOn = false
+    isqOrderClearRange()
     clearRangeRulers()
     unhighlightEnemies()
 end
