@@ -522,6 +522,10 @@ function _loadArmy()
 end
 
 function _loadArmyFromJson(data)
+  -- Blurring the import field while it is empty or holds invalid text fires
+  -- onEndEdit -> importFromText -> JSON.decode("") -> nil, and everything below
+  -- reads data directly, so the script errored out on a stray click.
+  if not data then return end
   _clearZone()
   if data.armyFaction == "" then
     data.armyFaction = "mercenary"
@@ -545,19 +549,75 @@ function _loadArmyFromJson(data)
 end
 
 -- TODO: Rename to _importFromText.
+-- Importing used to be wired to the field's onEndEdit, which fires whenever the
+-- field is deselected. Clicking anywhere outside it therefore reimported the
+-- list and cleared the zone, with no way to say no.
+--
+-- TTS has no submit event on an InputField, and onEndEdit is reported the same
+-- way whether the player pressed Enter or clicked away, so the two cannot be
+-- told apart there. With lineType MultiLineNewLine, Enter no longer ends the
+-- edit: it inserts a newline, which reaches us here as a single character added
+-- at the end of the text. That is the signal we import on. Pasting adds many
+-- characters at once and is never mistaken for it.
+function listImportFieldChanged(_, text, id)
+  if __listImportSuppress then return end
+  local previous = __listImportText or ''
+  __listImportText = text
+  _refreshListImportButton()
+  if text ~= previous .. '\n' then return end
+
+  -- Enter: take the newline back out of the field, then load.
+  __listImportText = previous
+  __listImportSuppress = true
+  self.UI.setAttribute(id or 'listToImport', 'text', previous)
+  Wait.frames(function() __listImportSuppress = false end, 2)
+  importFromText(nil, previous)
+end
+
 function importFromText(_, text)
-  _loadArmyFromJson(JSON.decode(text))
+  -- Blurring the import field fires onEndEdit even when nothing was typed, and
+  -- JSON.decode either returns nil or raises on invalid text, so decode
+  -- defensively and do nothing at all when there is no list to load.
+  if text == nil or text == '' then return end
+  local ok, data = pcall(function() return JSON.decode(text) end)
+  if not ok or type(data) ~= 'table' then
+    broadcastToAll('List import: that text is not a valid list.', {0.9, 0.4, 0.4})
+    return
+  end
+  _loadArmyFromJson(data)
   _mainMenu()
 end
 
--- TODO: Rename to _toggleListImporterUI
-function toggleListImporterUI()
-  local uiStatus = self.UI.getAttribute('listImporterUI', 'active')
-  local newStatus = true
-  if uiStatus == 'True' then
-    newStatus = false
+-- The button doubles as the importer's open/close toggle and its submit, so its
+-- label has to say which one the next click does.
+-- Tracked here rather than read back from the UI: setAttribute is not applied by
+-- the time the next getAttribute runs, so the panel would report its old state.
+__listImporterOpen = false
+
+function _refreshListImportButton()
+  local text = __listImportText or ''
+  local label = 'Import JSON'
+  if __listImporterOpen and text:match('%S') then
+    label = 'Load JSON'
   end
-  self.UI.setAttribute('listImporterUI', 'active', newStatus)
+  self.UI.setValue('listImportButtonLabel', label)
+end
+
+-- TODO: Rename to _listImportButtonClicked
+-- Closed             -> open the field.
+-- Open, field filled -> load the list (Enter still works too).
+-- Open, field empty  -> close the field.
+function listImportButtonClicked()
+  if __listImporterOpen and not (__listImportText or ''):match('%S') then
+    __listImporterOpen = false
+  elseif __listImporterOpen then
+    importFromText(nil, __listImportText)
+    return
+  else
+    __listImporterOpen = true
+  end
+  self.UI.setAttribute('listImporterUI', 'active', __listImporterOpen)
+  _refreshListImportButton()
 end
 
 function _calculatePoints()
