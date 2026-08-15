@@ -6,6 +6,9 @@ require('!/generated/cards')
 require('!/UI')
 require('!/RangeRulers')
 require('!/Cohesion')
+-- Must stay AFTER !/RangeRulers and !/Cohesion: it captures their original
+-- functions before shadowing them.
+require('!/IsqOverlays')
 
 function onsave()
   local chessClocksActive = UI.getAttribute("floatingChessClockUI", "active") == "true"

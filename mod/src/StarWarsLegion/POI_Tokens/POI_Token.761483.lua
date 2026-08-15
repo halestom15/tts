@@ -39,6 +39,18 @@ function onDestroy()
 end
 
 function toggleRangeRuler()
+  -- Iron Squadron overlays (see !/IsqOverlays): route this token's R button to
+  -- the Projector renderer when they are on, unchanged otherwise.
+  if isqOverlaysOn() then
+    isqClearRange({figGUID = self.getGUID()})
+    if rangeOn then
+      rangeOn = false
+    else
+      isqRangeTrigger({figGUID = self.getGUID()})
+      rangeOn = true
+    end
+    return
+  end
   clearRangeRuler()
   rangeOn = not rangeOn
   if rangeOn then
