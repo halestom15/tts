@@ -1219,7 +1219,17 @@ function createRangeButton(leaderObj)
         end
     end
 
-    lowestDistance = lowestDistance - templateInfo.baseRadius[enemyBaseSize]/2 - templateInfo.baseRadius[enemyBaseSize]/2
+    -- getDistance mesure de centre a centre, alors qu'en jeu une portee se
+    -- mesure de bord de socle a bord de socle. Il faut donc retrancher le rayon
+    -- de l'unite qui mesure PUIS celui de la cible. C'est celui de la cible qui
+    -- etait retranche deux fois : la bande affichee etait fausse des que les
+    -- deux socles differaient, de rayon(cible) - rayon(mesureur), soit jusqu'a
+    -- 2,4 pouces entre un trooper et un AAT, sur des bandes de 6.
+    -- (templateInfo.baseRadius contient des diametres, d'ou les moities.)
+    local ownBaseSize = selectedUnitObj.getVar("baseSize") or unitData.baseSize
+    lowestDistance = lowestDistance
+        - templateInfo.baseRadius[ownBaseSize]/2
+        - templateInfo.baseRadius[enemyBaseSize]/2
 
     finalRange = math.ceil(lowestDistance/6)
     if finalRange > 4 then
