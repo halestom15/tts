@@ -1147,7 +1147,7 @@ function spawnAttackLine(aOriginObj,aTargetObj)
         attackLineObj.setCustomObject({
             type = 0,
             mesh = templateInfo.attackLineMesh,
-            collider = "http://cloud-3.steamusercontent.com/ugc/785234780862865411/C2B5E8CA63651BE485909340212736C0A68C2754/",
+            collider = "https://steamusercontent-a.akamaihd.net/ugc/785234780862865411/C2B5E8CA63651BE485909340212736C0A68C2754/",
             material = 1,
         })
         attackLineObj.setLock(true)

@@ -310,7 +310,7 @@ function spawnSilhouette(obj, pos, rot)
   local scale = globals.baseRadius["medium"]
   local height = 1.111
   local offset = 0.0 
-  local silhouetteData = "http://cloud-3.steamusercontent.com/ugc/5063766435505471684/D97103C9FFB76016DDF9CE66A7622BDB3E810160/"
+  local silhouetteData = "https://steamusercontent-a.akamaihd.net/ugc/5063766435505471684/D97103C9FFB76016DDF9CE66A7622BDB3E810160/"
   if obj ~= nil then
     local objUp = obj.getTransformUp()
     local offsetVector = Vector.new(objUp.x * offset, objUp.y * offset, objUp.z * offset)

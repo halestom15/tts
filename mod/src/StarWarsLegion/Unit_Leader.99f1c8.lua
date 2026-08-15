@@ -253,16 +253,16 @@ function spawnSilhouette(obj, pos, rot)
   local scale = globals.baseRadius[unitData.baseSize]
   local height = 1.0
   local offset = 0.0
-  local silhouetteData = "http://cloud-3.steamusercontent.com/ugc/5063766435505471684/D97103C9FFB76016DDF9CE66A7622BDB3E810160/"
+  local silhouetteData = "https://steamusercontent-a.akamaihd.net/ugc/5063766435505471684/D97103C9FFB76016DDF9CE66A7622BDB3E810160/"
   if silhType == "custom" then
     height = silhHeight
     offset = silhOffset
     if unitData.baseSize == "snail" then
-      silhouetteData = "http://cloud-3.steamusercontent.com/ugc/5063766435505471854/AE2D411CFBF4D88321CAD0D75961CBF0512D62E4/"
+      silhouetteData = "https://steamusercontent-a.akamaihd.net/ugc/5063766435505471854/AE2D411CFBF4D88321CAD0D75961CBF0512D62E4/"
       scale = 1.0
     end
     if unitData.baseSize == "long" then
-      silhouetteData = "http://cloud-3.steamusercontent.com/ugc/5063766435505471800/DF511A83E913EBA164F74E20BA239AE286458D91/"
+      silhouetteData = "https://steamusercontent-a.akamaihd.net/ugc/5063766435505471800/DF511A83E913EBA164F74E20BA239AE286458D91/"
       scale = 1.0
     end
   else    
