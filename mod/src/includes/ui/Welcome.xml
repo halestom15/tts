@@ -1,7 +1,7 @@
 <!-- Welcome/Help/Changelog Dialog -->
 
-<Panel 
-  active="true"
+<Panel
+  active="false"
   allowDragging="true"
   color="#40404080"
   height="300"

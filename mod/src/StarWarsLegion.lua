@@ -14,8 +14,10 @@ require('!/IsqOverlays')
 -- so an onsave() is never called and the global script saves nothing at all.
 function onSave()
   local chessClocksActive = UI.getAttribute("floatingChessClockUI", "active") == "true"
+  local welcomeDialogActive = UI.getAttribute("welcomeDialog", "active") == "true"
   return JSON.encode({
     clocks = chessClocksActive,
+    welcome = welcomeDialogActive,
   })
 end
 
@@ -23,14 +25,17 @@ function onload(saveData)
     VERSION = "v5.0.0-beta"
     CCID = sha256(tostring(Time.time))
     UUID = sha256(Player.getPlayers()[1].steam_id)
-    initUI()
 
     local loadData = {
       clocks = false,
+      welcome = true,
     }
     if saveData ~= "" then
       loadData = JSON.decode(saveData)
     end
+    -- Saves written before the welcome dialog was remembered have no such key,
+    -- and those players expect to be greeted as they always were.
+    initUI(loadData.welcome ~= false)
 
     initCardsSchema()
     ga_event("Global", "onLoad")
