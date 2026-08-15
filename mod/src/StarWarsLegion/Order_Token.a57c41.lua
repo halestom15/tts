@@ -553,7 +553,11 @@ function moveUnit(isDeploy)
     local baseSizeMoveBundles = maxMoveBundles[unitData.baseSize]
     local maxMoveTemplateBundleToSpawn = baseSizeMoveBundles[unitData.selectedSpeed]
 
-    if isDeploy == false then
+    -- changeSpeed1/2/3 rappellent moveUnit() sans argument apres avoir detruit
+    -- les gabarits, donc isDeploy vaut nil et non false. Avec une egalite
+    -- stricte, le cercle de mouvement disparaissait des qu'on changeait de
+    -- vitesse et ne revenait jamais.
+    if isDeploy ~= true then
         --max movement ring projector
         if maxMoveTemplateBundleToSpawn ~= nil then
             maxMoveTemplate = spawnObject({
@@ -781,7 +785,10 @@ function clearMovementTemplates()
         destroyObject(templateB)
     end
     if maxMoveTemplate ~= nil then
-        destroyObject(maxMoveTemplate)
+        -- pcall : l'objet peut avoir deja disparu (Clear Map, standbyTokens),
+        -- auquel cas destroyObject leve et le reste du nettoyage sautait.
+        pcall(destroyObject, maxMoveTemplate)
+        maxMoveTemplate = nil
     end
 end
 
