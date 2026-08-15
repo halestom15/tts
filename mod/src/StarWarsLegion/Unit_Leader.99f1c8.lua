@@ -188,8 +188,14 @@ function clearSilhouette()
 
     -- Guard against players who delete their minis!
     if obj then
+      -- silhouetteState is saved with the game, but the silhouette objects
+      -- themselves are not: loading a save made with silhouettes up leaves the
+      -- state true with nothing attached, and removeAttachments() returns an
+      -- empty list. Destructing that nil crashed the script.
       local silToDestroy = obj.removeAttachments()[1]
-      silToDestroy.destruct()
+      if silToDestroy then
+        silToDestroy.destruct()
+      end
     end
   end
   silhouetteState = false

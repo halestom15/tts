@@ -90,8 +90,11 @@ function addSilhouetteButton()
   -- Removes all attachments and destroys the first one
   -- The silhouette should be the only attachment, so this should be safe to do
   function clearSilhouette()
+    -- May be empty: silhouetteState is saved, the silhouette objects are not.
     local silToDestroy = self.removeAttachments()[1]
-    silToDestroy.destruct()
+    if silToDestroy then
+      silToDestroy.destruct()
+    end
     silhouetteState = false
   end
   
