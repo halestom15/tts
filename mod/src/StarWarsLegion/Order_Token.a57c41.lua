@@ -581,7 +581,13 @@ function moveUnit(isDeploy)
             maxMoveTemplate = spawnObject({
                 type = "Custom_AssetBundle",
                 position = {basePos.x, basePos.y + 20, basePos.z},
-                rotation = {0, basePos.y, 0},
+                -- Le lacet se prend sur baseRot.y, l'orientation de l'unite.
+                -- Il valait basePos.y, c'est-a-dire sa HAUTEUR au-dessus de la
+                -- table : le projecteur etait donc toujours pose a ~1 degre dans
+                -- le repere du monde, sans jamais suivre le vehicule. Invisible
+                -- tant que l'empreinte est un disque, faux des qu'elle ne l'est
+                -- plus.
+                rotation = {0, baseRot.y, 0},
                 scale = {0,0,0} -- 0 scale will hide TTS default box and won't impact projector
             })
 
