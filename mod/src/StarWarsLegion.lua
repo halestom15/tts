@@ -10,7 +10,9 @@ require('!/Cohesion')
 -- functions before shadowing them.
 require('!/IsqOverlays')
 
-function onsave()
+-- Must be spelled onSave: unlike onload, TTS has no all-lowercase alias for it,
+-- so an onsave() is never called and the global script saves nothing at all.
+function onSave()
   local chessClocksActive = UI.getAttribute("floatingChessClockUI", "active") == "true"
   return JSON.encode({
     clocks = chessClocksActive,
@@ -48,7 +50,7 @@ function onload(saveData)
     clockGUIDs = {}
     clockGUIDs.blue = "4f823a"
     clockGUIDs.red = "6ce1bb"
-    initChessClocks(clockGUIDs, loadData.clocks)
+    initChessClocks(loadData.clocks)
 
     battlefieldTable = "3a3ed9"
 
@@ -576,18 +578,13 @@ end
 
 function dummy() end
 
--- Initialize red and blue clocks at 01:30:00
-function initChessClocks(guids, show)
+-- Shows or hides the clocks according to the saved state of the floating UI.
+-- The times themselves are never touched here: a game starts at 01:30:00
+-- because that is what the two clock objects hold in the mod, and a game that
+-- is loaded back keeps whatever both players had left.
+function initChessClocks(show)
   Wait.frames(function()
-    if show then
-      toggleChessClockUI()
-    else
-      for _, v in pairs(guids) do
-        local obj = getObjectFromGUID(v)
-        obj.setScale({0, 0, 0})
-        obj.Clock.setValue(5400)
-      end
-    end
+    setChessClockUI(show)
   end)
 end
 
@@ -664,19 +661,96 @@ function initChessClockHotkeys()
   }
   addHotkey("Toggle Chess Clocks", toggleChessClocks)
   addHotkey("Pause All Chess Clocks", pauseAllChessClocks)
+  -- A clock that was running when the game was saved would otherwise keep
+  -- counting while the table loads, and the button would still read whatever
+  -- the XML declares instead of what the clocks actually show.
+  pauseRunningClocks()
+  updateClockButton()
+end
+
+-- Spells a clock value the way the clock itself shows it, so a player reading
+-- the chat and a player reading the table see the same thing.
+function formatClockTime(seconds)
+  seconds = math.max(0, math.floor(seconds))
+  return string.format(
+    "%02d:%02d:%02d",
+    math.floor(seconds / 3600),
+    math.floor(seconds % 3600 / 60),
+    seconds % 60
+  )
+end
+
+-- Stops whichever clocks are still running, and says whether it had to stop
+-- any. Silent on purpose: each caller announces the reason in its own words.
+function pauseRunningClocks()
+  local stopped = false
+  for _, clock in pairs(clocks) do
+    if not clock.paused then
+      clock.pauseStart()
+      stopped = true
+    end
+  end
+  return stopped
+end
+
+-- Nobody should lose time while sitting at a table they are no longer at, so
+-- a player leaving their seat stops the clocks. Only the two seats that own a
+-- clock count: a spectator coming and going changes nothing about the game.
+function onPlayerDisconnect(player)
+  if clocks == nil then
+    return
+  end
+  local color = tostring(player.color)
+  if clocks[color] == nil then
+    return
+  end
+  if pauseRunningClocks() then
+    broadcastToAll(color .. " left the table: chess clocks paused.", {1, 1, 1})
+    updateClockButton()
+  end
 end
 
 function updateClockButton()
+  -- The label is white in the XML and stays white: all three backgrounds are
+  -- dark, so the color never has to follow the state.
+  local label, colors
   if clocks.Blue.paused and clocks.Red.paused then
-    UI.setValue("toggleClockText", "Chess Clocks Paused")
-    UI.setAttribute("toggleClockButton", "colors", "#FFFFFF|#DFDFDF")
+    label = "Chess Clocks Paused"
+    colors = "#303030|#454545"
   elseif clocks.Blue.paused then
-    UI.setValue("toggleClockText", "Red Player on Clock")
-    UI.setAttribute("toggleClockButton", "colors", "#DF0000|#DF0000")
+    label = "Red Player on Clock  " .. formatClockTime(clocks.Red.getValue())
+    colors = "#DF0000|#DF0000"
   else
-    UI.setValue("toggleClockText", "Blue Player on Clock")
-    UI.setAttribute("toggleClockButton", "colors", "#0000DF|#0000DF")
+    label = "Blue Player on Clock  " .. formatClockTime(clocks.Blue.getValue())
+    colors = "#0000DF|#0000DF"
   end
+  -- Tabletop Simulator only ever reports whole seconds. Reading once a second
+  -- would slide out of step with it, showing one second twice and then
+  -- skipping the next, so the banner is read often and written only when it
+  -- has something new to say.
+  if label ~= clockButtonLabel then
+    UI.setValue("toggleClockText", label)
+    clockButtonLabel = label
+  end
+  if colors ~= clockButtonColors then
+    UI.setAttribute("toggleClockButton", "colors", colors)
+    clockButtonColors = colors
+  end
+  scheduleClockButtonTick()
+end
+
+-- Keeps the banner counting down in step with the clock it reports. Each tick
+-- books the next one and a paused table books none, so the button costs
+-- nothing while nobody is playing.
+function scheduleClockButtonTick()
+  if clockButtonTick ~= nil then
+    Wait.stop(clockButtonTick)
+    clockButtonTick = nil
+  end
+  if clocks.Blue.paused and clocks.Red.paused then
+    return
+  end
+  clockButtonTick = Wait.time(updateClockButton, 0.25)
 end
 
 function toggleClockButton(player, button)
@@ -716,8 +790,11 @@ function toggleChessClocks(playerColor)
     clocks.Red.pauseStart()
   end
 
+  -- Keyed by player color: the table used to hold a single "diffuse" key, so
+  -- every lookup returned nil and the message always came out white.
   local fontColors = {
-    diffuse = {1,0,0},
+    Red = {0.856, 0.100, 0.094},
+    Blue = {0.118, 0.530, 1.000},
   }
   broadcastToAll ("*** " .. getClockPlayerName() .. " is now on the clock ***", fontColors[getClockPlayerColor()])
   updateClockButton()
@@ -725,9 +802,7 @@ end
 
 -- Calls pauseStart() for each clock that is not already paused
 function pauseAllChessClocks(playerColor)
-  for k, v in pairs(clocks) do
-    if not v.paused then v.pauseStart() end
-  end
+  pauseRunningClocks()
   broadcastToAll('All chess clocks paused')
   updateClockButton()
 end

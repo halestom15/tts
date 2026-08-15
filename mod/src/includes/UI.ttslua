@@ -14,16 +14,21 @@ function toggleWelcomeDialog()
   _toggleDialog("welcomeDialog")
 end
 
-function toggleChessClockUI()
-  if UI.getAttribute("floatingChessClockUI", "active") == "true" then
-    UI.hide("floatingChessClockUI")
-    getObjectFromGUID(clockGUIDs.blue).setScale({0, 0, 0})
-    getObjectFromGUID(clockGUIDs.red).setScale({0, 0, 0})
-  else
+-- Puts the chess clocks in a known state. Restoring a saved game has to say
+-- what it wants rather than flip whatever is on screen at that moment.
+function setChessClockUI(visible)
+  local scale = visible and 0.7 or 0
+  if visible then
     UI.show("floatingChessClockUI")
-    getObjectFromGUID(clockGUIDs.blue).setScale({0.7, 0.7, 0.7})
-    getObjectFromGUID(clockGUIDs.red).setScale({0.7, 0.7, 0.7})
+  else
+    UI.hide("floatingChessClockUI")
   end
+  getObjectFromGUID(clockGUIDs.blue).setScale({scale, scale, scale})
+  getObjectFromGUID(clockGUIDs.red).setScale({scale, scale, scale})
+end
+
+function toggleChessClockUI()
+  setChessClockUI(UI.getAttribute("floatingChessClockUI", "active") ~= "true")
 end
 
 -- No default: the field starts empty and the player supplies the file. This used
