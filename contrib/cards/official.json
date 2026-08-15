@@ -126,6 +126,26 @@
         }
       },
       {
+        "name": "Dual Armaments",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15383106681652424645/13A9D76ABAB49D3533662601851B17B309F7B178/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
+          }
+        }
+      },
+      {
+        "name": "EE-3 Carbine Rifle",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14154240411543659362/35FA2EEA3E0C7C8E0B7270639AF5CF311EAB2306/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
+          }
+        }
+      },
+      {
         "name": "Electro Gauntlets",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639059/89380FD599DD6819950BB21C5F940A9074C34A51/",
         "points": 10,
@@ -160,12 +180,32 @@
         }
       },
       {
+        "name": "GALAAR-15 Carbine",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12458484896452493690/2A81DABD1DC96B92349A67A1ABC5962EC5D19898/",
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
+          }
+        }
+      },
+      {
         "name": "GALAAR-15 Carbines",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14826834852996456696/2B37B47DBB22C51D5A890CCCACB09E814980DD6E/",
         "points": 5,
         "restrictions": {
           "include": {
             "type": ["Mandalorian Trooper"]
+          }
+        }
+      },
+      {
+        "name": "GALAAR-90 Sniper Rifle (Armament)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13111967417942725266/E6D98CAA98E36C8750704413EB7DCAA1F05E0AFB/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
           }
         }
       },
@@ -424,6 +464,16 @@
         }
       },
       {
+        "name": "Vibrosword",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10319682741949254430/F855F7B46E30A17E5571FA5D020ED59E8E4B74E9/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
+          }
+        }
+      },
+      {
         "name": "Z-6 Riot Baton",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/11921155978538693026/3426025D9984B223902084BA7DA742C27DEC0D63/",
         "points": 8,
@@ -494,6 +544,16 @@
         "points": 15
       },
       {
+        "name": "Caught in a Web",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11838331827405158510/1F55450A403C54B6CA2D0D45F85F29153411B66E/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Admiral Trench"]
+          }
+        }
+      },
+      {
         "name": "Commanding Presence",
         "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568139512/84EE686E19B56453386F3929C01D0B71687488E4/",
         "points": 5
@@ -501,6 +561,11 @@
       {
         "name": "Esteemed Leader",
         "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568140964/439066821E561B2D148F432E1382CCE7E89C4195/",
+        "points": 5
+      },
+      {
+        "name": "Fire Control",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/18198943695068594795/92D4DD28AAA6936E97C23CEB0ED8DA8B40B3B138/",
         "points": 5
       },
       {
@@ -537,9 +602,29 @@
         "name": "Underworld Connections",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/13075491375596331661/7404D8A06A3E978E3729E9D32EE0EBA855FA18FF/",
         "points": 5
+      },
+      {
+        "name": "You're Not All the Same to Me",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15370805566231514237/94E51F351864193F16FF1B238842FC86F198C286/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Plo Koon"]
+          }
+        }
       }
     ],
     "Comms": [
+      {
+        "name": "Adaptive Combat Network",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12747669721959267055/18E66C3214736C5A7E5E4430484E5F5F0549D1D8/",
+        "points": 4,
+        "restrictions": {
+          "include": {
+            "unit": ["Droid Trooper"]
+          }
+        }
+      },
       {
         "name": "Command Control Array",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/13152173042783439846/9068A2E707EA6AD6B201273F43B7A275E41ED1C0/",
@@ -574,6 +659,16 @@
         "name": "Hacked Comms Unit",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16875746628328702203/66EFD3995E6C5DDB8B687B86323884DFA50E767D/",
         "points": 5
+      },
+      {
+        "name": "Infantry Support",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/18316493360640646809/A2E08DF45F9DC1C97D3F66F50D2F53584D7D8A3F/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "type": ["Vehicle"]
+          }
+        }
       },
       {
         "name": "Integrated Comms Antenna",
@@ -619,6 +714,16 @@
         "name": "Spotter Uplink",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14924322567155862762/F2A27A192FD49D879842AF20650351B03ACB0AFB/",
         "points": 3
+      },
+      {
+        "name": "Squadron Leader",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12636219336015554477/57D5BA27413134A10B30D188DD785E924D525264/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "type": ["Vehicle"]
+          }
+        }
       }
     ],
     "Counterpart": [
@@ -868,6 +973,46 @@
     ],
     "Doctrine": [
       {
+        "name": "Battlemaster",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12771660125697568011/9F60B274A5440ABFA056F6C96A6171596B0397C9/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
+          }
+        }
+      },
+      {
+        "name": "Deadeye",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13367178318589775831/0457F96FEE9B635DA1FCF89F633B83DB33906F44/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader", "Mandalorian Hunter"]
+          }
+        }
+      },
+      {
+        "name": "Guild Member",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16299650346430265484/BD1BE7C71A15B220FE4D5C2B1E076C5EE3CFEE77/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Hunter"]
+          }
+        }
+      },
+      {
+        "name": "War Party Leader",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16295165203471720670/4CCE00A3E8809D02A0FECFA321FDE95BE894BD9F/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Leader"]
+          }
+        }
+      },
+      {
         "name": "Tyrannical Taskmaster",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/11179625379357754651/6A6C0FBE6E379AADAD32AB5E1EEDD59125FDBDC0/",
         "points": 8,
@@ -1037,6 +1182,16 @@
         }
       },
       {
+        "name": "Annul",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13039134873400486823/9CA9AE5DAE1840E5F6E9DBA8F5896A45D4056212/",
+        "points": 12
+      },
+      {
+        "name": "Battlemind",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12434883397260467490/EF5E1EEA7995AE65E44BFA3D032F8F58AB774B66/",
+        "points": 8
+      },
+      {
         "name": "Battle Meditation",
         "image": "http://cloud-3.steamusercontent.com/ugc/1680393865568138926/6CA76E020914829864896AC19CB9532DDED05558/",
         "points": 5
@@ -1052,6 +1207,16 @@
         "points": 10
       },
       {
+        "name": "Despair",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12088173990954982038/D9C8027900AAF45CA1E58DA224712ABFA7E568E5/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "alignment": ["Dark"]
+          }
+        }
+      },
+      {
         "name": "Fear",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/9673306764281530635/A29BF04A277C5491400B32B97D8FEA512722A7B3/",
         "points": 3,
@@ -1060,6 +1225,21 @@
             "alignment": ["Dark"]
           }
         }
+      },
+      {
+        "name": "Force Absorb",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15840046545526065098/01C122DBFD570A11DA0D957295AF5C38CDE5D5C7/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "alignment": ["Light"]
+          }
+        }
+      },
+      {
+        "name": "Force Agility",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14961122563602180292/B4EE99604975F90351059BE01612D0398BF257BB/",
+        "points": 8
       },
       {
         "name": "Force Barrier",
@@ -1075,6 +1255,21 @@
             "alignment": ["Dark"]
           }
         }
+      },
+      {
+        "name": "Force Drain",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12928108812106231713/AED8C5793B210DFA257D5D4058BE477FBAC50BF4/",
+        "points": 14,
+        "restrictions": {
+          "include": {
+            "alignment": ["Dark"]
+          }
+        }
+      },
+      {
+        "name": "Force Enhanced Defense",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11291805294552051436/0A7A06BA992A9C01C2E3D41A3A068A9BF919DD60/",
+        "points": 5
       },
       {
         "name": "Force Guidance",
@@ -1096,6 +1291,26 @@
         "name": "Force Reflexes",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16096715596179885171/664DA23B337498B297143163C2B92A87EF60F515/",
         "points": 5
+      },
+      {
+        "name": "Hatred",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16895897896759420436/A2DC6768E12116A6D5E234B0AAC722BAEA59D2A4/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "alignment": ["Dark"]
+          }
+        }
+      },
+      {
+        "name": "Helping Hand",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10796382668911716728/3FECEAC8990685BBD6355419F7263BF2803D6A0D/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "alignment": ["Light"]
+          }
+        }
       },
       {
         "name": "Hope",
@@ -1139,6 +1354,39 @@
       }
     ],
     "Gear": [
+      {
+        "name": "Superior Equipment",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13978585535035849617/705A89F3595683D28C048AC9E04DD1E6B3F6BF63/",
+        "points": 15,
+        "restrictions": {
+          "type": ["Commander", "Operative"]
+        }
+      },
+      {
+        "name": "High-Speed Tracking",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9694194129386529255/2578A8BA698467D7A38C919869D7BB656CBB0B3F/",
+        "points": 3
+      },
+      {
+        "name": "Overcharged Blaster Packs",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9459050577866768390/40269497C077CBA375F9CB783D12EBEBD33CA15F/",
+        "points": 3
+      },
+      {
+        "name": "Tank Hunting Munitions",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16865623468525966409/64F2A7D8E6EC3711BF7072F0F681C4036A14E7B3/",
+        "points": 3
+      },
+      {
+        "name": "Full Beskar Armor",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15487917071921528655/C573E37E3752AD3140468BDE6E841AFB4B3CA7F3/",
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "type": ["Mandalorian Hunter"]
+          }
+        }
+      },
       {
         "name": "Flame Projector",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10609844131251620584/4B8108E69F8E6883C42DB08C550901244FF54F65/",
@@ -1705,6 +1953,38 @@
       }
     ],
     "Heavy Weapon": [
+      {
+        "name": "B2-HA Rocket Droid",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14481177409828935621/616A668B2DBC6F06F0E395DA8F23AFE94B08B8A5/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/11993998747845382830/D3FCC0E5C71EEC955A5565301737BC69976309B8/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/12199368484869338390/D8C03A91B7551742F3376C73A8816363812B5726/"
+        },
+        "points": 30,
+        "restrictions": {
+          "include": {
+            "unit": ["B2 Super Rocket Battle Droids"]
+          }
+        }
+      },
+      {
+        "name": "Missile Pod Rocket Droid",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/18092846818600646440/C9F00A52A3BD29EDA03B7C92B5C37350EC2D0778/",
+        "flip": {
+          "name": "Anti-Armor Missile Pod Rocket Droid",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/16501527007025144375/516EFB62AC4069878F9B2F269543291C4A8E751B/"
+        },
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14198368847980106687/9C1F89910D899A8DBD08368E2F1B4FF06AFB4081/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/17201161655117853432/6E226B22540661AFA02A5D280DFCAFB27B8697A4/"
+        },
+        "points": 24,
+        "restrictions": {
+          "include": {
+            "unit": ["B2 Super Rocket Battle Droids"]
+          }
+        }
+      },
       {
         "name": "Super Commando Gunslinger (Saxon)",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15694515457995026743/79DBD04052ADF8764C4603B053BF534AF06EE35E/",
@@ -3050,6 +3330,51 @@
     ],
     "Squad Leader": [
       {
+        "name": "Ki-Adi-Mundi",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11942287930523896080/D76CFC23E0B5B42C6128F4D138EE0632AABFFAFE/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12461470789103203864/DACD5524454E91F35C586DDEABAD420ED4E1FF46/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/17297173129004280551/384F67D13FCA3EBA539BD8D3818F5A0E5A8F2A0B/"
+        },
+        "points": 25,
+        "leader": true,
+        "restrictions": {
+          "include": {
+            "type": ["Clone Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Mace Windu",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11054699631738298760/F4A004C7D56F228645F23CD774166A3DADD137CC/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12925628276853873664/6E5E101942F74FC183F7154481D3EB5CFEAAAD65/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/18287494378041429592/02BB80E1E8A06309E2424A0AD83A7A68E9A42FD6/"
+        },
+        "points": 35,
+        "leader": true,
+        "restrictions": {
+          "include": {
+            "type": ["Clone Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Plo Koon (Squad Leader)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14970446310415322356/3617D61451009B533943FF1A47D657C56B28FB48/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10428072234539757120/3154697B7EB8A5076E1CB4C312068560C7B3DE19/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16082411658181568841/AC55908D9B799DAEE652A7505DD8E06857464614/"
+        },
+        "points": 22,
+        "leader": true,
+        "restrictions": {
+          "include": {
+            "type": ["Clone Trooper"]
+          }
+        }
+      },
+      {
         "name": "Obi-Wan Kenobi",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16739187061396312294/0BFA142DE447B3EAFC7447BBDBE40BB10C51A844/",
         "mini": {
@@ -3229,6 +3554,20 @@
       }
     ],
     "Personnel": [
+      {
+        "name": "B2 Super Rocket Battle Droid",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12046890039399081772/0F0CC57666FEC4A737B5978D0369FDC34A92CD0E/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/17643173733829902036/9F0522C51E16AD0B6689028E265173598DC40090/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11157784104298856053/53AE2BE9E41C5FFF05E04719F9DD5C02EEA3C375/"
+        },
+        "points": 21,
+        "restrictions": {
+          "include": {
+            "unit": ["B2 Super Rocket Battle Droids"]
+          }
+        }
+      },
       {
         "name": "Rook Kast (Saxon)",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12834237972750748762/A58D104B13D7E69A71D308EB317E08599291D488/",
@@ -4936,6 +5275,66 @@
     ],
     "Training": [
       {
+        "name": "Lying in Wait",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/18063525339174644743/A735711E50A767331DE924A1DFFC3C52E632A09A/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "type": ["Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Stuck In",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9920570282586854750/9D655EB01D4D8BBCF8739BA076D8300C69A7B173/",
+        "points": 8,
+        "restrictions": {
+          "include": {
+            "type": ["Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Strong in the Force",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10536929120995788903/E88185F23830DD0EEC6F33F5DBB2C6809D206B5A/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "slot": ["Force"]
+          }
+        }
+      },
+      {
+        "name": "Hit the Dirt",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9314695132399729706/939457E2E0646CF43305DA36AC35BC1995B99C1B/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "type": ["Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Go for Broke",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/12895134279705796265/311401A8B412C871CFFD26ABBC26DD13DF3CBCA8/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "type": ["Trooper"]
+          }
+        }
+      },
+      {
+        "name": "Agile Climber",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10141164197510858693/08B159FCF002C9511B772F8B8FFF3908616607A5/",
+        "points": 3,
+        "restrictions": {
+          "include": {
+            "type": ["Trooper"]
+          }
+        }
+      },
+      {
         "name": "Security Detail",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12222061891853555901/CD168A0212E4D0E6D145E0802870606F91B35F68/",
         "points": 5,
@@ -5347,6 +5746,11 @@
         "pip": 1
       },
       {
+        "name": "Wisdom of the Council",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15019723583884053183/9DB670A1A3C67885DBABEC3321FDA6CE40737E68/",
+        "pip": 1
+      },
+      {
         "name": "A Disturbance in the Force",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15573825798028976140/1303767C2A7775954093FE0105F0E9B2985AA64B/",
         "pip": 2
@@ -5408,6 +5812,11 @@
       }
     ],
     "Separatist": [
+      {
+        "name": "For the Cause",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10076215953450451651/78E90846B5F9B1430416734F0E31978DC176F4C5/",
+        "pip": 1
+      },
       {
         "name": "Mechanized Incursion",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131525764/985E35D1F4C14B36C2DDE31CD8426CD3F9499744/",
@@ -5872,7 +6281,7 @@
         },
         {
           "name": "Cauldron",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/10797932102881883680/1D79E4E632BB4C723467FD7A72933464A45798E3/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/15202510808993607071/E926687AE8607950057DD4EFBCE615C742C57A1B/",
           "type": "vertical",
           "zone": [
             ["r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"],

@@ -1,6 +1,33 @@
 {
   "Commander": [
     {
+      "name": "Admiral Trench",
+      "title": "Fleet Commander",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/16194815350321258294/DB4B06DB96EDD6951123AFE5A492F9FEECA32CF8/",
+      "size": "small",
+      "type": "Trooper",
+      "points": 85,
+      "speed": 2,
+      "upgrades": {
+        "Command": 3,
+        "Comms": 1,
+        "Gear": 1
+      },
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13582257643008706061/583C0B3197DA229776ACEB3E2AC10B30B8E9FA93/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/12435482100457318347/A84C0F3EE099F67D3C4620EC697B8F4518CAA6AD/"
+        }
+      ],
+      "commands": [
+        {
+          "name": "I Smell Fear... and it Smells Good",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/10490296650041820972/30DCC7D6BA740EF644B2AB018AC60FB348D2FFA2/",
+          "pip": 2
+        }
+      ]
+    },
+    {
       "name": "Super Tactical Command Droid",
       "title": "Command and Control Droid",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/14913642294365138668/20D5A2E42D4F40B1AA078295E3C9D05E96C4A1DD/",
@@ -331,9 +358,12 @@
       "image": "https://steamusercontent-a.akamaihd.net/ugc/13168414506047365764/A8CEC8BB31ACD5D20F2472F1FE2A1C0BE1179F34/",
       "size": "small",
       "type": "Trooper",
-      "points": 0,
+      "points": 90,
       "speed": 2,
-      "upgrades": {},
+      "upgrades": {
+        "Force": 1,
+        "Training": 1
+      },
       "minis": [
         {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/11082776058831308047/3A974FCF53960CCBBC537A4134AD12242D4DDF89/",
@@ -985,6 +1015,38 @@
         {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16428277771241462/FFE8D6B9DE310FE7BC3B01C8128264DB9A8B1DFE/",
           "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16428277771241663/4DEF50D36EB484BB1BBD9FD6092708DEF89A28EA/"
+        }
+      ]
+    },
+    {
+      "name": "B2 Super Rocket Battle Droids",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/14331408854205821880/03C1301E1221D8EFDD48E493B0CB18753A5D8733/",
+      "size": "small",
+      "type": "Trooper",
+      "points": 94,
+      "speed": 2,
+      "upgrades": {
+        "Heavy Weapon": 1,
+        "Personnel": 1,
+        "Gear": 1,
+        "Comms": 1
+      },
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14079659949067709179/FBC077E7E2A989A1AA80B390B345935332234CB5/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15195142241768271822/56A96C198A9456D75E170D575137BCE90C6D37AA/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12647682813870347333/951983F4D76A55134039BE40D7E13964B2BA7637/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/12586959894552863334/1956EB282D183BFE93EEEEA05B8D3D9EB65249E4/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/18131661509463997651/802406FAE3C7EBFDFE4F29AEC334754F7A8DE054/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9766141705896501567/D0FDE6537837D4F5218558D78EED9E94D0F2B31C/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13193741203494495092/F241D1ECCD05EDDB94D08748F047BED896D6C43D/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14848880388017139268/EE0B78DD5D9DA37FBF9F43B35273F44881856B82/"
         }
       ]
     },

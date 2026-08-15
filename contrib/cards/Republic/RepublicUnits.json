@@ -6,9 +6,13 @@
       "image": "https://steamusercontent-a.akamaihd.net/ugc/11929402197203734988/9CF2A7578A3EB20BA278864950D163A26901C4F5/",
       "size": "small",
       "type": "Trooper",
-      "points": 0,
+      "points": 155,
       "speed": 2,
-      "upgrades": {},
+      "upgrades": {
+        "Force": 3,
+        "Command": 1,
+        "Training": 1
+      },
       "minis": [
         {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12461470789103203864/DACD5524454E91F35C586DDEABAD420ED4E1FF46/",
@@ -388,9 +392,13 @@
       "image": "https://steamusercontent-a.akamaihd.net/ugc/17555033359148455110/D2F1B99C8AB43C8B73071DAED15D378AC38F65C5/",
       "size": "small",
       "type": "Trooper",
-      "points": 0,
+      "points": 120,
       "speed": 2,
-      "upgrades": {},
+      "upgrades": {
+        "Force": 2,
+        "Command": 1,
+        "Training": 1
+      },
       "minis": [
         {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/18026057114183857483/0D959FB4A356818AA1FA6D8034166916BB6EA84B/",
@@ -411,9 +419,13 @@
       "image": "https://steamusercontent-a.akamaihd.net/ugc/11338358295243396609/72E584709E6C16445AFBDB6820E58449092839EF/",
       "size": "small",
       "type": "Trooper",
-      "points": 0,
+      "points": 105,
       "speed": 2,
-      "upgrades": {},
+      "upgrades": {
+        "Force": 2,
+        "Command": 1,
+        "Training": 1
+      },
       "minis": [
         {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10428072234539757120/3154697B7EB8A5076E1CB4C312068560C7B3DE19/",
