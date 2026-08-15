@@ -240,9 +240,14 @@ function Shelf:_spawnComplimentaryObject(name, container, scripts)
       end
     end
   elseif spawn.card then
-    local back = spawn.card.back
-    local card = self:_spawnCard(spawn.card.image)
-    card.setName(spawn.name)
+    -- The back was read and then dropped, so _spawnCard fell back to reusing the
+    -- front for both faces. It goes unnoticed while every map card in
+    -- official.json repeats its front as its back, but it makes the "back" field
+    -- impossible to use - a second objective face, say.
+    local card = self:_spawnCard(spawn.card.image, spawn.card.back)
+    -- spawn is the definition table, which has no name of its own; the name is
+    -- the key it was stored under, and it is this function's parameter.
+    card.setName(name)
     container.putObject(card)
   else
     print("Unsupported object definition: \"" .. name .. "\" (" .. container.getName() .. ")")
