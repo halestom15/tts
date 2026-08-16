@@ -18,5 +18,12 @@
       "mesh": "https://steamusercontent-a.akamaihd.net/ugc/15025643569729148138/3234A1971769FAC0F38D47E88358E8888C2B1324/",
       "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/13510151128195010361/35405F252DE00026D4411B239D9C8E7B15B8B3D5/"
     }
+  ],
+  "commands": [
+    {
+      "name": "No Escape",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/12293898180518678174/EA155EC69305F27FA59A9485631DED43C319D04A/",
+      "pip": 1
+    }
   ]
 }

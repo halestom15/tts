@@ -102,6 +102,13 @@
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/10500316828645976341/579A5DB7F881125EB7391C8A48D15919CCBD0E8E/",
           "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10602863397452048802/1978A79686277BCAFDDBD72892FE25CCC86E2ED4/"
         }
+      ],
+      "commands": [
+        {
+          "name": "Honor and Strength",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/17383785002134426297/FAEEC6E13FE9382E5863FB97F840FD39A9B0F8D1/",
+          "pip": 3
+        }
       ]
     },
     {
