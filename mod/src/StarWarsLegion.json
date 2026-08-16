@@ -500,6 +500,21 @@
     "TABLE.3a3ed9.json",
     "Saved_Map.38fcd0.json",
     "Blitz_Deck_Bag.169190.json",
-    "POI_Tokens.094230.json"
+    "POI_Tokens.094230.json",
+    "RULES_PANEL.e0d001.json",
+    "Rules_Panel_Option_1.e0d002.json",
+    "Rules_Panel_Option_2.e0d003.json",
+    "Rules_Panel_Option_3.e0d004.json",
+    "Rules_Panel_Option_4.e0d005.json",
+    "Rules_Panel_Option_5.e0d006.json",
+    "Rules_Panel_Option_1_Button.e0d007.json",
+    "Rules_Panel_Option_2_Button.e0d008.json",
+    "Rules_Panel_Option_3_Button.e0d009.json",
+    "Rules_Panel_Option_4_Button.e0d00a.json",
+    "Rules_Panel_Option_5_Button.e0d00b.json",
+    "Rules_Panel_Back_Button.e0d00c.json",
+    "Rules_Page_Box_1.e0d00d.json",
+    "Rules_Page_Box_2.e0d00e.json",
+    "Rules_Page_Box_3.e0d00f.json"
   ]
 }
