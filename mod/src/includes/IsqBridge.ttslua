@@ -42,15 +42,3 @@ function isqClearCohesion(params)
   if gClearCohesion then return gClearCohesion(params) end
   return Global.call('gClearCohesion', params)
 end
-
--- The maximum move ring carries its own bundle: getMovementLinks() is required
--- by the order token, not by Global, so the module cannot look it up itself.
-function isqSpawnMaxMove(params)
-  if gSpawnMaxMove then return gSpawnMaxMove(params) end
-  return Global.call('gSpawnMaxMove', params)
-end
-
-function isqClearMaxMove(params)
-  if gClearMaxMove then return gClearMaxMove(params) end
-  return Global.call('gClearMaxMove', params)
-end
