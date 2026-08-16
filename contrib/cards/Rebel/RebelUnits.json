@@ -220,7 +220,7 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2174736446809186518/DCA8031C62A867134FAA814D4976978058C01369/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/lando_metal_v1.unity3d"
         }
       ],
       "commands": [
@@ -293,7 +293,7 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2023850162090106066/B6E661CAB8049A1B1CE975B53BB57B337E2C5DEE/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/wicket_model_metal_v1.unity3d"
         }
       ],
       "commands": [
@@ -328,7 +328,7 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129309/3D6C219F243BDE984C42BB3444B01DB09B522CBB/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/logray_model_metal_v1.unity3d"
         }
       ]
     },
@@ -696,7 +696,7 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1745728519554838398/33764317D1BE774E1F978082C1A97681C1183C01/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/boba_fett_the_old_and_wise_model_1_metal_v1.unity3d"
         }
       ],
       "commands": [
@@ -755,7 +755,7 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2023850162084443471/517A8997FB85780B040DD3017147753F438137CC/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ahsoka_metal_v1.unity3d"
         }
       ],
       "commands": [
@@ -795,7 +795,7 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2475370743175243916/EFBD0137414E802232F64B02C78A9D9275C9C1CB/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/hunter_model_metal_v1.unity3d"
         }
       ],
       "commands": [
@@ -943,27 +943,27 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128972/9388116F0C7BE70B991CC7715943BF9FF08D3890/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129049/686925E47D218727E1C79A25E0F44FC80FAEE43F/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ewok_sharedmat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129131/D612F1B1EBDA3172B69BEE40159CE5D999045A62/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129049/686925E47D218727E1C79A25E0F44FC80FAEE43F/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ewok_sharedmat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129196/6EED0C8AAF8F50751EE4206471D1273B6C0F4B5A/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129049/686925E47D218727E1C79A25E0F44FC80FAEE43F/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ewok_sharedmat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129252/FC0A6247B6AB21A99919659C1F9069186C6D82ED/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129049/686925E47D218727E1C79A25E0F44FC80FAEE43F/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ewok_sharedmat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128356/9E8C70962F9D5BF853BD9310F2BB1E1A3F80DB5D/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129049/686925E47D218727E1C79A25E0F44FC80FAEE43F/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ewok_sharedmat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128445/EBB56734DB6527B3566C317F6F4F0E84471D6776/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129049/686925E47D218727E1C79A25E0F44FC80FAEE43F/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ewok_sharedmat_metal_v1.unity3d"
         }
       ]
     }
@@ -1082,13 +1082,13 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2174736446809186437/C255A6920C6B62ADD6B948311053BAAE4803BE29/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/mandoresistance_leader_metal_v1.unity3d"
         },
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2174736446809186272/7872209AB5CBE104129F9AFC58267EB8F6CF80D1/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/mandoresistance_1_metal_v1.unity3d"
         },
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2174736446809186179/35024924D8BC8A727F508557AF7B714D2E3D22FF/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/mandoresistance_2_metal_v1.unity3d"
         }
       ]
     },
@@ -1111,7 +1111,7 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2174736446809185852/7940F0BEFCFE905039054DA1CA3BBF3C0CB2C7A9/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/clanwrenchump_metal_v1.unity3d"
         }
       ],
       "required": ["Ursa Wren", "Tristan Wren"]
@@ -1133,13 +1133,13 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1619598366708043779/0D96CE1619F4B27F583257A366431E3BAD428F19/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/kashyyyk_defenders_leader_model_metal_v1.unity3d"
         },
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1619598366708043883/1EA1B3C21A50C20D4D168AB91ECFE1C01A4F7DF5/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/kashyyyk_defenders_model_metal_v1.unity3d"
         },
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1619598366708043883/1EA1B3C21A50C20D4D168AB91ECFE1C01A4F7DF5/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/kashyyyk_defenders_model_metal_v1.unity3d"
         }
       ]
     },
@@ -1158,27 +1158,27 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128972/9388116F0C7BE70B991CC7715943BF9FF08D3890/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129049/686925E47D218727E1C79A25E0F44FC80FAEE43F/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ewok_sharedmat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128506/B24F2402EDC36C64688B7F492B382D972ABA30F1/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129049/686925E47D218727E1C79A25E0F44FC80FAEE43F/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ewok_sharedmat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128565/24D88975D67E46B5FA9294EB6DCC146912D61F2F/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129049/686925E47D218727E1C79A25E0F44FC80FAEE43F/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ewok_sharedmat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128627/19AC5B05F3A355226EE783B9F239B3B285EA077A/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129049/686925E47D218727E1C79A25E0F44FC80FAEE43F/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ewok_sharedmat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128715/CB52DA6C0FC1DF3511C2A2D62CB2B3A13A9D4F8F/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129049/686925E47D218727E1C79A25E0F44FC80FAEE43F/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ewok_sharedmat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128778/1D5BCB551375F1A7988C434F0B52E18434BB4747/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129049/686925E47D218727E1C79A25E0F44FC80FAEE43F/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ewok_sharedmat_metal_v1.unity3d"
         }
       ]
     },
@@ -1341,7 +1341,7 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1686023073179090715/187094FD9EBAFB6FF44A65F2D411D68154C0FAC7/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/t47_airspeeder_model_metal_v1.unity3d"
         }
       ]
     },
@@ -1389,7 +1389,7 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1802024425338475441/730DE7AD6E1A55EA9F9264DADC1DDC0AC2CCA565/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/aa5_scan_metal_v1.unity3d"
         }
       ]
     },
