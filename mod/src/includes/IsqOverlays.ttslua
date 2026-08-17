@@ -520,15 +520,32 @@ function macModeToggle(_, _, _)
     macRemoveAllOfType("maxmove")
     for _, obj in ipairs(getAllObjects()) do
         if obj.getVar and obj.getVar("cohesionRuler") then
-            pcall(function() obj.call("clearCohesionRulerOriginal", obj) end)
+            pcall(function() obj.call("clearCohesionRuler") end)
         end
         if obj.getVar and obj.getVar("rangeRuler") then
-            pcall(function() obj.call("clearRangeRulersOriginal", obj) end)
+            -- Every family that can hold a ruler requires !/RangeRulers, whose
+            -- clearRangeRulers wipes the scope's ruler whichever script
+            -- spawned it (tokens, order tokens, bomb carts alike).
+            pcall(function() obj.call("clearRangeRulers") end)
+        end
+        -- The button flags outlive the wipes above -- and the Mac renderer
+        -- sets them without ever setting rangeRuler -- so reset every
+        -- family's flag unconditionally or the button is left inverted:
+        -- rangeOn on tokens, isqRangeOn on bomb carts, rulerOn (cohesion)
+        -- on order tokens.
+        if obj.getVar then
+            for _, flag in ipairs({"rangeOn", "isqRangeOn", "rulerOn"}) do
+                if obj.getVar(flag) then
+                    pcall(function() obj.setVar(flag, false) end)
+                end
+            end
         end
     end
     -- The Windows-mode Range bundle is spawned from the Global scope, which
-    -- getAllObjects() above does not cover.
+    -- getAllObjects() above does not cover; forget the hover-hotkey's toggle
+    -- identity too, or its next press on the same unit is a dead click.
     pcall(clearRangeRulersOriginalGlobal)
+    selectedUnitObj = nil
     macWinRangeGUID = nil
     broadcastToAll(
         (overlayMode == "mac") and "Iron Squadron overlays ON for the whole table."
