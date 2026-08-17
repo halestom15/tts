@@ -161,7 +161,7 @@ function onload(saveData)
     templateInfo.moveTemplate[1] = {}
     templateInfo.moveTemplate[1].colorTint = {1,1,1}
     templateInfo.moveTemplate[1].shortBundle = "https://steamusercontent-a.akamaihd.net/ugc/1761462778007615968/4EE8D2332DCB6F4837551255CE5B1F240937BBE5/"
-    templateInfo.moveTemplate[1].longBundle = "https://steamusercontent-a.akamaihd.net/ugc/1848161512056297932/A762E187E43177F01CD89D1348F51B1E3C1C744D/"
+    templateInfo.moveTemplate[1].longBundle = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/movetool_long_speed1_isq_v1.unity3d"
     templateInfo.moveTemplate[1].sharedBundle = "https://steamusercontent-a.akamaihd.net/ugc/14063680635734530221/FCD291B71472CA8636D00D0B82B1BA02671FF414/"
     templateInfo.moveTemplate[1].sharedBundle = "https://steamusercontent-a.akamaihd.net/ugc/14063680635734530221/FCD291B71472CA8636D00D0B82B1BA02671FF414/"
 
