@@ -18,6 +18,7 @@ function onSave()
   return JSON.encode({
     clocks = chessClocksActive,
     welcome = welcomeDialogActive,
+    overlays = overlayMode,
   })
 end
 
@@ -33,6 +34,10 @@ function onload(saveData)
     if saveData ~= "" then
       loadData = JSON.decode(saveData)
     end
+    -- Impose the saved overlay mode (never toggle: an undo replays this whole
+    -- function with the snapshot's state). Saves from before the key default
+    -- to the mod's original overlays, as they always did.
+    overlayMode = (loadData.overlays == "mac") and "mac" or "windows"
     -- Saves written before the welcome dialog was remembered have no such key,
     -- and those players expect to be greeted as they always were.
     initUI(loadData.welcome ~= false)
