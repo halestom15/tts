@@ -539,7 +539,12 @@ end
 -- UI: single Iron Squadron toggle button in the bottom-right
 -- legionFloatingMenu.
 function macRefreshModeUI()
-    local tree = UI.getXmlTable() or {}
+    -- While the table is still assembling (or Steam is failing to serve its
+    -- content), the vanilla XML is not up yet: getXmlTable returns nothing,
+    -- and pushing an empty table back logs "<UI.setXmlTable>: table was
+    -- null". Nothing to edit into means nothing to do.
+    local tree = UI.getXmlTable()
+    if not tree or #tree == 0 then return false end
     -- Drop the legacy mode-picker panel if this save still carries one.
     for i = #tree, 1, -1 do
         if tree[i].attributes and tree[i].attributes.id == "macModePanel" then
@@ -604,8 +609,16 @@ function macDeferRefresh()
     Wait.frames(function() pcall(macRefreshModeUI) end, 1)
 end
 
--- Initial UI build, deferred + pcalled like the rest.
-Wait.time(function() pcall(macRefreshModeUI) end, 2)
+-- Initial UI build. The vanilla XML can come up late -- slow or absent
+-- connectivity delays it past any fixed timer -- so retry until it is there
+-- rather than fire once and miss the menu.
+local function macInitialRefresh(tries)
+    local ok, done = pcall(macRefreshModeUI)
+    if (not ok or done == false) and tries > 0 then
+        Wait.time(function() macInitialRefresh(tries - 1) end, 2)
+    end
+end
+Wait.time(function() macInitialRefresh(30) end, 2)
 
 -- Note: we deliberately do NOT override the global spawnRangeRuler /
 -- clearRangeRulers / showRangeOnHoveredModel chain at the Lua scope where
