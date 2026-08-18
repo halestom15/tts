@@ -42,6 +42,7 @@ function onload(saveData)
     -- and those players expect to be greeted as they always were.
     initUI(loadData.welcome ~= false)
 
+
     initCardsSchema()
     ga_event("Global", "onLoad")
 
@@ -582,7 +583,10 @@ function standbyTokens()
     for i, obj in pairs(allObjs) do
         if obj.getVar("isAToken") == true then
             obj.call("standby")
-        elseif obj.getName() == "Cohesion Ruler" or obj.getName() == "Movement Template" or obj.getName() == "Range Ruler" or obj.getName() == "Deployment Boundary" then
+        -- "Maximum Move" joins the sweep: like the rulers, the only reference
+        -- to the ring lives in volatile script state, so one that made it
+        -- into a save can never be cleared again after a load or an undo.
+        elseif obj.getName() == "Cohesion Ruler" or obj.getName() == "Movement Template" or obj.getName() == "Range Ruler" or obj.getName() == "Deployment Boundary" or obj.getName() == "Maximum Move" then
             destroyObject(obj)
         end
     end
