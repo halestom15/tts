@@ -19,15 +19,12 @@
 -- macOS-only fallback. The module is platform-agnostic.
 
 
--- Capture the ORIGINAL Global functions loaded by !/RangeRulers and
--- !/Cohesion BEFORE we overwrite them below. We also capture the inner
--- spawn/clear pair because the toggle wrapper resolves them by NAME at
--- call time  -  without aliasing those too, the original toggle would route
--- back into our Mac versions, defeating Windows mode entirely.
+-- Capture the ORIGINAL Global functions loaded by !/RangeRulers BEFORE we
+-- overwrite them below: the toggle wrapper resolves them by NAME at call
+-- time  -  without aliasing them, the original toggle would route back
+-- into our Mac versions, defeating Windows mode entirely.
 spawnRangeRulerOriginalGlobal     = spawnRangeRuler
 clearRangeRulersOriginalGlobal    = clearRangeRulers
-spawnCohesionRulerOriginalGlobal  = spawnCohesionRuler
-clearCohesionRulerOriginalGlobal  = clearCohesionRuler
 
 activeOverlays = activeOverlays or {}
 
