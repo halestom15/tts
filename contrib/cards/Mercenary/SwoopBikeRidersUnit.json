@@ -14,10 +14,10 @@
   },
   "minis": [
     {
-      "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1924743543116067434/0A068914BDD35AE6F63D7E29EBC7E0B5F712DA1F/"
+      "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/swoop__bikes_leader_model_metal_v1.unity3d"
     },
     {
-      "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1924743543116067490/87719312BE33C493B97B0915DB8C89FDC57D3F38/"
+      "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/swoop_bikes_rider_model_metal_v1.unity3d"
     }
   ]
 }

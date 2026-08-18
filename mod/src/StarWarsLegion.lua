@@ -18,6 +18,7 @@ function onSave()
   return JSON.encode({
     clocks = chessClocksActive,
     welcome = welcomeDialogActive,
+    overlays = overlayMode,
   })
 end
 
@@ -33,9 +34,14 @@ function onload(saveData)
     if saveData ~= "" then
       loadData = JSON.decode(saveData)
     end
+    -- Impose the saved overlay mode (never toggle: an undo replays this whole
+    -- function with the snapshot's state). Saves from before the key default
+    -- to the mod's original overlays, as they always did.
+    overlayMode = (loadData.overlays == "mac") and "mac" or "windows"
     -- Saves written before the welcome dialog was remembered have no such key,
     -- and those players expect to be greeted as they always were.
     initUI(loadData.welcome ~= false)
+
 
     initCardsSchema()
     ga_event("Global", "onLoad")
@@ -158,24 +164,27 @@ function onload(saveData)
     templateInfo.diceTrayGUID = "3d3ac4"
 
     templateInfo.moveTemplate = {}
+    -- The colorTint fields below are decorative: setColorTint never reaches
+    -- these bundles' materials, the rendered color is baked into each shared
+    -- bundle. Kept in sync with the baked values so nobody chases a phantom
+    -- source of truth here.
     templateInfo.moveTemplate[1] = {}
     templateInfo.moveTemplate[1].colorTint = {1,1,1}
     templateInfo.moveTemplate[1].shortBundle = "https://steamusercontent-a.akamaihd.net/ugc/1761462778007615968/4EE8D2332DCB6F4837551255CE5B1F240937BBE5/"
-    templateInfo.moveTemplate[1].longBundle = "https://steamusercontent-a.akamaihd.net/ugc/1848161512056297932/A762E187E43177F01CD89D1348F51B1E3C1C744D/"
-    templateInfo.moveTemplate[1].sharedBundle = "https://steamusercontent-a.akamaihd.net/ugc/14063680635734530221/FCD291B71472CA8636D00D0B82B1BA02671FF414/"
-    templateInfo.moveTemplate[1].sharedBundle = "https://steamusercontent-a.akamaihd.net/ugc/14063680635734530221/FCD291B71472CA8636D00D0B82B1BA02671FF414/"
+    templateInfo.moveTemplate[1].longBundle = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/movetool_long_speed1_isq_v1.unity3d"
+    templateInfo.moveTemplate[1].sharedBundle = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/movetool_shared_speed1_isq_v1.unity3d"
 
 
     templateInfo.moveTemplate[2] = {}
-    templateInfo.moveTemplate[2].colorTint = {0.5,0.5,0.5}
+    templateInfo.moveTemplate[2].colorTint = {0.38,0.38,0.38}
     templateInfo.moveTemplate[2].shortBundle = "https://steamusercontent-a.akamaihd.net/ugc/1761462778009510155/77119B471FE3C51B06443F8ABE1C1B522431DF9B/"
     templateInfo.moveTemplate[2].longBundle = "https://steamusercontent-a.akamaihd.net/ugc/1761462778009510102/15B368A8D753AB35E1D60F7A377AE273EBEC0145/"
-    templateInfo.moveTemplate[2].sharedBundle = "https://steamusercontent-a.akamaihd.net/ugc/10737538167305927398/637135B07177CA895B71593EB85563FEFD0567D7/"
+    templateInfo.moveTemplate[2].sharedBundle = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/movetool_shared_speed2_isq_v1.unity3d"
     templateInfo.moveTemplate[3] = {}
-    templateInfo.moveTemplate[3].colorTint = {1,0.2,0.2}
+    templateInfo.moveTemplate[3].colorTint = {1,0.36,0.32}
     templateInfo.moveTemplate[3].shortBundle = "https://steamusercontent-a.akamaihd.net/ugc/1761462778009510243/26BA9DD7881AF63E1A19EB6BF9802630D792F836/"
     templateInfo.moveTemplate[3].longBundle = "https://steamusercontent-a.akamaihd.net/ugc/1761462778009510200/6723334F35444B547AA1382AE80F12E3FE9B72B1/"
-    templateInfo.moveTemplate[3].sharedBundle = "https://steamusercontent-a.akamaihd.net/ugc/14511655092146905869/6D223BCC7D94DBDD342B6F887F7C777CE47D5585/"
+    templateInfo.moveTemplate[3].sharedBundle = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/movetool_shared_speed3_isq_v1.unity3d"
 
     --This is actually diameter... just saying
     templateInfo.baseRadius = {
@@ -574,7 +583,10 @@ function standbyTokens()
     for i, obj in pairs(allObjs) do
         if obj.getVar("isAToken") == true then
             obj.call("standby")
-        elseif obj.getName() == "Cohesion Ruler" or obj.getName() == "Movement Template" or obj.getName() == "Range Ruler" or obj.getName() == "Deployment Boundary" then
+        -- "Maximum Move" joins the sweep: like the rulers, the only reference
+        -- to the ring lives in volatile script state, so one that made it
+        -- into a save can never be cleared again after a load or an undo.
+        elseif obj.getName() == "Cohesion Ruler" or obj.getName() == "Movement Template" or obj.getName() == "Range Ruler" or obj.getName() == "Deployment Boundary" or obj.getName() == "Maximum Move" then
             destroyObject(obj)
         end
     end

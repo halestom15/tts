@@ -458,7 +458,7 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1789640371719058670/9E6B82A0BF8367F2C6D369BD3464DA5E9D0C7917/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/ig_88_model_metal_v1.unity3d"
         }
       ],
       "commands": [
@@ -672,19 +672,19 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821645/5FF305DCBED87DDE0DC92AB430557E501D5CDFC2/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821736/A6557A52AB579A320023B7028C55A38815DC566E/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/riot_stormtrooper_mat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821412/A274C8B3E646E0EBFB81D282570C5A1C6D263F2B/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821736/A6557A52AB579A320023B7028C55A38815DC566E/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/riot_stormtrooper_mat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821497/585AF58548561265B23B01A56577DE0732464636/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821736/A6557A52AB579A320023B7028C55A38815DC566E/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/riot_stormtrooper_mat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821557/0B4EFC2CDDBC7BB72768141562946583278CAAD6/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821736/A6557A52AB579A320023B7028C55A38815DC566E/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/riot_stormtrooper_mat_metal_v1.unity3d"
         }
       ]
     },
@@ -701,15 +701,15 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2017090166650141156/BF26D516EA8F33C72822FF9AB369FF7CA444C403/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2017090166650141746/A8FD77EB51C50C64CD924BDAEEDB70D8839E0EF3/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/stormtrooper_mat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2017090166650141545/30BEFE4E87E379AA361AFF5FD24A8F5D3F0BA4C0/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2017090166650141746/A8FD77EB51C50C64CD924BDAEEDB70D8839E0EF3/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/stormtrooper_mat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2017090166650141624/1366A6A4D84D9FE597EEA2736AFC187F392418DA/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2017090166650141746/A8FD77EB51C50C64CD924BDAEEDB70D8839E0EF3/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/stormtrooper_mat_metal_v1.unity3d"
         }
       ]
     },
@@ -1049,19 +1049,19 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2495630600682669687/1A75297DAE22B6DFE46AF5B69EDC87652B23957F/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2495630600682582649/F03C73249983DDC1178314FD61C7D53DA27840EE/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/range_trooper_mat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2495630600682669758/7E6C79BDA776AD0618FF66FCD961C59DD6B0F4F1/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2495630600682582649/F03C73249983DDC1178314FD61C7D53DA27840EE/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/range_trooper_mat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2495630600682669758/7E6C79BDA776AD0618FF66FCD961C59DD6B0F4F1/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2495630600682582649/F03C73249983DDC1178314FD61C7D53DA27840EE/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/range_trooper_mat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2495630600682669758/7E6C79BDA776AD0618FF66FCD961C59DD6B0F4F1/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2495630600682582649/F03C73249983DDC1178314FD61C7D53DA27840EE/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/range_trooper_mat_metal_v1.unity3d"
         }
       ]
     }
@@ -1152,16 +1152,16 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1785135125810942830/666860D7C34C83C500C62BDDE115F30C59A42C74/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2004698291313176203/E77892ADB668EA0CB548F6ED71BE44CA3FB730E7/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/darktrooper_leader_metal_v1.unity3d",
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/darktrooper_mat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1785135125810942938/E77EC5970DA310A2E1D96F796E98D82813AE0891/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2004698291313176203/E77892ADB668EA0CB548F6ED71BE44CA3FB730E7/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/darktrooper_mat_metal_v1.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1785135125810943021/4B5888D461F54C2C281B108233D1F1D8D8C2A679/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2004698291313176203/E77892ADB668EA0CB548F6ED71BE44CA3FB730E7/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-metal-rebuilds/darktrooper_mat_metal_v1.unity3d"
         }
       ]
     },

@@ -1,10 +1,10 @@
 function getCohesionLinks()
     local cohesions = {}
         --27 mm
-        cohesions.small = "https://steamusercontent-a.akamaihd.net/ugc/2482129948496305632/EBBE2560D4336E6C96317EDDA787E225CF0E5B48/"
+        cohesions.small = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/halfcohesion_27mm_metal_v1.unity3d"
         --50 mm
-        cohesions.medium = "https://steamusercontent-a.akamaihd.net/ugc/2482129948496305877/719896A3F975D8C914D47DC22507816A512C4839/"
+        cohesions.medium = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/halfcohesion_50mm_metal_v1.unity3d"
         --70 mm
-        cohesions.large = "https://steamusercontent-a.akamaihd.net/ugc/2482129948496305957/A977453A781738EA5AF2935A4562670012881080/"
+        cohesions.large = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/halfcohesion_70mm_metal_v1.unity3d"
     return cohesions
 end

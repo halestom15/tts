@@ -218,10 +218,10 @@ function clearSilhouette()
 
     -- Guard against players who delete their minis!
     if obj then
-      -- silhouetteState is saved with the game, but the silhouette objects
-      -- themselves are not: loading a save made with silhouettes up leaves the
-      -- state true with nothing attached, and removeAttachments() returns an
-      -- empty list. Destructing that nil crashed the script.
+      -- May be empty: silhouettes are attachments and never survive a save
+      -- (setUp resets silhouetteState accordingly), and a mid-session reload
+      -- or state drift can leave nothing attached with the state still true.
+      -- Destructing that nil crashed the script.
       local silToDestroy = obj.removeAttachments()[1]
       if silToDestroy then
         silToDestroy.destruct()
@@ -253,16 +253,16 @@ function spawnSilhouette(obj, pos, rot)
   local scale = globals.baseRadius[unitData.baseSize]
   local height = 1.0
   local offset = 0.0
-  local silhouetteData = "https://steamusercontent-a.akamaihd.net/ugc/5063766435505471684/D97103C9FFB76016DDF9CE66A7622BDB3E810160/"
+  local silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/sihl_metal_v1.unity3d"
   if silhType == "custom" then
     height = silhHeight
     offset = silhOffset
     if unitData.baseSize == "snail" then
-      silhouetteData = "https://steamusercontent-a.akamaihd.net/ugc/5063766435505471854/AE2D411CFBF4D88321CAD0D75961CBF0512D62E4/"
+      silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/sihl_snail_variant_metal_v1.unity3d"
       scale = 1.0
     end
     if unitData.baseSize == "long" then
-      silhouetteData = "https://steamusercontent-a.akamaihd.net/ugc/5063766435505471800/DF511A83E913EBA164F74E20BA239AE286458D91/"
+      silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/sihl_long_variant_metal_v1.unity3d"
       scale = 1.0
     end
   else    

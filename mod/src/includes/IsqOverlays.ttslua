@@ -19,15 +19,12 @@
 -- macOS-only fallback. The module is platform-agnostic.
 
 
--- Capture the ORIGINAL Global functions loaded by !/RangeRulers and
--- !/Cohesion BEFORE we overwrite them below. We also capture the inner
--- spawn/clear pair because the toggle wrapper resolves them by NAME at
--- call time  -  without aliasing those too, the original toggle would route
--- back into our Mac versions, defeating Windows mode entirely.
+-- Capture the ORIGINAL Global functions loaded by !/RangeRulers BEFORE we
+-- overwrite them below: the toggle wrapper resolves them by NAME at call
+-- time  -  without aliasing them, the original toggle would route back
+-- into our Mac versions, defeating Windows mode entirely.
 spawnRangeRulerOriginalGlobal     = spawnRangeRuler
 clearRangeRulersOriginalGlobal    = clearRangeRulers
-spawnCohesionRulerOriginalGlobal  = spawnCohesionRuler
-clearCohesionRulerOriginalGlobal  = clearCohesionRuler
 
 activeOverlays = activeOverlays or {}
 
@@ -41,7 +38,7 @@ activeOverlays = activeOverlays or {}
 --
 -- What this layer still owns, and the vanilla mod does not:
 --   * cohesion stays visible and FOLLOWS the figure during a drag;
---   * toggles are deterministic (see gRangeTrigger / gCohesionTrigger);
+--   * toggles are deterministic (see gRangeTrigger);
 --   * MaxMove is anchored where the move STARTED and never follows.
 -- Spec: the Iron Squadron overlay spec (kept internal, ask us for it).
 -- ============================================
@@ -82,10 +79,11 @@ local TOKEN_TO_BASESIZE = {
 -- the mod's own URLs, so anything added to them would show in the mod's
 -- original mode too, and the toggle would stop meaning anything for Range.
 --
--- Base URL for this module's assets. The files themselves are committed under
--- mod/data/isq-overlay-assets, so this only needs to be repointed at whichever
--- repository ships the mod. Keep it in sync with the isqLogo entry in
--- CustomUIAssets (mod/src/StarWarsLegion.json).
+-- Base URL for this module's assets, committed under
+-- mod/data/isq-overlay-assets. Repointing the module means this constant,
+-- the isqLogo entry in CustomUIAssets (mod/src/StarWarsLegion.json), and the
+-- repaired-bundle URLs swapped in place across the mod's own files -- those
+-- are deliberate full literals, greppable and revertible entry by entry.
 local ISQ_ASSETS = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/"
 
 -- Only the hover hotkey reaches this table (forceFigMode). A token's own R
@@ -447,32 +445,6 @@ overlayMode = overlayMode or "windows"  -- "windows" | "mac", table-wide
 
 function gGetMode(_) return overlayMode end
 
-function gCohesionTrigger(params)
-    if not params or not params.figGUID then return end
-    local fig = getObjectFromGUID(params.figGUID)
-    if not fig then return end
-    if overlayMode ~= "windows" then
-        gToggleCohesion({figGUID = params.figGUID})
-        return
-    end
-    -- Windows mode: the vanilla Projector lives in the FIG scope (every fig
-    -- requires !/Cohesion), so read and clear it there. Vanilla
-    -- spawnCohesionRuler RESPAWNS instead of toggling, so without this a
-    -- second click just redrew the ruler and it could never be turned off.
-    -- pcall guards objects that carry no such function (e.g. a hovered
-    -- non-fig object), which fall back to the Mac renderer.
-    local ok, isOn = pcall(function() return fig.getVar("cohesionRuler") ~= nil end)
-    if not ok then
-        gToggleCohesion({figGUID = params.figGUID})
-        return
-    end
-    if isOn then
-        pcall(function() fig.call("clearCohesionRulerOriginal", fig) end)
-    elseif not pcall(function() fig.call("spawnCohesionRulerOriginal", fig) end) then
-        gToggleCohesion({figGUID = params.figGUID})
-    end
-end
-
 -- Which fig currently owns the vanilla (Windows-mode) Range bundle, so a
 -- second trigger on the same fig turns it off like vanilla
 -- showRangeOnHoveredModel does.
@@ -518,17 +490,32 @@ function macModeToggle(_, _, _)
     macRemoveAllOfType("cohesion")
     macRemoveAllOfType("range")
     macRemoveAllOfType("maxmove")
+    -- The button flags outlive the ruler wipes -- and the Mac renderer sets
+    -- them without ever setting rangeRuler -- so reset each family's flag
+    -- too, or its button is left inverted: rangeOn on tokens, isqRangeOn on
+    -- bomb carts, rulerOn (cohesion) on order tokens.
+    local FLAGS = {"rangeOn", "isqRangeOn", "rulerOn"}
     for _, obj in ipairs(getAllObjects()) do
-        if obj.getVar and obj.getVar("cohesionRuler") then
-            pcall(function() obj.call("clearCohesionRulerOriginal", obj) end)
-        end
-        if obj.getVar and obj.getVar("rangeRuler") then
-            pcall(function() obj.call("clearRangeRulersOriginal", obj) end)
+        if obj.getVar then
+            if obj.getVar("cohesionRuler") then
+                pcall(function() obj.call("clearCohesionRuler") end)
+            end
+            if obj.getVar("rangeRuler") then
+                -- Every family that can hold a ruler requires !/RangeRulers,
+                -- whose clearRangeRulers wipes the scope's ruler whichever
+                -- script spawned it (tokens, order tokens, bomb carts alike).
+                pcall(function() obj.call("clearRangeRulers") end)
+            end
+            for _, flag in ipairs(FLAGS) do
+                if obj.getVar(flag) then obj.setVar(flag, false) end
+            end
         end
     end
     -- The Windows-mode Range bundle is spawned from the Global scope, which
-    -- getAllObjects() above does not cover.
+    -- getAllObjects() above does not cover; forget the hover-hotkey's toggle
+    -- identity too, or its next press on the same unit is a dead click.
     pcall(clearRangeRulersOriginalGlobal)
+    selectedUnitObj = nil
     macWinRangeGUID = nil
     broadcastToAll(
         (overlayMode == "mac") and "Iron Squadron overlays ON for the whole table."
@@ -551,7 +538,12 @@ end
 -- UI: single Iron Squadron toggle button in the bottom-right
 -- legionFloatingMenu.
 function macRefreshModeUI()
-    local tree = UI.getXmlTable() or {}
+    -- While the table is still assembling (or Steam is failing to serve its
+    -- content), the vanilla XML is not up yet: getXmlTable returns nothing,
+    -- and pushing an empty table back logs "<UI.setXmlTable>: table was
+    -- null". Nothing to edit into means nothing to do.
+    local tree = UI.getXmlTable()
+    if not tree or #tree == 0 then return false end
     -- Drop the legacy mode-picker panel if this save still carries one.
     for i = #tree, 1, -1 do
         if tree[i].attributes and tree[i].attributes.id == "macModePanel" then
@@ -616,8 +608,16 @@ function macDeferRefresh()
     Wait.frames(function() pcall(macRefreshModeUI) end, 1)
 end
 
--- Initial UI build, deferred + pcalled like the rest.
-Wait.time(function() pcall(macRefreshModeUI) end, 2)
+-- Initial UI build. The vanilla XML can come up late -- slow or absent
+-- connectivity delays it past any fixed timer -- so retry until it is there
+-- rather than fire once and miss the menu.
+local function macInitialRefresh(tries)
+    local ok, done = pcall(macRefreshModeUI)
+    if (not ok or done == false) and tries > 0 then
+        Wait.time(function() macInitialRefresh(tries - 1) end, 2)
+    end
+end
+Wait.time(function() macInitialRefresh(30) end, 2)
 
 -- Note: we deliberately do NOT override the global spawnRangeRuler /
 -- clearRangeRulers / showRangeOnHoveredModel chain at the Lua scope where

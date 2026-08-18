@@ -291,7 +291,7 @@ end
 
 function clearSilhouette()
   silhouetteState = false
-  -- May be empty: silhouetteState is saved, the silhouette objects are not.
+  -- May be empty: silhouettes are attachments and never survive a save.
   local silToDestroy = self.removeAttachments()[1]
   if silToDestroy then
     silToDestroy.destruct()
@@ -310,7 +310,7 @@ function spawnSilhouette(obj, pos, rot)
   local scale = globals.baseRadius["medium"]
   local height = 1.111
   local offset = 0.0 
-  local silhouetteData = "https://steamusercontent-a.akamaihd.net/ugc/5063766435505471684/D97103C9FFB76016DDF9CE66A7622BDB3E810160/"
+  local silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/sihl_metal_v1.unity3d"
   if obj ~= nil then
     local objUp = obj.getTransformUp()
     local offsetVector = Vector.new(objUp.x * offset, objUp.y * offset, objUp.z * offset)

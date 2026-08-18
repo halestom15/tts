@@ -11,6 +11,9 @@ require('!/RangeRulers')
 
 function onLoad()
   rangeOn = false
+  -- Explicit, like Unit_Leader and BombCarts do: silhouettes are attachments
+  -- and never survive a save, so a load always starts with none up.
+  silhouetteState = false
   createButton({0, 0, 0})
   createButton({0, 0, 180})
   addSilhouetteButton()
@@ -102,7 +105,7 @@ function addSilhouetteButton()
   -- Removes all attachments and destroys the first one
   -- The silhouette should be the only attachment, so this should be safe to do
   function clearSilhouette()
-    -- May be empty: silhouetteState is saved, the silhouette objects are not.
+    -- May be empty: silhouettes are attachments and never survive a save.
     local silToDestroy = self.removeAttachments()[1]
     if silToDestroy then
       silToDestroy.destruct()
@@ -125,7 +128,7 @@ function addSilhouetteButton()
     local scale = 2.0
     local height = 3.0
     local offset = 0.0
-    local silhouetteData = "https://steamusercontent-a.akamaihd.net/ugc/5063766435505471684/D97103C9FFB76016DDF9CE66A7622BDB3E810160/"
+    local silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/sihl_metal_v1.unity3d"
     if obj ~= nil then
       local objUp = obj.getTransformUp()
       local offsetVector = Vector.new(objUp.x * offset, objUp.y * offset, objUp.z * offset)

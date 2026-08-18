@@ -35,7 +35,7 @@
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomAssetbundle": {
-      "AssetbundleURL": "https://steamusercontent-a.akamaihd.net/ugc/1803106576260862383/3682F0805A27B73240DD439C9904C9326C95537A/",
+      "AssetbundleURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/unit_id_token_5_metal_v1.unity3d",
       "AssetbundleSecondaryURL": "",
       "MaterialIndex": 0,
       "TypeIndex": 0,
