@@ -11,6 +11,9 @@ require('!/RangeRulers')
 
 function onLoad()
   rangeOn = false
+  -- Explicit, like Unit_Leader and BombCarts do: silhouettes are attachments
+  -- and never survive a save, so a load always starts with none up.
+  silhouetteState = false
   createButton({0, 0, 0})
   createButton({0, 0, 180})
   addSilhouetteButton()
@@ -102,7 +105,7 @@ function addSilhouetteButton()
   -- Removes all attachments and destroys the first one
   -- The silhouette should be the only attachment, so this should be safe to do
   function clearSilhouette()
-    -- May be empty: silhouetteState is saved, the silhouette objects are not.
+    -- May be empty: silhouettes are attachments and never survive a save.
     local silToDestroy = self.removeAttachments()[1]
     if silToDestroy then
       silToDestroy.destruct()

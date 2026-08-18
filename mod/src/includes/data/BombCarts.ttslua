@@ -291,7 +291,7 @@ end
 
 function clearSilhouette()
   silhouetteState = false
-  -- May be empty: silhouetteState is saved, the silhouette objects are not.
+  -- May be empty: silhouettes are attachments and never survive a save.
   local silToDestroy = self.removeAttachments()[1]
   if silToDestroy then
     silToDestroy.destruct()
