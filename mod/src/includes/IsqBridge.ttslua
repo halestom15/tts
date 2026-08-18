@@ -43,17 +43,22 @@ function isqClearCohesion(params)
   return Global.call('gClearCohesion', params)
 end
 
+-- Probe a script-global on a foreign object; pcall keeps a hostile or
+-- scriptless object from throwing. Returns the value, or nil.
+local function isqVar(obj, name)
+  local ok, v = pcall(function() return obj.getVar(name) end)
+  if ok then return v end
+end
+
 -- What a hovered object IS, for the hover hotkeys. Holding unitData is not
 -- enough: an ASSIGNED order token copies the selected unit's unitData into
 -- its script globals, so it passes for a unit and gets an overlay drawn
 -- around the token itself. Ask for unit markers instead: leaders carry
 -- miniGUIDs, minis carry leaderGUID, order tokens carry neither.
 function isqIsUnitFigure(obj)
-  if not obj then return false end
-  local ok, v = pcall(function() return obj.getTable('miniGUIDs') end)
-  if ok and v then return true end
-  ok, v = pcall(function() return obj.getVar('leaderGUID') end)
-  return ok and v ~= nil
+  local ok, minis = pcall(function() return obj.getTable('miniGUIDs') end)
+  if ok and minis then return true end
+  return isqVar(obj, 'leaderGUID') ~= nil
 end
 
 -- Everything the range hover hotkey may draw for: unit figures; tokens with
@@ -63,9 +68,7 @@ end
 -- script-global baseSize. An order token declares none of these -- its
 -- baseSize only ever lives in locals.
 function isqRangeHoverTarget(obj)
-  if isqIsUnitFigure(obj) then return true end
-  local ok, v = pcall(function() return obj.getVar('rangeKey') end)
-  if ok and v ~= nil then return true end
-  ok, v = pcall(function() return obj.getVar('baseSize') end)
-  return ok and v ~= nil
+  return isqIsUnitFigure(obj)
+      or isqVar(obj, 'rangeKey') ~= nil
+      or isqVar(obj, 'baseSize') ~= nil
 end

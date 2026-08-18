@@ -79,10 +79,11 @@ local TOKEN_TO_BASESIZE = {
 -- the mod's own URLs, so anything added to them would show in the mod's
 -- original mode too, and the toggle would stop meaning anything for Range.
 --
--- Base URL for this module's assets. The files themselves are committed under
--- mod/data/isq-overlay-assets, so this only needs to be repointed at whichever
--- repository ships the mod. Keep it in sync with the isqLogo entry in
--- CustomUIAssets (mod/src/StarWarsLegion.json).
+-- Base URL for this module's assets, committed under
+-- mod/data/isq-overlay-assets. Repointing the module means this constant,
+-- the isqLogo entry in CustomUIAssets (mod/src/StarWarsLegion.json), and the
+-- repaired-bundle URLs swapped in place across the mod's own files -- those
+-- are deliberate full literals, greppable and revertible entry by entry.
 local ISQ_ASSETS = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/"
 
 -- Only the hover hotkey reaches this table (forceFigMode). A token's own R
@@ -489,26 +490,24 @@ function macModeToggle(_, _, _)
     macRemoveAllOfType("cohesion")
     macRemoveAllOfType("range")
     macRemoveAllOfType("maxmove")
+    -- The button flags outlive the ruler wipes -- and the Mac renderer sets
+    -- them without ever setting rangeRuler -- so reset each family's flag
+    -- too, or its button is left inverted: rangeOn on tokens, isqRangeOn on
+    -- bomb carts, rulerOn (cohesion) on order tokens.
+    local FLAGS = {"rangeOn", "isqRangeOn", "rulerOn"}
     for _, obj in ipairs(getAllObjects()) do
-        if obj.getVar and obj.getVar("cohesionRuler") then
-            pcall(function() obj.call("clearCohesionRuler") end)
-        end
-        if obj.getVar and obj.getVar("rangeRuler") then
-            -- Every family that can hold a ruler requires !/RangeRulers, whose
-            -- clearRangeRulers wipes the scope's ruler whichever script
-            -- spawned it (tokens, order tokens, bomb carts alike).
-            pcall(function() obj.call("clearRangeRulers") end)
-        end
-        -- The button flags outlive the wipes above -- and the Mac renderer
-        -- sets them without ever setting rangeRuler -- so reset every
-        -- family's flag unconditionally or the button is left inverted:
-        -- rangeOn on tokens, isqRangeOn on bomb carts, rulerOn (cohesion)
-        -- on order tokens.
         if obj.getVar then
-            for _, flag in ipairs({"rangeOn", "isqRangeOn", "rulerOn"}) do
-                if obj.getVar(flag) then
-                    pcall(function() obj.setVar(flag, false) end)
-                end
+            if obj.getVar("cohesionRuler") then
+                pcall(function() obj.call("clearCohesionRuler") end)
+            end
+            if obj.getVar("rangeRuler") then
+                -- Every family that can hold a ruler requires !/RangeRulers,
+                -- whose clearRangeRulers wipes the scope's ruler whichever
+                -- script spawned it (tokens, order tokens, bomb carts alike).
+                pcall(function() obj.call("clearRangeRulers") end)
+            end
+            for _, flag in ipairs(FLAGS) do
+                if obj.getVar(flag) then obj.setVar(flag, false) end
             end
         end
     end

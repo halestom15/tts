@@ -10,12 +10,8 @@ function onload(save_state)
         pickedUp = false
         templatePos = self.getPosition()
 
-        -- The Order Token wires this copy right after spawning it (templateA,
-        -- basePos, baseRot via setVar/setTable). That wiring is volatile
-        -- script state: a save, a load or an undo restarts this script with
-        -- only its source, so every later touch errors on a nil. A fresh
-        -- spawn is wired within its first frame; a reloaded copy never is.
-        -- Give it a second, then remove the zombie.
+        -- Same zombie guard as Model Template A, for the templateA wiring
+        -- this half receives -- the full story lives there.
         Wait.time(function()
             if templateA == nil then self.destruct() end
         end, 1)
