@@ -41,7 +41,7 @@ activeOverlays = activeOverlays or {}
 --
 -- What this layer still owns, and the vanilla mod does not:
 --   * cohesion stays visible and FOLLOWS the figure during a drag;
---   * toggles are deterministic (see gRangeTrigger / gCohesionTrigger);
+--   * toggles are deterministic (see gRangeTrigger);
 --   * MaxMove is anchored where the move STARTED and never follows.
 -- Spec: the Iron Squadron overlay spec (kept internal, ask us for it).
 -- ============================================
@@ -446,32 +446,6 @@ end
 overlayMode = overlayMode or "windows"  -- "windows" | "mac", table-wide
 
 function gGetMode(_) return overlayMode end
-
-function gCohesionTrigger(params)
-    if not params or not params.figGUID then return end
-    local fig = getObjectFromGUID(params.figGUID)
-    if not fig then return end
-    if overlayMode ~= "windows" then
-        gToggleCohesion({figGUID = params.figGUID})
-        return
-    end
-    -- Windows mode: the vanilla Projector lives in the FIG scope (every fig
-    -- requires !/Cohesion), so read and clear it there. Vanilla
-    -- spawnCohesionRuler RESPAWNS instead of toggling, so without this a
-    -- second click just redrew the ruler and it could never be turned off.
-    -- pcall guards objects that carry no such function (e.g. a hovered
-    -- non-fig object), which fall back to the Mac renderer.
-    local ok, isOn = pcall(function() return fig.getVar("cohesionRuler") ~= nil end)
-    if not ok then
-        gToggleCohesion({figGUID = params.figGUID})
-        return
-    end
-    if isOn then
-        pcall(function() fig.call("clearCohesionRulerOriginal", fig) end)
-    elseif not pcall(function() fig.call("spawnCohesionRulerOriginal", fig) end) then
-        gToggleCohesion({figGUID = params.figGUID})
-    end
-end
 
 -- Which fig currently owns the vanilla (Windows-mode) Range bundle, so a
 -- second trigger on the same fig turns it off like vanilla
