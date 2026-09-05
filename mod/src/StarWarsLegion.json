@@ -303,6 +303,33 @@
     "XmlUI": "#include ./StarWarsLegion.xml",
     "CustomUIAssets": [
       {
+        "Name": "isqUiPill",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/import-toast-pill.png"
+      },
+      {
+        "Name": "isqUiTrack",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/import-toast-track.png"
+      },
+      {
+        "Name": "isqUiFill",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/import-toast-fill.png"
+      },
+      {
+        "Name": "swlLogo",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/swl-logo-v1.png",
+        "Type": 0
+      },
+      {
+        "Name": "swlBackdrop1",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/swl-backdrop-1-v1.jpg",
+        "Type": 0
+      },
+      {
+        "Name": "swlBackdrop2",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/swl-backdrop-2-v1.jpg",
+        "Type": 0
+      },
+      {
         "Name": "PalpatinePoster",
         "URL": "https://steamusercontent-a.akamaihd.net/ugc/966480765117276391/DDA8500A1694EF1EAA32998DCAB2D53098FBE040/"
       },
@@ -320,7 +347,7 @@
       },
       {
         "Name": "isqLogo",
-        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/iron_squadron_logo_v2.png"
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/iron_squadron_logo_v2.png"
       }
     ],
     "ObjectStates": []

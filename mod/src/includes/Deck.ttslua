@@ -30,8 +30,22 @@ function Deck:create()
   return meta
 end
 
+-- The compiled cards table weighs ~650 Kb once marshalled: every
+-- Global.getTable copies all of it from the engine into Lua. pinSchema
+-- freezes one copy for the duration of a list import (the hot path, where
+-- the copy used to be taken again for every card spawned); everything else
+-- keeps reading the live table, so side-loaded homebrew shows up as soon as
+-- it is added.
 function Deck:_getSchema()
-  return Global.getTable("CardsSchema")
+  return self._cache.schema or Global.getTable("CardsSchema")
+end
+
+function Deck:pinSchema()
+  self._cache.schema = Global.getTable("CardsSchema")
+end
+
+function Deck:unpinSchema()
+  self._cache.schema = nil
 end
 
 function Deck:spawnUnitCard(faction, name)
@@ -334,7 +348,7 @@ end
 
 function Deck:getFactions()
   local result = {}
-  for faction, _ in pairs(self._getSchema().units) do
+  for faction, _ in pairs(self:_getSchema().units) do
     table.insert(result, faction)
   end
   return result
@@ -593,7 +607,7 @@ end
 
 function Deck:getBattleCardScenarios()
   local result = {}
-  for name, deck in pairs(self._getSchema().battlefield) do
+  for name, deck in pairs(self:_getSchema().battlefield) do
     local hasCards = 0
     for _, cards in pairs(deck) do
       if #cards then hasCards = hasCards + 1 end

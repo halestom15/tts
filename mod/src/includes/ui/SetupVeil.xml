@@ -1,0 +1,306 @@
+<!-- The setup veil: the full-screen loading overlay shown while the setup
+     crate deploys the table (see DeferredSetup.ttslua).
+
+     Every piece is a ROOT element, because an element anchors to its
+     parent's edges: nested inside a panel of our own, "top of the screen"
+     became the top of that panel instead, and the rule sat well below the
+     screen edge. As roots they anchor to the screen, and the ones that
+     must span it say so in percent rather than in pixels we cannot know.
+
+     Cotes transposed from Martin's mockup (measured on the 1487x838 canvas
+     of his screenshot, scaled by 1920/1487):
+       - the band starts 147px from the left edge and is 503px wide
+         (26% of the width), full height, black at 65%;
+       - the logo is 213x148, centred in the band, its top 94px down;
+       - the orange rule is 6px tall, flush with the top edge, spanning the
+         screen - it is the progress bar, filling left to right.
+
+     Declared active: the veil has to be up when TTS reveals the table and
+     plays its entry camera move, which happens long before Global's onload
+     runs. Every path out of the load lowers it, and a timeout lowers it
+     even if onload dies halfway.
+
+     setupVeilArt is tinted black rather than hidden: an Image whose
+     texture has not downloaded yet renders as a white rectangle, which
+     washed the sheet out. Black multiplies it away, and DeferredSetup
+     only lifts the tint once the file has actually answered. -->
+<Panel
+  id="setupVeilGround"
+  active="true"
+  rectAlignment="MiddleCenter"
+  width="12000"
+  height="12000"
+  color="#05070CFF"
+/>
+
+<Image
+  id="setupVeilArt"
+  active="true"
+  rectAlignment="MiddleCenter"
+  offsetXY="0 0"
+  width="2208"
+  height="1242"
+  color="#000000FF"
+  preserveAspect="true"
+/>
+
+<Panel
+  id="setupVeilCard"
+  active="true"
+  rectAlignment="MiddleLeft"
+  offsetXY="147 0"
+  width="503"
+  height="100%"
+  color="#000000A6"
+/>
+
+<Image
+  id="setupVeilLogo"
+  active="true"
+  rectAlignment="UpperLeft"
+  offsetXY="292 -94"
+  width="213"
+  height="148"
+  image="swlLogo"
+  preserveAspect="true"
+/>
+
+<VerticalLayout
+  id="setupVeilText"
+  active="true"
+  rectAlignment="UpperLeft"
+  offsetXY="177 -282"
+  width="443"
+  height="760"
+  spacing="13"
+  childForceExpandHeight="false"
+>
+    <Text fontSize="18" fontStyle="Bold" color="#F5F6FA"
+      alignment="MiddleLeft" preferredHeight="26">SETTING UP THE TABLE</Text>
+
+    <Text fontSize="13" fontStyle="Bold" color="#E8801A"
+      alignment="UpperLeft" preferredHeight="20">CAMERA</Text>
+    <HorizontalLayout preferredHeight="24" spacing="4"
+      childForceExpandWidth="false" childAlignment="MiddleLeft">
+      <Text fontSize="13" color="#C9D2E0" alignment="MiddleLeft">View: 1st / 3rd / top down</Text>
+      <Panel preferredWidth="23" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">P</Text>
+      </Panel>
+      <Panel flexibleWidth="1" color="#00000000" />
+    </HorizontalLayout>
+    <HorizontalLayout preferredHeight="24" spacing="4"
+      childForceExpandWidth="false" childAlignment="MiddleLeft">
+      <Text fontSize="13" color="#C9D2E0" alignment="MiddleLeft">Pan camera</Text>
+      <Panel preferredWidth="23" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">W</Text>
+      </Panel>
+      <Panel preferredWidth="23" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">A</Text>
+      </Panel>
+      <Panel preferredWidth="23" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">S</Text>
+      </Panel>
+      <Panel preferredWidth="23" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">D</Text>
+      </Panel>
+      <Panel flexibleWidth="1" color="#00000000" />
+    </HorizontalLayout>
+    <HorizontalLayout preferredHeight="24" spacing="4"
+      childForceExpandWidth="false" childAlignment="MiddleLeft">
+      <Text fontSize="13" color="#C9D2E0" alignment="MiddleLeft">Reset camera</Text>
+      <Panel preferredWidth="55" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">Space</Text>
+      </Panel>
+      <Panel flexibleWidth="1" color="#00000000" />
+    </HorizontalLayout>
+    <HorizontalLayout preferredHeight="24" spacing="4"
+      childForceExpandWidth="false" childAlignment="MiddleLeft">
+      <Text fontSize="13" color="#C9D2E0" alignment="MiddleLeft">Save / load view</Text>
+      <Panel preferredWidth="47" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">Ctrl</Text>
+      </Panel>
+      <Text preferredWidth="9" flexibleWidth="0" fontSize="12"
+        color="#8A93A6" alignment="MiddleCenter">/</Text>
+      <Panel preferredWidth="55" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">Shift</Text>
+      </Panel>
+      <Text preferredWidth="9" flexibleWidth="0" fontSize="12"
+        color="#8A93A6" alignment="MiddleCenter">+</Text>
+      <Panel preferredWidth="39" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">1-9</Text>
+      </Panel>
+      <Panel flexibleWidth="1" color="#00000000" />
+    </HorizontalLayout>
+    <Text fontSize="13" fontStyle="Bold" color="#E8801A"
+      alignment="UpperLeft" preferredHeight="20">OBJECTS</Text>
+    <HorizontalLayout preferredHeight="24" spacing="4"
+      childForceExpandWidth="false" childAlignment="MiddleLeft">
+      <Text fontSize="13" color="#C9D2E0" alignment="MiddleLeft">Rotate</Text>
+      <Panel preferredWidth="23" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">Q</Text>
+      </Panel>
+      <Text preferredWidth="9" flexibleWidth="0" fontSize="12"
+        color="#8A93A6" alignment="MiddleCenter">/</Text>
+      <Panel preferredWidth="23" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">E</Text>
+      </Panel>
+      <Panel flexibleWidth="1" color="#00000000" />
+    </HorizontalLayout>
+    <HorizontalLayout preferredHeight="24" spacing="4"
+      childForceExpandWidth="false" childAlignment="MiddleLeft">
+      <Text fontSize="13" color="#C9D2E0" alignment="MiddleLeft">Flip</Text>
+      <Panel preferredWidth="23" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">F</Text>
+      </Panel>
+      <Panel flexibleWidth="1" color="#00000000" />
+    </HorizontalLayout>
+    <HorizontalLayout preferredHeight="24" spacing="4"
+      childForceExpandWidth="false" childAlignment="MiddleLeft">
+      <Text fontSize="13" color="#C9D2E0" alignment="MiddleLeft">Lock in place</Text>
+      <Panel preferredWidth="23" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">L</Text>
+      </Panel>
+      <Panel flexibleWidth="1" color="#00000000" />
+    </HorizontalLayout>
+    <HorizontalLayout preferredHeight="24" spacing="4"
+      childForceExpandWidth="false" childAlignment="MiddleLeft">
+      <Text fontSize="13" color="#C9D2E0" alignment="MiddleLeft">Zoom on object</Text>
+      <Panel preferredWidth="39" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">Alt</Text>
+      </Panel>
+      <Panel flexibleWidth="1" color="#00000000" />
+    </HorizontalLayout>
+    <HorizontalLayout preferredHeight="24" spacing="4"
+      childForceExpandWidth="false" childAlignment="MiddleLeft">
+      <Text fontSize="13" color="#C9D2E0" alignment="MiddleLeft">Multi-select</Text>
+      <Panel preferredWidth="47" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">Ctrl</Text>
+      </Panel>
+      <Text preferredWidth="9" flexibleWidth="0" fontSize="12"
+        color="#8A93A6" alignment="MiddleCenter">+</Text>
+      <Panel preferredWidth="55" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">click</Text>
+      </Panel>
+      <Panel flexibleWidth="1" color="#00000000" />
+    </HorizontalLayout>
+    <HorizontalLayout preferredHeight="24" spacing="4"
+      childForceExpandWidth="false" childAlignment="MiddleLeft">
+      <Text fontSize="13" color="#C9D2E0" alignment="MiddleLeft">Grab the one underneath</Text>
+      <Panel preferredWidth="23" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">T</Text>
+      </Panel>
+      <Panel flexibleWidth="1" color="#00000000" />
+    </HorizontalLayout>
+    <HorizontalLayout preferredHeight="24" spacing="4"
+      childForceExpandWidth="false" childAlignment="MiddleLeft">
+      <Text fontSize="13" color="#C9D2E0" alignment="MiddleLeft">Peek at a card</Text>
+      <Panel preferredWidth="39" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">Alt</Text>
+      </Panel>
+      <Text preferredWidth="9" flexibleWidth="0" fontSize="12"
+        color="#8A93A6" alignment="MiddleCenter">+</Text>
+      <Panel preferredWidth="55" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">Shift</Text>
+      </Panel>
+      <Panel flexibleWidth="1" color="#00000000" />
+    </HorizontalLayout>
+    <HorizontalLayout preferredHeight="24" spacing="4"
+      childForceExpandWidth="false" childAlignment="MiddleLeft">
+      <Text fontSize="13" color="#C9D2E0" alignment="MiddleLeft">Rewind time (host)</Text>
+      <Panel preferredWidth="47" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">Ctrl</Text>
+      </Panel>
+      <Text preferredWidth="9" flexibleWidth="0" fontSize="12"
+        color="#8A93A6" alignment="MiddleCenter">+</Text>
+      <Panel preferredWidth="23" preferredHeight="17" flexibleWidth="0"
+        color="#0C0F14CC" outline="#E8801A" outlineSize="1 -1">
+        <Text fontSize="12" fontStyle="Bold" color="#F2A657"
+          alignment="MiddleCenter">Z</Text>
+      </Panel>
+      <Panel flexibleWidth="1" color="#00000000" />
+    </HorizontalLayout>
+    <Text fontSize="13" fontStyle="Bold" color="#E8801A"
+      alignment="UpperLeft" preferredHeight="20">THIS MOD</Text>
+    <Text fontSize="13" color="#C9D2E0" alignment="UpperLeft"
+      preferredHeight="82">Bind these in Options -> Game Keys: range or
+cohesion on the hovered model; aim, dodge, smoke or
+suppression to the cursor; the chess clocks.</Text>
+</VerticalLayout>
+
+<Text
+  id="setupVeilCount"
+  active="true"
+  rectAlignment="LowerLeft"
+  offsetXY="177 46"
+  width="443"
+  height="20"
+  fontSize="12"
+  color="#7C879B"
+  alignment="MiddleLeft"
+></Text>
+
+<!-- Two panels rather than a ProgressBar: a ProgressBar would not span
+     the screen, and its fill is driven by a percentage attribute we cannot
+     stretch. Here the track is the full width and the fill is a percentage
+     OF THE TRACK, so the rule reaches both edges whatever the resolution.
+     Flush with the top of the UI frame, which is as high as it goes: TTS
+     starts that frame a little under the window's edge and covers the gap
+     with its own toolbar, so a rule nudged above the frame is hidden
+     rather than raised - tried, and it vanished. -->
+<Panel
+  id="setupVeilBar"
+  active="true"
+  rectAlignment="UpperCenter"
+  offsetXY="0 0"
+  width="100%"
+  height="6"
+  color="#00000000"
+>
+  <Panel
+    id="setupVeilBarFill"
+    rectAlignment="MiddleLeft"
+    width="0%"
+    height="100%"
+    color="#E8801AFF"
+  />
+</Panel>

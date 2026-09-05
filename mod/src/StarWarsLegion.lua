@@ -9,6 +9,7 @@ require('!/Cohesion')
 -- Must stay AFTER !/RangeRulers and !/Cohesion: it captures their original
 -- functions before shadowing them.
 require('!/IsqOverlays')
+require('!/DeferredSetup')
 
 -- Must be spelled onSave: unlike onload, TTS has no all-lowercase alias for it,
 -- so an onsave() is never called and the global script saves nothing at all.
@@ -22,9 +23,23 @@ function onSave()
 end
 
 function onload(saveData)
+    -- First, before anything that can throw: the veil is up from the XML,
+    -- and this is what guarantees it comes back down.
+    armSetupVeil()
+
     VERSION = "v5.0.0-beta"
     CCID = sha256(tostring(Time.time))
     UUID = sha256(Player.getPlayers()[1].steam_id)
+
+    -- A save or an undo taken mid-import must not resurrect an import
+    -- banner: runtime UI state is written into saves, so force both off
+    -- here (imposed, never toggled). The count of imports in flight goes
+    -- with them, since no pump survives the reload that would clear it.
+    UI.setAttribute("importProgressRed", "active", false)
+    UI.setAttribute("importProgressBlue", "active", false)
+    UI.setAttribute("importRuleRed", "active", false)
+    UI.setAttribute("importRuleBlue", "active", false)
+    isqImportsInFlight = 0
 
     local loadData = {
       clocks = false,
@@ -567,6 +582,9 @@ function onload(saveData)
 
     -- standby tokens
     standbyTokens()
+
+    -- deploy the deferred side-table furniture (paced, under the veil)
+    initDeferredSetup()
 end
 
 function standbyTokens()

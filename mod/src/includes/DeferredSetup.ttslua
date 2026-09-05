@@ -1,0 +1,246 @@
+-- Deploys the setup crate: the furniture that defer-setup.ts moved into a
+-- hidden bag at build time comes back out here, one object per frame,
+-- under a full-screen loading veil.
+--
+-- An object inside a container pays neither its script context nor its
+-- asset bind while the table loads (measured: ~40ms of loading bar per
+-- scripted object, plus its share of the first-frame freeze), and a paced
+-- takeObject costs ~40-50ms per object - invisible behind the veil.
+--
+-- The veil starts ON, declared active in the XML, so it is already up when
+-- TTS reveals the table and plays its entry camera move: by the time it
+-- comes down the table is set. Every path that can end the load lowers it,
+-- and a timeout lowers it even if onload dies halfway.
+--
+-- Idempotent by construction: an undo or a save replays Global's onload,
+-- so everything is recomputed from what actually exists - an object
+-- already on the table is never taken again, an empty crate lowers the
+-- veil at once.
+
+local CRATE_GUID = 'd3f3a0' -- must match src/lib/defer-setup.ts
+
+-- If onload throws before the cascade even starts, this is what gives the
+-- players their table back. It only fires while nothing has started: once
+-- the cascade is running, the deployment and the asset wait own the veil,
+-- each with its own cap.
+local VEIL_TIMEOUT_SECONDS = 60
+
+-- The veil never comes down before this: the cascade alone is over in
+-- about a second and a half, too fast to read anything and too fast for a
+-- cold backdrop to arrive. Still far less than the load time the crate
+-- saves.
+local VEIL_MINIMUM_SECONDS = 3
+
+-- How long the veil will wait for a first-ever load to fetch the deployed
+-- objects' models and textures before giving up and showing the table
+-- anyway. Only a player with an empty cache ever waits at all.
+local VEIL_ASSET_WAIT_SECONDS = 90
+
+-- Veil artwork. The backdrops are 16:9, with no text and no dark band of
+-- their own - the band and the shortcut sheet are drawn by the XML on top,
+-- so they stay put whatever the player's screen ratio does to the picture.
+-- One is picked per load; the url is here because a TTS Image gives no
+-- loaded callback, so the file is asked for over the network first and the
+-- picture is only revealed once it answers (see veilRevealArt).
+local SETUP_ILLUSTRATIONS = {
+  {name = 'swlBackdrop1', url = 'https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/swl-backdrop-1-v1.jpg'},
+  {name = 'swlBackdrop2', url = 'https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/swl-backdrop-2-v1.jpg'},
+}
+
+local deployGeneration = 0
+local cascadeStarted = false
+
+-- Each piece of the veil is a root element, so they are raised and lowered
+-- together.
+local VEIL_PARTS = {
+  'setupVeilGround', 'setupVeilArt', 'setupVeilCard', 'setupVeilLogo',
+  'setupVeilText', 'setupVeilCount', 'setupVeilBar',
+}
+
+local function veilHide()
+  for _, id in ipairs(VEIL_PARTS) do
+    UI.setAttribute(id, 'active', false)
+  end
+end
+
+-- An Image whose texture has not downloaded yet renders as a white
+-- rectangle, which washes out the sheet over it. The XML tints the picture
+-- black, and the tint is only lifted once the file has answered - so a
+-- cold cache, a dead host or no network shows the dark veil, never a white
+-- flash.
+local function veilRevealArt(gen, choice)
+  if choice == nil then return end
+  UI.setAttribute('setupVeilArt', 'image', choice.name)
+  WebRequest.get(choice.url, function(request)
+    if gen ~= deployGeneration then return end
+    if request.is_error or request.response_code ~= 200 then return end
+    UI.setAttribute('setupVeilArt', 'color', '#FFFFFFFF')
+  end)
+end
+
+-- Last progress repaint, shared by veilDress and veilProgress below.
+local lastProgressAt = 0
+
+local function veilDress(gen, total)
+  UI.setAttribute('setupVeilArt', 'color', '#000000FF')
+  if #SETUP_ILLUSTRATIONS > 0 then
+    -- math.floor is not decoration: MoonSharp's os.time returns a real
+    -- number, so the remainder of it is fractional and indexing a table
+    -- with 1.4 yields nil rather than the first entry.
+    local pick = (math.floor(os.time()) % #SETUP_ILLUSTRATIONS) + 1
+    veilRevealArt(gen, SETUP_ILLUSTRATIONS[pick])
+  end
+  UI.setAttribute('setupVeilBarFill', 'width', '0%')
+  UI.setValue('setupVeilCount', '0 / ' .. total)
+  lastProgressAt = os.clock()
+  for _, id in ipairs(VEIL_PARTS) do
+    UI.setAttribute(id, 'active', true)
+  end
+end
+
+-- Throttled on purpose: every UI.setAttribute makes TTS rebuild the UI,
+-- and doing that twice per frame across the cascade costs far more than
+-- the deployment itself.
+local function veilProgress(done, total, force)
+  local now = os.clock()
+  if not force and now - lastProgressAt < 0.2 then return end
+  lastProgressAt = now
+  UI.setAttribute('setupVeilBarFill', 'width',
+    math.floor(done * 100 / total) .. '%')
+  UI.setValue('setupVeilCount', done .. ' / ' .. total)
+end
+
+-- Called first thing in Global's onload, before anything that can throw.
+function armSetupVeil()
+  -- The whole point of this timer is the onload that throws between here
+  -- and initDeferredSetup: no generation is ever opened in that case, so
+  -- the only thing worth testing is whether a cascade started at all.
+  cascadeStarted = false
+  Wait.time(function()
+    if not cascadeStarted then veilHide() end
+  end, VEIL_TIMEOUT_SECONDS)
+end
+
+-- What the crate could not do for objects that find each other by scanning
+-- the table rather than by GUID: once everything is out, the two load-time
+-- scans in the mod are replayed, and any deployed object may ask to be
+-- called back by defining onSetupComplete.
+local function afterDeployment(deployed)
+  for _, guid in ipairs(deployed) do
+    local obj = getObjectFromGUID(guid)
+    if obj ~= nil and obj.getVar('onSetupComplete') ~= nil then
+      pcall(function() obj.call('onSetupComplete') end)
+    end
+  end
+  pcall(standbyTokens)
+end
+
+-- Holds the veil up until the table is set AND it has been up long enough
+-- to be read; the two conditions are met in either order.
+local function veilLower(gen, raisedAt)
+  local left = VEIL_MINIMUM_SECONDS - (os.clock() - raisedAt)
+  if left <= 0 then
+    veilHide()
+    return
+  end
+  Wait.time(function()
+    if gen == deployGeneration then veilHide() end
+  end, left)
+end
+
+-- A crated object downloads its model and texture when it is taken out,
+-- not while the table loads - so on a first ever load the cascade hands
+-- the engine 85 objects with nothing to draw yet. Rather than drop the
+-- veil onto furniture texturing itself in front of the player, wait for
+-- the engine to report them all loaded (loading_custom), capped so a dead
+-- asset host cannot hold the table hostage.
+local function waitForAssets(gen, deployed, raisedAt, waitedFor)
+  if gen ~= deployGeneration then return end
+  local pending = 0
+  for _, guid in ipairs(deployed) do
+    local obj = getObjectFromGUID(guid)
+    if obj ~= nil and obj.loading_custom then
+      pending = pending + 1
+    end
+  end
+  if pending == 0 or waitedFor >= VEIL_ASSET_WAIT_SECONDS then
+    veilLower(gen, raisedAt)
+    return
+  end
+  UI.setValue('setupVeilCount', 'downloading models - ' .. pending .. ' left')
+  Wait.time(function()
+    waitForAssets(gen, deployed, raisedAt, waitedFor + 0.5)
+  end, 0.5)
+end
+
+local function deployStep(gen, crate, pending, index, total, deployed, raisedAt)
+  if gen ~= deployGeneration then return end
+  local entry = pending[index]
+  if entry == nil then
+    afterDeployment(deployed)
+    waitForAssets(gen, deployed, raisedAt, 0)
+    return
+  end
+  -- Re-checked at take time: a save made mid-cascade, then undone into,
+  -- may hold any mix of deployed and crated objects. The pcall keeps the
+  -- cascade alive even if the crate itself was destroyed under us.
+  if getObjectFromGUID(entry.g) == nil then
+    pcall(function()
+      local obj = crate.takeObject({
+        guid = entry.g,
+        position = {entry.p.x, entry.p.y, entry.p.z},
+        rotation = {entry.r.x, entry.r.y, entry.r.z},
+        smooth = false,
+      })
+      -- Locked on the returned reference, same frame: the object must not
+      -- feel gravity for even one frame.
+      if entry.l == 1 and obj ~= nil then obj.setLock(true) end
+    end)
+  end
+  deployed[#deployed + 1] = entry.g
+  veilProgress(index, total, index == total)
+  Wait.frames(function()
+    deployStep(gen, crate, pending, index + 1, total, deployed, raisedAt)
+  end, 1)
+end
+
+-- Called at the end of Global's onload.
+function initDeferredSetup()
+  deployGeneration = deployGeneration + 1
+  local crate = getObjectFromGUID(CRATE_GUID)
+  if crate == nil then
+    veilHide()
+    return
+  end
+  local ok, manifest = pcall(function()
+    return JSON.decode(crate.getGMNotes())
+  end)
+  if not ok or type(manifest) ~= 'table' then
+    veilHide()
+    return
+  end
+  local inCrate = {}
+  for _, item in ipairs(crate.getObjects()) do
+    inCrate[item.guid] = true
+  end
+  local pending = {}
+  for _, entry in ipairs(manifest) do
+    if inCrate[entry.g] and getObjectFromGUID(entry.g) == nil then
+      pending[#pending + 1] = entry
+    end
+  end
+  if #pending == 0 then
+    veilHide()
+    return
+  end
+  local gen = deployGeneration
+  -- Dressing the veil is cosmetic; the furniture is not. An error in the
+  -- UI must never be what stops the table from being set up - which is
+  -- exactly what happened the first time this shipped.
+  pcall(function() veilDress(gen, #pending) end)
+  cascadeStarted = true
+  local raisedAt = os.clock()
+  Wait.frames(function()
+    deployStep(gen, crate, pending, 1, #pending, {}, raisedAt)
+  end, 1)
+end

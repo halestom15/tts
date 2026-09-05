@@ -1,0 +1,89 @@
+<!-- The import toast: a rounded dark pill (sprite, soft drop shadow) with a
+     small bold label, and the progress rule every loading indicator of the
+     mod shares, a thin band flush with the top of the screen and as wide as
+     it, here tinted the importing player's color. The pill sprite carries
+     24 px of shadow margin on every side, hence the anchored children.
+
+     One panel per player, because both can import at the same time: a single
+     shared toast let whichever list started last relabel the other's, and
+     whichever finished first hide it. Each player owns a panel, so two
+     imports stack instead of fighting, and the colours are baked in rather
+     than set from the script. The offsets below are only the resting place:
+     SpawnList hands out the two slots BY ARRIVAL, so whoever imports alone
+     sits at the top of the screen whatever their colour. -->
+<Panel
+  id="importProgressRed"
+  active="false"
+  rectAlignment="UpperCenter"
+  offsetXY="0 -28"
+  width="388"
+  height="104"
+  image="isqUiPill"
+>
+  <Text
+    id="importProgressTextRed"
+    rectAlignment="UpperCenter"
+    offsetXY="0 -38"
+    width="300"
+    height="20"
+    fontSize="15"
+    color="#EDEDF2"
+    fontStyle="Bold"
+    alignment="MiddleCenter"
+  >IMPORTING LIST</Text>
+</Panel>
+<Panel
+  id="importProgressBlue"
+  active="false"
+  rectAlignment="UpperCenter"
+  offsetXY="0 -108"
+  width="388"
+  height="104"
+  image="isqUiPill"
+>
+  <Text
+    id="importProgressTextBlue"
+    rectAlignment="UpperCenter"
+    offsetXY="0 -38"
+    width="300"
+    height="20"
+    fontSize="15"
+    color="#EDEDF2"
+    fontStyle="Bold"
+    alignment="MiddleCenter"
+  >IMPORTING LIST</Text>
+</Panel>
+<Panel
+  id="importRuleRed"
+  active="false"
+  rectAlignment="UpperCenter"
+  offsetXY="0 0"
+  width="100%"
+  height="6"
+  color="#00000000"
+>
+  <Panel
+    id="importRuleFillRed"
+    rectAlignment="MiddleLeft"
+    width="0%"
+    height="100%"
+    color="#FF5A5AFF"
+  />
+</Panel>
+<Panel
+  id="importRuleBlue"
+  active="false"
+  rectAlignment="UpperCenter"
+  offsetXY="0 -6"
+  width="100%"
+  height="6"
+  color="#00000000"
+>
+  <Panel
+    id="importRuleFillBlue"
+    rectAlignment="MiddleLeft"
+    width="0%"
+    height="100%"
+    color="#58A6FFFF"
+  />
+</Panel>
