@@ -26,6 +26,16 @@ function onload(save_state)
         templateRot = self.getRotation()
 
         templateBRot = {x = 0,y = templateRot.y+180,z=0}
+
+        -- The Order Token wires this copy right after spawning it (templateB,
+        -- basePos, baseRot via setVar/setTable). That wiring is volatile
+        -- script state: a save, a load or an undo restarts this script with
+        -- only its source, so every later touch errors on a nil. A fresh
+        -- spawn is wired within its first frame; a reloaded copy never is.
+        -- Give it a second, then remove the zombie.
+        Wait.time(function()
+            if templateB == nil then self.destruct() end
+        end, 1)
     end
     --self.setName("Movement Template")
 end

@@ -9,6 +9,12 @@ function onload(save_state)
         -- DEFAULT VALUES
         pickedUp = false
         templatePos = self.getPosition()
+
+        -- Same zombie guard as Model Template A, for the templateA wiring
+        -- this half receives -- the full story lives there.
+        Wait.time(function()
+            if templateA == nil then self.destruct() end
+        end, 1)
     end
 
     self.use_gravity = false
