@@ -9,9 +9,9 @@
       "rotX": -0.00194118218,
       "rotY": 74.96692,
       "rotZ": -0.0020336262,
-      "scaleX": 0.7490039,
+      "scaleX": 0.6962911,
       "scaleY": 1,
-      "scaleZ": 0.7490039
+      "scaleZ": 0.6962911
     },
     "Nickname": "Smoke Token",
     "Description": "Flip to change color",
@@ -36,7 +36,7 @@
     "Hands": false,
     "CustomMesh": {
       "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/785236717874061016/BB4832A82AEEA19EE9B1E9498380E7D3850DB0B6/",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/smoke_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
@@ -58,5 +58,7 @@
     "LuaScriptState": "",
     "XmlUI": ""
   },
-  "StatesPaths": {}
+  "StatesPaths": {
+    "2": "Smoke_Token.5c0d21.json"
+  }
 }

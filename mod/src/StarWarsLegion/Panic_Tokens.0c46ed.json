@@ -6,12 +6,12 @@
       "posX": -45.6356773,
       "posY": 0.9336015,
       "posZ": 4.48043346,
-      "rotX": -0.00000254425777,
+      "rotX": -2.54425777e-06,
       "rotY": 135.028519,
-      "rotZ": -0.0000175216537,
-      "scaleX": 3.14999771,
-      "scaleY": 3.14999771,
-      "scaleZ": 3.14999771
+      "rotZ": -1.75216537e-05,
+      "scaleX": 0.845682,
+      "scaleY": 1.413794,
+      "scaleZ": 0.845682
     },
     "Nickname": "Panic Tokens",
     "Description": "",
@@ -37,8 +37,8 @@
     "MaterialIndex": -1,
     "MeshIndex": -1,
     "CustomMesh": {
-      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442142/E2BBDA84DFF104080284F15909B71C8F125DA50F/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314444049/7A5C1C3F824FDE5C14596782B4DCC628F9846334/",
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/hex_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/panic_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,

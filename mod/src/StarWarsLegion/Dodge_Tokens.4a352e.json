@@ -38,7 +38,7 @@
     "MeshIndex": -1,
     "CustomMesh": {
       "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442740/91C08C293B53CCF3D104B0472B60ECF7BF4B613E/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442875/553BAF41BE032BCE7282C4DECB180B5410AC7226/",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/dodge_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,

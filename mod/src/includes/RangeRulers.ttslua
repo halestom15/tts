@@ -1,3 +1,54 @@
+
+-- ============ Iron Squadron: buttons that follow the visible face ============
+-- A button is attached to the token's frame: once the token is flipped it is
+-- seen from behind and its in-plane angle reads negated. Vanilla answered with
+-- two superposed buttons, the second at {0,0,180}. That passes for an "R" and
+-- fails as soon as a second letter joins it: two "E"s read as an "H". So each
+-- token keeps ONE button per label and reorients it on flip.
+--
+-- One angle per button: its placement angle phi on the circle, measured from
+-- the token's front. The label turns the opposite way, so face up the button
+-- is { 0, -phi, 0 } and face down { 0, phi, 180 }; phi = 0 gives exactly the
+-- old second button. A button that shows up on the other side once flipped is
+-- the same object seen from the other face, not a defect.
+--
+-- The helpers live here because the POI token has its own copy of the button
+-- and does not use TokenWithRangeRuler. onRotate is NOT defined here: this
+-- file is also included by Global, the order token and the bomb carts, which
+-- have no button to reorient. Every button owner declares its own onRotate
+-- calling isqRefreshButtons.
+ISQ_BUTTON_RADIUS = 0.7
+
+isqOrientedButtons = {}
+
+function isqButtonRotation(phi, flip)
+  if flip == nil then flip = self.getRotation().z end
+  if flip > 90 and flip < 270 then return { 0, phi, 180 } end
+  return { 0, -phi, 0 }
+end
+
+function isqButtonPosition(phi)
+  local r = math.rad(phi)
+  return { ISQ_BUTTON_RADIUS * math.sin(r), 0.1, ISQ_BUTTON_RADIUS * math.cos(r) }
+end
+
+-- Call once a button is created so it follows the visible face.
+function isqRegisterButton(label, phi)
+  table.insert(isqOrientedButtons, { label = label, phi = phi })
+end
+
+function isqRefreshButtons(flip)
+  for _, e in ipairs(isqOrientedButtons) do
+    for _, b in ipairs(self.getButtons() or {}) do
+      if b.label == e.label then
+        self.editButton({ index = b.index, rotation = isqButtonRotation(e.phi, flip) })
+        break
+      end
+    end
+  end
+end
+-- =============================================================================
+
 require('!/data/RangeRulerLinks')
 require('!/IsqBridge')
 

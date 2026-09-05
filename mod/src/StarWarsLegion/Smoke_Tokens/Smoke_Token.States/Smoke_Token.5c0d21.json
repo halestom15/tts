@@ -1,20 +1,20 @@
 {
   "Object": {
-    "GUID": "5d3ceb",
+    "GUID": "5c0d21",
     "Name": "Custom_Model",
     "Transform": {
-      "posX": -46.431633,
-      "posY": 1.16699541,
-      "posZ": -14.2836924,
-      "rotX": -4.623577e-06,
-      "rotY": 0.0,
-      "rotZ": -1.10528117e-06,
-      "scaleX": 0.4651,
-      "scaleY": 0.749,
-      "scaleZ": 0.4651
+      "posX": -47.0614433,
+      "posY": 1.14985752,
+      "posZ": 16.4290714,
+      "rotX": -0.00194118218,
+      "rotY": 74.96692,
+      "rotZ": -0.0020336262,
+      "scaleX": 0.6962911,
+      "scaleY": 1,
+      "scaleZ": 0.6962911
     },
-    "Nickname": "Immobilize Token",
-    "Description": "",
+    "Nickname": "Smoke Token (V1)",
+    "Description": "Flip to change color",
     "GMNotes": "",
     "ColorDiffuse": {
       "r": 1,
@@ -35,13 +35,13 @@
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomMesh": {
-      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/immobilize_v2.obj",
-      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/immobilize_v2.jpg",
+      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
+      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/785236717874061016/BB4832A82AEEA19EE9B1E9498380E7D3850DB0B6/",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
       "MaterialIndex": 3,
-      "TypeIndex": 5,
+      "TypeIndex": 0,
       "CustomShader": {
         "SpecularColor": {
           "r": 1,
@@ -54,11 +54,9 @@
       },
       "CastShadows": true
     },
-    "LuaScript": "",
+    "LuaScript": "#include ./Smoke_Token.5c0d21.lua",
     "LuaScriptState": "",
     "XmlUI": ""
   },
-  "StatesPaths": {
-    "2": "Immobilize_Token.e1a206.json"
-  }
+  "StatesPaths": {}
 }

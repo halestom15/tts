@@ -6,12 +6,12 @@
       "posX": -45.49689,
       "posY": 0.94903636,
       "posZ": -14.0955343,
-      "rotX": 2.26867876e-8,
+      "rotX": 2.26867876e-08,
       "rotY": 150.0118,
-      "rotZ": -9.588955e-8,
-      "scaleX": 1.89999938,
-      "scaleY": 1.89999938,
-      "scaleZ": 1.89999938
+      "rotZ": -9.588955e-08,
+      "scaleX": 1.178253,
+      "scaleY": 1.897465,
+      "scaleZ": 1.178253
     },
     "Nickname": "Immobilize Tokens",
     "Description": "",
@@ -37,8 +37,8 @@
     "MaterialIndex": -1,
     "MeshIndex": -1,
     "CustomMesh": {
-      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442992/DD893F407D50F2D029305A2F181989F90E3FA46A/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314446126/CCD2483A716B81931D26829BF205D6C0CB0196CD/",
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/immobilize_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/immobilize_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,

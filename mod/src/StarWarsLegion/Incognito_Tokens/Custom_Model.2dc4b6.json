@@ -7,11 +7,11 @@
       "posY": 1.06230116,
       "posZ": -24.9031086,
       "rotX": 0.00106365606,
-      "rotY": 0.00000197965664,
+      "rotY": 0.0,
       "rotZ": -0.00447030738,
-      "scaleX": 1,
-      "scaleY": 1,
-      "scaleZ": 1
+      "scaleX": 0.5047446,
+      "scaleY": 1.0,
+      "scaleZ": 0.5047446
     },
     "Nickname": "",
     "Description": "",
@@ -35,8 +35,8 @@
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomMesh": {
-      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/1777200555359102353/86DFA2C0B4428415B5765DE845A19BC78EC70050/",
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/incognito_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/incognito_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
@@ -48,5 +48,7 @@
     "LuaScriptState": "",
     "XmlUI": ""
   },
-  "StatesPaths": {}
+  "StatesPaths": {
+    "2": "Custom_Model.e1a207.json"
+  }
 }

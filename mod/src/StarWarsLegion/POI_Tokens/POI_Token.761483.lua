@@ -9,6 +9,11 @@ require('!/RangeRulers')
 -- token = 25.1mm diameter (range 1)
 -- poi = 50.8mm diameter (range 0.5 aka 3in)
 
+-- The POI keeps its own copy of the range button (its own position, size and
+-- tint) and does not go through !/TokenWithRangeRuler, so it gets the same
+-- treatment by hand: one button that follows the visible face, instead of two
+-- superposed ones. The helpers come from !/RangeRulers. The look is unchanged:
+-- position, width, height, font and tint are kept as they were.
 function onLoad()
   rangeOn = false
   createButton({0, 0, 0})
@@ -16,7 +21,17 @@ function onLoad()
   addSilhouetteButton()
 end
 
+function onRotate(spin, flip, player_color, old_spin, old_flip)
+  isqRefreshButtons(flip)
+end
+
+-- onLoad still asks for its two buttons, one per face, exactly as it always
+-- did: the first call builds the single reoriented button, the second is a
+-- no-op. The requested rotation is ignored, the visible face decides.
+local isqRangeButtonBuilt = false
 function createButton(rotation)
+  if isqRangeButtonBuilt then return end
+  isqRangeButtonBuilt = true
   local gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
   local btnTint = gameData.getTable("battlefieldTint")
   self.createButton({
@@ -25,13 +40,14 @@ function createButton(rotation)
     label = "R",
     tooltip = "Spawn Range Ruler",
     position = {-0.2, 0.1, 1.15},
-    rotation = rotation,
+    rotation = isqButtonRotation(0),
     width = 230,
     height = 180,
     font_size = 100,
     color= {btnTint["r"], btnTint["g"], btnTint["b"], 0.7},
     font_color= {1, 1, 1, 100}
   })
+  isqRegisterButton("R", 0)
 end
 
 function onDestroy()
@@ -81,6 +97,7 @@ function addSilhouetteButton()
       label = "SIL",
       tooltip = "Toggle silhouettes on this unit",
       position = {0.2, 0.1, 1.15},
+      rotation = isqButtonRotation(0),
       width = 230,
       height = 180,
       font_size = 100,
@@ -88,6 +105,8 @@ function addSilhouetteButton()
       font_color= {1, 1, 1, 100}
     }
     self.createButton(btnData)
+    -- It had no rotation at all, so it read mirrored on the back face too.
+    isqRegisterButton("SIL", 0)
   end    
 
   function toggleSilhouettes()

@@ -1,19 +1,19 @@
 {
   "Object": {
-    "GUID": "8887c9",
+    "GUID": "a1d0e7",
     "Name": "Custom_Model",
     "Transform": {
-      "posX": -10.6324787,
-      "posY": 1.06331956,
-      "posZ": -20.6646442,
-      "rotX": 0.00103532418,
-      "rotY": 0.0,
-      "rotZ": -0.00122020906,
-      "scaleX": 0.6962911,
-      "scaleY": 0.998,
-      "scaleZ": 0.6962911
+      "posX": -44.1457977,
+      "posY": 1.159769,
+      "posZ": -5.7930584,
+      "rotX": 0.018792266,
+      "rotY": 269.973541,
+      "rotZ": 0.008553838,
+      "scaleX": 0.925000131,
+      "scaleY": 0.925000131,
+      "scaleZ": 0.925000131
     },
-    "Nickname": "Observation Token",
+    "Nickname": "Aim Token (V1)",
     "Description": "",
     "GMNotes": "",
     "ColorDiffuse": {
@@ -23,20 +23,20 @@
     },
     "LayoutGroupSortIndex": 0,
     "Locked": false,
-    "Grid": true,
-    "Snap": true,
+    "Grid": false,
+    "Snap": false,
     "IgnoreFoW": false,
     "MeasureMovement": false,
     "DragSelectable": true,
     "Autoraise": true,
-    "Sticky": true,
+    "Sticky": false,
     "Tooltip": true,
     "GridProjection": false,
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomMesh": {
-      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/observation_v2.jpg",
+      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442508/5CF014A3E962C6116B3B910C8BE44FE1C8FCA1D2/",
+      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442626/A2574B5726D1DE612FF4F2464A2315C7C85759D1/",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
@@ -48,7 +48,5 @@
     "LuaScriptState": "",
     "XmlUI": ""
   },
-  "StatesPaths": {
-    "2": "Observation_Token.e1a205.json"
-  }
+  "StatesPaths": {}
 }

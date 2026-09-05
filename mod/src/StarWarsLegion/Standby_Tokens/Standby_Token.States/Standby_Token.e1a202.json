@@ -1,19 +1,19 @@
 {
   "Object": {
-    "GUID": "5d3ceb",
+    "GUID": "e1a202",
     "Name": "Custom_Model",
     "Transform": {
-      "posX": -46.431633,
-      "posY": 1.16699541,
-      "posZ": -14.2836924,
-      "rotX": -4.623577e-06,
-      "rotY": 0.0,
-      "rotZ": -1.10528117e-06,
-      "scaleX": 0.4651,
-      "scaleY": 0.749,
-      "scaleZ": 0.4651
+      "posX": -46.2590675,
+      "posY": 1.15910244,
+      "posZ": -10.7836752,
+      "rotX": -7.085472e-06,
+      "rotY": 44.96722,
+      "rotZ": 6.098125e-06,
+      "scaleX": 0.7750004,
+      "scaleY": 0.7750004,
+      "scaleZ": 0.7750004
     },
-    "Nickname": "Immobilize Token",
+    "Nickname": "Standby Token",
     "Description": "",
     "GMNotes": "",
     "ColorDiffuse": {
@@ -35,13 +35,13 @@
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomMesh": {
-      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/immobilize_v2.obj",
-      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/immobilize_v2.jpg",
+      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441910/ED14AA37D66E5E75EA5D6790A50546B1FC105DAC/",
+      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442019/EF36C682BC69BB9239DC15B0C52EE6FFACEE19C0/",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
       "MaterialIndex": 3,
-      "TypeIndex": 5,
+      "TypeIndex": 0,
       "CustomShader": {
         "SpecularColor": {
           "r": 1,
@@ -58,7 +58,5 @@
     "LuaScriptState": "",
     "XmlUI": ""
   },
-  "StatesPaths": {
-    "2": "Immobilize_Token.e1a206.json"
-  }
+  "StatesPaths": {}
 }

@@ -1,17 +1,17 @@
 {
   "Object": {
-    "GUID": "f89492",
+    "GUID": "e1a204",
     "Name": "Custom_Model",
     "Transform": {
       "posX": -46.9712372,
       "posY": 1.08421123,
       "posZ": 8.07918549,
       "rotX": -1.37044835e-05,
-      "rotY": 0.0,
+      "rotY": 359.948669,
       "rotZ": -0.000109419205,
-      "scaleX": 0.4564,
-      "scaleY": 0.763,
-      "scaleZ": 0.4564
+      "scaleX": 1.69999945,
+      "scaleY": 1.69999945,
+      "scaleZ": 1.69999945
     },
     "Nickname": "Panic Token",
     "Description": "",
@@ -35,8 +35,8 @@
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomMesh": {
-      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/hex_v2.obj",
-      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/panic_v2.jpg",
+      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442142/E2BBDA84DFF104080284F15909B71C8F125DA50F/",
+      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314444049/7A5C1C3F824FDE5C14596782B4DCC628F9846334/",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
@@ -48,7 +48,5 @@
     "LuaScriptState": "",
     "XmlUI": ""
   },
-  "StatesPaths": {
-    "2": "Panic_Token.e1a204.json"
-  }
+  "StatesPaths": {}
 }

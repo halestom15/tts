@@ -1,19 +1,19 @@
 {
   "Object": {
-    "GUID": "5d3ceb",
+    "GUID": "d0d9e2",
     "Name": "Custom_Model",
     "Transform": {
-      "posX": -46.431633,
-      "posY": 1.16699541,
-      "posZ": -14.2836924,
-      "rotX": -4.623577e-06,
-      "rotY": 0.0,
-      "rotZ": -1.10528117e-06,
-      "scaleX": 0.4651,
-      "scaleY": 0.749,
-      "scaleZ": 0.4651
+      "posX": -44.2080269,
+      "posY": 1.14115238,
+      "posZ": -9.154423,
+      "rotX": -0.00031632543,
+      "rotY": 210.031082,
+      "rotZ": 1.22906476e-06,
+      "scaleX": 0.650000334,
+      "scaleY": 0.650000334,
+      "scaleZ": 0.650000334
     },
-    "Nickname": "Immobilize Token",
+    "Nickname": "Dodge Token (V1)",
     "Description": "",
     "GMNotes": "",
     "ColorDiffuse": {
@@ -35,8 +35,8 @@
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomMesh": {
-      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/immobilize_v2.obj",
-      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/immobilize_v2.jpg",
+      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442740/91C08C293B53CCF3D104B0472B60ECF7BF4B613E/",
+      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442875/553BAF41BE032BCE7282C4DECB180B5410AC7226/",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
@@ -58,7 +58,5 @@
     "LuaScriptState": "",
     "XmlUI": ""
   },
-  "StatesPaths": {
-    "2": "Immobilize_Token.e1a206.json"
-  }
+  "StatesPaths": {}
 }
