@@ -250,6 +250,7 @@ local function initListSpawner(params)
           "\"\n silhOffset = \"".. silhOffset ..
           "\"\n commandName = \"".. pMiniTable.commandName ..
           "\"\n commandType = \"".. pMiniTable.commandType ..
+          "\"\n unitType = \"".. (pMiniTable.type or "") ..
           "\"\n selectedSpeed = ".. pMiniTable.selectedSpeed ..
           "\n baseSize = \"".. pMiniTable.baseSize ..
           "\"\n unitID = " .. pMiniTable.unitID ..

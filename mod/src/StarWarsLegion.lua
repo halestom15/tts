@@ -224,8 +224,6 @@ function onload(saveData)
       snail = 14.52755906
     }
 
-    templateInfo.attackLineMesh = "https://steamusercontent-a.akamaihd.net/ugc/785234780861452902/76204298AA245698319FD2EA590160AFFE1B488C/"
-
     highestPoint = 0
 
     -- token Bags
@@ -570,6 +568,10 @@ function onload(saveData)
 end
 
 function standbyTokens()
+    -- The line-of-sight witness lines live in Global's vector lines, which a
+    -- save keeps and a reload (or an undo) brings back with no attack to own
+    -- them: wipe them like the rulers below.
+    Global.setVectorLines({})
     local allObjs = getAllObjects()
     for i, obj in pairs(allObjs) do
         if obj.getVar("isAToken") == true then

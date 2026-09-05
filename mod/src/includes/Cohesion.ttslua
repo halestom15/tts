@@ -65,8 +65,15 @@ function spawnCohesionRuler(cohesionSourceObject)
 end
 
 function clearCohesionRuler()
+    -- The handle can be dead: Global sweeps destroy every "Cohesion Ruler"
+    -- by name at load and on table resets, and destruct() on a dead handle
+    -- throws a bare object reference error attributed to this leader.
     if cohesionRuler ~= nil then
-        cohesionRuler.destruct()
+        pcall(function()
+            if not cohesionRuler.isDestroyed() then
+                cohesionRuler.destruct()
+            end
+        end)
         cohesionRuler = nil
     end
 end

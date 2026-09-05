@@ -82,11 +82,14 @@ local TOKEN_TO_BASESIZE = {
 -- the mod's own URLs, so anything added to them would show in the mod's
 -- original mode too, and the toggle would stop meaning anything for Range.
 --
--- Base URL for this module's assets. The files themselves are committed under
--- mod/data/isq-overlay-assets, so this only needs to be repointed at whichever
--- repository ships the mod. Keep it in sync with the isqLogo entry in
--- CustomUIAssets (mod/src/StarWarsLegion.json).
-local ISQ_ASSETS = "https://raw.githubusercontent.com/ironsquadronfr-hub/tts/isq-qol/mod/data/isq-overlay-assets/"
+-- Base URL for this module's assets. They live in the swl-assets store, one
+-- flat directory holding everything this mod downloads at runtime, under a
+-- contract that nothing there is ever renamed, overwritten or deleted - so
+-- this address does not have to move again. Repointing the module means this
+-- constant, the isqLogo entry in CustomUIAssets (mod/src/StarWarsLegion.json)
+-- and the repaired-bundle URLs written out in full across the mod's own files
+-- -- those are deliberate literals, greppable and revertible entry by entry.
+local ISQ_ASSETS = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/"
 
 -- Only the hover hotkey reaches this table (forceFigMode). A token's own R
 -- button keeps the mod's single-ring bundle, deliberately.

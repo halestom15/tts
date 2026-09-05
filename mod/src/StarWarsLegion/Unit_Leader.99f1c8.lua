@@ -18,6 +18,15 @@ function setUp()
     startPosition = nil
     startRotation = nil
 
+    -- A silhouette attached before a save comes back as a phantom: the
+    -- attachment is restored but the script state is not, so nothing knows
+    -- it is up. Purge them so the leader always starts clean.
+    pcall(function()
+      for _, phantom in ipairs(self.removeAttachments() or {}) do
+        if phantom then phantom.destruct() end
+      end
+    end)
+
     lockBtnGreen = {0.2, 0.9, 0.05, 0.7}
     lockBtnRed = {0.9, 0.1, 0.05, 0.7}
 
@@ -82,8 +91,11 @@ function scheduleOblongButtonFix()
 end
 
 function addSilhouetteButton()
+  -- A missing game data object must not abort the button rebuild: a leader
+  -- left without buttons throws on every later recolor.
   local gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
-  local btnTint = gameData.getTable("battlefieldTint")
+  local btnTint = gameData ~= nil and gameData.getTable("battlefieldTint")
+      or {r = 0.3, g = 0.3, b = 0.3}
   local buttonOffset = calculateButtonZOffset(templateInfo.baseRadius[unitData.baseSize])
   btnData = {
     click_function = "toggleSilhouettes",
@@ -102,8 +114,10 @@ function addSilhouetteButton()
 end
 
 function addLockButton()
+    -- Same guard as addSilhouetteButton: never abort the button rebuild.
     local gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
-    local btnTint = gameData.getTable("battlefieldTint")
+    local btnTint = gameData ~= nil and gameData.getTable("battlefieldTint")
+        or {r = 0.3, g = 0.3, b = 0.3}
     local templateInfo = Global.getTable("templateInfo")
     local buttonOffset = calculateButtonZOffset(templateInfo.baseRadius[unitData.baseSize])
     lockBtnData = {
@@ -123,6 +137,14 @@ function addLockButton()
 end
 
 function updateLockBtnColor()
+    -- editButton on an object with no buttons raises a bare object reference
+    -- error, and every unit move recolors every leader through the unlock
+    -- sweep: a leader whose buttons failed to build once would then throw at
+    -- every table event forever.
+    local buttons = self.getButtons()
+    if buttons == nil or #buttons == 0 then
+        return
+    end
     if isLocked() then
         self.editButton({
             index = 0,
@@ -210,18 +232,21 @@ function toggleSilhouettes()
 end
 
 -- Loops through all minis in the unit
--- Removes all attachments and destroys the first one
--- The silhouette should be the only attachment, so this should be safe to do
+-- Removes all attachments and destroys every one of them. A mini can carry
+-- more than one silhouette: one saved with the game comes back as a phantom
+-- attachment (the script state does not survive the save), and raising the
+-- silhouettes again stacks a second one on top. Destroying only the first
+-- left the other detached with no collider, falling through the world.
 function clearSilhouette()
   for k, guid in pairs(miniGUIDs) do
     local obj = getObjectFromGUID(guid)
 
     -- Guard against players who delete their minis!
     if obj then
-      -- silhouetteState is saved with the game, but the silhouette objects
-      -- themselves are not: loading a save made with silhouettes up leaves the
-      -- state true with nothing attached, and removeAttachments() returns an
-      -- empty list. Destructing that nil crashed the script.
+      -- May be empty: silhouettes are attachments and never survive a save
+      -- (setUp resets silhouetteState accordingly), and a mid-session reload
+      -- or state drift can leave nothing attached with the state still true.
+      -- Destructing that nil crashed the script.
       local silToDestroy = obj.removeAttachments()[1]
       if silToDestroy then
         silToDestroy.destruct()
@@ -290,9 +315,36 @@ function spawnSilhouette(obj, pos, rot)
       material = 3
   })
   silhouette.setColorTint({0.47,0.76,0.8,0.3})
-  if obj ~= nil then
-    obj.addAttachment(silhouette)
-  end
+  -- A silhouette is a visual aid: it must not collide with minis, and it
+  -- must never block the line of sight rays Order_Token casts. Colliders
+  -- only exist once the bundle has loaded, and a dead handle can throw on
+  -- any access, hence the shielded wait. Attaching also waits for the load:
+  -- attaching a still-loading custom object made the engine throw a bare
+  -- object reference error at the parent when the load completed. Locked in
+  -- the meantime, so the collider-less bundle cannot fall through the world.
+  silhouette.setLock(true)
+  silhouette.use_gravity = false
+  Wait.condition(function()
+    pcall(function()
+      for _, colliderName in ipairs({"MeshCollider", "BoxCollider"}) do
+        for _, collider in ipairs(silhouette.getComponentsInChildren(colliderName) or {}) do
+          collider.set("enabled", false)
+        end
+      end
+      -- The player may have lowered the silhouettes while this one was
+      -- still loading: an orphan must die, not float unattached forever.
+      if not silhouetteState then
+        silhouette.destruct()
+      elseif obj ~= nil then
+        obj.addAttachment(silhouette)
+      end
+    end)
+  end, function()
+    local ok, ready = pcall(function()
+      return silhouette.isDestroyed() or not silhouette.loading_custom
+    end)
+    return not ok or ready
+  end)
   return silhouette
 end
 
@@ -346,4 +398,5 @@ function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
 end
+
 
