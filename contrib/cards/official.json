@@ -3555,6 +3555,36 @@
     ],
     "Personnel": [
       {
+        "name": "Han Solo, Reckless Smuggler",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14172704663240194930/4ED01856C4723892D0296D594FC2593995759A7A/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/11142956928673458521/8743D92AC78311A00C61FFBDBDB9E91D9950BEB1/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/12562269575017159823/3C7D6BBF8434EEBB6D8A1E1BF354B122101C5B4C/"
+        },
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "unit": ["Han & Chewie"]
+          }
+        },
+        "leader": true
+      },
+      {
+        "name": "Chewbacca, Courageous Co-Pilot",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16331322498416314538/AF265B9A77602B11E8B99AD687CF88A31D6BB367/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12156068449555787075/72FA088F80EDE7E6E0A21FBAD3EE4D5DDAF2F49D/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10613978713855715706/A4967FFF05DC65508E6D66F2250565D79291664A/"
+        },
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "unit": ["Han & Chewie"]
+          }
+        },
+        "leader": true
+      },
+      {
         "name": "B2 Super Rocket Battle Droid",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12046890039399081772/0F0CC57666FEC4A737B5978D0369FDC34A92CD0E/",
         "mini": {
@@ -5758,6 +5788,11 @@
       {
         "name": "Air Support",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134030778/90E5CEF9833FED1C5F926FB8878BDBCD5B5099F6/",
+        "pip": 2
+      },
+      {
+        "name": "Evasive Action",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/11322185263229796569/A8053EF1FE9A21AE3BFEBE13F1C86595A6EAA482/",
         "pip": 2
       },
       {
