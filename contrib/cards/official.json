@@ -3581,8 +3581,7 @@
           "include": {
             "unit": ["Han & Chewie"]
           }
-        },
-        "leader": true
+        }
       },
       {
         "name": "B2 Super Rocket Battle Droid",
