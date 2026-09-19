@@ -3572,10 +3572,6 @@
       {
         "name": "Chewbacca, Courageous Co-Pilot",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16331322498416314538/AF265B9A77602B11E8B99AD687CF88A31D6BB367/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12156068449555787075/72FA088F80EDE7E6E0A21FBAD3EE4D5DDAF2F49D/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10613978713855715706/A4967FFF05DC65508E6D66F2250565D79291664A/"
-        },
         "points": 0,
         "restrictions": {
           "include": {
