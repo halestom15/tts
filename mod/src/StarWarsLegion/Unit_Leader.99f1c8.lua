@@ -231,12 +231,28 @@ function toggleSilhouettes()
   end
 end
 
--- Loops through all minis in the unit
--- Removes all attachments and destroys every one of them. A mini can carry
--- more than one silhouette: one saved with the game comes back as a phantom
--- attachment (the script state does not survive the save), and raising the
--- silhouettes again stacks a second one on top. Destroying only the first
--- left the other detached with no collider, falling through the world.
+-- Detaches every attachment from a mini and destroys those with the given
+-- name (and the unnamed ones too, if asked), putting the others back.
+function removeAttachmentsNamed(obj, name, includeUnnamed)
+  for _, attachment in ipairs(obj.removeAttachments()) do
+    if attachment ~= nil then
+      local attachmentName = attachment.getName()
+      if attachmentName == name or (includeUnnamed and attachmentName == "") then
+        attachment.destruct()
+      else
+        obj.addAttachment(attachment)
+      end
+    end
+  end
+end
+
+-- Loops through all minis in the unit and destroys every silhouette on it. A
+-- mini can carry more than one: one saved with the game comes back as a
+-- phantom attachment (the script state does not survive the save), and
+-- raising the silhouettes again stacks a second one on top. Destroying only
+-- the first left the other detached with no collider, falling through the
+-- world. Silhouettes from older saves carry no name, so unnamed attachments
+-- go too; anything else attached is put back.
 function clearSilhouette()
   for k, guid in pairs(miniGUIDs) do
     local obj = getObjectFromGUID(guid)
@@ -246,11 +262,7 @@ function clearSilhouette()
       -- May be empty: silhouettes are attachments and never survive a save
       -- (setUp resets silhouetteState accordingly), and a mid-session reload
       -- or state drift can leave nothing attached with the state still true.
-      -- Destructing that nil crashed the script.
-      local silToDestroy = obj.removeAttachments()[1]
-      if silToDestroy then
-        silToDestroy.destruct()
-      end
+      removeAttachmentsNamed(obj, "Silhouette", true)
     end
   end
   silhouetteState = false
@@ -315,9 +327,37 @@ function spawnSilhouette(obj, pos, rot)
       material = 3
   })
   silhouette.setColorTint({0.47,0.76,0.8,0.3})
-  if obj ~= nil then
-    obj.addAttachment(silhouette)
-  end
+  silhouette.setName("Silhouette")
+  -- A silhouette is a visual aid: it must not collide with minis, and it
+  -- must never block the line of sight rays Order_Token casts. Colliders
+  -- only exist once the bundle has loaded, and a dead handle can throw on
+  -- any access, hence the shielded wait. Attaching also waits for the load:
+  -- attaching a still-loading custom object made the engine throw a bare
+  -- object reference error at the parent when the load completed. Locked in
+  -- the meantime, so the collider-less bundle cannot fall through the world.
+  silhouette.setLock(true)
+  silhouette.use_gravity = false
+  Wait.condition(function()
+    pcall(function()
+      for _, colliderName in ipairs({"MeshCollider", "BoxCollider"}) do
+        for _, collider in ipairs(silhouette.getComponentsInChildren(colliderName) or {}) do
+          collider.set("enabled", false)
+        end
+      end
+      -- The player may have lowered the silhouettes while this one was
+      -- still loading: an orphan must die, not float unattached forever.
+      if not silhouetteState then
+        silhouette.destruct()
+      elseif obj ~= nil then
+        obj.addAttachment(silhouette)
+      end
+    end)
+  end, function()
+    local ok, ready = pcall(function()
+      return silhouette.isDestroyed() or not silhouette.loading_custom
+    end)
+    return not ok or ready
+  end)
   return silhouette
 end
 
@@ -371,4 +411,5 @@ function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
 end
+
 
