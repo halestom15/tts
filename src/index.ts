@@ -17,11 +17,22 @@ export async function extractSaveFile(
   if (!fs.pathExists(source)) {
     throw new Error(`No source file "${source}".`);
   }
+  const baseName = path.basename(source).split('.')[0];
+  // Global's XmlUI source is only include directives: what it renders lives in
+  // mod/src/includes/ui/*.xml and is spliced in at compile time. The extractor
+  // (@matanlurey/tts-expander) does not round-trip nested XML includes -
+  // Menu.xml itself includes Welcome.xml - and writes a fully expanded copy
+  // into this file instead. Recompiling that stacks several welcome dialogs
+  // sharing one id, which then cannot be closed. So the file is put back as
+  // it was before the extract.
+  const globalXmlPath = path.join(output, `${baseName}.xml`);
+  const globalXml = (await fs.pathExists(globalXmlPath))
+    ? await fs.readFile(globalXmlPath, 'utf8')
+    : undefined;
   if (!fs.pathExists(output)) {
     console.info(`Creating output directory "${output}"`);
     await fs.mkdirp(output);
   } else {
-    const baseName = path.basename(source).split('.')[0];
     const modOutput = path.join(output, baseName);
     console.info(`Clearing output directory "${modOutput}"`);
     await fs.remove(modOutput);
@@ -32,6 +43,10 @@ export async function extractSaveFile(
   const modTree = await splitter.readSaveAndSplit(source);
   await splitter.writeSplit(output, modTree);
   console.info(`Wrote "${output}"...`);
+  if (globalXml !== undefined) {
+    await fs.writeFile(globalXmlPath, globalXml, 'utf8');
+    console.info(`Restored "${globalXmlPath}" to its include-only form.`);
+  }
 }
 
 function concatAllObjectScripts(
@@ -103,9 +118,30 @@ export async function compileSaveFile(
   }
 }
 
+/**
+ * Finds the Tabletop Simulator home directory (the one containing `Saves`).
+ *
+ * Honors `TTS_HOME` on any platform, and finds a Documents folder that
+ * OneDrive has redirected on Windows, which `steam.homeDir.win32` misses.
+ * Otherwise falls back to each platform's default location.
+ */
 function defaultTTSHomeDir(): string {
+  if (process.env.TTS_HOME) {
+    return process.env.TTS_HOME;
+  }
   const platform = os.platform();
   if (platform === 'win32') {
+    if (process.env.OneDrive) {
+      const oneDriveHome = path.join(
+        process.env.OneDrive,
+        'Documents',
+        'My Games',
+        'Tabletop Simulator',
+      );
+      if (fs.existsSync(oneDriveHome)) {
+        return oneDriveHome;
+      }
+    }
     return steam.homeDir.win32(process.env);
   }
   if (platform === 'darwin') {
