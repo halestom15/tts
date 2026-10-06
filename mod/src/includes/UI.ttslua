@@ -1,5 +1,13 @@
-function initUI()
+-- The welcome dialog is declared closed in the XML and opened from here. An
+-- undo reloads the whole mod, so a dialog the XML declares open pops straight
+-- back into the middle of a game every single time a player rewinds.
+function initUI(showWelcome)
   UI.setValue("welcomeDialogTitle", "Star Wars Legion for TTS " .. VERSION)
+  if showWelcome then
+    Wait.frames(function()
+      UI.show("welcomeDialog")
+    end)
+  end
 end
 
 function _toggleDialog(name)
