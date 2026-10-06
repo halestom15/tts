@@ -6,6 +6,9 @@ require('!/generated/cards')
 require('!/UI')
 require('!/RangeRulers')
 require('!/Cohesion')
+-- Must stay AFTER !/RangeRulers and !/Cohesion: it captures their original
+-- functions before shadowing them.
+require('!/ExtendedOverlays')
 
 -- Must be spelled onSave: unlike onload, TTS has no all-lowercase alias for it,
 -- so an onsave() is never called and the global script saves nothing at all.
@@ -15,6 +18,7 @@ function onSave()
   return JSON.encode({
     clocks = chessClocksActive,
     welcome = welcomeDialogActive,
+    overlays = overlayMode,
   })
 end
 
@@ -30,6 +34,10 @@ function onload(saveData)
     if saveData ~= "" then
       loadData = JSON.decode(saveData)
     end
+    -- Impose the saved overlay mode (never toggle: an undo replays this whole
+    -- function with the snapshot's state). Saves from before the key default
+    -- to the mod's original overlays, as they always did.
+    overlayMode = (loadData.overlays == "extended") and "extended" or "original"
     -- Saves written before the welcome dialog was remembered have no such key,
     -- and those players expect to be greeted as they always were.
     initUI(loadData.welcome ~= false)

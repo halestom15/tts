@@ -42,6 +42,18 @@ function onDestroy()
 end
 
 function toggleRangeRuler()
+  -- extended overlays (see !/ExtendedOverlays): route this token's R button to
+  -- the Projector renderer when they are on, unchanged otherwise.
+  if extendedOverlaysOn() then
+    clearOverlayRange({figGUID = self.getGUID()})
+    if rangeOn then
+      rangeOn = false
+    else
+      triggerOverlayRange({figGUID = self.getGUID()})
+      rangeOn = true
+    end
+    return
+  end
   clearRangeRuler()
   rangeOn = not rangeOn
   if rangeOn then

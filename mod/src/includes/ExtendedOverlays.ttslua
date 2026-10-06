@@ -1,0 +1,571 @@
+-- Extended overlay module (optional, table-wide toggle), by Iron Squadron.
+--
+-- OFF by default: the mod's original range and cohesion overlays are used and
+-- nothing changes. A player turns it on for the whole table with the overlay
+-- toggle button in the bottom-right floating menu. While it is on:
+--   * the range rulers gain the white range 1/2 band, from the base edge out
+--     to 3in;
+--   * the Objective and Condition tokens' own R button shows a range 1/2 ring
+--     instead of range 1;
+--   * cohesion gets a ring on the base sizes the mod has none for (100mm,
+--     120mm, 150mm and the two oblong bases);
+--   * cohesion stays visible and follows a figure while it is dragged.
+-- The maximum move ring is not handled here: it stays the mod's own.
+--
+-- Load order matters: this file must be required AFTER !/RangeRulers and
+-- !/Cohesion, because it captures their original functions before shadowing
+-- them (see the aliases just below).
+
+
+-- Capture the ORIGINAL Global functions loaded by !/RangeRulers BEFORE we
+-- overwrite them below: the toggle wrapper resolves them by NAME at call
+-- time  -  without aliasing them, the original toggle would route back
+-- into our extended versions, defeating the original mode entirely.
+spawnRangeRulerOriginalGlobal     = spawnRangeRuler
+clearRangeRulersOriginalGlobal    = clearRangeRulers
+
+activeOverlays = activeOverlays or {}
+
+-- ============================================
+-- RENDERER: one real Unity Projector per active overlay, the same kind of
+-- object the mod's original overlays spawn.
+--
+-- What this layer owns, and the vanilla mod does not:
+--   * cohesion stays visible and FOLLOWS the figure during a drag;
+--   * toggles are deterministic (see gRangeTrigger).
+-- ============================================
+
+-- Resolve baseSize for a fig. The mod stores it as a script-local Var on the
+-- fig itself (set at spawn from the unit's container). unitData.baseSize is
+-- only populated on the Unit Leader, not on minis/vehicles, so getVar is the
+-- canonical read with unitData as a fallback.
+local function overlayBaseSize(fig)
+    if not fig then return nil end
+    local ok, bs = pcall(function() return fig.getVar("baseSize") end)
+    if ok and bs then return bs end
+    local data = fig.getTable("unitData")
+    if data and data.baseSize then return data.baseSize end
+    return nil
+end
+
+-- A token has no baseSize of its own. When the hover hotkey asks for the full
+-- fig-leader bands on a token, size them with the closest equivalent
+-- footprint. The token's own R button keeps its single-ring bundle.
+local TOKEN_TO_BASESIZE = {
+    smokeToken    = "small",
+    token         = "small",
+    tokenRangeTwo = "small",
+    poi           = "medium",
+    bombCart      = "medium",
+}
+
+-- The extended range rulers. Same Projector, same geometry, same colours
+-- as the mod's, with one thing added: the range 0.5 band, white, from the base
+-- edge out to 3in, with range 1's orange starting at 3in instead of at the
+-- base. Built from the mod's own prefabs, for Windows and macOS alike.
+--
+-- These are NEW assets, kept apart from the mod's own range bundles on
+-- purpose: anything added to those would show in the original mode too, and
+-- the toggle would stop meaning anything for Range.
+--
+-- Base URL for this module's assets. They live in the swl-assets store, one
+-- flat directory holding everything this mod downloads at runtime, under a
+-- contract that nothing there is ever renamed, overwritten or deleted - so
+-- this address does not have to move again. Repointing the module means this
+-- constant, the overlayToggleIcon entry in CustomUIAssets (mod/src/StarWarsLegion.json)
+-- and the repaired-bundle URLs written out in full across the mod's own files
+-- -- those are deliberate literals, greppable and revertible entry by entry.
+local OVERLAY_ASSETS = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/"
+
+-- Only the hover hotkey reaches this table (forceFigMode). A token's own R
+-- button keeps the mod's single-ring bundle, deliberately.
+local OVERLAY_RANGE_BUNDLES = {
+    small  = OVERLAY_ASSETS .. "projector_27mm_isq_v6.unity3d",
+    medium = OVERLAY_ASSETS .. "projector_50mm_isq_v6.unity3d",
+    large  = OVERLAY_ASSETS .. "projector_70mm_isq_v6.unity3d",
+    huge   = OVERLAY_ASSETS .. "projector_100mm_isq_v6.unity3d",
+    laat   = OVERLAY_ASSETS .. "projector_120mm_isq_v6.unity3d",
+    epic   = OVERLAY_ASSETS .. "projector_150mm_isq_v6.unity3d",
+    long   = OVERLAY_ASSETS .. "projector_100mm_oblong_isq_v6.unity3d",
+    snail  = OVERLAY_ASSETS .. "projector_200mm_oblong_isq_v6.unity3d",
+}
+
+-- Cohesion rings for the base sizes the mod has none for. getCohesionLinks()
+-- only knows small (27mm), medium (50mm) and large (70mm); on anything else
+-- vanilla spawnCohesionRuler returns without drawing. These fill the gap.
+--
+-- Nothing was invented: BB_CohesionProjector draws its ring at the projector's
+-- outer edge and reads nothing else, so the whole geometry is one number,
+-- ortho = half the base + 3in, which is what the mod's own three carry
+-- (27mm -> 3.531496 = 0.53150 + 3, and so on). 3in is range 1/2, the distance
+-- cohesion is measured at -- the same one the white band marks on the rulers.
+--
+-- long and snail go through BB_OblongCohesionProjector, written for them: the
+-- mod's cohesion shader computes its gradient with Circle() and can only draw
+-- a disc. Their base geometry is not invented either -- it is read back out of
+-- the oblong RANGE materials, the only place in the project where those
+-- dimensions are written down.
+local OVERLAY_COHESION_BUNDLES = {
+    huge  = OVERLAY_ASSETS .. "halfcohesion_100mm_isq_v2.unity3d",
+    laat  = OVERLAY_ASSETS .. "halfcohesion_120mm_isq_v2.unity3d",
+    epic  = OVERLAY_ASSETS .. "halfcohesion_150mm_isq_v2.unity3d",
+    long  = OVERLAY_ASSETS .. "halfcohesion_long_isq_v3.unity3d",
+    snail = OVERLAY_ASSETS .. "halfcohesion_snail_isq_v3.unity3d",
+}
+
+-- Range 1/2 rings for the tokens whose own R button should show range 1/2
+-- rather than the range 1 the mod gives them. Keyed by the object's name,
+-- because rangeKey cannot separate them: "token" is shared by Objective,
+-- Condition, Cad Bane, Proton Charge and Complete the Mission alike.
+--
+-- The mod already had exactly this object, and it is not a range ruler: the
+-- POI's 3in ring is BB_CohesionProjector with its orthographic size at 4,
+-- one inch of base radius plus three. Ours is the same build at the token's
+-- own base, and it keeps the ring's current amber so only the SIZE changes.
+--
+-- The hover hotkey is untouched: it still draws the fig-leader bands.
+-- Objective and Condition share the base and the colour, so one ring serves
+-- both. Condition is what the game calls the Advantage token (Martin, 14 Aug).
+local TOKEN_RING_BUNDLES = {
+    ["Objective Token"] = OVERLAY_ASSETS .. "token05_27mm_isq_v1.unity3d",
+    ["Condition Token"] = OVERLAY_ASSETS .. "token05_27mm_isq_v1.unity3d",
+}
+
+-- Per family: the name TTS gives the spawned object, whether it tracks its
+-- figure, and the pitch the vanilla spawn uses.
+--
+-- The names are deliberately the vanilla ones. standbyTokens (Global) and
+-- removeLockedRulers (GAME_CONTROLLER) sweep by name, so our Projectors
+-- inherit the mod's own cleanup.
+local PROJECTOR_SPEC = {
+    range      = {name = "Range Ruler",         follows = true,  pitch = 90},
+    cohesion   = {name = "Cohesion Ruler",      follows = true,  pitch = 0},
+}
+
+-- Vanilla injects this into its Range ruler so it tracks the figure. Reusing
+-- it for cohesion is what makes cohesion follow during a drag. Guarded
+-- against a destroyed target, which the vanilla one is not.
+local function followFigureScript(targetGUID)
+    return "targetGUID = '" .. targetGUID .. "'\n"
+        .. "function onFixedUpdate()\n"
+        .. "  local t = getObjectFromGUID(targetGUID)\n"
+        .. "  if t == nil then return end\n"
+        .. "  local p = t.getPosition()\n"
+        .. "  self.setPosition({p.x, p.y + 20, p.z})\n"
+        .. "  self.setRotation({0, t.getRotation().y, 0})\n"
+        .. "end"
+end
+
+local function isLiveObject(obj)
+    if obj == nil then return false end
+    local ok, dead = pcall(function() return obj.isDestroyed() end)
+    return ok and not dead
+end
+
+-- Which bundle this overlay shows.
+local function resolveOverlayBundle(kind, fig, params)
+    params = params or {}
+
+    if kind == "cohesion" then
+        local bs = overlayBaseSize(fig)
+        if not bs then return nil end
+        -- Ours first, for the base sizes the mod has no ring for at all.
+        if OVERLAY_COHESION_BUNDLES[bs] then return OVERLAY_COHESION_BUNDLES[bs] end
+        if not getCohesionLinks then return nil end
+        local links = getCohesionLinks()
+        return links and links[bs] or nil
+    end
+
+    if kind == "range" then
+        if not getRangeRulerLinks then return nil end
+        local links = getRangeRulerLinks()
+        if not links then return nil end
+
+        local key = params.rangeKey
+        if not key and fig then
+            local ok, v = pcall(function() return fig.getVar("rangeKey") end)
+            if ok then key = v end
+        end
+        -- Token R button: its own single-ring bundle. Hover hotkey
+        -- (forceFigMode): the full fig-leader bands instead.
+        if key and not params.forceFigMode then
+            local ok, nm = pcall(function() return fig.getName() end)
+            if ok and nm and TOKEN_RING_BUNDLES[nm] then return TOKEN_RING_BUNDLES[nm] end
+            if links[key] then return links[key] end
+        end
+        local bs = overlayBaseSize(fig) or (key and TOKEN_TO_BASESIZE[key])
+        if not bs then return nil end
+        -- Extended rulers first: same geometry as the mod's, plus the
+        -- white range 0.5 band. Fall back to the mod's own bundle if a base
+        -- size ever appears that we have no ruler for.
+        return OVERLAY_RANGE_BUNDLES[bs] or links[bs]
+    end
+
+    return nil
+end
+
+local function spawnOverlayProjector(kind, fig, params)
+    local spec = PROJECTOR_SPEC[kind]
+    if not spec then return nil end
+    local bundle = resolveOverlayBundle(kind, fig, params)
+    if not bundle then return nil end
+    if not fig then return nil end
+
+    local p = fig.getPosition()
+    local pos = {p.x, p.y + 20, p.z}
+    local yaw = fig.getRotation().y
+
+    local obj = spawnObject({
+        type     = "Custom_AssetBundle",
+        position = pos,
+        rotation = {spec.pitch, yaw, 0},
+        -- Scale 0 hides the TTS placeholder box without touching the
+        -- Projector itself, exactly as the vanilla spawns do.
+        scale    = {0, 0, 0},
+    })
+    obj.setCustomObject({type = 0, assetbundle = bundle})
+    obj.setLock(true)
+    obj.use_gravity = false
+    obj.setName(spec.name)
+    if spec.follows then
+        obj.setLuaScript(followFigureScript(fig.getGUID()))
+    end
+    return obj
+end
+
+-- Destroy the Projector an entry owns, then forget the entry. EVERY removal
+-- must go through here: dropping the entry alone leaks the object.
+function removeOverlay(key)
+    local entry = activeOverlays[key]
+    if entry == nil then return end
+    if isLiveObject(entry.obj) then
+        pcall(function() entry.obj.destruct() end)
+    end
+    activeOverlays[key] = nil
+end
+
+function removeOverlaysOfType(kind)
+    local keys = {}
+    for key, entry in pairs(activeOverlays) do
+        if entry.type == kind then keys[#keys + 1] = key end
+    end
+    for _, key in ipairs(keys) do removeOverlay(key) end
+end
+
+-- Reconcile the scene with the registry: give a Projector to every entry that
+-- has never had one, and drop entries that lost theirs.
+function redrawOverlaysNow()
+    local stale = {}
+    for key, entry in pairs(activeOverlays) do
+        if not entry.fig or type(entry.fig.getPosition) ~= "function" then
+            stale[#stale + 1] = key
+        elseif entry.objGUID == nil then
+            local ok, obj = pcall(spawnOverlayProjector, entry.type, entry.fig, entry.params)
+            if ok and obj then
+                entry.obj     = obj
+                entry.objGUID = obj.getGUID()
+            else
+                stale[#stale + 1] = key
+            end
+        elseif not isLiveObject(entry.obj) then
+            -- The Projector is gone and we did not remove it, so a sweeper
+            -- did: standbyTokens, removeLockedRulers or Clear Map. Those are
+            -- explicit "wipe the table" commands, so treat it as the overlay
+            -- having been switched off rather than respawn behind them.
+            stale[#stale + 1] = key
+        end
+    end
+    for _, k in ipairs(stale) do removeOverlay(k) end
+end
+
+-- Deferred by one frame so a single click touching several entries
+-- reconciles once.
+function redrawAllOverlays()
+    if overlayRedrawPending then return end
+    overlayRedrawPending = true
+    Wait.frames(function()
+        overlayRedrawPending = false
+        pcall(redrawOverlaysNow)
+    end, 1)
+end
+
+function gSpawnCohesion(params)
+    local fig = getObjectFromGUID(params.figGUID)
+    if not fig then return end
+    -- removeOverlay first: re-spawning over a live entry would orphan its
+    -- Projector, which nothing would ever destroy.
+    local key = fig.getGUID() .. ":cohesion"
+    removeOverlay(key)
+    activeOverlays[key] = {
+        type = "cohesion", fig = fig, params = params or {}
+    }
+    redrawAllOverlays()
+end
+
+function gClearCohesion(params)
+    local fig = getObjectFromGUID(params.figGUID)
+    if not fig then return end
+    -- Vanilla fig scripts clear cohesion from onPickedUp. Design choice
+    -- (11 aug): our cohesion stays visible and FOLLOWS the fig during the
+    -- drag, like Range does, so clears on a held fig are ignored (the
+    -- vanilla onPickedUp clear is the only caller in that state).
+    if fig.held_by_color then return end
+    removeOverlay(fig.getGUID() .. ":cohesion")
+end
+
+function gToggleCohesion(params)
+    local fig = getObjectFromGUID(params.figGUID)
+    if not fig then return end
+    local key = fig.getGUID() .. ":cohesion"
+    if activeOverlays[key] then
+        gClearCohesion(params)
+    else
+        gSpawnCohesion(params)
+    end
+end
+
+function gSpawnRange(params)
+    local fig = getObjectFromGUID(params.figGUID)
+    if not fig then return end
+    local key = fig.getGUID() .. ":range"
+    removeOverlay(key)
+    activeOverlays[key] = {
+        type = "range", fig = fig, params = params or {}
+    }
+    redrawAllOverlays()
+end
+
+function gClearRange(params)
+    local fig = getObjectFromGUID(params.figGUID)
+    if not fig then return end
+    removeOverlay(fig.getGUID() .. ":range")
+    -- Original mode: also destroy the vanilla bundle this fig owns. It was
+    -- spawned in the Global scope by gRangeTrigger, so the token's own
+    -- exitTargetingMode/clearRangeRulers cannot reach it.
+    if originalRangeGUID == params.figGUID then
+        pcall(clearRangeRulersOriginalGlobal)
+        originalRangeGUID = nil
+    end
+end
+
+function gToggleRange(params)
+    local fig = getObjectFromGUID(params.figGUID)
+    if not fig then return end
+    local key = fig.getGUID() .. ":range"
+    if activeOverlays[key] then
+        gClearRange(params)
+    else
+        gSpawnRange(params)
+    end
+end
+
+-- Note: no onObjectPickUp/onObjectDrop handlers (the vanilla Global defines
+-- none either). Cohesion, like Range, stays visible during a drag and follows
+-- because its Projector carries the tracking script; the vanilla onPickedUp
+-- clear is neutralized in gClearCohesion while the fig is held.
+
+function onObjectDestroy(obj)
+    if not obj or not obj.getGUID then return end
+    local guid = obj.getGUID()
+    local prefix = guid .. ":"
+    local plen = #prefix
+    local doomed = {}
+    for key, entry in pairs(activeOverlays) do
+        -- The destroyed object is either the figure an overlay belongs to,
+        -- or the overlay's own Projector (a sweeper, or a player deleting it
+        -- by hand).
+        if key:sub(1, plen) == prefix or entry.objGUID == guid then
+            doomed[#doomed + 1] = key
+        end
+    end
+    for _, key in ipairs(doomed) do removeOverlay(key) end
+end
+
+-- ============================================
+-- TABLE-WIDE OVERLAY TOGGLE (Range + Cohesion)
+-- One switch for the whole table: "original" (the mod's original Projectors)
+-- or "extended" (the extended overlays). Per-seat modes were dropped on
+-- purpose: any rendered overlay is visible to every player (TTS engine
+-- limitation), so one player triggering an original Projector shows it to
+-- the whole table anyway. The switch is the overlay toggle button in the
+-- bottom-right menu: default grey = off (originals, untouched), green = on.
+-- ============================================
+
+overlayMode = overlayMode or "original"  -- "original" | "extended", table-wide
+
+function gGetMode(_) return overlayMode end
+
+-- Which fig currently owns the vanilla (original-mode) Range bundle, so a
+-- second trigger on the same fig turns it off like vanilla
+-- showRangeOnHoveredModel does.
+originalRangeGUID = originalRangeGUID or nil
+
+function gRangeTrigger(params)
+    if not params or not params.figGUID then return end
+    local fig = getObjectFromGUID(params.figGUID)
+    if not fig then return end
+    if overlayMode ~= "original" then
+        -- Forward the WHOLE params table. Rebuilding it with figGUID alone
+        -- dropped forceFigMode, which the hover hotkey sets and
+        -- resolveOverlayBundle reads: the fig-leader bands documented for a
+        -- hovered token never rendered, its own single ring did instead.
+        -- showRangeOnHoveredModel already forwards it, so the same gesture
+        -- gave two different results depending on which path it took.
+        gToggleRange(params)
+        return
+    end
+    -- The vanilla bundle Range lives in the GLOBAL scope: !/RangeRulers is
+    -- required by Global, while figs only require !/Cohesion. Calling
+    -- fig.call("spawnRangeRulerOriginal", fig) therefore ALWAYS raised
+    -- "no such function"; the pcall swallowed it and we fell through to the
+    -- extended renderer, so the original mode silently drew extended overlays instead of
+    -- the original Projector. Route through the Global aliases captured at
+    -- the top of this block instead.
+    local wasOn = (originalRangeGUID == params.figGUID)
+    pcall(clearRangeRulersOriginalGlobal)
+    originalRangeGUID = nil
+    if not wasOn then
+        if pcall(function() spawnRangeRulerOriginalGlobal(fig) end) then
+            originalRangeGUID = params.figGUID
+        else
+            gToggleRange(params)
+        end
+    end
+end
+
+function toggleExtendedOverlays(_, _, _)
+    overlayMode = (overlayMode == "extended") and "original" or "extended"
+    -- Wipe both renderers' overlays so stale visuals don't linger after the
+    -- toggle; each player just re-triggers their hotkey.
+    removeOverlaysOfType("cohesion")
+    removeOverlaysOfType("range")
+    -- The button flags outlive the ruler wipes -- and the extended renderer sets
+    -- them without ever setting rangeRuler -- so reset each family's flag
+    -- too, or its button is left inverted: rangeOn on tokens, overlayRangeOn on
+    -- bomb carts, rulerOn (cohesion) on order tokens.
+    local FLAGS = {"rangeOn", "overlayRangeOn", "rulerOn"}
+    for _, obj in ipairs(getAllObjects()) do
+        if obj.getVar then
+            if obj.getVar("cohesionRuler") then
+                pcall(function() obj.call("clearCohesionRuler") end)
+            end
+            if obj.getVar("rangeRuler") then
+                -- Every family that can hold a ruler requires !/RangeRulers,
+                -- whose clearRangeRulers wipes the scope's ruler whichever
+                -- script spawned it (tokens, order tokens, bomb carts alike).
+                pcall(function() obj.call("clearRangeRulers") end)
+            end
+            for _, flag in ipairs(FLAGS) do
+                if obj.getVar(flag) then obj.setVar(flag, false) end
+            end
+        end
+    end
+    -- The original-mode Range bundle is spawned from the Global scope, which
+    -- getAllObjects() above does not cover; forget the hover-hotkey's toggle
+    -- identity too, or its next press on the same unit is a dead click.
+    pcall(clearRangeRulersOriginalGlobal)
+    selectedUnitObj = nil
+    originalRangeGUID = nil
+    broadcastToAll(
+        (overlayMode == "extended") and "Extended range and cohesion overlays ON for the whole table."
+                                or "Extended range and cohesion overlays OFF: the mod's original overlays are back.",
+        (overlayMode == "extended") and {0.55, 0.9, 0.6} or {0.9, 0.75, 0.55})
+    deferOverlayToggleRefresh()
+end
+
+local function findXmlNodeById(tree, id)
+    for _, node in ipairs(tree) do
+        if node.attributes and node.attributes.id == id then return node, tree end
+        if node.children then
+            local found, parent = findXmlNodeById(node.children, id)
+            if found then return found, parent end
+        end
+    end
+    return nil, nil
+end
+
+-- UI: single overlay toggle button in the bottom-right
+-- legionFloatingMenu.
+function refreshOverlayToggleUI()
+    -- While the table is still assembling (or Steam is failing to serve its
+    -- content), the vanilla XML is not up yet: getXmlTable returns nothing,
+    -- and pushing an empty table back logs "<UI.setXmlTable>: table was
+    -- null". Nothing to edit into means nothing to do.
+    local tree = UI.getXmlTable()
+    if not tree or #tree == 0 then return false end
+    local menu = findXmlNodeById(tree, "legionFloatingMenu")
+    if menu and menu.children then
+        local isExtended = (overlayMode == "extended")
+        local attrs = {
+            id = "overlayToggleMenuButton",
+            onClick = "toggleExtendedOverlays",
+            tooltip = isExtended
+                and "Extended range and cohesion overlays: ON"
+                or  "Extended range and cohesion overlays: OFF",
+        }
+        -- OFF keeps the sibling buttons' default light-grey look (Welcome,
+        -- Chess Clocks); ON switches to green.
+        if isExtended then attrs.color = "#1e7a3a" end
+        local button = {
+            tag = "Button",
+            attributes = attrs,
+            children = {{
+                -- White PNG sprite (CustomUIAssets "overlayToggleIcon"), tinted per
+                -- state: dark on the grey button, white on green. The shape
+                -- lives in the alpha channel, which is what makes the tint
+                -- work.
+                tag = "Image",
+                attributes = {
+                    image = "overlayToggleIcon",
+                    color = isExtended and "#FFFFFF" or "#2b2b2b",
+                    preserveAspect = "true",
+                    raycastTarget = "false",
+                },
+            }},
+        }
+        local placed = false
+        for i, c in ipairs(menu.children) do
+            if c.attributes and c.attributes.id == "overlayToggleMenuButton" then
+                menu.children[i] = button
+                placed = true
+                break
+            end
+        end
+        if not placed then
+            for i, c in ipairs(menu.children) do
+                if c.attributes and c.attributes.interactable == "false" then
+                    menu.children[i] = button
+                    placed = true
+                    break
+                end
+            end
+        end
+    end
+    UI.setXmlTable(tree)
+end
+
+-- Defer one frame: TTS throws a UTF-8 byte-buffer encoding error if we
+-- rebuild the UI XML synchronously inside a click handler. pcall guards
+-- against any residual race.
+function deferOverlayToggleRefresh()
+    Wait.frames(function() pcall(refreshOverlayToggleUI) end, 1)
+end
+
+-- Initial UI build. The vanilla XML can come up late -- slow or absent
+-- connectivity delays it past any fixed timer -- so retry until it is there
+-- rather than fire once and miss the menu.
+local function initialOverlayToggleRefresh(tries)
+    local ok, done = pcall(refreshOverlayToggleUI)
+    if (not ok or done == false) and tries > 0 then
+        Wait.time(function() initialOverlayToggleRefresh(tries - 1) end, 2)
+    end
+end
+Wait.time(function() initialOverlayToggleRefresh(30) end, 2)
+
+-- Note: we deliberately do NOT override the global spawnRangeRuler /
+-- clearRangeRulers / showRangeOnHoveredModel chain at the Lua scope where
+-- the vanilla mod defines it. Overriding spawnRangeRuler from a token
+-- script reproducibly SIGSEGV'd TTS on Mac in May 2026 (Mono GC stack
+-- corruption). Extended-mode routing happens via the g* functions called from our
+-- own hotkey/button wrappers; the originals stay reachable for
+-- original-mode players via spawnRangeRulerOriginalGlobal aliases above.

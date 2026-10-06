@@ -109,6 +109,18 @@ function finishInteraction()
 end
 
 function toggleRangeRuler()
+  -- extended overlays (see !/ExtendedOverlays): route this cart's R button to
+  -- the Projector renderer when they are on, unchanged otherwise.
+  if extendedOverlaysOn() then
+    clearOverlayRange({figGUID = self.getGUID()})
+    if overlayRangeOn then
+      overlayRangeOn = false
+    else
+      triggerOverlayRange({figGUID = self.getGUID()})
+      overlayRangeOn = true
+    end
+    return
+  end
   if rangeRuler == nil then
     spawnBombRuler()
   else
