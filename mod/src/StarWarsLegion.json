@@ -303,6 +303,18 @@
     "XmlUI": "#include ./StarWarsLegion.xml",
     "CustomUIAssets": [
       {
+        "Name": "progressPill",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/import-toast-pill.png"
+      },
+      {
+        "Name": "progressTrack",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/import-toast-track.png"
+      },
+      {
+        "Name": "progressFill",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/import-toast-fill.png"
+      },
+      {
         "Name": "PalpatinePoster",
         "URL": "https://steamusercontent-a.akamaihd.net/ugc/966480765117276391/DDA8500A1694EF1EAA32998DCAB2D53098FBE040/"
       },

@@ -36,6 +36,16 @@ function onload(saveData)
     CCID = sha256(tostring(Time.time))
     UUID = sha256(Player.getPlayers()[1].steam_id)
 
+    -- A save or an undo taken mid-import must not resurrect an import
+    -- banner: runtime UI state is written into saves, so force both off
+    -- here (imposed, never toggled). The count of imports in flight goes
+    -- with them, since no pump survives the reload that would clear it.
+    UI.setAttribute("importProgressRed", "active", false)
+    UI.setAttribute("importProgressBlue", "active", false)
+    UI.setAttribute("importRuleRed", "active", false)
+    UI.setAttribute("importRuleBlue", "active", false)
+    importsInFlight = 0
+
     local loadData = {
       clocks = false,
       welcome = true,
