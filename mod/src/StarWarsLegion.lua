@@ -9,6 +9,7 @@ require('!/Cohesion')
 -- Must stay AFTER !/RangeRulers and !/Cohesion: it captures their original
 -- functions before shadowing them.
 require('!/ExtendedOverlays')
+require('!/DeferredSetup')
 require('!/Antivirus')
 
 -- Must be spelled onSave: unlike onload, TTS has no all-lowercase alias for it,
@@ -30,8 +31,13 @@ function onObjectSpawn(obj)
 end
 
 function onload(saveData)
+    -- First, before anything that can throw: the veil is up from the XML,
+    -- and this is what guarantees it comes back down.
+    armSetupVeil()
+
     -- Saves, autosaves and undos reload objects that onObjectSpawn never sees.
     disinfectTable()
+
     VERSION = "v5.0.0-beta"
     CCID = sha256(tostring(Time.time))
     UUID = sha256(Player.getPlayers()[1].steam_id)
@@ -592,6 +598,9 @@ function onload(saveData)
 
     -- standby tokens
     standbyTokens()
+
+    -- deploy the deferred side-table furniture (paced, under the veil)
+    initDeferredSetup()
 end
 
 function standbyTokens()
