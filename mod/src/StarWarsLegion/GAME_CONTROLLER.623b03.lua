@@ -1099,7 +1099,7 @@ function togglePoiGuide()
             position = { 8, 30, 0 },
             scale = {0,0,0}
         })
-        local asset = "https://steamusercontent-a.akamaihd.net/ugc/2491137781649901469/35992792768FE398E61633C99C02D069A54F65B1/"
+        local asset = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_guide_isq_v2.unity3d"
         projector.setName("Poi Guide")
         projector.setLock(true)
         projector.setCustomObject({
