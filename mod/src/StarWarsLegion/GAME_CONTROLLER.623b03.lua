@@ -1,9 +1,6 @@
 require('!/Analytics')
 require('!/Deck')
 
-existingMasks = {}
-existingPoiGuide = nil
-
 function onload(save_state)
     _G.Deck = Deck:create()
 
@@ -1007,14 +1004,21 @@ function enableExperimentalFeatures()
     Global.UI.show("legionDisplay")
 end
 
-function getExistingMaskLength()
-    local length = 0
-    if existingMasks ~= nil then
-        for i, obj in pairs(existingMasks) do
-            length = length + 1
+-- The masks and the POI guide are found by name rather than kept in
+-- variables: a script reload (every save and load) resets the variables while
+-- the projectors stay on the table, so toggling went wrong and left orphans.
+function findObjectsByName(name)
+    local matches = {}
+    for _, obj in ipairs(getAllObjects()) do
+        if obj.getName() == name then
+            table.insert(matches, obj)
         end
     end
-    return length
+    return matches
+end
+
+function getExistingMaskLength()
+    return #findObjectsByName("Masking Boundary")
 end
 
 function toggleMaskMid()   
@@ -1054,13 +1058,8 @@ function toggleMaskLeft()
 end
 
 function clearMasks()
-    if existingMasks ~= nil then
-        for i, obj in pairs(existingMasks) do
-            if obj ~= nil then
-                destroyObject(obj)
-            end
-        end
-        existingMasks = {}
+    for _, obj in ipairs(findObjectsByName("Masking Boundary")) do
+        destroyObject(obj)
     end
 end
 
@@ -1079,15 +1078,15 @@ function placeMask(x, z)
       projector.setLock(true)
       projector.setCustomObject({
         assetbundle = asset,
-      })  
-    table.insert(existingMasks, projector)
+      })
 end
 
-function togglePoiGuide()   
-    local length = getExistingMaskLength() 
-    if existingPoiGuide ~= nil then
-        destroyObject(existingPoiGuide)
-        existingPoiGuide = nil
+function togglePoiGuide()
+    local existing = findObjectsByName("Poi Guide")
+    if #existing > 0 then
+        for _, obj in ipairs(existing) do
+            destroyObject(obj)
+        end
     else
         local projector = spawnObject({
             type = "Custom_AssetBundle",
@@ -1100,6 +1099,5 @@ function togglePoiGuide()
         projector.setCustomObject({
             assetbundle = asset
         })
-        existingPoiGuide = projector
     end
 end
