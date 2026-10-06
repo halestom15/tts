@@ -8,7 +8,7 @@
       "posZ": -9.154423,
       "rotX": -0.00031632543,
       "rotY": 210.031082,
-      "rotZ": 0.00000122906476,
+      "rotZ": 1.22906476e-06,
       "scaleX": 0.650000334,
       "scaleY": 0.650000334,
       "scaleZ": 0.650000334
@@ -36,7 +36,7 @@
     "Hands": false,
     "CustomMesh": {
       "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442740/91C08C293B53CCF3D104B0472B60ECF7BF4B613E/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442875/553BAF41BE032BCE7282C4DECB180B5410AC7226/",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/dodge_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
@@ -58,5 +58,7 @@
     "LuaScriptState": "",
     "XmlUI": ""
   },
-  "StatesPaths": {}
+  "StatesPaths": {
+    "2": "Dodge_Token.d0d9e2.json"
+  }
 }

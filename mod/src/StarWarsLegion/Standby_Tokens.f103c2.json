@@ -6,12 +6,12 @@
       "posX": -45.33208,
       "posY": 0.9404843,
       "posZ": -10.7486391,
-      "rotX": 0.000003882288,
+      "rotX": 3.882288e-06,
       "rotY": 135,
-      "rotZ": -0.0000163426284,
-      "scaleX": 1.84999943,
-      "scaleY": 1.84999943,
-      "scaleZ": 1.84999943
+      "rotZ": -1.63426284e-05,
+      "scaleX": 2.207585,
+      "scaleY": 1.84045,
+      "scaleZ": 2.207585
     },
     "Nickname": "Standby Tokens",
     "Description": "",
@@ -37,8 +37,8 @@
     "MaterialIndex": -1,
     "MeshIndex": -1,
     "CustomMesh": {
-      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441910/ED14AA37D66E5E75EA5D6790A50546B1FC105DAC/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442019/EF36C682BC69BB9239DC15B0C52EE6FFACEE19C0/",
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/aim_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/standby_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
