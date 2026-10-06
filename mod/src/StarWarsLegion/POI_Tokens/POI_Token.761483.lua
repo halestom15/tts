@@ -10,6 +10,8 @@ require('!/RangeRulers')
 -- poi = 50.8mm diameter (range 0.5 aka 3in)
 
 function onLoad()
+  -- Only tagged objects snap to the POI points on the battlefield.
+  self.addTag("POI")
   rangeOn = false
   -- Explicit, like Unit_Leader and BombCarts do: silhouettes are attachments
   -- and never survive a save, so a load always starts with none up.

@@ -258,7 +258,13 @@ function mapMenu()
     menuEntries[7] = {functionName = "saveConditions", label = "Save Battlefield Tokens", tooltip = "Saves Objects from the Objective/Deployment/Conditions", buttonTint = {0,0.913,1}}
     menuEntries[8] = {functionName = "toggleMaskMid", label = "Toggle Masks : Mid", tooltip = "Toggles Masking Objects for the middle of the Battlefield", buttonTint = {0,0.913,1}}
     menuEntries[9] = {functionName = "togglePoiGuide", label = "Toggle Poi Guide", tooltip = "Toggles Poi Layout Projector to help with Map Creation", buttonTint = {0,0.913,1}}
+    menuEntries[10] = {functionName = "togglePoiSnap", label = "Toggle POI Snap", tooltip = "Toggles snap points on the POI guide circles for POI tokens", buttonTint = {0,0.913,1}}
     createMenu(menuEntries, 1)
+end
+
+function togglePoiSnap()
+    ga_event("Game", "togglePoiSnap")
+    Global.call("togglePoiSnapPoints")
 end
 
 function featuredMapsMenu()
