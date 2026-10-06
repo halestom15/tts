@@ -49,8 +49,10 @@ function _disableVisualElements()
   getObjectFromGUID(__state.guids.mount).interactable = false
 end
 
-local ui = {
-  clear = function()
+-- Declared before the table so that the entries below can call each other.
+local ui
+ui = {
+  clearOptions = function()
     for _, guid in ipairs(__state.guids.options) do
       local object = getObjectFromGUID(guid)
       object.clearButtons()
@@ -60,6 +62,10 @@ local ui = {
       button.clearButtons()
       button.setColorTint({0, 0, 0})
     end
+  end,
+
+  clear = function()
+    ui.clearOptions()
     local back = getObjectFromGUID(__state.guids.back)
     back.clearButtons()
     back.setColorTint({0, 0, 0})
@@ -88,60 +94,77 @@ local ui = {
     button.setColorTint({1, 0, 0})
   end,
 
+  -- The panel has four physical option slots. Longer menus are paged over them
+  -- instead of being piled onto the fourth one: every entry past the fourth
+  -- used to be drawn on that same object a fifth of a row apart, so anything
+  -- over four options - five factions is enough, and side loading brings ten -
+  -- came out as one unreadable stack of overlapping labels.
   draw = function(buttons)
-    for i, config in ipairs(buttons) do
+    ui._options = buttons
+    ui._page = 1
+    ui._paint()
+  end,
+
+  _paint = function()
+    local options = ui._options
+    local slots = #__state.guids.options
+    local perPage = slots
+    local pages = 1
+    if #options > slots then
+      -- The last slot turns into the pager, so one fewer entry fits per page.
+      perPage = slots - 1
+      pages = math.ceil(#options / perPage)
+    end
+    local page = ui._page
+    local shown = {}
+    for i = (page - 1) * perPage + 1, math.min(page * perPage, #options) do
+      table.insert(shown, options[i])
+    end
+    if pages > 1 then
+      table.insert(shown, {
+        title    = "MORE (" .. page .. "/" .. pages .. ")",
+        tooltip  = "Show the next page of options",
+        tint     = {1, 0.647, 0},
+        callback = function()
+          ui._page = page % pages + 1
+          ui._paint()
+        end,
+      })
+    end
+
+    ui.clearOptions()
+    for i, config in ipairs(shown) do
       local callback = "_onButtonClicked_" .. i
-      local button
-      if i > 4 then
-        -- Emulate a button by drawing a rectangle.
-        --
-        -- Sorry, this is a huge hack until we have XML-UI list building
-        -- or a new table design that can account for more option buttons.
-        button = getObjectFromGUID(__state.guids.buttons[4])
-        button.createButton({
-          click_function = callback,
-          function_owner = self,
-          label          = config.title,
-          tooltip        = config.tooltip,
-          position       = {-11, 0.3, i},
-          scale          = {3, 3, 3},
-          width          = 4200,
-          height         = 600,
-          font_size      = 400,
-          font_color     = {0, 0, 0, 100},
-        })
-      else
-        local option = getObjectFromGUID(__state.guids.options[i])
-        button = getObjectFromGUID(__state.guids.buttons[i])
-        option.createButton({
-          click_function = callback,
-          function_owner = self,
-          label          = config.title,
-          tooltip        = config.tooltip,
-          position       = {-0.35, 0.3, 0},
-          scale          = {0.5, 0.5, 0.5},
-          width          = 4200,
-          height         = 600,
-          font_size      = 400,
-          font_color     = {0, 0, 0, 100},
-          color          = {0.7573, 0.7573, 0.7573, 0.01},
-        })
-        button.createButton({
-          click_function = callback,
-          function_owner = self,
-          label          = config.secondary or "",
-          tooltip        = config.tooltip,
-          position       = {0, 0.65, 0},
-          width          = 1400,
-          height         = 1400,
-          font_size      = 1100,
-          color          = {1, 1, 1, 0.01},
-          font_color     = {0, 0, 0, 100},
-          alignment      = 3,
-        })
-        button.setColorTint(config.tint)
-      end
-      
+      local option = getObjectFromGUID(__state.guids.options[i])
+      local button = getObjectFromGUID(__state.guids.buttons[i])
+      option.createButton({
+        click_function = callback,
+        function_owner = self,
+        label          = config.title,
+        tooltip        = config.tooltip,
+        position       = {-0.35, 0.3, 0},
+        scale          = {0.5, 0.5, 0.5},
+        width          = 4200,
+        height         = 600,
+        font_size      = 400,
+        font_color     = {0, 0, 0, 100},
+        color          = {0.7573, 0.7573, 0.7573, 0.01},
+      })
+      button.createButton({
+        click_function = callback,
+        function_owner = self,
+        label          = config.secondary or "",
+        tooltip        = config.tooltip,
+        position       = {0, 0.65, 0},
+        width          = 1400,
+        height         = 1400,
+        font_size      = 1100,
+        color          = {1, 1, 1, 0.01},
+        font_color     = {0, 0, 0, 100},
+        alignment      = 3,
+      })
+      button.setColorTint(config.tint)
+
       _G[callback] = function()
         button.AssetBundle.playTriggerEffect(0)
         config.callback()
@@ -335,7 +358,12 @@ function _chooseFaction()
   ui.clear()
   ui.back("Go back to the main menu", _mainMenu)
   local buttons = {}
-  for _, faction in ipairs(_deck:getFactions()) do
+  -- The schema is a keyed table, so the factions come out in no set order. That
+  -- did not show while they all fit on one screen; spread over pages, an
+  -- unsorted list would move a faction from one page to another between loads.
+  local factions = _deck:getFactions()
+  table.sort(factions)
+  for _, faction in ipairs(factions) do
     local title = stringx.titleCase(faction)
     table.insert(buttons, {
       title    = title,
