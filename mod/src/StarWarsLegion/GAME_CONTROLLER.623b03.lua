@@ -277,8 +277,10 @@ function featuredMapsMenu()
       buttonTint = buttonTint,
     },
     {
-      label = "Skirmish",
-      tooltip = "View Skirmish (3x3) Maps",
+      -- Skirmish is called Recon since the rules update; the data files and
+      -- the swlegion.dev links still use the old name.
+      label = "Recon",
+      tooltip = "View Recon (3x3) Maps",
       functionName = "featuredSkirmisMenu",
       buttonTint = buttonTint,
     }
@@ -308,7 +310,7 @@ end
 
 function featuredSkirmisMenu()
   ga_view("game_controller/featured_maps/skirmish")
-  printToScreen("FEATURED MAPS\n\nThese are maps featured by the community.\n\nSee https://go.swlegion.dev/maps for details.\n\nFull support for Skirmish is currently limited:\nhttps://go.swlegion.dev/skirmish.", 80, 3)
+  printToScreen("FEATURED MAPS\n\nThese are maps featured by the community.\n\nSee https://go.swlegion.dev/maps for details.\n\nFull support for Recon is currently limited:\nhttps://go.swlegion.dev/skirmish.", 80, 3)
   changeBackButton("featuredMapsMenu", "Go back to featured maps")
   local url = "https://raw.githubusercontent.com/swlegion/tts/master/contrib/maps/skirmish.json"
   WebRequest.get(url, function(data)

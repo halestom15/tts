@@ -34,6 +34,21 @@ function Deck:_getSchema()
   return Global.getTable("CardsSchema")
 end
 
+-- Skirmish is called Recon since the rules update, but the card data still
+-- keys on the old name. Accept either spelling wherever a scenario is named:
+-- the Scenario input on the setup controller, and imported list JSON.
+Deck.SCENARIO_ALIASES = {
+  recon = "skirmish",
+}
+
+function Deck:_scenarioKey(scenario)
+  if scenario == nil then
+    return "standard"
+  end
+  local key = scenario:lower()
+  return Deck.SCENARIO_ALIASES[key] or key
+end
+
 function Deck:spawnUnitCard(faction, name)
   -- TODO: Remove remapping.
   local remap = {
@@ -234,7 +249,7 @@ function Deck:spawnBattleCard(category, name, scenario)
   if category == "conditions" then
     category = "condition"
   end
-  local categories = self:_getSchema().battlefield[scenario:lower()]
+  local categories = self:_getSchema().battlefield[self:_scenarioKey(scenario)]
   if categories == nil then
     return self:_spawnUnitOrBattleDud(name, "No matching scenario: \"" .. scenario .. "\".")
   end
@@ -264,7 +279,7 @@ function Deck:spawnBattleDeck(position, scenarioName)
   if scenarioName == nil then
     scenarioName = "standard"
   end
-  local scenario = self:_getSchema().battlefield[scenarioName:lower()]
+  local scenario = self:_getSchema().battlefield[self:_scenarioKey(scenarioName)]
   if scenario == nil then
     return self:_spawnUnitOrBattleDud("Deck failed to load: " .. scenario, "No matching scenario.")
   end
@@ -544,8 +559,13 @@ function Deck:getBattleCardType(name, scenario)
   if not scenario then
     scenario = 'standard'
   end
-  scenario = scenario:lower()
-  for type, cards in pairs(self:_getSchema().battlefield[scenario]) do
+  scenario = self:_scenarioKey(scenario)
+  local categories = self:_getSchema().battlefield[scenario]
+  if not categories then
+    print("Could not find cards for scenario: " .. scenario)
+    return nil
+  end
+  for type, cards in pairs(categories) do
     if cards[name:upper()] then
       return type
     end
@@ -557,12 +577,17 @@ function Deck:getBattleCardNamesByType(name, scenario)
   if not scenario then
     scenario = 'standard'
   end
-  scenario = scenario:lower()
+  scenario = self:_scenarioKey(scenario)
   if name:lower() == "conditions" then
     name = "condition"
   end
   name = name:lower()
-  local cards = self:_getSchema().battlefield[scenario][name]
+  local categories = self:_getSchema().battlefield[scenario]
+  if not categories then
+    print("Could not find cards for scenario: " .. scenario)
+    return {}
+  end
+  local cards = categories[name]
   if not cards then
     return {}
   end
@@ -577,7 +602,7 @@ function Deck:getDeploymentBoundary(name, scenario_name)
   if not scenario_name then
     scenario_name = 'standard'
   end
-  scenario_name = scenario_name:lower()
+  scenario_name = self:_scenarioKey(scenario_name)
   local scenario = self:_getSchema().battlefield[scenario_name]
   if not scenario then
     print("Could not find cards for scenario: " .. scenario_name)
@@ -609,7 +634,7 @@ function Deck:getBattleCardObjects(name, card_type, scenario_name)
   if not scenario_name then
     scenario_name = 'standard'
   end
-  scenario_name = scenario_name:lower()
+  scenario_name = self:_scenarioKey(scenario_name)
   local scenario = self:_getSchema().battlefield[scenario_name]
   if not scenario then
     print("Could not find cards for scenario: " .. scenario_name)
