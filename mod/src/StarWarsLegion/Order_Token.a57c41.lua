@@ -1162,7 +1162,16 @@ function createRangeButton(leaderObj)
         end
     end
 
-    lowestDistance = lowestDistance - templateInfo.baseRadius[enemyBaseSize]/2 - templateInfo.baseRadius[enemyBaseSize]/2
+    -- getDistance measures centre to centre, while in the game range is measured
+    -- base edge to base edge. So the measuring unit's radius has to come off,
+    -- THEN the target's. It was the target's that came off twice: the band shown
+    -- was wrong whenever the two bases differed, by radius(target) -
+    -- radius(measurer), up to 2.4 in between a trooper and an AAT, on 6 in bands.
+    -- (templateInfo.baseRadius holds diameters, hence the halves.)
+    local ownBaseSize = selectedUnitObj.getVar("baseSize") or unitData.baseSize
+    lowestDistance = lowestDistance
+        - templateInfo.baseRadius[ownBaseSize]/2
+        - templateInfo.baseRadius[enemyBaseSize]/2
 
     finalRange = math.ceil(lowestDistance/6)
     if finalRange > 4 then
