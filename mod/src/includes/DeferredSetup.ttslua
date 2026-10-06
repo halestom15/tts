@@ -323,3 +323,75 @@ function initDeferredSetup()
     deployStep(gen, crate, pending, 1, #pending, {}, raisedAt)
   end, 1)
 end
+
+-- Packing the crate back, before a Workshop Upload.
+--
+-- TTS can only upload a table that is open, and by then the crate has
+-- deployed: the upload carries every object loose and an empty crate, and
+-- the published mod loads as slowly as if the crate did not exist. The host
+-- types !packsetup in the chat, waits for the confirmation, then uploads.
+-- Undoing or reloading afterwards deploys the crate again, as on any load.
+--
+-- One object per frame, like the deployment: putObject on a scripted object
+-- runs its onSave and tears down its script context, and 85 of those in a
+-- single frame is the freeze this whole module exists to avoid.
+
+local PACK_COMMAND = '!packsetup'
+
+local function packStep(crate, manifest, index, missing)
+  local entry = manifest[index]
+  if entry == nil then
+    local inCrate = #crate.getObjects()
+    broadcastToAll('Setup crate packed: ' .. inCrate .. ' of ' .. #manifest
+      .. ' objects inside. Upload now with Modding > Workshop Upload.', {0.6, 0.9, 0.6})
+    if #missing > 0 then
+      printToAll('Not on the table, so not packed: ' .. table.concat(missing, ', '), {1, 0.6, 0.3})
+    end
+    return
+  end
+  local obj = getObjectFromGUID(entry.g)
+  if obj ~= nil then
+    -- A locked object stays locked inside the container, and the
+    -- deployment locks it again from the manifest anyway; unlocking first
+    -- only makes sure TTS accepts it.
+    obj.setLock(false)
+    crate.putObject(obj)
+  else
+    -- Already inside (a pack run twice) or deleted during the session.
+    local alreadyIn = false
+    for _, item in ipairs(crate.getObjects()) do
+      if item.guid == entry.g then alreadyIn = true break end
+    end
+    if not alreadyIn then missing[#missing + 1] = entry.g end
+  end
+  Wait.frames(function()
+    packStep(crate, manifest, index + 1, missing)
+  end, 1)
+end
+
+local function packSetupCrate(player)
+  local crate = getObjectFromGUID(CRATE_GUID)
+  if crate == nil then
+    player.print('No setup crate on this table, nothing to pack.', {1, 0.6, 0.3})
+    return
+  end
+  local ok, manifest = pcall(function()
+    return JSON.decode(crate.getGMNotes())
+  end)
+  if not ok or type(manifest) ~= 'table' then
+    player.print('The setup crate has no readable manifest, nothing packed.', {1, 0.6, 0.3})
+    return
+  end
+  broadcastToAll('Packing the setup crate...', {0.9, 0.9, 0.9})
+  packStep(crate, manifest, 1, {})
+end
+
+function onChat(message, player)
+  if message ~= PACK_COMMAND then return true end
+  if not player.host then
+    player.print('Only the host can pack the setup crate.', {1, 0.6, 0.3})
+    return false
+  end
+  packSetupCrate(player)
+  return false
+end
