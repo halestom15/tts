@@ -18,6 +18,15 @@ function setUp()
     startPosition = nil
     startRotation = nil
 
+    -- A silhouette attached before a save comes back as a phantom: the
+    -- attachment is restored but the script state is not, so nothing knows
+    -- it is up. Purge them so the leader always starts clean.
+    pcall(function()
+      for _, phantom in ipairs(self.removeAttachments() or {}) do
+        if phantom then phantom.destruct() end
+      end
+    end)
+
     lockBtnGreen = {0.2, 0.9, 0.05, 0.7}
     lockBtnRed = {0.9, 0.1, 0.05, 0.7}
 
@@ -82,8 +91,11 @@ function scheduleOblongButtonFix()
 end
 
 function addSilhouetteButton()
+  -- A missing game data object must not abort the button rebuild: a leader
+  -- left without buttons throws on every later recolor.
   local gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
-  local btnTint = gameData.getTable("battlefieldTint")
+  local btnTint = gameData ~= nil and gameData.getTable("battlefieldTint")
+      or {r = 0.3, g = 0.3, b = 0.3}
   local buttonOffset = calculateButtonZOffset(templateInfo.baseRadius[unitData.baseSize])
   btnData = {
     click_function = "toggleSilhouettes",
@@ -102,8 +114,10 @@ function addSilhouetteButton()
 end
 
 function addLockButton()
+    -- Same guard as addSilhouetteButton: never abort the button rebuild.
     local gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
-    local btnTint = gameData.getTable("battlefieldTint")
+    local btnTint = gameData ~= nil and gameData.getTable("battlefieldTint")
+        or {r = 0.3, g = 0.3, b = 0.3}
     local templateInfo = Global.getTable("templateInfo")
     local buttonOffset = calculateButtonZOffset(templateInfo.baseRadius[unitData.baseSize])
     lockBtnData = {
@@ -123,6 +137,14 @@ function addLockButton()
 end
 
 function updateLockBtnColor()
+    -- editButton on an object with no buttons raises a bare object reference
+    -- error, and every unit move recolors every leader through the unlock
+    -- sweep: a leader whose buttons failed to build once would then throw at
+    -- every table event forever.
+    local buttons = self.getButtons()
+    if buttons == nil or #buttons == 0 then
+        return
+    end
     if isLocked() then
         self.editButton({
             index = 0,
@@ -210,8 +232,11 @@ function toggleSilhouettes()
 end
 
 -- Loops through all minis in the unit
--- Removes all attachments and destroys the first one
--- The silhouette should be the only attachment, so this should be safe to do
+-- Removes all attachments and destroys every one of them. A mini can carry
+-- more than one silhouette: one saved with the game comes back as a phantom
+-- attachment (the script state does not survive the save), and raising the
+-- silhouettes again stacks a second one on top. Destroying only the first
+-- left the other detached with no collider, falling through the world.
 function clearSilhouette()
   for k, guid in pairs(miniGUIDs) do
     local obj = getObjectFromGUID(guid)
