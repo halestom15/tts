@@ -1009,7 +1009,7 @@ end
 
 function getExistingMaskLength()
     local length = 0
-    if existingMasks != nil then
+    if existingMasks ~= nil then
         for i, obj in pairs(existingMasks) do
             length = length + 1
         end
@@ -1054,9 +1054,9 @@ function toggleMaskLeft()
 end
 
 function clearMasks()
-    if existingMasks != nil then
+    if existingMasks ~= nil then
         for i, obj in pairs(existingMasks) do
-            if obj != nil then
+            if obj ~= nil then
                 destroyObject(obj)
             end
         end
