@@ -553,13 +553,22 @@ function moveUnit(isDeploy)
     local baseSizeMoveBundles = maxMoveBundles[unitData.baseSize]
     local maxMoveTemplateBundleToSpawn = baseSizeMoveBundles[unitData.selectedSpeed]
 
-    if isDeploy == false then
+    -- changeSpeed1/2/3 call moveUnit() with no argument after destroying the
+    -- templates, so isDeploy is nil, not false. With a strict equality the
+    -- maximum move ring disappeared as soon as the speed changed, and never
+    -- came back.
+    if isDeploy ~= true then
         --max movement ring projector
         if maxMoveTemplateBundleToSpawn ~= nil then
             maxMoveTemplate = spawnObject({
                 type = "Custom_AssetBundle",
                 position = {basePos.x, basePos.y + 20, basePos.z},
-                rotation = {0, basePos.y, 0},
+                -- The yaw comes from baseRot.y, the unit's facing. It used
+                -- to be basePos.y, its HEIGHT above the table: the projector
+                -- always sat at about 1 degree in world space and never
+                -- followed the vehicle. Invisible while the footprint is a
+                -- disc, wrong as soon as it is not.
+                rotation = {0, baseRot.y, 0},
                 scale = {0,0,0} -- 0 scale will hide TTS default box and won't impact projector
             })
 
@@ -781,7 +790,10 @@ function clearMovementTemplates()
         destroyObject(templateB)
     end
     if maxMoveTemplate ~= nil then
-        destroyObject(maxMoveTemplate)
+        -- pcall: the ring may already be gone (Clear Map, standbyTokens), in which
+        -- case destroyObject throws and the rest of the cleanup was skipped.
+        pcall(destroyObject, maxMoveTemplate)
+        maxMoveTemplate = nil
     end
 end
 
