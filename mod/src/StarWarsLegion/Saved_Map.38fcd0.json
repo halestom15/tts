@@ -22,7 +22,7 @@
       "b": 1
     },
     "LayoutGroupSortIndex": 0,
-    "Locked": false,
+    "Locked": true,
     "Grid": true,
     "Snap": true,
     "IgnoreFoW": false,
