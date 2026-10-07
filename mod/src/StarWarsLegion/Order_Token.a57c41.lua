@@ -363,6 +363,25 @@ function resetButtons()
             font_color = {0.4709, 0.9759, 0.9162, 1},
             tooltip = "Spawn Range Rulers"
         })
+
+        self.createButton({
+            click_function = "toggleHeightGuide",
+            function_owner = self,
+            label = "HEIGHT",
+            position = {1.6, 0.2, -2.0},
+            height = 350,
+            width = 750,
+            font_size = 150,
+            font_color = {0.4709, 0.9759, 0.9162, 1},
+            color = {0, 0, 0, 1},
+            tooltip = "Height guide in front of the unit leader. Click again after a move to set it again, or without moving to remove it"
+        })
+    end
+end
+
+function toggleHeightGuide()
+    if selectedUnitObj then
+        selectedUnitObj.call("toggleHeightGuide")
     end
 end
 
