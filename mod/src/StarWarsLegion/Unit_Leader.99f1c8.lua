@@ -268,6 +268,94 @@ function clearSilhouette()
   silhouetteState = false
 end
 
+-- HEIGHT GUIDE ----------------------------------------------------------------
+-- One guide per unit, like cohesion: a grey pillar set down just in front of
+-- the unit leader, its foot level with the leader's base. It stays where it
+-- was set. Next to a piece of terrain it shows by eye what the unit can climb
+-- onto: a dark line at height 1 (6 inches), marked 1 below and 2 above.
+-- The button sets the guide again in front of a leader that has moved since,
+-- and takes it away from a leader that has not.
+
+local HEIGHT_GUIDE_NAME = "Height Guide"
+local HEIGHT_GUIDE_MESH = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/height_guide_v1.obj"
+local HEIGHT_GUIDE_TEXTURE = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/height_guide_v1.png"
+
+function toggleHeightGuide()
+  if heightGuideGUID ~= nil and not leaderMovedSinceHeightGuide() then
+    clearHeightGuide()
+  else
+    showHeightGuide()
+  end
+end
+
+-- Where the leader stood when the guide was set, to tell whether it moved.
+function leaderMovedSinceHeightGuide()
+  if heightGuideFrom == nil then
+    return true
+  end
+  local pos, rotY = self.getPosition(), self.getRotation().y
+  local turn = math.abs(rotY - heightGuideFrom.rotY) % 360
+  return Vector.distance(pos, heightGuideFrom.pos) > 0.05
+    or math.min(turn, 360 - turn) > 1
+end
+
+function clearHeightGuide()
+  -- The handle can be dead: Global sweeps every "Height Guide" by name at load.
+  local pillar = heightGuideGUID and getObjectFromGUID(heightGuideGUID)
+  if pillar ~= nil then
+    pcall(function() pillar.destruct() end)
+  end
+  heightGuideGUID = nil
+  heightGuideFrom = nil
+end
+
+function showHeightGuide()
+  clearHeightGuide()
+  local globals = Global.getTable("templateInfo")
+  -- baseRadius holds the base's width in inches, despite its name
+  local width = globals.baseRadius[unitData.baseSize] or 1
+  -- The minis' models face their object's back: in front of the leader is
+  -- along -forward.
+  local facing = self.getTransformForward()
+  local forward = {x = -facing.x, z = -facing.z}
+  local pos = self.getPosition()
+  local bounds = self.getBounds()
+  local bottom = bounds.center.y - bounds.size.y / 2
+  local reach = width / 2 + 0.5
+  local pillar = spawnObject({
+    type = "Custom_Model",
+    position = {pos.x + forward.x * reach, bottom, pos.z + forward.z * reach},
+    rotation = {0, self.getRotation().y, 0},
+    scale = {1, 1, 1},
+  })
+  pillar.setCustomObject({
+    mesh = HEIGHT_GUIDE_MESH,
+    diffuse = HEIGHT_GUIDE_TEXTURE,
+    type = 0,
+    material = 3,
+  })
+  pillar.setName(HEIGHT_GUIDE_NAME)
+  pillar.setLock(true)
+  pillar.use_gravity = false
+  -- A guide must not push minis around: its colliders go once they exist.
+  Wait.condition(function()
+    pcall(function()
+      for _, colliderName in ipairs({"MeshCollider", "BoxCollider"}) do
+        for _, collider in ipairs(pillar.getComponentsInChildren(colliderName) or {}) do
+          collider.set("enabled", false)
+        end
+      end
+    end)
+  end, function()
+    local ok, ready = pcall(function()
+      return pillar.isDestroyed() or not pillar.loading_custom
+    end)
+    return not ok or ready
+  end)
+  heightGuideGUID = pillar.getGUID()
+  heightGuideFrom = {pos = pos, rotY = self.getRotation().y}
+end
+
 -- Loops through all minis in the unit
 -- Spawns a silhouette at the pos and rot of each one
 -- and attaches them using the new attachment feature
