@@ -458,6 +458,84 @@ function initDeploy()
 end
 
 
+-- The map in play: looked up in the battlefield zone first, the whole
+-- table only if it is not there.
+local function findBattlefield()
+    local zone = getObjectFromGUID(Global.getVar("battlefieldZoneGUID"))
+    if zone ~= nil then
+        for _, obj in ipairs(zone.getObjects()) do
+            if obj.getName() == "BATTLEFIELD" then return obj end
+        end
+    end
+    for _, obj in ipairs(getAllObjects()) do
+        if obj.getName() == "BATTLEFIELD" then return obj end
+    end
+    return nil
+end
+
+local function battlefieldRect()
+    local battlefield = findBattlefield()
+    if battlefield ~= nil then
+        local b = battlefield.getBounds()
+        -- a mesh still loading has no size yet
+        if b.size.x >= 10 and b.size.z >= 10 then
+            return {
+                minX = b.center.x - b.size.x / 2, maxX = b.center.x + b.size.x / 2,
+                minZ = b.center.z - b.size.z / 2, maxZ = b.center.z + b.size.z / 2,
+                top  = b.center.y + b.size.y / 2,
+            }
+        end
+    end
+    -- standard 6x3 battlefield
+    return {minX = -28, maxX = 44, minZ = -18, maxZ = 18, top = 1.44}
+end
+
+-- Distance from the centre of a base to its front, where the tool starts.
+-- baseRadius holds the width, which is not the length of the long and snail
+-- bases; aStart (centre to tool joint) knows the length, and for notched
+-- bases it is that distance plus a constant tool share, taken from medium.
+local function baseFront(baseSize)
+    if baseSize == "small" then
+        return templateInfo.baseRadius.small / 2
+    end
+    local toolShare = templateInfo.aStart.medium[1] - templateInfo.baseRadius.medium / 2
+    return templateInfo.aStart[baseSize][1] - toolShare
+end
+
+-- A Deploy measures from the battlefield edge, not from the unit leader:
+-- both prongs of the Movement Tool touch the edge (Rulebook, Deploying
+-- Units). The tool is placed as if the leader stood just outside the
+-- nearest edge, its base touching it and facing in, so deployMod still
+-- puts the prongs on the edge, notched bases included.
+local function deployAnchor(pos, baseSize)
+    local rect = battlefieldRect()
+    local radius = templateInfo.baseRadius[baseSize] / 2
+    local front = baseFront(baseSize)
+    local function clamp(v, lo, hi) return math.max(lo + radius, math.min(hi - radius, v)) end
+    local x = clamp(pos.x, rect.minX, rect.maxX)
+    local z = clamp(pos.z, rect.minZ, rect.maxZ)
+    -- each edge: its closest point to the leader and the inward direction
+    local edges = {
+        {x = rect.minX, z = z, nx = 1, nz = 0},
+        {x = rect.maxX, z = z, nx = -1, nz = 0},
+        {x = x, z = rect.minZ, nx = 0, nz = 1},
+        {x = x, z = rect.maxZ, nx = 0, nz = -1},
+    }
+    local best, bestDist
+    for _, e in ipairs(edges) do
+        local d = (pos.x - e.x)^2 + (pos.z - e.z)^2
+        if bestDist == nil or d < bestDist then best, bestDist = e, d end
+    end
+    local anchor = {
+        x = best.x - best.nx * front,
+        y = math.max(pos.y, rect.top + 0.05),
+        z = best.z - best.nz * front,
+    }
+    -- the tool is laid along -(sin q, cos q) from the leader
+    local yaw = math.deg(math.atan2(-best.nx, -best.nz))
+    return anchor, {x = 0, y = yaw, z = 0}
+end
+
 function moveUnit(isDeploy)
     local startOffset = 0.0
     if isDeploy and isDeploy == true then
@@ -482,7 +560,9 @@ function moveUnit(isDeploy)
     basePos.y = basePos.y + 0.05
     baseRot = selectedUnitObj.getRotation()
 
-    if moveDirection == "backward" then
+    if isDeploy == true then
+        basePos, baseRot = deployAnchor(basePos, unitData.baseSize)
+    elseif moveDirection == "backward" then
         baseRot.y = baseRot.y + 180
 
     elseif moveDirection == "left" then
