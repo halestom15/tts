@@ -1,0 +1,103 @@
+-- Script appended to every miniature (leader or not) when a unit is spawned.
+--
+-- Kept as a string so it can be concatenated at runtime by SpawnList without
+-- reading it from a template object. It wraps any event handlers already
+-- defined by the leader script rather than replacing them.
+function getMiniSharedScript()
+  return [==[
+
+-- avoid minis being flipped upside down when dropped on terrain.
+
+local _shared = {
+  tiltLimit     = 0.34, -- roughly cos(70deg); below this the mini is tipped (vehicles may stand at 45deg)
+  pendingSettle = false,
+}
+
+local function _options()
+  return Global.getTable("miniOptions") or {}
+end
+
+-- Make sure the model stands uprht
+
+function sharedFixUpright()
+  if self.held_by_color ~= nil then
+    return
+  end
+  local up = self.getTransformUp()
+  if up.y >= _shared.tiltLimit then
+    return
+  end
+  local forward = self.getTransformForward()
+  local yaw
+  if math.abs(forward.y) < 0.9 then
+    yaw = math.deg(math.atan2(forward.x, forward.z))
+  else
+    local right = self.getTransformRight()
+    yaw = math.deg(math.atan2(right.x, right.z)) - 90
+  end
+  local pos = self.getPosition()
+  self.setVelocity({0, 0, 0})
+  self.setAngularVelocity({0, 0, 0})
+  self.setRotation({0, yaw, 0})
+  self.setPosition({pos.x, pos.y + 0.3, pos.z})
+end
+
+local function _scheduleSettle()
+  if _shared.pendingSettle or _options().upright == false then
+    return
+  end
+  _shared.pendingSettle = true
+  Wait.condition(
+    function()
+      _shared.pendingSettle = false
+      sharedFixUpright()
+    end,
+    function()
+      return self.resting or self.held_by_color ~= nil
+    end,
+    6,
+    function()
+      _shared.pendingSettle = false
+    end
+  )
+end
+
+-- Shared functions
+function sharedOnDropped(_color)
+  _scheduleSettle()
+end
+
+function sharedOnCollisionEnter(_info)
+  if self.held_by_color ~= nil or self.resting then
+    return
+  end
+  _scheduleSettle()
+end
+
+local _prevOnLoad = onload or onLoad
+local _prevOnDropped = onDropped
+local _prevOnCollisionEnter = onCollisionEnter
+onload = nil
+
+function onLoad(saveState)
+  if _prevOnLoad then
+    _prevOnLoad(saveState)
+  end
+end
+
+function onDropped(color)
+  if _prevOnDropped then
+    _prevOnDropped(color)
+  end
+  sharedOnDropped(color)
+end
+
+function onCollisionEnter(info)
+  if _prevOnCollisionEnter then
+    _prevOnCollisionEnter(info)
+  end
+  sharedOnCollisionEnter(info)
+end
+-- END MINI SHARED -----------------------------------------------------------
+]==]
+end
