@@ -366,6 +366,55 @@ function resetButtons()
     end
 end
 
+-- Cycle through buttons
+function findButtonIndex(clickFunction)
+    for _, button in ipairs(self.getButtons() or {}) do
+        if button.click_function == clickFunction then
+            return button.index
+        end
+    end
+    return nil
+end
+
+-- Finds the surface height under mini position
+function findLandingHeight(pos, fallbackY)
+    local ignoreGUIDs = {}
+    if selectedUnitObj then
+        for _, guid in pairs(selectedUnitObj.getTable("miniGUIDs") or {}) do
+            ignoreGUIDs[guid] = true
+        end
+    end
+    local ignoreNames = {
+        ["Movement Template (A)"] = true,
+        ["Movement Template (B)"] = true,
+        ["Maximum Move"] = true,
+        ["Cohesion Ruler"] = true,
+        ["Range Ruler"] = true,
+        ["Height Indicator"] = true,
+        ["Silhouette"] = true,
+    }
+    local hits = Physics.cast({
+        origin = {pos.x, pos.y + 30, pos.z},
+        direction = {0, -1, 0},
+        type = 1,
+        max_distance = 60,
+    })
+    local best = nil
+
+    for _, hit in ipairs(hits or {}) do
+        local obj = hit.hit_object
+        if obj ~= nil and not ignoreGUIDs[obj.getGUID()] and not ignoreNames[obj.getName()] then
+            if best == nil or hit.point.y > best then
+                best = hit.point.y
+            end
+        end
+    end
+    if best == nil then
+        return fallbackY + 2
+    end
+    return best + 0.3
+end
+
 function toggleCohesionRuler()
     -- extended overlays (see !/ExtendedOverlays): route this button to the
     -- Projector renderer when they are on. Off by default, in which case
@@ -799,7 +848,7 @@ function moveFull()
         local startRot = templateB.getRotation()
         local endOffset = unitData.baseSize == "small" and templateInfo.deployMod.small or 0.0
         local endPos = translatePos(startPos, startRot, unitData.aStart + endOffset, 0)
-        endPos.y = endPos.y + 2
+        endPos.y = findLandingHeight(endPos, endPos.y)
 
         local endRot = startRot
         if moveDirection == "backward" then
@@ -820,8 +869,8 @@ end
 
 
 function moveStart()
-    local endPos = initPos
-    endPos.y = initPos.y + 2
+    -- initPos must stay untouched
+    local endPos = Vector(initPos.x, findLandingHeight(initPos, initPos.y), initPos.z)
     selectedUnitObj.setPositionSmooth(endPos, false, false)
     selectedUnitObj.setRotationSmooth(initRot, false, false)
     Wait.frames(function()
@@ -830,23 +879,29 @@ function moveStart()
 end
 
 function moveBackwards()
-    self.editButton({
-        index = 11,
-        click_function = "moveForward",
-        label = "F",
-        tooltip = "Move Forwards"
-    })
+    local index = findButtonIndex("moveBackwards")
+    if index ~= nil then
+        self.editButton({
+            index = index,
+            click_function = "moveForward",
+            label = "F",
+            tooltip = "Move Forwards"
+        })
+    end
     moveDirection = "backward"
     moveUnit()
 end
 
 function moveForward()
-    self.editButton({
-        index = 11,
-        click_function = "moveBackwards",
-        label = "B",
-        tooltip = "Move Backwards"
-    })
+    local index = findButtonIndex("moveForward")
+    if index ~= nil then
+        self.editButton({
+            index = index,
+            click_function = "moveBackwards",
+            label = "B",
+            tooltip = "Move Backwards"
+        })
+    end
     moveDirection = "forward"
     moveUnit()
 end
