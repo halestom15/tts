@@ -288,18 +288,30 @@ function featuredMapsMenu()
   createMenu(menuEntries, 1)
 end
 
+-- WebRequest responses aren't guaranteed to be valid JSON (a dead/expired
+-- link can return an HTML error page instead), so JSON.decode needs a pcall
+-- guard wherever we feed it a network response - otherwise a single broken
+-- community-contributed link crashes with a raw Lua error and leaves the
+-- player stuck mid-menu instead of getting a clear message back.
+function safeJsonDecode(text)
+  local ok, result = pcall(JSON.decode, text)
+  if ok and type(result) == "table" then
+    return result
+  end
+  return nil
+end
+
 function featuredCompetitiveMenu()
   ga_view("game_controller/featured_maps/competitive")
   printToScreen("FEATURED MAPS\n\nThese are maps featured by the community.\n\nSee https://go.swlegion.dev/maps for details.", 80, 3)
   changeBackButton("featuredMapsMenu", "Go back to featured maps")
   local url = "https://raw.githubusercontent.com/swlegion/tts/master/contrib/maps/competitive.json"
   WebRequest.get(url, function(data)
-    -- GitHub answers an outage or a hiccup with an HTML page, and decoding
-    -- that raises inside the download handler where nothing catches it.
-    local ok, items = pcall(function() return JSON.decode(data.text) end)
-    if not ok or type(items) ~= "table" then
-      printToAll("Could not read the featured map list. Check your connection.")
-      return mainMenu()
+    local items = safeJsonDecode(data.text)
+    if items == nil then
+      printToAll("Could not load the featured maps list. Check your connection, or try again later.", {1, 0.5, 0.5})
+      featuredMapsMenu()
+      return
     end
     local menu = {}
     for _, entry in pairs(items) do
@@ -320,12 +332,11 @@ function featuredSkirmisMenu()
   changeBackButton("featuredMapsMenu", "Go back to featured maps")
   local url = "https://raw.githubusercontent.com/swlegion/tts/master/contrib/maps/skirmish.json"
   WebRequest.get(url, function(data)
-    -- GitHub answers an outage or a hiccup with an HTML page, and decoding
-    -- that raises inside the download handler where nothing catches it.
-    local ok, items = pcall(function() return JSON.decode(data.text) end)
-    if not ok or type(items) ~= "table" then
-      printToAll("Could not read the featured map list. Check your connection.")
-      return mainMenu()
+    local items = safeJsonDecode(data.text)
+    if items == nil then
+      printToAll("Could not load the featured maps list. Check your connection, or try again later.", {1, 0.5, 0.5})
+      featuredMapsMenu()
+      return
     end
     local menu = {}
     for _, entry in pairs(items) do
@@ -1319,16 +1330,16 @@ function unpackMap(text)
     -- Every way out of here either loads the map or hands the menu back:
     -- the screen is showing UNPACKING MAP and nothing else would clear it.
     if not text:find('"ObjectStates"', 1, true) then
-      printToAll("Failed to download map.")
+      printToAll("Could not download this map - the link may be broken or no longer hosts a valid map file.", {1, 0.5, 0.5})
       mapRuleHide()
       return mainMenu()
     end
     local json = extractCartridgeJson(text)
     if json == nil then
       -- Unexpected shape: pay for the full decode rather than fail.
-      local map = JSON.decode(text)
+      local map = safeJsonDecode(text)
       if not map or not map.ObjectStates or not map.ObjectStates[1] then
-        printToAll("Failed to decode map.")
+        printToAll("Could not download this map - the link may be broken or no longer hosts a valid map file.", {1, 0.5, 0.5})
         mapRuleHide()
         return mainMenu()
       end
