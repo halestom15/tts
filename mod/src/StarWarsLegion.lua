@@ -9,6 +9,7 @@ require('!/Cohesion')
 -- Must stay AFTER !/RangeRulers and !/Cohesion: it captures their original
 -- functions before shadowing them.
 require('!/ExtendedOverlays')
+require('!/Antivirus')
 
 -- Must be spelled onSave: unlike onload, TTS has no all-lowercase alias for it,
 -- so an onsave() is never called and the global script saves nothing at all.
@@ -22,7 +23,15 @@ function onSave()
   })
 end
 
+-- Anything brought onto the table (out of a bag, a deck, an additive load)
+-- is defused as soon as TTS reports it.
+function onObjectSpawn(obj)
+  disinfectSpawnedObject(obj)
+end
+
 function onload(saveData)
+    -- Saves, autosaves and undos reload objects that onObjectSpawn never sees.
+    disinfectTable()
     VERSION = "v5.0.0-beta"
     CCID = sha256(tostring(Time.time))
     UUID = sha256(Player.getPlayers()[1].steam_id)
