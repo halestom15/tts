@@ -390,7 +390,7 @@ function findLandingHeight(pos, fallbackY)
         ["Maximum Move"] = true,
         ["Cohesion Ruler"] = true,
         ["Range Ruler"] = true,
-        ["Height Indicator"] = true,
+        ["Height Guide"] = true,
         ["Silhouette"] = true,
     }
     local hits = Physics.cast({
@@ -869,8 +869,9 @@ end
 
 
 function moveStart()
-    -- initPos must stay untouched
-    local endPos = Vector(initPos.x, findLandingHeight(initPos, initPos.y), initPos.z)
+    -- initPos must stay untouched. The unit stood there before the move, so
+    -- it goes back as it was: a ray could land it on a balcony above.
+    local endPos = Vector(initPos.x, initPos.y + 0.3, initPos.z)
     selectedUnitObj.setPositionSmooth(endPos, false, false)
     selectedUnitObj.setRotationSmooth(initRot, false, false)
     Wait.frames(function()
