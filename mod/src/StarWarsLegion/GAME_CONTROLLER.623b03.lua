@@ -1253,9 +1253,108 @@ local function applySwaps(text, swaps, prefix)
   return text
 end
 
+-- Terrain whose collider is a flat plate on the ground, or a rough block
+-- that misses the model: minis dropped through bridges, crates and walls, or
+-- stood off the rocks. Each gets a collider made of convex pieces cut from
+-- the model itself (Mod TTS SWL/make_terrain_colliders.py). They only work
+-- as one mesh with Convex off: a single convex hull of them all would fill
+-- the arches and the space under the bridges. Keyed by the model, not by
+-- the old collider: the two Scarif outpost walls are different models that
+-- share one. Area terrain - Holo Ads, Cargo Pallets, Ruins, the Jedha
+-- barricades, woods - keeps its plate on purpose: minis stand inside it.
+TERRAIN_COLLIDERS = {
+  -- Barricade [Heavy Cover]
+  ["https://steamusercontent-a.akamaihd.net/ugc/785234780864397132/F696994B2A4CE38EA3D5928C17543CB11630C072/"] =
+    "collider_scarif_barricade_v1.obj",
+  -- Bespin Wall (High Stone Wall) [Heavy Cover]
+  ["https://steamusercontent-a.akamaihd.net/ugc/785234540542509494/8CA403F2ACD4BF21A2A42AD20809239A4A0C60BF/"] =
+    "collider_bespin_wall_half_moon_v1.obj",
+  -- Bespin Wall (High Stone Wall) [Heavy Cover]
+  ["https://steamusercontent-a.akamaihd.net/ugc/785234540542571500/3E825CA67AF0A048127E8E0A08B5C105D1E98588/"] =
+    "collider_bespin_wall_straight_v1.obj",
+  -- Bridge Walkway [Heavy Cover]
+  ["https://steamusercontent-a.akamaihd.net/ugc/966480765117279505/8182E3A340062698877307FC66C2163E1D34711C/"] =
+    "collider_bridge_walkway_v1.obj",
+  -- Building [Heavy Cover]
+  ["https://steamusercontent-a.akamaihd.net/ugc/966480765117277880/2D1CC9AE9EE1B583ECBA13328DA1BE93D1D175B5/"] =
+    "collider_building_small_v1.obj",
+  -- Cargo Crates [Light Cover]
+  ["https://steamusercontent-a.akamaihd.net/ugc/785234540542832033/58B168E2A63745DB7AA2BD9A6182709416576DBB/"] =
+    "collider_cargo_crates_stack_v1.obj",
+  -- Landing Bay Archway [Heavy Cover]
+  ["https://steamusercontent-a.akamaihd.net/ugc/785234540546190104/855BF67B705B962579C4A39ACAB4FE330CF00ED8/"] =
+    "collider_landing_bay_archway_v1.obj",
+  -- Landing Bay Loading Door [Heavy Cover]
+  ["https://steamusercontent-a.akamaihd.net/ugc/785234540546190513/71CCB9F68D1ECBC9273FA105D7DC6D9EDE3D96C0/"] =
+    "collider_landing_bay_loading_door_v1.obj",
+  -- Moisture Vaporator [Light Cover]
+  ["https://steamusercontent-a.akamaihd.net/ugc/785234780858650890/E974F7F12BA33FEA0C4BF337030EFF56CCBB514A/"] =
+    "collider_moisture_vaporator_v1.obj",
+  -- Outpost Wall Lvl 2 (High Stone Wall) [Heavy Cover]
+  ["https://steamusercontent-a.akamaihd.net/ugc/785234540546189005/6BA05494E29AE2107927C5B66A40D74552961B9E/"] =
+    "collider_outpost_wall_b_v1.obj",
+  -- Outpost Wall Lvl 2 (High Stone Wall) [Heavy Cover]
+  ["https://steamusercontent-a.akamaihd.net/ugc/785234540546188381/4504550673E1F3490F323C751CA9ED67F2EF8220/"] =
+    "collider_outpost_wall_a_v1.obj",
+  -- Rock Formation [Heavy Cover]
+  ["https://gist.githubusercontent.com/nashjaee/0ae48450370150c2c00027895b8e82ba/raw/a1a792c26c857ffd87aba6787c33a932fed0946c/rock_formation_2_model.txt"] =
+    "collider_rock_formation_large_v1.obj",
+  -- Rock Formation [Heavy Cover]
+  ["https://gist.githubusercontent.com/nashjaee/8c5ce4aca7e9cba562148ec0a2c438e5/raw/4ca2b165bab93fd9bc9537042941d85d1e6fe1b6/rock_formation_model.txt"] =
+    "collider_rock_formation_pillar_v1.obj",
+  -- T-65 X-Wing [Light/Heavy Cover]
+  ["https://steamusercontent-a.akamaihd.net/ugc/785234540542754362/7AAD7B25F1A8C2CDBD05B3444E42CA0801A35BD7/"] =
+    "collider_xwing_wreck_v1.obj",
+}
+
+-- One walk over the models of the map, and only when one of ours is in it.
+-- Runs before MIRRORED_ASSETS, which would otherwise move the two rocks to
+-- their mirrored copies first. Plain finds only: a pattern stretching across
+-- a CustomMesh block is "too complex" for MoonSharp, though stock Lua takes
+-- it. In a block, ColliderURL comes after MeshURL and Convex right after it.
+local function applyTerrainColliders(text)
+  local hit = false
+  for mesh in pairs(TERRAIN_COLLIDERS) do
+    if text:find(mesh, 1, true) then
+      hit = true
+      break
+    end
+  end
+  if not hit then return text end
+  local out, from, pos = {}, 1, 1
+  while true do
+    local key = text:find('"MeshURL":', pos, true)
+    if not key then break end
+    local open = text:find('"', key + 10, true)
+    local close = open and text:find('"', open + 1, true)
+    if not close then break end
+    pos = close + 1
+    local file = TERRAIN_COLLIDERS[text:sub(open + 1, close - 1)]
+    if file then
+      local nextMesh = text:find('"MeshURL":', pos, true) or #text + 1
+      local collider = text:find('"ColliderURL":', pos, true)
+      local cOpen = collider and text:find('"', collider + 14, true)
+      local cClose = cOpen and text:find('"', cOpen + 1, true)
+      local convex = cClose and text:find('"Convex":', cClose, true)
+      local vStart = convex and text:find("%a", convex + 9)
+      local vEnd = vStart and text:find("%A", vStart)
+      if vEnd and vEnd < nextMesh then
+        table.insert(out, text:sub(from, cOpen))
+        table.insert(out, ASSET_STORE .. file)
+        table.insert(out, text:sub(cClose, vStart - 1))
+        table.insert(out, "false")
+        from, pos = vEnd, vEnd
+      end
+    end
+  end
+  table.insert(out, text:sub(from))
+  return table.concat(out)
+end
+
 function repairDeadSteamHost(text)
   local repaired = text:gsub("https?://cloud%-3%.steamusercontent%.com/", "https://steamusercontent-a.akamaihd.net/")
   repaired = applySwaps(repaired, DEAD_UGC_SWAPS)
+  repaired = applyTerrainColliders(repaired)
   repaired = applySwaps(repaired, MIRRORED_ASSETS, ASSET_STORE)
   return repaired
 end
