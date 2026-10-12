@@ -16,7 +16,7 @@ require('!/TokenWithRangeRuler')
 -- factor of 3.4). Height is not scaled either: to reach the table, copies are
 -- STACKED.
 
-SMOKE_BUNDLE = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/smoke_volume.unity3d"
+SMOKE_BUNDLE = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/smoke_volume_v2.unity3d"
 SILHOUETTE_NOTCHED = 2.707   -- templateInfo.silhouetteHeight.notched
 SMOKE_HEIGHT = 2.707         -- the prefab's height; its radius is the ring the mod already draws
 SMOKE_MAX_COPIES = 5         -- each copy costs ~160 particles
