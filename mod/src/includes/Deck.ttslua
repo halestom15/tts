@@ -189,8 +189,12 @@ function Deck:spawnUpgradeDeck(position)
 end
 
 function Deck:spawnCommandCard(name, isContingency)
-  if not self._cache.commands then
+  -- Legion Helper card art raises the revision: the cache holds copies of
+  -- the cards, so it has to be read again.
+  local revision = Global.getVar("CardsSchemaRevision")
+  if not self._cache.commands or self._cache.commandsRevision ~= revision then
     self:_cacheCommandCardsByName()
+    self._cache.commandsRevision = revision
   end
   local command = self._cache.commands[name:upper()]
   if command == nil then

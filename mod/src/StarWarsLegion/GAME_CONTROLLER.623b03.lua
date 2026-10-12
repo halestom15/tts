@@ -83,6 +83,7 @@ function mainMenu()
     local menuEntries = {}
     menuEntries[1] = {functionName = "mapMenu", label = "Maps", tooltip = "Map Menu", buttonTint = {0,0.913,1}}
     menuEntries[2] = {functionName = "gameOptionsMenu", label = "Set Up", tooltip = "Set Up options menu", buttonTint = {0,0.913,1}}
+    menuEntries[3] = {functionName = "configMenu", label = "Config", tooltip = "Config Menu", buttonTint = {0,0.913,1}}
 
     createMenu(menuEntries, 1)
 
@@ -237,6 +238,45 @@ function gameOptionsMenu()
       buttonTint = {0,0.913,1}
     }
     createMenu(menuEntries, 1)
+end
+
+function configMenu()
+    ga_view("game_controller/config_menu")
+    printToScreen("CONFIG MENU", 80, 3)
+    clearAllButtons()
+    changeBackButton("mainMenu", "Go back to Main Menu")
+    local menuEntries = {}
+    menuEntries[1] = {functionName = "cardArtMenu", label = "Card Art", tooltip = "Card art loading options", buttonTint = {0,0.913,1}}
+    createMenu(menuEntries, 1)
+end
+
+-- Card art from Legion Helper, by takras (see !/LegionHelper): only the art
+-- of the cards the mod knows changes, for this session.
+function cardArtMenu()
+    ga_view("game_controller/config_menu/card_art")
+    printToScreen("CARD ART\n\nArt by Legion Helper (legion.takras.net).\nOnly the art changes, for this session.", 80, 3)
+    clearAllButtons()
+    changeBackButton("configMenu", "Go back to Config Menu")
+    local menuEntries = {}
+    menuEntries[1] = {functionName = "loadCardArtActive", label = "Load Active", tooltip = "Art for the cards and units on the table only - quick", buttonTint = {0,0.913,1}}
+    menuEntries[2] = {functionName = "loadCardArtUpgrades", label = "All Upgrades", tooltip = "Art for every upgrade card", buttonTint = {0,0.913,1}}
+    menuEntries[3] = {functionName = "loadCardArtAll", label = "All Cards", tooltip = "Art for every unit, upgrade and command card", buttonTint = {0,0.913,1}}
+    createMenu(menuEntries, 1)
+end
+
+function loadCardArtActive()
+    ga_event("Game", "loadLegionHelperActiveArmy")
+    Global.call("loadLegionHelperActiveArmy")
+end
+
+function loadCardArtUpgrades()
+    ga_event("Game", "loadLegionHelperUpgrades")
+    Global.call("loadLegionHelperUpgrades")
+end
+
+function loadCardArtAll()
+    ga_event("Game", "loadLegionHelperCards")
+    Global.call("loadLegionHelperCards")
 end
 
 function mapMenu()
