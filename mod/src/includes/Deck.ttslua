@@ -100,6 +100,7 @@ function Deck:spawnUpgradeCard(name)
     ["A-280-CFE Config"]                = "A280-CFE Sniper Config",
     ["Battle Shield Wookiee"]           = "Battle Shield Wookiee (Offensive)",
     ["E-11D Config"]                    = "E-11D Focused Fire Config",
+    ["DW-3 Concussion Grenade Launcher"] = "DW-3 Grenade Launcher",
     ["J-19 Bo-rifle"]                   = "J-19 Bo-Rifle Blaster",
     ["C-3PO Human-Cyborg Relations"]    = "C-3PO",
     ["C-3PO Made to Suffer"]            = "C-3PO",
