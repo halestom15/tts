@@ -373,10 +373,11 @@ function gToggleRange(params)
     end
 end
 
--- Note: no onObjectPickUp/onObjectDrop handlers (the vanilla Global defines
--- none either). Cohesion, like Range, stays visible during a drag and follows
--- because its Projector carries the tracking script; the vanilla onPickedUp
--- clear is neutralized in gClearCohesion while the fig is held.
+-- Note: no onObjectPickUp/onObjectDrop handlers here (the Global's
+-- onObjectDrop only feeds !/TokenCounters). Cohesion, like Range, stays
+-- visible during a drag and follows because its Projector carries the
+-- tracking script; the vanilla onPickedUp clear is neutralized in
+-- gClearCohesion while the fig is held.
 
 function onObjectDestroy(obj)
     if not obj or not obj.getGUID then return end
