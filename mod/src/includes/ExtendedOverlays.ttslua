@@ -35,16 +35,28 @@ activeOverlays = activeOverlays or {}
 --   * toggles are deterministic (see gRangeTrigger).
 -- ============================================
 
--- Resolve baseSize for a fig. The mod stores it as a script-local Var on the
--- fig itself (set at spawn from the unit's container). unitData.baseSize is
--- only populated on the Unit Leader, not on minis/vehicles, so getVar is the
--- canonical read with unitData as a fallback.
-local function overlayBaseSize(fig)
+-- Resolve baseSize for a fig. Bomb carts declare it as a script global; a
+-- unit stores it on its leader only (the baseSize var set at spawn, or
+-- unitData.baseSize). The other minis of the unit carry nothing but
+-- leaderGUID.
+local function ownBaseSize(fig)
     if not fig then return nil end
     local ok, bs = pcall(function() return fig.getVar("baseSize") end)
     if ok and bs then return bs end
     local data = fig.getTable("unitData")
     if data and data.baseSize then return data.baseSize end
+    return nil
+end
+
+-- Range is measured from any mini of a unit, so a mini that is not the
+-- leader reads its leader's base size: without that, the range hotkey drew
+-- nothing on it. Cohesion keeps ownBaseSize: it is the leader's ring only.
+local function rangeBaseSize(fig)
+    local bs = ownBaseSize(fig)
+    if bs then return bs end
+    local ok, leaderGUID = pcall(function() return fig.getVar("leaderGUID") end)
+    local leader = ok and leaderGUID and getObjectFromGUID(leaderGUID)
+    if leader and leader ~= fig then return ownBaseSize(leader) end
     return nil
 end
 
@@ -169,7 +181,7 @@ local function resolveOverlayBundle(kind, fig, params)
     params = params or {}
 
     if kind == "cohesion" then
-        local bs = overlayBaseSize(fig)
+        local bs = ownBaseSize(fig)
         if not bs then return nil end
         -- Ours first, for the base sizes the mod has no ring for at all.
         if OVERLAY_COHESION_BUNDLES[bs] then return OVERLAY_COHESION_BUNDLES[bs] end
@@ -195,7 +207,7 @@ local function resolveOverlayBundle(kind, fig, params)
             if ok and nm and TOKEN_RING_BUNDLES[nm] then return TOKEN_RING_BUNDLES[nm] end
             if links[key] then return links[key] end
         end
-        local bs = overlayBaseSize(fig) or (key and TOKEN_TO_BASESIZE[key])
+        local bs = rangeBaseSize(fig) or (key and TOKEN_TO_BASESIZE[key])
         if not bs then return nil end
         -- Extended rulers first: same geometry as the mod's, plus the
         -- white range 0.5 band. Fall back to the mod's own bundle if a base
