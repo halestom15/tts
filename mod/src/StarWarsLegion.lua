@@ -13,6 +13,7 @@ require('!/Cohesion')
 require('!/ExtendedOverlays')
 require('!/DeferredSetup')
 require('!/Antivirus')
+require('!/TokenCounters')
 
 -- Must be spelled onSave: unlike onload, TTS has no all-lowercase alias for it,
 -- so an onsave() is never called and the global script saves nothing at all.
@@ -33,6 +34,12 @@ end
 function onObjectSpawn(obj)
   refreshPoiSnapForMap(obj)
   disinfectSpawnedObject(obj)
+  counterTokensOnObject(obj)
+end
+
+-- Suppression and wound tokens add up when stacked (see !/TokenCounters).
+function onObjectDrop(_, obj)
+  counterTokensOnObject(obj)
 end
 
 function onload(saveData)
@@ -42,6 +49,7 @@ function onload(saveData)
 
     -- Saves, autosaves and undos reload objects that onObjectSpawn never sees.
     disinfectTable()
+    counterTokensInit()
 
     VERSION = "v5.0.0-beta"
     CCID = sha256(tostring(Time.time))
@@ -689,10 +697,18 @@ function initTokenHotkeys()
     -- add more key,value pairs in here once Global has more bagGUID vars added
   }
 
+  -- Suppression and wound are counters: their hotkey adds one to the hovered
+  -- or nearby token instead of always dropping a new one.
+  local counterKinds = { Suppression = "Suppression Token", Wound = "Wound Token" }
+
   for hotkeyName,bagGUID in pairs (globalBagGUIDs) do
     addHotkey(
       "Deliver "..hotkeyName.." to Cursor",
       function(playerColor, hoverObject, cursorPosition)
+        if counterKinds[hotkeyName] then
+          deliverCounterToCursor(counterKinds[hotkeyName], hoverObject, cursorPosition)
+          return
+        end
         -- local bagGUID = Global.getVar(varName)
         if bagGUID then
           local bag = getObjectFromGUID(bagGUID)

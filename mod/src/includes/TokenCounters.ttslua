@@ -1,0 +1,261 @@
+-- Suppression and wound tokens as counters: a token's state is its value
+-- (1 to 20; state 21, our previous face, counts as one). They are Chip models,
+-- so TTS stacks identical ones into one object worth getQuantity() x face.
+--
+-- TTS's events cannot be trusted to follow a token dragged out of a bag (it
+-- stays held_by_color, the event may carry the bag model's GUID, a token
+-- absorbed into a native stack leaves getAllObjects). So every drop or spawn
+-- of a counter starts a short inspection of the table instead, over a
+-- registry fed by those events.
+
+local COUNTER_KINDS = {
+  ["Suppression Token"] = "suppressionBagGUID",
+  ["Wound Token"]       = "woundBagGUID",
+}
+local FACES, NEUTRAL = 20, 21
+-- Inches around a unit's minis where the S / W buttons look for its token.
+local UNIT_RADIUS = 2.5
+-- A token 0.02 to 0.3 in above another of its kind, within 1.4 widths, rests
+-- on it (stacked: 0.04 to 0.09 in; across a triangle's edge: 1.2 widths).
+local MIN_DY, MAX_DY, REACH = 0.02, 0.3, 1.4
+local SCAN_EVERY, SCAN_PASSES = 0.4, 10
+
+local registry = {}
+local passesLeft, scanning = 0, false
+
+local function isCounter(o, kind)
+  if o == nil or o.isDestroyed() then return false end
+  local n = o.getName()
+  if kind then return n == kind end
+  return COUNTER_KINDS[n] ~= nil
+end
+
+local function register(o)
+  if not isCounter(o) then return end
+  for _, r in ipairs(registry) do
+    if rawequal(r, o) then return end
+  end
+  registry[#registry + 1] = o
+end
+
+local function counters(kind)
+  local t, live = {}, {}
+  for _, o in ipairs(registry) do
+    if isCounter(o) then
+      live[#live + 1] = o
+      if o.getName() == kind then t[#t + 1] = o end
+    end
+  end
+  registry = live
+  return t
+end
+
+local function bagFor(kind)
+  return getObjectFromGUID(Global.getVar(COUNTER_KINDS[kind]))
+end
+
+local function count(o)
+  return math.max(o.getQuantity(), 1)
+end
+
+local function faceValue(o)
+  local s = o.getStateId()
+  if s == NEUTRAL or s < 1 then return 1 end
+  return s
+end
+
+local function value(o)
+  return count(o) * faceValue(o)
+end
+
+local function warnMax()
+  broadcastToAll("Maximum " .. FACES .. " on a token", {1, 0.8, 0})
+end
+
+-- A native stack cannot change face: replace it by one token from the bag.
+local function replaceStack(o, v)
+  local bag = bagFor(o.getName())
+  if not bag then return end
+  local pos, rot, memo = o.getPosition(), o.getRotation(), o.memo
+  o.destruct()
+  bag.takeObject({
+    position = {pos.x, pos.y + 0.2, pos.z},
+    rotation = {0, rot.y, 0},
+    smooth = false,
+    callback_function = function(t)
+      if memo then t.memo = memo end
+      register(t)
+      if v > 1 then t.setState(v) end -- the bag hands out face 1
+    end,
+  })
+end
+
+local function setValue(o, v)
+  if count(o) > 1 then return replaceStack(o, v) end
+  local target = v
+  if v == 1 and o.getStateId() == NEUTRAL then target = NEUTRAL end
+  if o.getStateId() == target then return end
+  local memo = o.memo
+  local n = o.setState(target) or o
+  if memo then n.memo = memo end
+  register(n)
+end
+
+-- Adds n to the token; returns what did not fit above FACES.
+local function addTo(o, n)
+  local total = value(o) + n
+  if total > FACES then
+    warnMax()
+    setValue(o, FACES)
+    return total - FACES
+  end
+  setValue(o, total)
+  return 0
+end
+
+local function distXZ(a, b)
+  local dx, dz = a.x - b.x, a.z - b.z
+  return math.sqrt(dx * dx + dz * dz)
+end
+
+local function nearest(list, positions, radius)
+  local best, bestD = nil, radius
+  for _, o in ipairs(list) do
+    local p = o.getPosition()
+    for _, q in ipairs(positions) do
+      local d = distXZ(p, q)
+      if d < bestD then best, bestD = o, d end
+    end
+  end
+  return best
+end
+
+-- A (top, bottom) pair of tokens resting one on the other, or nil.
+local function findPile(list)
+  for _, top in ipairs(list) do
+    if top.resting then
+      local p, size = top.getPosition(), top.getBoundsNormalized().size
+      local bottom, bestD = nil, math.max(size.x, size.z) * REACH
+      for _, o in ipairs(list) do
+        local q = o.getPosition()
+        local dy, d = p.y - q.y, distXZ(p, q)
+        if dy > MIN_DY and dy < MAX_DY and d < bestD then bottom, bestD = o, d end
+      end
+      if bottom then return top, bottom end
+    end
+  end
+end
+
+local function scanOnce()
+  for kind in pairs(COUNTER_KINDS) do
+    for _, o in ipairs(counters(kind)) do
+      if count(o) > 1 and o.resting then
+        if value(o) > FACES then warnMax() end
+        replaceStack(o, math.min(value(o), FACES))
+        passesLeft = math.max(passesLeft, 3)
+      end
+    end
+    -- One pile per kind and pass: setState replaces the object.
+    local top, bottom = findPile(counters(kind))
+    if top then
+      local rest = addTo(bottom, value(top))
+      if rest > 0 then setValue(top, rest) else top.destruct() end
+      passesLeft = math.max(passesLeft, 3)
+    end
+  end
+end
+
+local function scanLoop()
+  scanOnce()
+  passesLeft = passesLeft - 1
+  if passesLeft > 0 then
+    Wait.time(scanLoop, SCAN_EVERY)
+  else
+    scanning = false
+  end
+end
+
+local function scanSoon()
+  passesLeft = SCAN_PASSES
+  if not scanning then
+    scanning = true
+    Wait.time(scanLoop, SCAN_EVERY)
+  end
+end
+
+local function spawnCounter(kind, pos, rot, memo)
+  local bag = bagFor(kind)
+  if not bag then return end
+  bag.takeObject({
+    position = pos,
+    rotation = rot,
+    smooth = false,
+    callback_function = function(o) if memo then o.memo = memo end end,
+  })
+end
+
+-- ----------------------------------------------------------------- API
+
+-- From the Global's onload: reloaded objects never go through onObjectSpawn.
+function counterTokensInit()
+  registry = {}
+  for _, o in ipairs(getAllObjects()) do register(o) end
+end
+
+function counterTokensOnObject(obj)
+  if isCounter(obj) then
+    register(obj)
+    scanSoon()
+  end
+end
+
+-- The "Deliver Suppression / Wound to Cursor" hotkeys: +1 on the hovered or
+-- nearby token, else a new token at the cursor.
+function deliverCounterToCursor(kind, hover, pos)
+  if isCounter(hover, kind) then addTo(hover, 1) return end
+  if not pos then return end
+  local near = nearest(counters(kind), {pos}, 1.0)
+  if near then
+    addTo(near, 1)
+  else
+    spawnCounter(kind, pos + Vector({0, 1, 0}))
+  end
+end
+
+-- The order token's S / W buttons: +1 on the token tied to the unit, else on
+-- the token nearest one of its minis (then tied to it), else a new token at
+-- params.spawnPos. params = {kind, leaderGUID, spawnPos, spawnRot}
+function gAddCounterToUnit(params)
+  local leader = getObjectFromGUID(params.leaderGUID)
+  if not leader then return end
+  local list = counters(params.kind)
+  for _, o in ipairs(list) do
+    if o.memo == params.leaderGUID then addTo(o, 1) return end
+  end
+  local positions = {}
+  for _, g in pairs(leader.getTable("miniGUIDs") or {params.leaderGUID}) do
+    local m = getObjectFromGUID(g)
+    if m then positions[#positions + 1] = m.getPosition() end
+  end
+  local best = nearest(list, positions, UNIT_RADIUS)
+  if best then
+    best.memo = params.leaderGUID
+    addTo(best, 1)
+  else
+    spawnCounter(params.kind, params.spawnPos, params.spawnRot, params.leaderGUID)
+  end
+end
+
+-- The REMOVE SUPPRESSION button: one suppression off every token and stack
+-- in the battlefield zone; a token at one goes back to the bag.
+function gRemoveOneSuppression(params)
+  local zone = getObjectFromGUID(Global.getVar("battlefieldZoneGUID"))
+  local inZone = {}
+  for _, o in ipairs(zone and zone.getObjects() or {}) do inZone[o.getGUID()] = true end
+  for _, o in ipairs(counters("Suppression Token")) do
+    if inZone[o.getGUID()] then
+      local v = value(o)
+      if v <= 1 then o.destruct() else setValue(o, v - 1) end
+    end
+  end
+end
