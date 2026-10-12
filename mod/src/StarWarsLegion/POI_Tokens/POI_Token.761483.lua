@@ -14,6 +14,12 @@ require('!/RangeRulers')
 -- treatment by hand: one button that follows the visible face, instead of two
 -- superposed ones. The helpers come from !/RangeRulers. The look is unchanged:
 -- position, width, height, font and tint are kept as they were.
+-- Just above the face. Buttons count in the POI's bounds: higher up, on a
+-- token 0.08 thick, they hung below it once turned over and the next flip
+-- threw it through the table. Both states have their origin on the top
+-- face, so the same height suits the new POI and the old one.
+BUTTON_HEIGHT = 0.005
+
 function onLoad()
   rangeOn = false
   -- Explicit, like Unit_Leader and BombCarts do: silhouettes are attachments
@@ -42,7 +48,7 @@ function createButton(rotation)
     function_owner = self,
     label = "R",
     tooltip = "Spawn Range Ruler",
-    position = {-0.2, 0.1, 1.15},
+    position = {-0.2, BUTTON_HEIGHT, 1.15},
     rotation = uprightButtonRotation(0),
     width = 230,
     height = 180,
@@ -99,7 +105,7 @@ function addSilhouetteButton()
       function_owner = self,
       label = "SIL",
       tooltip = "Toggle silhouettes on this unit",
-      position = {0.2, 0.1, 1.15},
+      position = {0.2, BUTTON_HEIGHT, 1.15},
       rotation = uprightButtonRotation(0),
       width = 230,
       height = 180,
