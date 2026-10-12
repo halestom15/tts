@@ -1,3 +1,3 @@
-rangeKey = "token"
+rangeKey = "smokeToken"
 
 require('!/TokenWithRangeRuler')

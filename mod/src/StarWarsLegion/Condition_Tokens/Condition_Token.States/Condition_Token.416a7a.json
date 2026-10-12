@@ -1,11 +1,11 @@
 {
   "Object": {
-    "GUID": "c9df63",
+    "GUID": "416a7a",
     "Name": "Custom_Model",
     "Transform": {
-      "posX": 46.88163,
-      "posY": 0.94903636,
-      "posZ": 19.7541523,
+      "posX": 57.41649,
+      "posY": 1.24507773,
+      "posZ": 14.1719475,
       "rotX": 0,
       "rotY": 0,
       "rotZ": 0,
@@ -13,8 +13,8 @@
       "scaleY": 1,
       "scaleZ": 1
     },
-    "Nickname": "Objective Token",
-    "Description": "Vaporator",
+    "Nickname": "Condition Token",
+    "Description": "",
     "GMNotes": "",
     "ColorDiffuse": {
       "r": 1,
@@ -35,18 +35,19 @@
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomMesh": {
-      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/785234540542328104/A2054CFEB171834D4A800251FA8117BDAC0A1D37/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/785234540542328216/085CC3C91285C2FA1862638422F55542F8F284AF/",
+      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
+      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786360308354563594/D7CA9A23D1F8610544A092594F1CFF19C8C0A578/",
       "NormalURL": "",
-      "ColliderURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
+      "ColliderURL": "",
       "Convex": true,
       "MaterialIndex": 3,
       "TypeIndex": 0,
       "CastShadows": true
     },
-    "LuaScript": "#include ./Objective_Token.c9df63.lua",
+    "LuaScript": "#include ../Condition_Token.85fa87.lua",
     "LuaScriptState": "",
-    "XmlUI": ""
+    "XmlUI": "",
+    "States": {}
   },
   "StatesPaths": {}
 }

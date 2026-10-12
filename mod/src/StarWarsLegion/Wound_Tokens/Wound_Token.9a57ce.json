@@ -6,9 +6,9 @@
       "posX": -44.5349426,
       "posY": 1.15873361,
       "posZ": 5.940003,
-      "rotX": 0.000002347223,
+      "rotX": 2.347223e-06,
       "rotY": 89.97681,
-      "rotZ": 8.97575831e-7,
+      "rotZ": 8.97575831e-07,
       "scaleX": 0.9249999,
       "scaleY": 0.9249999,
       "scaleZ": 0.9249999
@@ -35,8 +35,8 @@
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomMesh": {
-      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443832/CC490842F0159459C8D5C252BE7225E9D2581951/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443935/0F8A37E8CD128D5644B391E4EFEC50656D558FF7/",
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wound_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wound_v2_s1.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
@@ -48,5 +48,14 @@
     "LuaScriptState": "",
     "XmlUI": ""
   },
-  "StatesPaths": {}
+  "StatesPaths": {
+    "2": "Wound_Token.d031e1.json",
+    "3": "Wound_Token.040b9a.json",
+    "4": "Wound_Token.19d31d.json",
+    "5": "Wound_Token.00ba7b.json",
+    "6": "Wound_Token.161619.json",
+    "7": "Wound_Token.2322a3.json",
+    "8": "Wound_Token.71f5f8.json",
+    "9": "Wound_Token.c9a3f9.json"
+  }
 }

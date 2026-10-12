@@ -35,8 +35,8 @@
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomMesh": {
-      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442508/5CF014A3E962C6116B3B910C8BE44FE1C8FCA1D2/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442626/A2574B5726D1DE612FF4F2464A2315C7C85759D1/",
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/aim_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/aim_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
@@ -48,5 +48,7 @@
     "LuaScriptState": "",
     "XmlUI": ""
   },
-  "StatesPaths": {}
+  "StatesPaths": {
+    "2": "Aim_Token.a1d0e7.json"
+  }
 }

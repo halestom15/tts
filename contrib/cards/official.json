@@ -6946,7 +6946,7 @@
     "Condition Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786360308354563594/D7CA9A23D1F8610544A092594F1CFF19C8C0A578/"
+        "diffuse": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/advantage_asset_v2.jpg"
       },
       "target": "table",
       "stacks": false,
@@ -7027,7 +7027,7 @@
     "Objective Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441567/9502856DC8B0CEDD3D8316346FAD22C7BB8ADBF7/"
+        "diffuse": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/advantage_asset_v2.jpg"
       },
       "target": "table",
       "stacks": false,
@@ -7128,8 +7128,8 @@
     },
     "Suppression Token": {
       "token": {
-        "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443213/E353EC3098CC94615DE0BA5CEF4CE8B298CF7777/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443321/002CBBCACEB0F7497BEA744B8D7B17736A5FF65E/"
+        "mesh": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/suppression_v2.obj",
+        "diffuse": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/suppression_v2_s1.jpg"
       },
       "target": "unit"
     },
@@ -7165,14 +7165,14 @@
     },
     "Wound Token": {
       "token": {
-        "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443832/CC490842F0159459C8D5C252BE7225E9D2581951/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443935/0F8A37E8CD128D5644B391E4EFEC50656D558FF7/"
+        "mesh": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wound_v2.obj",
+        "diffuse": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wound_v2_s1.jpg"
       },
       "target": "mini"
     },
     "POI Token": {
       "token": {
-        "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2482129948495931625/A14C0E047A0C7C8D12B96B34A16D2DAAA3A5E9E3/"
+        "mesh": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_v2.obj", "diffuse": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_v2.jpg"
       },
       "target": "table",
       "stacks": false,
