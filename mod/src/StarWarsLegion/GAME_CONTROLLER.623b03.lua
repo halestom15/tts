@@ -1100,8 +1100,6 @@ MIRRORED_ASSETS = {
     "86dab0221e7c4b6b4de9.obj",
   ["https://gist.githubusercontent.com/nashjaee/31a2f65534f55c298b97768d85c6d7ed/raw/039d1f64c1764ecf6ce52b7dbb967e299884e597/short_tight_90.txt"] =
     "6c35562d0e038872a6c4.obj",
-  ["https://gist.githubusercontent.com/nashjaee/3375e9ebe255d751196483c59c545591/raw/fe2fa562af6874076a3dc4e0f74dc7c68eeafa63/rock_formation_collider.txt"] =
-    "268c4fa83f51fd727b8f.obj",
   ["https://gist.githubusercontent.com/nashjaee/39efab0cd1f7f06bebe96234166a7e5f/raw/bf1cb1943f287af6cc925fe89f676022393b1ca6/trench_holdout_model.txt"] =
     "700c83442cf4dcb2163e.obj",
   ["https://gist.githubusercontent.com/nashjaee/3bf24876e6e170127cce6049880595bd/raw/7aa374631f2d94ecee9421d919a43391de68a0b4/tat_shop_full.txt"] =
@@ -1134,8 +1132,6 @@ MIRRORED_ASSETS = {
     "b795942d99cb522ee6dd.obj",
   ["https://gist.githubusercontent.com/nashjaee/b5f868e1a32dd277e804ba5243140395/raw/094ee931f3514d97f4ca7f1ff4c812333fbc297a/short_straight.txt"] =
     "fd8e88dfa63fabc182ae.obj",
-  ["https://gist.githubusercontent.com/nashjaee/b9048effba06e7d8baaaacb0594c885b/raw/b71c618b6498c858ae3c55da102c1eaee6c3709e/rock_formation_2_collider.txt"] =
-    "b028d3e6aa20b1507ab5.obj",
   ["https://gist.githubusercontent.com/nashjaee/b93cdf53600ef76b4b425fc4f4b92103/raw/528b054fc44fd3573b055b74600e71c338cb0d25/short_90_corner.txt"] =
     "24eaad127a589e4436d8.obj",
   ["https://gist.githubusercontent.com/nashjaee/c16261972363a0bcb9f59a763fc0f771/raw/0cf50b5b1c66b4d4969bc7b37f4f92bfc6074059/tat_medium_house_2.txt"] =
