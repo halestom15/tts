@@ -1074,7 +1074,7 @@ function placeMask(x, z)
         },
         scale       = {0, 0, 0},
       })
-      local asset = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_masking_3x3_metal_v1.unity3d"
+      local asset = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_masking_3x3_metal_v2.unity3d"
       projector.setName("Masking Boundary")
       projector.setLock(true)
       projector.setCustomObject({

@@ -14,10 +14,10 @@
   },
   "minis": [
     {
-      "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/swoop__bikes_leader_model_metal_v1.unity3d"
+      "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/swoop__bikes_leader_model_metal_v2.unity3d"
     },
     {
-      "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/swoop_bikes_rider_model_metal_v1.unity3d"
+      "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/swoop_bikes_rider_model_metal_v2.unity3d"
     }
   ]
 }

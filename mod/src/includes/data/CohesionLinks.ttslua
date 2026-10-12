@@ -1,10 +1,10 @@
 function getCohesionLinks()
     local cohesions = {}
         --27 mm
-        cohesions.small = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/halfcohesion_27mm_metal_v1.unity3d"
+        cohesions.small = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/halfcohesion_27mm_metal_v2.unity3d"
         --50 mm
-        cohesions.medium = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/halfcohesion_50mm_metal_v1.unity3d"
+        cohesions.medium = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/halfcohesion_50mm_metal_v2.unity3d"
         --70 mm
-        cohesions.large = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/halfcohesion_70mm_metal_v1.unity3d"
+        cohesions.large = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/halfcohesion_70mm_metal_v2.unity3d"
     return cohesions
 end

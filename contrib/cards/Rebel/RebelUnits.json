@@ -220,7 +220,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/lando_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/lando_metal_v2.unity3d"
         }
       ],
       "commands": [
@@ -293,7 +293,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wicket_model_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wicket_model_metal_v2.unity3d"
         }
       ],
       "commands": [
@@ -328,7 +328,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/logray_model_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/logray_model_metal_v2.unity3d"
         }
       ]
     },
@@ -732,7 +732,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/boba_fett_the_old_and_wise_model_1_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/boba_fett_the_old_and_wise_model_1_metal_v2.unity3d"
         }
       ],
       "commands": [
@@ -791,7 +791,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ahsoka_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ahsoka_metal_v2.unity3d"
         }
       ],
       "commands": [
@@ -831,7 +831,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/hunter_model_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/hunter_model_metal_v2.unity3d"
         }
       ],
       "commands": [
@@ -979,27 +979,27 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128972/9388116F0C7BE70B991CC7715943BF9FF08D3890/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129131/D612F1B1EBDA3172B69BEE40159CE5D999045A62/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129196/6EED0C8AAF8F50751EE4206471D1273B6C0F4B5A/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867129252/FC0A6247B6AB21A99919659C1F9069186C6D82ED/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128356/9E8C70962F9D5BF853BD9310F2BB1E1A3F80DB5D/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128445/EBB56734DB6527B3566C317F6F4F0E84471D6776/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
         }
       ]
     }
@@ -1118,13 +1118,13 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/mandoresistance_leader_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/mandoresistance_leader_metal_v2.unity3d"
         },
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/mandoresistance_1_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/mandoresistance_1_metal_v2.unity3d"
         },
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/mandoresistance_2_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/mandoresistance_2_metal_v2.unity3d"
         }
       ]
     },
@@ -1147,7 +1147,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/clanwrenchump_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/clanwrenchump_metal_v2.unity3d"
         }
       ],
       "required": ["Ursa Wren", "Tristan Wren"]
@@ -1194,27 +1194,27 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128972/9388116F0C7BE70B991CC7715943BF9FF08D3890/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128506/B24F2402EDC36C64688B7F492B382D972ABA30F1/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128565/24D88975D67E46B5FA9294EB6DCC146912D61F2F/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128627/19AC5B05F3A355226EE783B9F239B3B285EA077A/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128715/CB52DA6C0FC1DF3511C2A2D62CB2B3A13A9D4F8F/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128778/1D5BCB551375F1A7988C434F0B52E18434BB4747/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
         }
       ]
     },
@@ -1377,7 +1377,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/t47_airspeeder_model_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/t47_airspeeder_model_metal_v2.unity3d"
         }
       ]
     },
@@ -1425,7 +1425,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/aa5_scan_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/aa5_scan_metal_v2.unity3d"
         }
       ]
     },

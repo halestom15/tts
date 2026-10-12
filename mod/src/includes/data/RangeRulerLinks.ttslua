@@ -1,30 +1,30 @@
 function getRangeRulerLinks()
     local rangeRulers  = {}
         -- 27mm
-        rangeRulers.small = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_27mm_metal_v1.unity3d"
+        rangeRulers.small = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_27mm_metal_v2.unity3d"
         -- 50mm
-        rangeRulers.medium = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_50mm_metal_v1.unity3d"
+        rangeRulers.medium = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_50mm_metal_v2.unity3d"
         -- 70mm
-        rangeRulers.large = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_70mm_metal_v1.unity3d"
+        rangeRulers.large = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_70mm_metal_v2.unity3d"
         -- 100mm
-        rangeRulers.huge = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_100mm_metal_v1.unity3d"
+        rangeRulers.huge = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_100mm_metal_v2.unity3d"
         -- 120mm
-        rangeRulers.laat = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_120mm_metal_v1.unity3d"
+        rangeRulers.laat = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_120mm_metal_v2.unity3d"
         -- 150mm
-        rangeRulers.epic = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_150mm_metal_v1.unity3d"
+        rangeRulers.epic = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_150mm_metal_v2.unity3d"
         -- 100mm oblong
-        rangeRulers.long = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_100mm_oblong_metal_v1.unity3d"
+        rangeRulers.long = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_100mm_oblong_metal_v2.unity3d"
         -- 100mm x 200mm oblong
-        rangeRulers.snail = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_200mm_oblong_metal_v1.unity3d"
+        rangeRulers.snail = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_200mm_oblong_metal_v2.unity3d"
         -- bomb cart
-        rangeRulers.bombCart = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_bomb_cart_metal_v1.unity3d"
+        rangeRulers.bombCart = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_bomb_cart_metal_v2.unity3d"
         -- smoke token
-        rangeRulers.smokeToken = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_smoketoken_metal_v1.unity3d"
+        rangeRulers.smokeToken = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_smoketoken_metal_v2.unity3d"
         -- charge, objective, condition
-        rangeRulers.token = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_token_metal_v1.unity3d"
+        rangeRulers.token = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_token_metal_v2.unity3d"
         -- graffiti token, same as objective but range 2
-        rangeRulers.tokenRangeTwo = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_tokenrangetwo_metal_v1.unity3d"
+        rangeRulers.tokenRangeTwo = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_tokenrangetwo_metal_v2.unity3d"
         -- poi token (2" token w/ 3" range)
-        rangeRulers.poi = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_3in_metal_v1.unity3d"
+        rangeRulers.poi = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_3in_metal_v2.unity3d"
     return rangeRulers
 end

@@ -227,7 +227,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/tseries_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/tseries_metal_v2.unity3d"
         }
       ]
     },
@@ -329,7 +329,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poggle_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poggle_metal_v2.unity3d"
         }
       ],
       "commands": [
@@ -438,7 +438,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/maul_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/maul_metal_v2.unity3d"
         }
       ],
       "commands": [
@@ -473,7 +473,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/assajventress_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/assajventress_metal_v2.unity3d"
         }
       ],
       "commands": [
@@ -509,7 +509,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/sunfac_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/sunfac_metal_v2.unity3d"
         }
       ],
       "commands": [
@@ -612,19 +612,19 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2058763770177202081/37F68E146C49B315AA46E15BE88DDB56AE97646C/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2058763770177201554/7AEA5B0A98A298731F6BE51591401BBF095A5797/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2058763770177201933/E0DBF0D812FFF4F7F3A77CF1E4EAB84F78B8C49E/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2058763770177202012/76CB0371503304D5AAF562E5E2F04961CD206090/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v2.unity3d"
         }
       ]
     },
@@ -640,19 +640,19 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2058763770177202081/37F68E146C49B315AA46E15BE88DDB56AE97646C/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2058763770177201554/7AEA5B0A98A298731F6BE51591401BBF095A5797/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2058763770177201933/E0DBF0D812FFF4F7F3A77CF1E4EAB84F78B8C49E/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2058763770177202012/76CB0371503304D5AAF562E5E2F04961CD206090/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugshared_metal_v2.unity3d"
         }
       ]
     }
@@ -703,13 +703,13 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/drksithprobe_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/drksithprobe_metal_v2.unity3d"
         },
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/drksithprobe_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/drksithprobe_metal_v2.unity3d"
         },
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/drksithprobe_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/drksithprobe_metal_v2.unity3d"
         }
       ]
     },
@@ -729,15 +729,15 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1621849308236386731/FA50237A0BF717ED06EA3020D5F4089D452ADCD6/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1621849308236386470/4D5227051DEEED77303985CE6D34CDBFB27FD472/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1621849308236386513/AC53B9F503C0B353AE7AA797072F7EBA15A1214C/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v2.unity3d"
         }
       ]
     },
@@ -758,19 +758,19 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1621849308236386731/FA50237A0BF717ED06EA3020D5F4089D452ADCD6/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1621849308236386470/4D5227051DEEED77303985CE6D34CDBFB27FD472/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1621849308236386513/AC53B9F503C0B353AE7AA797072F7EBA15A1214C/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1621849308236386470/4D5227051DEEED77303985CE6D34CDBFB27FD472/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_100_magnagaurd_mat_metal_v2.unity3d"
         }
       ]
     },
@@ -840,12 +840,12 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/droideka_leader_metal_v1.unity3d",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/droideka_fx_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/droideka_leader_metal_v2.unity3d",
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/droideka_fx_metal_v2.unity3d"
         },
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/droideka_metal_v1.unity3d",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/droideka_fx_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/droideka_metal_v2.unity3d",
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/droideka_fx_metal_v2.unity3d"
         }
       ]
     },
@@ -915,7 +915,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/dsd_1_dwarf_spider_droid_model_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/dsd_1_dwarf_spider_droid_model_metal_v2.unity3d"
         }
       ]
     }
@@ -964,7 +964,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/nr_n99_persuader_class_tank_droid_model_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/nr_n99_persuader_class_tank_droid_model_metal_v2.unity3d"
         }
       ]
     },
@@ -988,7 +988,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/nr_n99_persuader_class_tank_droid_model_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/nr_n99_persuader_class_tank_droid_model_metal_v2.unity3d"
         }
       ]
     },

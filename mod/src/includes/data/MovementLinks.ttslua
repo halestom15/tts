@@ -3,58 +3,58 @@ function getMovementLinks()
         --27 mm
         movements.small = 
             {
-                "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_27mm_speed1_metal_v1.unity3d",
-                "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_27mm_speed2_metal_v1.unity3d",
-                "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_27mm_speed3_metal_v1.unity3d"
+                "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_27mm_speed1_metal_v2.unity3d",
+                "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_27mm_speed2_metal_v2.unity3d",
+                "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_27mm_speed3_metal_v2.unity3d"
             }
         --50 mm
         movements.medium = 
             {
-                "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_50mm_speed1_metal_v1.unity3d",
-                "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_50mm_speed2_metal_v1.unity3d",
-                "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_50mm_speed3_metal_v1.unity3d"
+                "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_50mm_speed1_metal_v2.unity3d",
+                "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_50mm_speed2_metal_v2.unity3d",
+                "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_50mm_speed3_metal_v2.unity3d"
             }
         --70mm
         movements.large = 
         {
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_70mm_speed1_metal_v1.unity3d",
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_70mm_speed2_metal_v1.unity3d",
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_70mm_speed3_metal_v1.unity3d"
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_70mm_speed1_metal_v2.unity3d",
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_70mm_speed2_metal_v2.unity3d",
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_70mm_speed3_metal_v2.unity3d"
         }
         --100mm
         movements.huge = 
         {
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_100mm_speed1_metal_v1.unity3d",
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_100mm_speed2_metal_v1.unity3d",
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_100mm_speed3_metal_v1.unity3d"
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_100mm_speed1_metal_v2.unity3d",
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_100mm_speed2_metal_v2.unity3d",
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_100mm_speed3_metal_v2.unity3d"
         }
         --120mm
         movements.laat = 
         {
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_120mm_speed1_metal_v1.unity3d",
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_120mm_speed2_metal_v1.unity3d",
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_120mm_speed3_metal_v1.unity3d"
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_120mm_speed1_metal_v2.unity3d",
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_120mm_speed2_metal_v2.unity3d",
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_120mm_speed3_metal_v2.unity3d"
         }
         --150mm
         movements.epic =
         {
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_150mm_speed1_metal_v1.unity3d",
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_150mm_speed2_metal_v1.unity3d",
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_150mm_speed3_metal_v1.unity3d"
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_150mm_speed1_metal_v2.unity3d",
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_150mm_speed2_metal_v2.unity3d",
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_150mm_speed3_metal_v2.unity3d"
         }
         --100mm x 175mm oblong (gav, aa5)
         movements.long = 
         {
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_oblong_speed1_metal_v1.unity3d",
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_oblong_speed2_metal_v1.unity3d",
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_oblong_speed3_metal_v1.unity3d"
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_oblong_speed1_metal_v2.unity3d",
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_oblong_speed2_metal_v2.unity3d",
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_oblong_speed3_metal_v2.unity3d"
         }
         --100mm x 200mm oblong (snail)
         movements.snail = 
         {
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_snail_speed1_metal_v1.unity3d",
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_snail_speed2_metal_v1.unity3d",
-            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_snail_speed3_metal_v1.unity3d"
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_snail_speed1_metal_v2.unity3d",
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_snail_speed2_metal_v2.unity3d",
+            "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/movement_snail_speed3_metal_v2.unity3d"
         }
     return movements
 end

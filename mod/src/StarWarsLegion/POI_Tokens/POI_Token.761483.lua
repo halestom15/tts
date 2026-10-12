@@ -128,7 +128,7 @@ function addSilhouetteButton()
     local scale = 2.0
     local height = 3.0
     local offset = 0.0
-    local silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/sihl_metal_v1.unity3d"
+    local silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/sihl_metal_v2.unity3d"
     if obj ~= nil then
       local objUp = obj.getTransformUp()
       local offsetVector = Vector.new(objUp.x * offset, objUp.y * offset, objUp.z * offset)

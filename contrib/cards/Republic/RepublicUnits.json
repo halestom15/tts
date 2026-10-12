@@ -306,7 +306,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/clonecommander_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/clonecommander_metal_v2.unity3d"
         }
       ]
     },
@@ -411,7 +411,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/cody_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/cody_metal_v2.unity3d"
         }
       ],
       "commands": [
@@ -648,7 +648,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/hunter_model_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/hunter_model_metal_v2.unity3d"
         }
       ],
       "commands": [
@@ -759,11 +759,11 @@
           "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
         },
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/arc_2_metal_v1.unity3d",
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/arc_2_metal_v2.unity3d",
           "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
         },
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/arc_3_metal_v1.unity3d",
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/arc_3_metal_v2.unity3d",
           "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
         }
       ]
@@ -961,7 +961,7 @@
       },
       "minis": [
         {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/atrt_gar_metal_v1.unity3d"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/atrt_gar_metal_v2.unity3d"
         }
       ]
     },
@@ -1030,19 +1030,19 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2495630600682669631/743A3F4EE203D22A0C7A8324994F8DD6D15337C0/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/rep_commandomat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/rep_commandomat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2495630600682669442/778C5CDC3ED0EF8036784484685D9C1E283AE229/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/rep_commandomat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/rep_commandomat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2495630600682669514/964CC0732F05CF777C4F226E4A66B82C9B8F17F1/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/rep_commandomat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/rep_commandomat_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2495630600682669589/FE6E365D8DFE4186F7AE93CBEF854B84881DFA18/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/rep_commandomat_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/rep_commandomat_metal_v2.unity3d"
         }
       ],
       "additionalObjects": ["Complete the Mission Token"]
@@ -1064,19 +1064,19 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2474241114696859651/A77E973493F46183AC97F68C1A191EC0E74F6A65/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/delta_38mat_1_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/delta_38mat_1_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2474241114696859554/12CFFC76B71288B5426C2E57CC8A91F515B075F2/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/delta_62mat_1_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/delta_62mat_1_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2474241114696859485/0340EC3130B99413F05F2CB2544E9FDE79A3871D/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/delta_40mat_1_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/delta_40mat_1_metal_v2.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2474241114696859319/2846289D99E3CA2DC68F2BB8FC69ECF1ABE2072E/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/delta_07mat_1_metal_v1.unity3d"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/delta_07mat_1_metal_v2.unity3d"
         }
       ],
       "additionalObjects": ["Complete the Mission Token"]

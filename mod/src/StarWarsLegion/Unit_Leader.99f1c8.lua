@@ -253,16 +253,16 @@ function spawnSilhouette(obj, pos, rot)
   local scale = globals.baseRadius[unitData.baseSize]
   local height = 1.0
   local offset = 0.0
-  local silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/sihl_metal_v1.unity3d"
+  local silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/sihl_metal_v2.unity3d"
   if silhType == "custom" then
     height = silhHeight
     offset = silhOffset
     if unitData.baseSize == "snail" then
-      silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/sihl_snail_variant_metal_v1.unity3d"
+      silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/sihl_snail_variant_metal_v2.unity3d"
       scale = 1.0
     end
     if unitData.baseSize == "long" then
-      silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/sihl_long_variant_metal_v1.unity3d"
+      silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/sihl_long_variant_metal_v2.unity3d"
       scale = 1.0
     end
   else    
