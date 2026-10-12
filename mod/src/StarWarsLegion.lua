@@ -1,6 +1,7 @@
 require('!/Analytics')
 require('!/CardSchema')
 require('!/common/SHA256')
+require('!/Battlefield')
 require('!/data/ListBuilder')
 require('!/generated/cards')
 require('!/UI')
@@ -21,12 +22,15 @@ function onSave()
     clocks = chessClocksActive,
     welcome = welcomeDialogActive,
     overlays = overlayMode,
+    poiSnap = isPoiSnapEnabled(),
   })
 end
 
 -- Anything brought onto the table (out of a bag, a deck, an additive load)
--- is defused as soon as TTS reports it.
+-- is defused as soon as TTS reports it. A loaded map brings its own
+-- battlefield: the POI snap points follow it.
 function onObjectSpawn(obj)
+  refreshPoiSnapForMap(obj)
   disinfectSpawnedObject(obj)
 end
 
@@ -261,6 +265,12 @@ function onload(saveData)
     templateInfo.attackLineMesh = "https://steamusercontent-a.akamaihd.net/ugc/785234780861452902/76204298AA245698319FD2EA590160AFFE1B488C/"
 
     highestPoint = 0
+
+    -- POI snap points (only POI tokens snap to them), on unless the save
+    -- turned them off. Left a moment for a saved map to report its size.
+    Wait.time(function()
+      setPoiSnapPoints(loadData.poiSnap ~= false)
+    end, 2)
 
     -- token Bags
     aimBagGUID = "beca0f"

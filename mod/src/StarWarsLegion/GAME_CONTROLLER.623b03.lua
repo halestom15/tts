@@ -1,9 +1,6 @@
 require('!/Analytics')
 require('!/Deck')
 
-existingMasks = {}
-existingPoiGuide = nil
-
 function onload(save_state)
     _G.Deck = Deck:create()
 
@@ -261,7 +258,13 @@ function mapMenu()
     menuEntries[7] = {functionName = "saveConditions", label = "Save Battlefield Tokens", tooltip = "Saves Objects from the Objective/Deployment/Conditions", buttonTint = {0,0.913,1}}
     menuEntries[8] = {functionName = "toggleMaskMid", label = "Toggle Masks : Mid", tooltip = "Toggles Masking Objects for the middle of the Battlefield", buttonTint = {0,0.913,1}}
     menuEntries[9] = {functionName = "togglePoiGuide", label = "Toggle Poi Guide", tooltip = "Toggles Poi Layout Projector to help with Map Creation", buttonTint = {0,0.913,1}}
+    menuEntries[10] = {functionName = "togglePoiSnap", label = "Toggle POI Snap", tooltip = "Toggles snap points on the POI guide circles for POI tokens", buttonTint = {0,0.913,1}}
     createMenu(menuEntries, 1)
+end
+
+function togglePoiSnap()
+    ga_event("Game", "togglePoiSnap")
+    Global.call("togglePoiSnapPoints")
 end
 
 function featuredMapsMenu()
@@ -1895,14 +1898,21 @@ function enableExperimentalFeatures()
     Global.UI.show("legionDisplay")
 end
 
-function getExistingMaskLength()
-    local length = 0
-    if existingMasks ~= nil then
-        for i, obj in pairs(existingMasks) do
-            length = length + 1
+-- The masks and the POI guide are found by name rather than kept in
+-- variables: a script reload (every save and load) resets the variables while
+-- the projectors stay on the table, so toggling went wrong and left orphans.
+function findObjectsByName(name)
+    local matches = {}
+    for _, obj in ipairs(getAllObjects()) do
+        if obj.getName() == name then
+            table.insert(matches, obj)
         end
     end
-    return length
+    return matches
+end
+
+function getExistingMaskLength()
+    return #findObjectsByName("Masking Boundary")
 end
 
 function toggleMaskMid()   
@@ -1942,13 +1952,8 @@ function toggleMaskLeft()
 end
 
 function clearMasks()
-    if existingMasks ~= nil then
-        for i, obj in pairs(existingMasks) do
-            if obj ~= nil then
-                destroyObject(obj)
-            end
-        end
-        existingMasks = {}
+    for _, obj in ipairs(findObjectsByName("Masking Boundary")) do
+        destroyObject(obj)
     end
 end
 
@@ -1967,27 +1972,26 @@ function placeMask(x, z)
       projector.setLock(true)
       projector.setCustomObject({
         assetbundle = asset,
-      })  
-    table.insert(existingMasks, projector)
+      })
 end
 
-function togglePoiGuide()   
-    local length = getExistingMaskLength() 
-    if existingPoiGuide ~= nil then
-        destroyObject(existingPoiGuide)
-        existingPoiGuide = nil
+function togglePoiGuide()
+    local existing = findObjectsByName("Poi Guide")
+    if #existing > 0 then
+        for _, obj in ipairs(existing) do
+            destroyObject(obj)
+        end
     else
         local projector = spawnObject({
             type = "Custom_AssetBundle",
             position = { 8, 30, 0 },
             scale = {0,0,0}
         })
-        local asset = "https://steamusercontent-a.akamaihd.net/ugc/2491137781649901469/35992792768FE398E61633C99C02D069A54F65B1/"
+        local asset = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_guide_isq_v3.unity3d"
         projector.setName("Poi Guide")
         projector.setLock(true)
         projector.setCustomObject({
             assetbundle = asset
         })
-        existingPoiGuide = projector
     end
 end

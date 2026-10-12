@@ -21,6 +21,8 @@ require('!/RangeRulers')
 BUTTON_HEIGHT = 0.005
 
 function onLoad()
+  -- Only tagged objects snap to the POI points on the battlefield.
+  self.addTag("POI")
   rangeOn = false
   -- Explicit, like Unit_Leader and BombCarts do: silhouettes are attachments
   -- and never survive a save, so a load always starts with none up.
