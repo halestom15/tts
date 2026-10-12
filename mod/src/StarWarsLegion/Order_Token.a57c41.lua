@@ -366,7 +366,74 @@ function resetButtons()
     end
 end
 
+-- Cycle through buttons
+function findButtonIndex(clickFunction)
+    for _, button in ipairs(self.getButtons() or {}) do
+        if button.click_function == clickFunction then
+            return button.index
+        end
+    end
+    return nil
+end
+
+-- Finds the surface height under mini position
+function findLandingHeight(pos, fallbackY)
+    local ignoreGUIDs = {}
+    if selectedUnitObj then
+        for _, guid in pairs(selectedUnitObj.getTable("miniGUIDs") or {}) do
+            ignoreGUIDs[guid] = true
+        end
+    end
+    local ignoreNames = {
+        ["Movement Template (A)"] = true,
+        ["Movement Template (B)"] = true,
+        ["Maximum Move"] = true,
+        ["Cohesion Ruler"] = true,
+        ["Range Ruler"] = true,
+        ["Height Guide"] = true,
+        ["Silhouette"] = true,
+    }
+    local hits = Physics.cast({
+        origin = {pos.x, pos.y + 30, pos.z},
+        direction = {0, -1, 0},
+        type = 1,
+        max_distance = 60,
+    })
+    local best = nil
+
+    for _, hit in ipairs(hits or {}) do
+        local obj = hit.hit_object
+        if obj ~= nil and not ignoreGUIDs[obj.getGUID()] and not ignoreNames[obj.getName()] then
+            if best == nil or hit.point.y > best then
+                best = hit.point.y
+            end
+        end
+    end
+    if best == nil then
+        return fallbackY + 2
+    end
+    return best + 0.3
+end
+
 function toggleCohesionRuler()
+    -- extended overlays (see !/ExtendedOverlays): route this button to the
+    -- Projector renderer when they are on. Off by default, in which case
+    -- everything below runs unchanged.
+    if extendedOverlaysOn() then
+        if not selectedUnitObj then return end
+        -- Clear before toggling on: the hover hotkey writes to the same key as
+        -- this unit, so without the clear the first click here would turn that
+        -- overlay off while we set rulerOn = true, leaving the button inverted
+        -- from then on.
+        clearOverlayCohesion({figGUID = selectedUnitObj.getGUID()})
+        if rulerOn then
+            rulerOn = false
+        else
+            toggleOverlayCohesion({figGUID = selectedUnitObj.getGUID()})
+            rulerOn = true
+        end
+        return
+    end
     if not rulerOn then
         selectedUnitObj.call("spawnCohesionRuler", selectedUnitObj)
         rulerOn = true
@@ -440,6 +507,84 @@ function initDeploy()
 end
 
 
+-- The map in play: looked up in the battlefield zone first, the whole
+-- table only if it is not there.
+local function findBattlefield()
+    local zone = getObjectFromGUID(Global.getVar("battlefieldZoneGUID"))
+    if zone ~= nil then
+        for _, obj in ipairs(zone.getObjects()) do
+            if obj.getName() == "BATTLEFIELD" then return obj end
+        end
+    end
+    for _, obj in ipairs(getAllObjects()) do
+        if obj.getName() == "BATTLEFIELD" then return obj end
+    end
+    return nil
+end
+
+local function battlefieldRect()
+    local battlefield = findBattlefield()
+    if battlefield ~= nil then
+        local b = battlefield.getBounds()
+        -- a mesh still loading has no size yet
+        if b.size.x >= 10 and b.size.z >= 10 then
+            return {
+                minX = b.center.x - b.size.x / 2, maxX = b.center.x + b.size.x / 2,
+                minZ = b.center.z - b.size.z / 2, maxZ = b.center.z + b.size.z / 2,
+                top  = b.center.y + b.size.y / 2,
+            }
+        end
+    end
+    -- standard 6x3 battlefield
+    return {minX = -28, maxX = 44, minZ = -18, maxZ = 18, top = 1.44}
+end
+
+-- Distance from the centre of a base to its front, where the tool starts.
+-- baseRadius holds the width, which is not the length of the long and snail
+-- bases; aStart (centre to tool joint) knows the length, and for notched
+-- bases it is that distance plus a constant tool share, taken from medium.
+local function baseFront(baseSize)
+    if baseSize == "small" then
+        return templateInfo.baseRadius.small / 2
+    end
+    local toolShare = templateInfo.aStart.medium[1] - templateInfo.baseRadius.medium / 2
+    return templateInfo.aStart[baseSize][1] - toolShare
+end
+
+-- A Deploy measures from the battlefield edge, not from the unit leader:
+-- both prongs of the Movement Tool touch the edge (Rulebook, Deploying
+-- Units). The tool is placed as if the leader stood just outside the
+-- nearest edge, its base touching it and facing in, so deployMod still
+-- puts the prongs on the edge, notched bases included.
+local function deployAnchor(pos, baseSize)
+    local rect = battlefieldRect()
+    local radius = templateInfo.baseRadius[baseSize] / 2
+    local front = baseFront(baseSize)
+    local function clamp(v, lo, hi) return math.max(lo + radius, math.min(hi - radius, v)) end
+    local x = clamp(pos.x, rect.minX, rect.maxX)
+    local z = clamp(pos.z, rect.minZ, rect.maxZ)
+    -- each edge: its closest point to the leader and the inward direction
+    local edges = {
+        {x = rect.minX, z = z, nx = 1, nz = 0},
+        {x = rect.maxX, z = z, nx = -1, nz = 0},
+        {x = x, z = rect.minZ, nx = 0, nz = 1},
+        {x = x, z = rect.maxZ, nx = 0, nz = -1},
+    }
+    local best, bestDist
+    for _, e in ipairs(edges) do
+        local d = (pos.x - e.x)^2 + (pos.z - e.z)^2
+        if bestDist == nil or d < bestDist then best, bestDist = e, d end
+    end
+    local anchor = {
+        x = best.x - best.nx * front,
+        y = math.max(pos.y, rect.top + 0.05),
+        z = best.z - best.nz * front,
+    }
+    -- the tool is laid along -(sin q, cos q) from the leader
+    local yaw = math.deg(math.atan2(-best.nx, -best.nz))
+    return anchor, {x = 0, y = yaw, z = 0}
+end
+
 function moveUnit(isDeploy)
     local startOffset = 0.0
     if isDeploy and isDeploy == true then
@@ -464,7 +609,9 @@ function moveUnit(isDeploy)
     basePos.y = basePos.y + 0.05
     baseRot = selectedUnitObj.getRotation()
 
-    if moveDirection == "backward" then
+    if isDeploy == true then
+        basePos, baseRot = deployAnchor(basePos, unitData.baseSize)
+    elseif moveDirection == "backward" then
         baseRot.y = baseRot.y + 180
 
     elseif moveDirection == "left" then
@@ -553,13 +700,22 @@ function moveUnit(isDeploy)
     local baseSizeMoveBundles = maxMoveBundles[unitData.baseSize]
     local maxMoveTemplateBundleToSpawn = baseSizeMoveBundles[unitData.selectedSpeed]
 
-    if isDeploy == false then
+    -- changeSpeed1/2/3 call moveUnit() with no argument after destroying the
+    -- templates, so isDeploy is nil, not false. With a strict equality the
+    -- maximum move ring disappeared as soon as the speed changed, and never
+    -- came back.
+    if isDeploy ~= true then
         --max movement ring projector
         if maxMoveTemplateBundleToSpawn ~= nil then
             maxMoveTemplate = spawnObject({
                 type = "Custom_AssetBundle",
                 position = {basePos.x, basePos.y + 20, basePos.z},
-                rotation = {0, basePos.y, 0},
+                -- The yaw comes from baseRot.y, the unit's facing. It used
+                -- to be basePos.y, its HEIGHT above the table: the projector
+                -- always sat at about 1 degree in world space and never
+                -- followed the vehicle. Invisible while the footprint is a
+                -- disc, wrong as soon as it is not.
+                rotation = {0, baseRot.y, 0},
                 scale = {0,0,0} -- 0 scale will hide TTS default box and won't impact projector
             })
 
@@ -692,7 +848,7 @@ function moveFull()
         local startRot = templateB.getRotation()
         local endOffset = unitData.baseSize == "small" and templateInfo.deployMod.small or 0.0
         local endPos = translatePos(startPos, startRot, unitData.aStart + endOffset, 0)
-        endPos.y = endPos.y + 2
+        endPos.y = findLandingHeight(endPos, endPos.y)
 
         local endRot = startRot
         if moveDirection == "backward" then
@@ -713,8 +869,9 @@ end
 
 
 function moveStart()
-    local endPos = initPos
-    endPos.y = initPos.y + 2
+    -- initPos must stay untouched. The unit stood there before the move, so
+    -- it goes back as it was: a ray could land it on a balcony above.
+    local endPos = Vector(initPos.x, initPos.y + 0.3, initPos.z)
     selectedUnitObj.setPositionSmooth(endPos, false, false)
     selectedUnitObj.setRotationSmooth(initRot, false, false)
     Wait.frames(function()
@@ -723,23 +880,29 @@ function moveStart()
 end
 
 function moveBackwards()
-    self.editButton({
-        index = 11,
-        click_function = "moveForward",
-        label = "F",
-        tooltip = "Move Forwards"
-    })
+    local index = findButtonIndex("moveBackwards")
+    if index ~= nil then
+        self.editButton({
+            index = index,
+            click_function = "moveForward",
+            label = "F",
+            tooltip = "Move Forwards"
+        })
+    end
     moveDirection = "backward"
     moveUnit()
 end
 
 function moveForward()
-    self.editButton({
-        index = 11,
-        click_function = "moveBackwards",
-        label = "B",
-        tooltip = "Move Backwards"
-    })
+    local index = findButtonIndex("moveForward")
+    if index ~= nil then
+        self.editButton({
+            index = index,
+            click_function = "moveBackwards",
+            label = "B",
+            tooltip = "Move Backwards"
+        })
+    end
     moveDirection = "forward"
     moveUnit()
 end
@@ -769,6 +932,10 @@ end
 ------------------------------------------------- Clear templates------------------------------------------------------------
 function clearTemplates()
     clearMovementTemplates()
+    -- extended overlays (see !/ExtendedOverlays): clearRangeRulers only wipes
+    -- the vanilla ruler, so ours has to be cleared alongside it. No-op when the
+    -- overlays are off, which is the default.
+    clearOrderOverlayRange()
     clearRangeRulers()
     clearCohesionRulers()
 end
@@ -781,7 +948,10 @@ function clearMovementTemplates()
         destroyObject(templateB)
     end
     if maxMoveTemplate ~= nil then
-        destroyObject(maxMoveTemplate)
+        -- pcall: the ring may already be gone (Clear Map, standbyTokens), in which
+        -- case destroyObject throws and the rest of the cleanup was skipped.
+        pcall(destroyObject, maxMoveTemplate)
+        maxMoveTemplate = nil
     end
 end
 
@@ -919,11 +1089,39 @@ function attack()
     attackMode()
 end
 
+-- extended overlays (see !/ExtendedOverlays): draw and clear this token's range
+-- with the Projector renderer when they are on. Both are no-ops when they are
+-- off, which is the default, so the vanilla calls around them are untouched.
+--
+-- These two only ever call into the module. The vanilla spawnRangeRuler and
+-- clearRangeRulers are deliberately NOT overridden on this object: doing so
+-- crashed Tabletop Simulator on macOS whenever a figure hotkey spawned a range
+-- bundle, so only their callers are adapted.
+function spawnOrderOverlayRange()
+    if not selectedUnitObj then return end
+    if not extendedOverlaysOn() then return end
+    -- Clear before triggering: the module toggles by GUID and the hover hotkey
+    -- writes to this same unit, so without the clear a click meant to draw
+    -- could erase instead.
+    clearOverlayRange({figGUID = selectedUnitObj.getGUID()})
+    triggerOverlayRange({figGUID = selectedUnitObj.getGUID()})
+end
+
+function clearOrderOverlayRange()
+    if not selectedUnitObj then return end
+    if not extendedOverlaysOn() then return end
+    clearOverlayRange({figGUID = selectedUnitObj.getGUID()})
+end
+
 function targetingMode()
     if not enemyHighlighted then
         exitAttackMode()
         highlightEnemies()
-        spawnRangeRuler(selectedUnitObj)
+        if extendedOverlaysOn() then
+            spawnOrderOverlayRange()
+        else
+            spawnRangeRuler(selectedUnitObj)
+        end
         enemyHighlighted = true
         resetRangeButtons()
     else
@@ -935,7 +1133,11 @@ function attackMode()
     if not attackModeOn then
         exitTargetingMode()
         highlightEnemies()
-        spawnRangeRuler(selectedUnitObj)
+        if extendedOverlaysOn() then
+            spawnOrderOverlayRange()
+        else
+            spawnRangeRuler(selectedUnitObj)
+        end
         attackModeOn = true
         resetTargetingButtons()
     else
@@ -946,6 +1148,7 @@ end
 function exitTargetingMode()
     enemyHighlighted = false
     attackModeOn = false
+    clearOrderOverlayRange()
     clearRangeRulers()
     unhighlightEnemies()
     clearAttackLine()
@@ -954,6 +1157,7 @@ end
 function exitAttackMode()
     enemyHighlighted = false
     attackModeOn = false
+    clearOrderOverlayRange()
     clearRangeRulers()
     unhighlightEnemies()
 end
@@ -1078,7 +1282,7 @@ function spawnAttackLine(aOriginObj,aTargetObj)
         attackLineObj.setCustomObject({
             type = 0,
             mesh = templateInfo.attackLineMesh,
-            collider = "http://cloud-3.steamusercontent.com/ugc/785234780862865411/C2B5E8CA63651BE485909340212736C0A68C2754/",
+            collider = "https://steamusercontent-a.akamaihd.net/ugc/785234780862865411/C2B5E8CA63651BE485909340212736C0A68C2754/",
             material = 1,
         })
         attackLineObj.setLock(true)
@@ -1150,7 +1354,16 @@ function createRangeButton(leaderObj)
         end
     end
 
-    lowestDistance = lowestDistance - templateInfo.baseRadius[enemyBaseSize]/2 - templateInfo.baseRadius[enemyBaseSize]/2
+    -- getDistance measures centre to centre, while in the game range is measured
+    -- base edge to base edge. So the measuring unit's radius has to come off,
+    -- THEN the target's. It was the target's that came off twice: the band shown
+    -- was wrong whenever the two bases differed, by radius(target) -
+    -- radius(measurer), up to 2.4 in between a trooper and an AAT, on 6 in bands.
+    -- (templateInfo.baseRadius holds diameters, hence the halves.)
+    local ownBaseSize = selectedUnitObj.getVar("baseSize") or unitData.baseSize
+    lowestDistance = lowestDistance
+        - templateInfo.baseRadius[ownBaseSize]/2
+        - templateInfo.baseRadius[enemyBaseSize]/2
 
     finalRange = math.ceil(lowestDistance/6)
     if finalRange > 4 then

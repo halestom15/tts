@@ -11,6 +11,9 @@ require('!/RangeRulers')
 
 function onLoad()
   rangeOn = false
+  -- Explicit, like Unit_Leader and BombCarts do: silhouettes are attachments
+  -- and never survive a save, so a load always starts with none up.
+  silhouetteState = false
   createButton({0, 0, 0})
   createButton({0, 0, 180})
   addSilhouetteButton()
@@ -39,6 +42,18 @@ function onDestroy()
 end
 
 function toggleRangeRuler()
+  -- extended overlays (see !/ExtendedOverlays): route this token's R button to
+  -- the Projector renderer when they are on, unchanged otherwise.
+  if extendedOverlaysOn() then
+    clearOverlayRange({figGUID = self.getGUID()})
+    if rangeOn then
+      rangeOn = false
+    else
+      triggerOverlayRange({figGUID = self.getGUID()})
+      rangeOn = true
+    end
+    return
+  end
   clearRangeRuler()
   rangeOn = not rangeOn
   if rangeOn then
@@ -90,8 +105,11 @@ function addSilhouetteButton()
   -- Removes all attachments and destroys the first one
   -- The silhouette should be the only attachment, so this should be safe to do
   function clearSilhouette()
+    -- May be empty: silhouettes are attachments and never survive a save.
     local silToDestroy = self.removeAttachments()[1]
-    silToDestroy.destruct()
+    if silToDestroy then
+      silToDestroy.destruct()
+    end
     silhouetteState = false
   end
   
@@ -110,7 +128,7 @@ function addSilhouetteButton()
     local scale = 2.0
     local height = 3.0
     local offset = 0.0
-    local silhouetteData = "http://cloud-3.steamusercontent.com/ugc/5063766435505471684/D97103C9FFB76016DDF9CE66A7622BDB3E810160/"
+    local silhouetteData = "https://steamusercontent-a.akamaihd.net/ugc/5063766435505471684/D97103C9FFB76016DDF9CE66A7622BDB3E810160/"
     if obj ~= nil then
       local objUp = obj.getTransformUp()
       local offsetVector = Vector.new(objUp.x * offset, objUp.y * offset, objUp.z * offset)
