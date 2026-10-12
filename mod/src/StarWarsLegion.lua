@@ -4,6 +4,7 @@ require('!/common/SHA256')
 require('!/data/ListBuilder')
 require('!/generated/cards')
 require('!/UI')
+require('!/LegionHelper')
 require('!/RangeRulers')
 require('!/Cohesion')
 -- Must stay AFTER !/RangeRulers and !/Cohesion: it captures their original
