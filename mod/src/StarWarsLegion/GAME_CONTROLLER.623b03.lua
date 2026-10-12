@@ -1068,7 +1068,7 @@ DEAD_UGC_SWAPS = {
   -- from our own host. The map places it flipped and stretched; the bundle
   -- is built for that exact transform.
   ["http://infinitebucket.com/tts/scenesystem/dust.unity3d"] =
-    "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/geonosis_dust_v1.unity3d",
+    "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/geonosis_dust_v2.unity3d",
 }
 
 -- Featured Map assets whose hosts nobody controls any more: personal imgur
