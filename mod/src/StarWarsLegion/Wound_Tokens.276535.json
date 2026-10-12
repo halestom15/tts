@@ -6,9 +6,9 @@
       "posX": -44.10725,
       "posY": 0.949036956,
       "posZ": 9.166985,
-      "rotX": 0.00002016583,
+      "rotX": 2.016583e-05,
       "rotY": 90.0010452,
-      "rotZ": -0.00000461467562,
+      "rotZ": -4.61467562e-06,
       "scaleX": 2.17499876,
       "scaleY": 2.17499876,
       "scaleZ": 2.17499876
@@ -38,7 +38,7 @@
     "MeshIndex": -1,
     "CustomMesh": {
       "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443832/CC490842F0159459C8D5C252BE7225E9D2581951/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443935/0F8A37E8CD128D5644B391E4EFEC50656D558FF7/",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wound_v2_s1.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,

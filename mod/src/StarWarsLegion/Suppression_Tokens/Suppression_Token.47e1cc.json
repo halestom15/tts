@@ -6,9 +6,9 @@
       "posX": -45.06674,
       "posY": 1.13791108,
       "posZ": 9.538007,
-      "rotX": -0.000003187766,
+      "rotX": -3.187766e-06,
       "rotY": 0.022126399,
-      "rotZ": -6.64082734e-7,
+      "rotZ": -6.64082734e-07,
       "scaleX": 0.875000238,
       "scaleY": 0.875000238,
       "scaleZ": 0.875000238
@@ -35,8 +35,8 @@
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomMesh": {
-      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443213/E353EC3098CC94615DE0BA5CEF4CE8B298CF7777/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443321/002CBBCACEB0F7497BEA744B8D7B17736A5FF65E/",
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/suppression_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/suppression_v2_s1.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
@@ -48,5 +48,14 @@
     "LuaScriptState": "",
     "XmlUI": ""
   },
-  "StatesPaths": {}
+  "StatesPaths": {
+    "2": "Suppression_Token.19b726.json",
+    "3": "Suppression_Token.577275.json",
+    "4": "Suppression_Token.75b92d.json",
+    "5": "Suppression_Token.774b0f.json",
+    "6": "Suppression_Token.263c4a.json",
+    "7": "Suppression_Token.a1ad88.json",
+    "8": "Suppression_Token.dff840.json",
+    "9": "Suppression_Token.3aae7a.json"
+  }
 }

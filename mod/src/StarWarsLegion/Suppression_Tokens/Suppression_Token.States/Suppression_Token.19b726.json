@@ -1,19 +1,19 @@
 {
   "Object": {
-    "GUID": "2f908d",
+    "GUID": "19b726",
     "Name": "Custom_Model",
     "Transform": {
-      "posX": 42.75248,
-      "posY": 1.050219,
-      "posZ": 19.1065578,
-      "rotX": 0,
-      "rotY": 0,
-      "rotZ": 0,
-      "scaleX": 1,
-      "scaleY": 1,
-      "scaleZ": 1
+      "posX": -45.06674,
+      "posY": 1.13791108,
+      "posZ": 9.538007,
+      "rotX": -3.187766e-06,
+      "rotY": 0.022126399,
+      "rotZ": -6.64082734e-07,
+      "scaleX": 0.875000238,
+      "scaleY": 0.875000238,
+      "scaleZ": 0.875000238
     },
-    "Nickname": "Condition Token",
+    "Nickname": "Suppression Token",
     "Description": "",
     "GMNotes": "",
     "ColorDiffuse": {
@@ -29,22 +29,22 @@
     "MeasureMovement": false,
     "DragSelectable": true,
     "Autoraise": true,
-    "Sticky": true,
+    "Sticky": false,
     "Tooltip": true,
     "GridProjection": false,
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomMesh": {
-      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786360308354564059/692D4C84B80AEE4E1561249704AB3D7130E0D848/",
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/suppression_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/suppression_v2_s2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
       "MaterialIndex": 3,
-      "TypeIndex": 0,
+      "TypeIndex": 5,
       "CastShadows": true
     },
-    "LuaScript": "#include ./Condition_Token.2f908d.lua",
+    "LuaScript": "",
     "LuaScriptState": "",
     "XmlUI": ""
   },

@@ -1,25 +1,25 @@
 {
   "Object": {
-    "GUID": "ca106f",
+    "GUID": "71f5f8",
     "Name": "Custom_Model",
     "Transform": {
-      "posX": 43.6538773,
-      "posY": 1.0502187,
-      "posZ": 18.8204632,
-      "rotX": 0,
-      "rotY": 0,
-      "rotZ": 0,
-      "scaleX": 1,
-      "scaleY": 1,
-      "scaleZ": 1
+      "posX": -44.5349426,
+      "posY": 1.15873361,
+      "posZ": 5.940003,
+      "rotX": 2.347223e-06,
+      "rotY": 89.97681,
+      "rotZ": 8.97575831e-07,
+      "scaleX": 0.9249999,
+      "scaleY": 0.9249999,
+      "scaleZ": 0.9249999
     },
-    "Nickname": "Condition Token",
+    "Nickname": "Wound Token",
     "Description": "",
     "GMNotes": "",
     "ColorDiffuse": {
-      "r": 1,
-      "g": 1,
-      "b": 1
+      "r": 0.7531577,
+      "g": 0.7531577,
+      "b": 0.7531577
     },
     "LayoutGroupSortIndex": 0,
     "Locked": false,
@@ -35,16 +35,16 @@
     "HideWhenFaceDown": false,
     "Hands": false,
     "CustomMesh": {
-      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441794/A5214853EF5CF66714FC230767A634761777F6A9/",
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wound_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wound_v2_s8.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
       "MaterialIndex": 3,
-      "TypeIndex": 0,
+      "TypeIndex": 5,
       "CastShadows": true
     },
-    "LuaScript": "#include ./Condition_Token.ca106f.lua",
+    "LuaScript": "",
     "LuaScriptState": "",
     "XmlUI": ""
   },

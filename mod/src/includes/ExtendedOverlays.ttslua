@@ -129,6 +129,7 @@ local OVERLAY_COHESION_BUNDLES = {
 local TOKEN_RING_BUNDLES = {
     ["Objective Token"] = OVERLAY_ASSETS .. "token05_27mm_isq_v1.unity3d",
     ["Condition Token"] = OVERLAY_ASSETS .. "token05_27mm_isq_v1.unity3d",
+    ["Advantage / Asset Token"] = OVERLAY_ASSETS .. "token05_27mm_isq_v1.unity3d",
 }
 
 -- Per family: the name TTS gives the spawned object, whether it tracks its
