@@ -277,10 +277,13 @@ export function deferSetup(save: SaveState): void {
   const crate = {
     GUID: CRATE_GUID,
     Name: 'Bag',
+    // Inside the computer's screen, where nothing shows: further out it was
+    // seen at the edge of the table. Its contents go back to their own
+    // positions, wherever it stands.
     Transform: {
-      posX: 75,
+      posX: 55.2,
       posY: -2.5,
-      posZ: 30,
+      posZ: -1.42,
       rotX: 0,
       rotY: 0,
       rotZ: 0,
