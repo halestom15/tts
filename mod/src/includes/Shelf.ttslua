@@ -25,15 +25,41 @@ function Shelf:create()
   return meta
 end
 
+-- The compiled cards table weighs ~650 Kb once marshalled: every
+-- Global.getTable copies all of it from the engine into Lua. pinSchema
+-- freezes one copy for the duration of a list import (the hot path, where
+-- the copy used to be taken again for every unit and every upgrade lookup);
+-- everything else keeps reading the live table, so side-loaded homebrew
+-- shows up as soon as it is added.
 function Shelf:_getSchema()
-  return Global.getTable("CardsSchema")
+  return self._cache.schema or Global.getTable("CardsSchema")
 end
 
+function Shelf:pinSchema()
+  self._cache.schema = Global.getTable("CardsSchema")
+end
+
+function Shelf:unpinSchema()
+  self._cache.schema = nil
+end
+
+-- Spawns every model of a unit, one queued job at a time.
+--
+-- Spawning is queued, not immediate: a whole list instantiated in one frame
+-- is what froze the table on import. `params.schedule(job)` enqueues one job
+-- per model - a job returns true when it spawned an object, so the caller's
+-- pump can pace them - and `params.done(result)` runs after the last model
+-- job, receiving the unit description table the synchronous version used to
+-- return. The planning below only reads the (pinned) schema, so it all
+-- happens up front; spawn order is preserved: leader first, then base minis,
+-- then upgrade minis.
 function Shelf:spawnUnitModels(params)
   -- Standard parameters (required).
   local faction = params.faction
   local name = params.name
   local upgrades = params.upgrades
+  local schedule = params.schedule
+  local done = params.done
 
   -- Optional parameters.
   local callback = params.callback
@@ -51,145 +77,146 @@ function Shelf:spawnUnitModels(params)
   if remap[faction] ~= nil then
     faction = remap[faction]
   end
+
+  local function scheduleDud(description)
+    schedule(function()
+      local model = self:_spawnDudModel(name, description)
+      if callback ~= nil then
+        callback(model, 1, self._colliders.small[2])
+      end
+      done({model})
+      return true
+    end)
+  end
+
   local units = self:_getSchema().units[faction:upper()]
   if units == nil then
-    local model = self:_spawnDudModel(name, "No matching faction found: \"" .. faction .. "\".")
-    if callback ~= nil then
-      callback(model, 1, self._colliders.small[2])
-    end
-    return {model}
+    scheduleDud("No matching faction found: \"" .. faction .. "\".")
+    return
   end
   local card = units[name:upper()]
   if card == nil then
-    local model = self:_spawnDudModel(name, "No matching unit found.\nFaction: \"" .. faction .. "\".")
-    if callback ~= nil then
-      callback(model, 1, self._colliders.small[2])
-    end
-    return {model}
+    scheduleDud("No matching unit found.\nFaction: \"" .. faction .. "\".")
+    return
   end
   local size = self._colliders[card.size][2]
   local minis = card.minis
   if type(minis) == "number" then
     print("Spawning placeholder minis is not yet implemented (" .. name .. ": " .. tostring(minis) .. ")")
-    return {}
+    done({})
+    return
   end
-  local result = {}
-local skip = {}
--- 1. find leader / heavy weapon candidate
-local leaderUpgrade = nil
-local heavyWeaponUpgrade = nil
-local spawnedLeaderUpgrade = nil
 
-for _, upgradeName in ipairs(upgrades) do
+  local result = {}
+  local function scheduleModel(config, modelName)
+    schedule(function()
+      local model = self:_spawnModel(card.size, config)
+      model.setName(modelName)
+      table.insert(result, model)
+      if callback ~= nil then
+        callback(model, #result, size)
+      end
+      return true
+    end)
+  end
+
+  local skip = {}
+  -- 1. find leader / heavy weapon candidate
+  local leaderUpgrade = nil
+  local heavyWeaponUpgrade = nil
+
+  for _, upgradeName in ipairs(upgrades) do
     local upgrade = self:_fetchUpgradeByName(upgradeName)
 
     if upgrade ~= nil then
-        if upgrade.additionalObjects then
-            for _, name in ipairs(upgrade.additionalObjects) do
-                table.insert(additionalObjects, name)
-            end
+      if upgrade.additionalObjects then
+        for _, objectName in ipairs(upgrade.additionalObjects) do
+          table.insert(additionalObjects, objectName)
+        end
+      end
+
+      if upgrade.mini ~= nil then
+        if upgrade.leader == true and leaderUpgrade == nil then
+          leaderUpgrade = upgrade
         end
 
-        if upgrade.mini ~= nil then
-            if upgrade.leader == true and leaderUpgrade == nil then
-                leaderUpgrade = upgrade
-            end
-
-            if card.heavyWeaponTeam == true and heavyWeaponUpgrade == nil then
-                heavyWeaponUpgrade = upgrade
-            end
+        if card.heavyWeaponTeam == true and heavyWeaponUpgrade == nil then
+          heavyWeaponUpgrade = upgrade
         end
+      end
     end
-end
+  end
 
--- 2. spawn leader FIRST
-local leaderCandidate = leaderUpgrade or heavyWeaponUpgrade
+  -- 2. the leader spawns FIRST
+  local leaderCandidate = leaderUpgrade or heavyWeaponUpgrade
 
-if leaderCandidate ~= nil then
-    spawnedLeaderUpgrade = leaderCandidate
+  if leaderCandidate ~= nil then
     skip[leaderCandidate.name] = true
+    scheduleModel(leaderCandidate.mini, leaderCandidate.name .. " (Unit Leader)")
+  end
 
-    local model = self:_spawnModel(card.size, leaderCandidate.mini)
-    model.setName(leaderCandidate.name .. " (Unit Leader)")
-    table.insert(result, model)
-
-    if callback ~= nil then
-        callback(model, #result, size)
+  -- 3. base minis; the first model overall is named the unit leader
+  local haveLeader = leaderCandidate ~= nil
+  for _, config in ipairs(minis) do
+    local modelName = name
+    if not haveLeader then
+      modelName = name .. " (Unit Leader)"
+      haveLeader = true
     end
-end
+    scheduleModel(config, modelName)
+  end
 
--- 3. spawn base minis
-for _, config in ipairs(minis) do
-    local model = self:_spawnModel(card.size, config)
-    table.insert(result, model)
-
-    if #result == 1 then
-        model.setName(name .. " (Unit Leader)")
-    else
-        model.setName(name)
-    end
-
-    if callback ~= nil then
-        callback(model, #result, size)
-    end
-end
-
--- 4. spawn remaining upgrades (excluding leader)
-for _, upgradeName in ipairs(upgrades) do
+  -- 4. remaining upgrades (excluding the leader)
+  for _, upgradeName in ipairs(upgrades) do
     local upgrade = self:_fetchUpgradeByName(upgradeName)
 
     if upgrade ~= nil and not skip[upgrade.name] then
+      if upgrade.mini ~= nil and upgrade ~= leaderCandidate then
+        skip[upgrade.name] = true
+        scheduleModel(upgrade.mini, upgrade.name)
+      end
 
-        if upgrade.mini ~= nil and upgrade ~= spawnedLeaderUpgrade then
-            local model = self:_spawnModel(card.size, upgrade.mini)
-            model.setName(upgrade.name)
-            table.insert(result, model)
-            skip[upgrade.name] = true
-
-            if callback ~= nil then
-                callback(model, #result, size)
-            end
+      if upgrade.minis ~= nil then
+        skip[upgrade.name] = true
+        for _, mini in ipairs(upgrade.minis) do
+          scheduleModel(mini, upgrade.name)
         end
-
-        if upgrade.minis ~= nil then
-            for _, mini in ipairs(upgrade.minis) do
-                local model = self:_spawnModel(card.size, mini)
-                model.setName(upgrade.name)
-                table.insert(result, model)
-                skip[upgrade.name] = true
-
-                if callback ~= nil then
-                    callback(model, #result, size)
-                end
-            end
-        end
+      end
     end
-end
+  end
+
   if additional and additional.position then
-    for _, name in ipairs(card.additionalObjects or {}) do
-      table.insert(additionalObjects, name)
+    for _, objectName in ipairs(card.additionalObjects or {}) do
+      table.insert(additionalObjects, objectName)
     end
     -- Spawn additional objects attached to unit or upgrade cards.
     if #additionalObjects > 0 or additional.callback then
-      self:spawnAdditionalObjects({
-        name     = card.name .. "'s Objects",
-        position = additional.position,
-        rotation = additional.rotation,
-        callback = additional.callback,
-        objects  = additionalObjects,
-        -- TODO: Make this global somehow instead.
-        scripts  = params.scripts,
-      })
+      schedule(function()
+        self:spawnAdditionalObjects({
+          name     = card.name .. "'s Objects",
+          position = additional.position,
+          rotation = additional.rotation,
+          callback = additional.callback,
+          objects  = additionalObjects,
+          -- TODO: Make this global somehow instead.
+          scripts  = params.scripts,
+        })
+        return true
+      end)
     end
   end
-  return {
-    rank   = card.rank,
-    speed  = card.speed,
-    size   = card.size,
-    height = card.height or 2,
-    models = result,
-    tokens = card.tokens
-  }
+
+  schedule(function()
+    done({
+      rank   = card.rank,
+      speed  = card.speed,
+      size   = card.size,
+      height = card.height or 2,
+      models = result,
+      tokens = card.tokens
+    })
+    return false
+  end)
 end
 
 function Shelf:spawnAdditionalObjects(params)
@@ -217,7 +244,7 @@ end
 function Shelf:_spawnComplimentaryObject(name, container, scripts)
   if not self._cache.objects then
     local cache = {}
-    for name, details in pairs(self._getSchema().objects) do
+    for name, details in pairs(self:_getSchema().objects) do
       cache[name:upper()] = details
     end
     self._cache.objects = cache

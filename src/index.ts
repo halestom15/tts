@@ -5,6 +5,7 @@ import { ObjectState } from '@matanlurey/tts-save-files';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+import { deferSetup } from './lib/defer-setup';
 import buildDeckSchemaLua from './lib/generate-deck-schema';
 
 /**
@@ -81,6 +82,7 @@ export async function compileSaveFile(
   console.info(`Reading "${source}"...`);
   const splitter = new expander.SplitIO();
   const saveFile = await splitter.readAndCollapse(source);
+  deferSetup(saveFile);
   console.info(`Writing "${output}"...`);
   await fs.writeJson(output, saveFile);
   console.info(`Wrote "${output}"...`);
