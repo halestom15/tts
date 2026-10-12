@@ -1,0 +1,52 @@
+{
+  "Object": {
+    "GUID": "8e2ad9",
+    "Name": "Custom_Model",
+    "Transform": {
+      "posX": -45.06674,
+      "posY": 1.13791108,
+      "posZ": 9.538007,
+      "rotX": -3.187766e-06,
+      "rotY": 0.022126399,
+      "rotZ": -6.64082734e-07,
+      "scaleX": 0.875000238,
+      "scaleY": 0.875000238,
+      "scaleZ": 0.875000238
+    },
+    "Nickname": "Suppression Token",
+    "Description": "",
+    "GMNotes": "",
+    "ColorDiffuse": {
+      "r": 1,
+      "g": 1,
+      "b": 1
+    },
+    "LayoutGroupSortIndex": 0,
+    "Locked": false,
+    "Grid": true,
+    "Snap": true,
+    "IgnoreFoW": false,
+    "MeasureMovement": false,
+    "DragSelectable": true,
+    "Autoraise": true,
+    "Sticky": false,
+    "Tooltip": true,
+    "GridProjection": false,
+    "HideWhenFaceDown": false,
+    "Hands": false,
+    "CustomMesh": {
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/suppression_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/suppression_v2_s16.jpg",
+      "NormalURL": "",
+      "ColliderURL": "",
+      "Convex": true,
+      "MaterialIndex": 3,
+      "TypeIndex": 5,
+      "CastShadows": true
+    },
+    "LuaScript": "",
+    "LuaScriptState": "",
+    "XmlUI": ""
+  },
+  "StatesPaths": {}
+}
