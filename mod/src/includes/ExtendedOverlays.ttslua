@@ -80,14 +80,14 @@ local OVERLAY_ASSETS = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl
 -- Only the hover hotkey reaches this table (forceFigMode). A token's own R
 -- button keeps the mod's single-ring bundle, deliberately.
 local OVERLAY_RANGE_BUNDLES = {
-    small  = OVERLAY_ASSETS .. "projector_27mm_isq_v6.unity3d",
-    medium = OVERLAY_ASSETS .. "projector_50mm_isq_v6.unity3d",
-    large  = OVERLAY_ASSETS .. "projector_70mm_isq_v6.unity3d",
-    huge   = OVERLAY_ASSETS .. "projector_100mm_isq_v6.unity3d",
-    laat   = OVERLAY_ASSETS .. "projector_120mm_isq_v6.unity3d",
-    epic   = OVERLAY_ASSETS .. "projector_150mm_isq_v6.unity3d",
-    long   = OVERLAY_ASSETS .. "projector_100mm_oblong_isq_v6.unity3d",
-    snail  = OVERLAY_ASSETS .. "projector_200mm_oblong_isq_v6.unity3d",
+    small  = OVERLAY_ASSETS .. "projector_27mm_isq_v7.unity3d",
+    medium = OVERLAY_ASSETS .. "projector_50mm_isq_v7.unity3d",
+    large  = OVERLAY_ASSETS .. "projector_70mm_isq_v7.unity3d",
+    huge   = OVERLAY_ASSETS .. "projector_100mm_isq_v7.unity3d",
+    laat   = OVERLAY_ASSETS .. "projector_120mm_isq_v7.unity3d",
+    epic   = OVERLAY_ASSETS .. "projector_150mm_isq_v7.unity3d",
+    long   = OVERLAY_ASSETS .. "projector_100mm_oblong_isq_v7.unity3d",
+    snail  = OVERLAY_ASSETS .. "projector_200mm_oblong_isq_v7.unity3d",
 }
 
 -- Cohesion rings for the base sizes the mod has none for. getCohesionLinks()
@@ -106,11 +106,11 @@ local OVERLAY_RANGE_BUNDLES = {
 -- the oblong RANGE materials, the only place in the project where those
 -- dimensions are written down.
 local OVERLAY_COHESION_BUNDLES = {
-    huge  = OVERLAY_ASSETS .. "halfcohesion_100mm_isq_v2.unity3d",
-    laat  = OVERLAY_ASSETS .. "halfcohesion_120mm_isq_v2.unity3d",
-    epic  = OVERLAY_ASSETS .. "halfcohesion_150mm_isq_v2.unity3d",
-    long  = OVERLAY_ASSETS .. "halfcohesion_long_isq_v3.unity3d",
-    snail = OVERLAY_ASSETS .. "halfcohesion_snail_isq_v3.unity3d",
+    huge  = OVERLAY_ASSETS .. "halfcohesion_100mm_isq_v3.unity3d",
+    laat  = OVERLAY_ASSETS .. "halfcohesion_120mm_isq_v3.unity3d",
+    epic  = OVERLAY_ASSETS .. "halfcohesion_150mm_isq_v3.unity3d",
+    long  = OVERLAY_ASSETS .. "halfcohesion_long_isq_v4.unity3d",
+    snail = OVERLAY_ASSETS .. "halfcohesion_snail_isq_v4.unity3d",
 }
 
 -- Range 1/2 rings for the tokens whose own R button should show range 1/2
@@ -127,8 +127,8 @@ local OVERLAY_COHESION_BUNDLES = {
 -- Objective and Condition share the base and the colour, so one ring serves
 -- both. Condition is what the game calls the Advantage token (Martin, 14 Aug).
 local TOKEN_RING_BUNDLES = {
-    ["Objective Token"] = OVERLAY_ASSETS .. "token05_27mm_isq_v1.unity3d",
-    ["Condition Token"] = OVERLAY_ASSETS .. "token05_27mm_isq_v1.unity3d",
+    ["Objective Token"] = OVERLAY_ASSETS .. "token05_27mm_isq_v2.unity3d",
+    ["Condition Token"] = OVERLAY_ASSETS .. "token05_27mm_isq_v2.unity3d",
 }
 
 -- Per family: the name TTS gives the spawned object, whether it tracks its
