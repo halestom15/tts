@@ -1,5 +1,7 @@
 require('!/Analytics')
 require('!/Deck')
+require('!/Mission')
+require('!/common/Zonex')
 
 function onload(save_state)
     _G.Deck = Deck:create()
@@ -19,9 +21,6 @@ function onload(save_state)
     redZone = getObjectFromGUID(listBuilder.redZoneGUID)
     blueZone = getObjectFromGUID(listBuilder.blueZoneGUID)
     screen = getObjectFromGUID(Global.getVar("screenGUID"))
-    objectiveCards = getObjectFromGUID(gameController.objectiveCardsGUID)
-    deploymentCards = getObjectFromGUID(gameController.deploymentCardsGUID)
-    conditionsCards = getObjectFromGUID(gameController.conditionsCardsGUID)
     setUpData = Global.getTable("setUpData")
     setUpData.deploymentMount = getObjectFromGUID(setUpData.deploymentMountGUID)
     setUpData.conditionsMount = getObjectFromGUID(setUpData.conditionsMountGUID)
@@ -31,13 +30,11 @@ function onload(save_state)
     zonesGUIDs = Global.getTable("zonesGUIDs")
 
     setUpController = getObjectFromGUID(Global.getVar("setUpControllerGUID"))
-    battleDeckTypes = {"deployment", "objective", "conditions"}
 
     blueDeckMount = getObjectFromGUID(listBuilder.blueDeckMountGUID)
     redDeckMount = getObjectFromGUID(listBuilder.redDeckMountGUID)
     blueDeckZone = getObjectFromGUID(listBuilder.blueDeckZoneGUID)
     redDeckZone = getObjectFromGUID(listBuilder.redDeckZoneGUID)
-
 
     -- button Models
     dataDiskMount = getObjectFromGUID("a44dcb")
@@ -68,16 +65,15 @@ end
 
 function homeScreen()
     screen.createButton({click_function = "dud", function_owner = self, label = "", position = {0.9, 0.25, 0}, rotation = {0, -90, 90}, scale = {0.5, 0.5, 0.5}, width = 0, height = 0, font_size = 100, font_color = {0.8867, 0.7804, 0, 1}, alignment = 1})
-    printToScreen("STAR WARS LEGION TTS MOD\n by SWL Dev Foundation\n\nThe home of BLITZ!\nSelect an option below to start", 80, 3)
+    printToScreen("STAR WARS LEGION TTS MOD\n by SWL Dev Foundation\n\nSelect an option below to start", 80, 3)
 end
-
 
 -- MENU
 
 function mainMenu()
     timerScreen = false
 
-    printToScreen("STAR WARS LEGION TTS MOD\n by SWL Dev Foundation\n\nThe home of BLITZ!\nSelect an option below to start", 80, 3)
+    printToScreen("STAR WARS LEGION TTS MOD\n by SWL Dev Foundation\n\nSelect an option below to start", 80, 3)
 
     clearAllButtons()
     local menuEntries = {}
@@ -87,10 +83,6 @@ function mainMenu()
 
     createMenu(menuEntries, 1)
 
-end
-
-function defineBattlefieldMenuBlue()
-    blueDeckMount.call("defineBattlefield")
 end
 
 function enterTintData(obj, dataString, tintTable)
@@ -118,7 +110,8 @@ function enterData(obj, dataString, newValue)
 end
 
 function reset()
-    clearSetUpCards("all")
+    clearMissionCards()
+    mission = nil
     mainMenu()
 end
 
@@ -177,31 +170,6 @@ function clearPlayerZones()
     end
 end
 
-function defineBattlefieldMenu(params)
-    local selectedDeck = params.deck
-    local selectedScenario = params.scenario
-    if #selectedDeck.getObjects() < 12 then
-      broadcastToAll("At least 12 cards are required to use battlefield vetoes. Move your choices manually to the right places!")
-      return
-    end
-    _G.selectedScenario = selectedScenario
-    print(selectedScenario)
-    ga_view("game_controller/define_battlefield")
-    clearAllButtons()
-    changeBackButton("reset", "Go back to Main Menu")
-    local menuEntries = {}
-    menuEntries[1] = {functionName = "finishDefineBattlefieldMenu", label = "NEXT", tooltip = "NEXT", buttonTint = {0,0.913,1}}
-    createMenu(menuEntries, 1)
-    revealBattleCards(selectedDeck, selectedScenario)
-    printToScreen("DEFINE BATTLEFIELD\nStarting with Blue player, players eliminate left most card.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", 60, 2)
-end
-
-function finishDefineBattlefieldMenu()
-    defineBattlefield()
-    spawnObjectiveConditionsDelay()
-    mainMenu()
-end
-
 function gameOptionsMenu()
     ga_view("game_controller/game_options")
     clearAllButtons()
@@ -214,9 +182,9 @@ function gameOptionsMenu()
       buttonTint = {0,0.913,1}
     }
     menuEntries[2] = {
-      functionName = "defineBattlefieldMenuBlue",
-      label = "Blue Player: Define Battlefield",
-      tooltip = "Spawn Battlefield Objective, Deployment and Condition cards from Blue Deck",
+      functionName = "buildMissionMenu",
+      label = "Build Mission",
+      tooltip = "Build the mission from both players' battle decks (2024 rules)",
       buttonTint = {0,0.913,1}
     }
     menuEntries[3] = {
@@ -424,243 +392,6 @@ function spawnCardDecks()
   Deck:spawnBattleDeck({52.43, 1.42, 23})
 end
 
-function setBattleCardPos()
-    for i, battleDeckType in pairs(battleDeckTypes) do
-        for n=1, 4, 1 do
-            local setUpCardPos = gameController.setUpCardsPos[battleDeckType][n]
-            local spawnPos = {}
-            
-            spawnPos.x = screen.getPosition().x - setUpCardPos[1]
-            spawnPos.y = screen.getPosition().y - setUpCardPos[2]
-            spawnPos.z = screen.getPosition().z - setUpCardPos[3]
-
-            local spawnRot = {55.91, 270.00, 0.00}
-            local spawnedCardObj = setUp5Data.spawnedCards[battleDeckType][n]
-
-            spawnedCardObj.setLock(true)
-            spawnedCardObj.setScale({0.5,1,0.5})
-            spawnedCardObj.setRotation(spawnRot)
-            spawnedCardObj.setPosition(spawnPos)
-
-            Wait.frames(function()
-              debugSpawnSetupCard(spawnedCardObj)
-            end)
-        end
-    end
-end
-
-function createMatrixFromDeck(battleDeckInserted, battleDeckScenario)
-  -- CLONE DECK
-  local battleDeckClone = battleDeckInserted.clone({
-      position     = {0,-10,0},
-      rotation     = {55.91, 270.00, 0.00},
-      scale        = {0.5, 1, 0.5},
-  })
-  battleDeckClone.shuffle()
-  local battleDeckTable = battleDeckClone.getObjects()
-
-  -- for each card
-  
-  local cardMatrixSelected = {
-    deployment = {},
-    objective  = {},
-    conditions = {},
-  }
-
-  for i, card in ipairs(battleDeckClone.getObjects()) do
-    local object = battleDeckClone.takeObject({
-      position     = {i*1, -10, 0},
-    })
-    local name = object.getName()
-    local type = Deck:getBattleCardType(name, battleDeckScenario)
-    -- TODO: Rename conditions -> condition
-    if type == "condition" then
-      type = "conditions"
-    end
-    table.insert(cardMatrixSelected[type], object)
-  end
-
-  if battleDeckClone then
-    destroyObject(battleDeckClone)
-  end
-
-  return cardMatrixSelected.objective, 
-         cardMatrixSelected.deployment,
-         cardMatrixSelected.conditions
-end
-
-function revealBattleCards(insertedDeck, battleDeckScenario)
-    clearSetUpCards("all")
-    setUp5Data = {
-      objectiveCards  = objectiveCards,
-      deploymentCards = deploymentCards,
-      conditionsCards = conditionsCards,
-      spawnedCards    = {},
-    }
-    if insertedDeck == nil then
-        setUp5Data.spawnedCards.objective = spawnSetupCards("objective")
-        setUp5Data.spawnedCards.deployment = spawnSetupCards("deployment")
-        setUp5Data.spawnedCards.conditions = spawnSetupCards("conditions")
-    else
-        objectiveCardMatrix, deploymentCardMatrix, conditionsCardMatrix = createMatrixFromDeck(insertedDeck, battleDeckScenario)
-        setUp5Data.spawnedCards.objective = objectiveCardMatrix
-        setUp5Data.spawnedCards.deployment = deploymentCardMatrix
-        setUp5Data.spawnedCards.conditions = conditionsCardMatrix
-        setBattleCardPos()
-    end
-    setUp5Data.cardSelection = {objective = 1, deployment = 1, conditions = 1}
-
-    createButtonSetUpCard("objective", 1)
-    createButtonSetUpCard("deployment", 1)
-    createButtonSetUpCard("conditions", 1)
-    Wait.frames(debugSetupCards)
-end
-
-function debugSetupCards()
-    for i = 1, 4, 1 do
-        if setUp5Data.spawnedCards.objective[i] then
-            setUp5Data.spawnedCards.objective[i].setRotation({55.91, 270.00, 0.00})
-        end
-
-        if setUp5Data.spawnedCards.deployment[i] then
-            setUp5Data.spawnedCards.deployment[i].setRotation({55.91, 270.00, 0.00})
-        end
-        if setUp5Data.spawnedCards.conditions[i] then
-            setUp5Data.spawnedCards.conditions[i].setRotation({55.91, 270.00, 0.00})
-        end
-    end
-end
-
-function clearSetUpCards(clearedCards)
-    if setUp5Data then
-        for i = 1, 4, 1 do
-            if setUp5Data.cardSelection.objective == i and clearedCards == "eliminate" then
-            else
-                if setUp5Data.spawnedCards.objective[i] then
-                    destroyObject(setUp5Data.spawnedCards.objective[i])
-                end
-            end
-
-            if setUp5Data.cardSelection.deployment == i and clearedCards == "eliminate" then
-            else
-                if setUp5Data.spawnedCards.deployment[i] then
-                    destroyObject(setUp5Data.spawnedCards.deployment[i])
-                end
-            end
-
-            if setUp5Data.cardSelection.conditions == i and clearedCards == "eliminate" then
-            else
-                if setUp5Data.spawnedCards.conditions[i] then
-                    destroyObject(setUp5Data.spawnedCards.conditions[i])
-                end
-            end
-        end
-    end
-
-    if clearedCards == "all" then
-        setUp5Data = nil
-    end
-
-end
-
-function defineBattlefield()
-    clearSetUpCards("eliminate")
-    insertSetUpCard("objective")
-    insertSetUpCard("deployment")
-    insertSetUpCard("conditions")
-end
-
-function insertSetUpCard(cardType)
-    local mount = setUpData[cardType.."Mount"]
-    local finalPos = {mount.getPosition().x, mount.getPosition().y+0.23, mount.getPosition().z}
-    local finalCard = setUp5Data.spawnedCards[cardType][setUp5Data.cardSelection[cardType]]
-    finalCard.setScale({0.83,1,0.83})
-    finalCard.setLock(false)
-    finalCard.setPosition(finalPos)
-    finalCard.setRotation(mount.getRotation())
-    finalCard.clearButtons()
-end
-
-function spawnObjectiveConditionsDelay()
-    Wait.frames(spawnObjectiveConditions)
-end
-
-function spawnObjectiveConditions()
-    local scenario = _G.selectedScenario
-    setUpController.call("changeScenario", {scenario})
-    setUpController.call("checkCardCall", {"deployment"})
-    setUpController.call("checkCardCall", {"objective"})
-    setUpController.call("checkCardCall", {"conditions"})
-end
-
-
-function eliminateCard(eliminatedCategory, eliminateNumber)
-    local eliminiatedCard = setUp5Data.spawnedCards[eliminatedCategory][eliminateNumber]
-    local cardRot = eliminiatedCard.getRotation()
-    cardRot.x = cardRot.x + 180
-    eliminiatedCard.setRotation(cardRot)
-    eliminiatedCard.clearButtons()
-
-    if eliminateNumber ~= 3 then
-        createButtonSetUpCard(eliminatedCategory, eliminateNumber+1)
-    end
-
-    setUp5Data.cardSelection[eliminatedCategory] = eliminateNumber+1
-end
-
-function createButtonSetUpCard(cardType, selectedNumber)
-    _G["eliminate"..cardType..selectedNumber] = function() eliminateCard(cardType, selectedNumber) end
-
-    local data = {click_function = "eliminate"..cardType..selectedNumber, function_owner = self, label = "ELIMINATE", position = {-1, 1, 0}, rotation = {0, -90, 0}, scale = {0.7, 0.5, 0.5}, width = 2000, height = 400, font_size = 300, color = {1, 0, 0, 0.8}, font_color = {0,0,0, 1.25}}
-
-    setUp5Data.spawnedCards[cardType][selectedNumber].createButton(data)
-end
-
-function spawnSetupCards(selection)
-        setUp5Data[selection.."CardsClone"] = setUp5Data[selection .."Cards"].clone({
-            position     = {0,-10,0}
-        })
-
-        setUp5Data[selection.."CardsClone"].shuffle()
-
-        local spawnedCardTable = {}
-
-        for n=1, #gameController.setUpCardsPos[selection], 1 do
-            local setUpCardPos = gameController.setUpCardsPos[selection][n]
-
-            local spawnPos = {}
-            spawnPos.x = screen.getPosition().x - setUpCardPos[1]
-            spawnPos.y = screen.getPosition().y - setUpCardPos[2]
-            spawnPos.z = screen.getPosition().z - setUpCardPos[3]
-
-            local spawnRot = {55.91, 270.00, 0.00}
-
-            spawnedCard = setUp5Data[selection.."CardsClone"].takeObject({
-                position       = spawnPos,
-                rotation       = spawnRot,
-                smooth         = false,
-                top            = true
-            })
-
-            spawnedCard.setLock(true)
-            spawnedCard.setRotation(spawnRot)
-
-            spawnedCardTable[n] = spawnedCard
-
-            Wait.frames(function()
-              debugSpawnSetupCard(spawnedCard)
-            end)
-        end
-
-        destroyObject(setUp5Data[selection.."CardsClone"])
-
-        return spawnedCardTable
-end
-
-function debugSpawnSetupCard(spawnedSetupCard)
-    spawnedSetupCard.setRotation({55.91, 270.00, 0.00})
-end
-
 function flipObjPos(pObj)
     local objPos = pObj.getPosition()
     local newPos = objPos
@@ -704,7 +435,6 @@ function spawnCustomMap(selectedMap, selectedCartridgeObj, mapMenuCallback, clea
     local selectedCartridgeObjClone = selectedCartridgeObj.clone({
         position     = {0,-10,0}
     })
-
 
     -- get guid
     local selectedCartridgeTable = selectedCartridgeObj.getObjects()
@@ -958,7 +688,6 @@ function placeTerrain(paObj)
         paObj.setLuaScript("")
     end
 
-
     if paObj.getName() == "BATTLEFIELD" then
         paObj.interactable = false
         paObj.setLock(true)
@@ -997,7 +726,6 @@ function printToScreen(screenText, fontSize, selectedAlignment)
         int = 0, click_function = "dud", function_owner = self, label = screenText, position = {0.9, 0.25, 0}, rotation = {0, -90, 90}, scale = {0.5, 0.5, 0.5}, width = 0, height = 0, font_size = fontSize, font_color = {0.8867, 0.7804, 0, 1}, alignment = selectedAlignment
     })
 end
-
 
 function createOptionButton(optionNumber, optionClickFunction, optionLabel, optionToolTip,tint)
     optionObj = optionObjs["gameControllerOption"..optionNumber]
@@ -1911,8 +1639,6 @@ function createMenu(optionTable, selectedIndex)
     end
 end
 
-
-
 function changeBattlefieldTint(tint)
     enterTintData(gameData, "battlefieldTint", tint)
 
@@ -2034,4 +1760,336 @@ function togglePoiGuide()
             assetbundle = asset
         })
     end
+end
+-- MISSION (2024 rules)
+--
+-- Builds the mission from both players' battle decks on the TV, then places
+-- the final cards on the setup mounts and runs their setup in rules order
+-- (Objective, Secondary, then blue's and red's Advantage).
+-- See includes/Mission.ttslua for the rules logic.
+
+MISSION_SCENARIOS = {standard = true, skirmish = true}
+
+-- Where Red's Advantage card and tokens go until the table has a second
+-- Advantage mount.
+RED_ADVANTAGE_CARD_OFFSET = {-5.7, 0.23, 0}
+RED_ADVANTAGE_OBJECTS_POS = {49, 1, 6}
+
+MISSION_ACTION_LABELS = {
+  replaceObjective       = "Replace Objective",
+  replaceSecondary       = "Replace Secondary",
+  replaceOwnAdvantage    = "Replace your Advantage",
+  forceOpponentAdvantage = "Replace their Advantage",
+  takeBlue               = "Become Blue Player",
+  pass                   = "Pass",
+}
+
+MISSION_ACTION_TOOLTIPS = {
+  replaceObjective       = "Replace the Objective with a random one from your deck",
+  replaceSecondary       = "Replace the Secondary Objective with a random one from your deck",
+  replaceOwnAdvantage    = "Replace your Advantage with a random one from your deck",
+  forceOpponentAdvantage = "Make your opponent replace their Advantage with a random one from their deck",
+  takeBlue               = "Become the blue player (blue chooses the table side)",
+  pass                   = "Do nothing this turn",
+}
+
+missionCards = {}
+
+local function missionSeatName(seat)
+  return seat .. " Player"
+end
+
+-- Returns the card names in the battle deck on a player's deck mount, or nil
+-- and an error message.
+local function readBattleDeck(seat)
+  local zone = seat == "Red" and redDeckZone or blueDeckZone
+  local names = {}
+  for _, obj in ipairs(zone.getObjects()) do
+    local type = obj.type or obj.tag
+    if type == "Deck" then
+      for _, entry in ipairs(obj.getObjects()) do
+        local name = entry.nickname
+        if name == nil or name == "" then
+          name = entry.name
+        end
+        table.insert(names, name)
+      end
+    elseif type == "Card" then
+      table.insert(names, obj.getName())
+    end
+  end
+  if #names == 0 then
+    return nil, missionSeatName(seat) .. ": no battle deck on your deck mount."
+  end
+  return names
+end
+
+local function readScenario(seat)
+  local mount = seat == "Red" and redDeckMount or blueDeckMount
+  local scenario = mount.call("getScenario")
+  if scenario == "" then
+    scenario = nil
+  end
+  -- Recon decks are keyed "skirmish" in the card data.
+  return Deck:_scenarioKey(scenario)
+end
+
+-- Reads and checks both battle decks. Returns the decks and scenario, or nil
+-- after telling the players what is wrong.
+local function readMissionDecks()
+  local decks = {}
+  local scenario = nil
+  local ok = true
+  for _, seat in ipairs({"Blue", "Red"}) do
+    local seatScenario = readScenario(seat)
+    if not MISSION_SCENARIOS[seatScenario] then
+      broadcastToAll(missionSeatName(seat) .. ": Build Mission supports Standard and Recon battle decks, not \"" .. seatScenario .. "\". Use the setup mounts to set up by hand.", {1, 0.4, 0.4})
+      return nil
+    end
+    if scenario and scenario ~= seatScenario then
+      broadcastToAll("Both battle decks must be the same type (Blue: " .. scenario .. ", Red: " .. seatScenario .. ").", {1, 0.4, 0.4})
+      return nil
+    end
+    scenario = seatScenario
+
+    local names, err = readBattleDeck(seat)
+    if not names then
+      broadcastToAll(err, {1, 0.4, 0.4})
+      ok = false
+    else
+      local split, unknown = Deck:splitBattleDeck(names, scenario)
+      if #unknown > 0 then
+        broadcastToAll(missionSeatName(seat) .. ": ignoring cards that aren't " .. scenario .. " battle cards: " .. table.concat(unknown, ", "), {1, 0.8, 0.4})
+      end
+      for _, kind in ipairs(MISSION_KINDS) do
+        local label = Deck.BATTLE_KINDS[kind].label
+        local count = #split[kind]
+        if count == 0 or (scenario == "standard" and count ~= 3) then
+          broadcastToAll(missionSeatName(seat) .. ": your battle deck needs 3 " .. label .. " cards (found " .. count .. ").", {1, 0.4, 0.4})
+          ok = false
+        elseif count ~= 3 then
+          broadcastToAll(missionSeatName(seat) .. ": battle decks normally have 3 " .. label .. " cards (found " .. count .. ").", {1, 0.8, 0.4})
+        end
+      end
+      decks[seat] = split
+    end
+  end
+  if not ok then
+    return nil
+  end
+  return decks, scenario
+end
+
+function clearMissionCards()
+  for _, card in pairs(missionCards) do
+    if card ~= nil and not card.isDestroyed() then
+      destroyObject(card)
+    end
+  end
+  missionCards = {}
+end
+
+-- Shows a card on the TV. row = "objective", "deployment" or "conditions"
+-- (the rows of gameController.setUpCardsPos), slot = 1..4.
+local function showMissionCard(slotKey, row, slot, kind, card)
+  if missionCards[slotKey] and not missionCards[slotKey].isDestroyed() then
+    destroyObject(missionCards[slotKey])
+  end
+  missionCards[slotKey] = nil
+  if card == nil then
+    return
+  end
+  local offset = gameController.setUpCardsPos[row][slot]
+  local screenPos = screen.getPosition()
+  local obj = Deck:spawnBattleCard(Deck.BATTLE_KINDS[kind].key, card.name, missionScenario)
+  obj.setLock(true)
+  obj.setScale({0.5, 1, 0.5})
+  obj.setRotation({55.91, 270.00, 0.00})
+  obj.setPosition({
+    screenPos.x - offset[1],
+    screenPos.y - offset[2],
+    screenPos.z - offset[3],
+  })
+  obj.setDescription("From the " .. missionSeatName(card.owner) .. "'s battle deck")
+  missionCards[slotKey] = obj
+end
+
+local function showMission()
+  local blue = mission.blueSeat
+  local red = Mission.otherSeat(blue)
+  showMissionCard("objective", "objective", 2, "objective", mission.cards.objective)
+  showMissionCard("secondary", "deployment", 2, "secondary", mission.cards.secondary)
+  showMissionCard("advantageBlue", "conditions", 1, "advantage", mission.cards.advantage[blue])
+  showMissionCard("advantageRed", "conditions", 3, "advantage", mission.cards.advantage[red])
+end
+
+local function missionSummary()
+  local blue = mission.blueSeat
+  local red = Mission.otherSeat(blue)
+  local function name(card)
+    return card and card.name or "-"
+  end
+  return "Objective: " .. name(mission.cards.objective)
+    .. "\nSecondary: " .. name(mission.cards.secondary)
+    .. "\nBlue Advantage (" .. blue .. " seat): " .. name(mission.cards.advantage[blue])
+    .. "\nRed Advantage (" .. red .. " seat): " .. name(mission.cards.advantage[red])
+end
+
+-- Step 1: read both decks.
+function buildMissionMenu()
+  ga_view("game_controller/build_mission")
+  local decks, scenario = readMissionDecks()
+  if not decks then
+    return
+  end
+  clearMissionCards()
+  missionDecks = decks
+  missionScenario = scenario
+  mission = nil
+
+  clearAllButtons()
+  changeBackButton("reset", "Cancel and go back to Main Menu")
+  createMenu({
+    {functionName = "missionBlueIsBlue", label = "Blue Seat is Blue", tooltip = "The player at the blue seat is the blue player", buttonTint = {0, 0.4, 1}},
+    {functionName = "missionRedIsBlue", label = "Red Seat is Blue", tooltip = "The player at the red seat is the blue player", buttonTint = {1, 0.2, 0.2}},
+  }, 1)
+  local modeName = scenario == "skirmish" and "RECON" or scenario:upper()
+  printToScreen("BUILD MISSION (" .. modeName .. ")\n\nWho is the blue player?\n\nRoll off as the rules describe, then pick the winner below.", 70, 3)
+end
+
+local function startMission(blueSeat)
+  mission = Mission:create({
+    red      = missionDecks.Red,
+    blue     = missionDecks.Blue,
+    blueSeat = blueSeat,
+  })
+  clearAllButtons()
+  changeBackButton("reset", "Cancel and go back to Main Menu")
+  createMenu({
+    {functionName = "missionRevealObjective", label = "Reveal Objective", tooltip = "Blue reveals an Objective; Red reveals a Secondary", buttonTint = {0, 0.913, 1}},
+    {functionName = "missionRevealSecondary", label = "Reveal Secondary", tooltip = "Blue reveals a Secondary; Red reveals an Objective", buttonTint = {0, 0.913, 1}},
+  }, 1)
+  printToScreen("BUILD MISSION\n\n" .. missionSeatName(blueSeat) .. " (blue):\nreveal an Objective or a Secondary?\n\nThe red player reveals the other.\nBoth players reveal an Advantage.", 70, 3)
+end
+
+function missionBlueIsBlue()
+  startMission("Blue")
+end
+
+function missionRedIsBlue()
+  startMission("Red")
+end
+
+local function revealOpening(kind)
+  mission:revealOpening(kind)
+  showMission()
+  missionTurnMenu()
+end
+
+function missionRevealObjective()
+  revealOpening("objective")
+end
+
+function missionRevealSecondary()
+  revealOpening("secondary")
+end
+
+-- Step 2: alternate modification turns.
+function missionTurnMenu()
+  if mission:isBuilt() then
+    missionSideMenu()
+    return
+  end
+  local seat = mission:currentSeat()
+  local role = mission.blueSeat == seat and "blue" or "red"
+  local turn = MISSION_TURNS - mission:turnsLeft() + 1
+  local entries = {}
+  for _, action in ipairs(mission:availableActions(seat)) do
+    local functionName = "missionAction_" .. action
+    _G[functionName] = function()
+      local drawn = mission:modify(seat, action)
+      local message = missionSeatName(seat) .. ": " .. MISSION_ACTION_LABELS[action]
+      if drawn then
+        message = message .. " -> " .. drawn.name
+      end
+      broadcastToAll(message, {0.8, 0.9, 1})
+      showMission()
+      missionTurnMenu()
+    end
+    table.insert(entries, {
+      functionName = functionName,
+      label        = MISSION_ACTION_LABELS[action],
+      tooltip      = MISSION_ACTION_TOOLTIPS[action],
+      buttonTint   = seat == "Red" and {1, 0.2, 0.2} or {0, 0.4, 1},
+    })
+  end
+  clearAllButtons()
+  changeBackButton("reset", "Cancel and go back to Main Menu")
+  createMenu(entries, 1)
+  printToScreen("MODIFY THE MISSION (turn " .. turn .. " of " .. MISSION_TURNS .. ")\n" .. missionSeatName(seat) .. " (" .. role .. ")\n\n" .. missionSummary() .. "\n\n\n\n\n\n\n\n\n\n\n", 55, 2)
+end
+
+-- Step 3: blue picks a long edge.
+function missionSideMenu()
+  clearAllButtons()
+  changeBackButton("reset", "Cancel and go back to Main Menu")
+  createMenu({
+    {functionName = "missionEdgeBlue", label = "Blue Seat's Edge", tooltip = "Blue deploys on the blue seat's long edge", buttonTint = {0, 0.4, 1}},
+    {functionName = "missionEdgeRed", label = "Red Seat's Edge", tooltip = "Blue deploys on the red seat's long edge", buttonTint = {1, 0.2, 0.2}},
+  }, 1)
+  printToScreen("MISSION BUILT\n" .. missionSeatName(mission.blueSeat) .. " (blue): choose your table edge.\n\n" .. missionSummary() .. "\n\n\n\n\n\n\n\n\n\n\n", 55, 2)
+end
+
+function missionEdgeBlue()
+  setUpMission(false)
+end
+
+function missionEdgeRed()
+  setUpMission(true)
+end
+
+local function placeOnMount(mount, kind, name, offset)
+  local pos = mount.getPosition()
+  offset = offset or {0, 0.23, 0}
+  local card = Deck:spawnBattleCard(Deck.BATTLE_KINDS[kind].key, name, missionScenario)
+  card.setScale({0.83, 1, 0.83})
+  card.setRotation(mount.getRotation())
+  card.setPosition({pos.x + offset[1], pos.y + offset[2], pos.z + offset[3]})
+  return card
+end
+
+-- Step 4: put the final cards on the setup mounts and run their setup in
+-- rules order: Objective, Secondary, blue's Advantage, red's Advantage.
+function setUpMission(mirror)
+  ga_event("Game", "setUpMission")
+  local result = mission:result()
+  local red = Mission.otherSeat(result.blueSeat)
+  clearMissionCards()
+  setUpController.call("clearMountedCards")
+
+  placeOnMount(setUpData.deploymentMount, "objective", result.objective)
+  placeOnMount(setUpData.objectiveMount, "secondary", result.secondary)
+  local blueAdvantage = placeOnMount(setUpData.conditionsMount, "advantage", result.advantage[result.blueSeat])
+  blueAdvantage.setDescription("Blue player's Advantage (" .. result.blueSeat .. " seat)")
+  local redAdvantage = placeOnMount(setUpData.conditionsMount, "advantage", result.advantage[red], RED_ADVANTAGE_CARD_OFFSET)
+  redAdvantage.setDescription("Red player's Advantage (" .. red .. " seat)")
+
+  setUpController.call("changeScenario", {missionScenario})
+  setUpController.call("setMirrorDeployment", {mirror = mirror})
+
+  -- Give the cards a moment to land in the mount zones before checking them.
+  Wait.time(function()
+    setUpController.call("checkCardCall", {"deployment"})
+    setUpController.call("checkCardCall", {"objective"})
+    setUpController.call("checkCardCall", {"conditions"})
+    setUpController.call("activateAdvantageByName", {
+      name     = result.advantage[red],
+      position = RED_ADVANTAGE_OBJECTS_POS,
+    })
+  end, 1)
+
+  local summary = missionSummary():gsub("\n", ". ")
+  broadcastToAll("Mission set up. " .. summary, {0.8, 0.9, 1})
+  mission = nil
+  mainMenu()
 end

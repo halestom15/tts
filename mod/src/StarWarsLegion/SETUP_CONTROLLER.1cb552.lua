@@ -40,6 +40,7 @@ function onload(save_state)
     conditionsMenu()
 
     _G.selectedScenario = "standard"
+    _G.mirrorDeployment = false
     drawInput()
 end
 
@@ -90,19 +91,19 @@ end
 
 function objectiveMenu()
     clearButton("objective")
-    createOptionButton("objective", "checkObjective", "Objective", "Spawn Relevant Objective Tokens", {0,0.913,1})
+    createOptionButton("objective", "checkObjective", "Secondary", "Spawn Relevant Secondary Objective Tokens", {0,0.913,1})
 end
 
 function deploymentMenu()
     clearDeploymentBoundary()
     clearButton("deployment")
-    createOptionButton("deployment", "checkDeployment", "Deployment", "Create Deployment overlay", {0,0.913,1})
+    createOptionButton("deployment", "checkDeployment", "Objective", "Create Deployment overlay and spawn Objective map and tokens", {0,0.913,1})
 end
 
 
 function conditionsMenu()
     clearButton("conditions")
-    createOptionButton("conditions", "checkConditions", "Conditions", "Spawn Relevant Conditions Tokens", {0,0.913,1})
+    createOptionButton("conditions", "checkConditions", "Advantage", "Spawn Relevant Advantage Tokens", {0,0.913,1})
 end
 
 function checkCardCall(cardTable)
@@ -154,7 +155,32 @@ function getObjectFromZone(selectedZone)
 end
 
 
-function spawnObjs(cardType, selectedBattleCardName)
+-- Called by the game controller before setting up a mission: when the blue
+-- player picks the red seat's edge, the deployment zones are mirrored.
+function setMirrorDeployment(params)
+  _G.mirrorDeployment = params.mirror == true
+end
+
+-- Removes battle cards from the setup mounts (before the game controller
+-- places a new mission).
+function clearMountedCards()
+  for _, zone in pairs(optionZones) do
+    for _, obj in ipairs(zone.getObjects()) do
+      local type = obj.type or obj.tag
+      if type == "Card" or type == "Deck" then
+        destroyObject(obj)
+      end
+    end
+  end
+end
+
+-- Spawns the objects for an Advantage card that isn't on the Advantage mount
+-- (the second player's Advantage in a 2024 mission).
+function activateAdvantageByName(params)
+  spawnObjs("condition", params.name, params.position)
+end
+
+function spawnObjs(cardType, selectedBattleCardName, position)
   local objects = Deck:getBattleCardObjects(
     selectedBattleCardName,
     cardType,
@@ -163,7 +189,7 @@ function spawnObjs(cardType, selectedBattleCardName)
   if #objects == 0 then
     return
   end
-  local position = ({
+  position = position or ({
     objective  = {49, 1, 16},
     deployment = {49, 1, 12},
     condition  = {49, 1, 08}, 
@@ -264,7 +290,7 @@ function spawnBoundaryCell(cell, x, z)
   })
 end
 
-function spawnDeploymentBoundary(matrix)
+function spawnDeploymentBoundary(matrix, mirror)
     local function invertMatrix(input)
       -- See https://github.com/swlegion/tts/issues/275.
       local output = {}
@@ -284,7 +310,31 @@ function spawnDeploymentBoundary(matrix)
       return output
     end
     
-    matrix = invertMatrix(matrix)
+    -- Swaps red and blue cells ("rh" <-> "bh"). Each red cell's art and offset
+    -- is its blue counterpart turned 180 degrees, so skipping invertMatrix and
+    -- swapping colors draws each player's zone on the opposite edge.
+    local function swapColors(input)
+      local output = {}
+      for y, row in ipairs(input) do
+        output[y] = {}
+        for x, cell in ipairs(row) do
+          local first = cell:sub(1, 1)
+          if first == "r" then
+            cell = "b" .. cell:sub(2)
+          elseif first == "b" then
+            cell = "r" .. cell:sub(2)
+          end
+          output[y][x] = cell
+        end
+      end
+      return output
+    end
+
+    if mirror then
+      matrix = swapColors(matrix)
+    else
+      matrix = invertMatrix(matrix)
+    end
     -- matrix is in the format of
     -- { x, x, x, x, x, x, x, x, x, x, x, x }
     -- { x, x, x, x, x, x, x, x, x, x, x, x }
@@ -293,8 +343,8 @@ function spawnDeploymentBoundary(matrix)
     -- { x, x, x, x, x, x, x, x, x, x, x, x }
     -- { x, x, x, x, x, x, x, x, x, x, x, x }
     -- ... where "x" can either be:
-    -- "r" :  red deployment zone
-    -- "b" :  blue deployment zone
+    -- "r*" :  red deployment zone (the suffix picks the edge piece)
+    -- "b*" :  blue deployment zone
     -- ""  :  ignore
     for z, row in pairs(matrix) do
       for x, cell in pairs(row) do
@@ -340,19 +390,19 @@ end
 
 function noObjectiveTokensMenu()
     clearButton("objective")
-    createOptionButton("objective", "checkObjective", "No Tokens", "No relevant Objective tokens needed", {0.7,0,0})
+    createOptionButton("objective", "checkObjective", "No Tokens", "No relevant Secondary Objective tokens needed", {0.7,0,0})
     resetTimer("objective")
 end
 
 function noConditionsTokensMenu()
     clearButton("conditions")
-    createOptionButton("conditions", "checkConditions", "No Tokens", "No relevant Conditions tokens needed", {0.7,0,0})
+    createOptionButton("conditions", "checkConditions", "No Tokens", "No relevant Advantage tokens needed", {0.7,0,0})
     resetTimer("conditions")
 end
 
 function noDeploymentTokensMenu()
     clearButton("deployment")
-    createOptionButton("deployment", "checkdDeployment", "No Tokens", "No relevant Objective tokens needed", {0.7,0,0})
+    createOptionButton("deployment", "checkDeployment", "No Tokens", "No relevant Objective tokens needed", {0.7,0,0})
     resetTimer("objective")
 end
 
@@ -366,7 +416,7 @@ function activatedeployment(name)
     clearDeploymentBoundary()
     local zone = Deck:getDeploymentBoundary(name, _G.selectedScenario)
     if zone and #zone > 0 then
-      spawnDeploymentBoundary(zone)
+      spawnDeploymentBoundary(zone, _G.mirrorDeployment)
     end
     deactivateDeploymentMenu()
     spawnObjs("deployment", name)
@@ -394,37 +444,37 @@ end
 
 function noobjective()
     clearButton("objective")
-    createOptionButton("objective", "checkObjective", "Mount Objective", "No Objective selected, mount objective card below", {0.7,0,0})
+    createOptionButton("objective", "checkObjective", "Mount Secondary", "No Secondary Objective selected, mount secondary objective card below", {0.7,0,0})
     resetTimer("objective")
 end
 
 function wrongobjective()
     clearButton("objective")
-    createOptionButton("objective", "checkObjective", "Wrong Card", "Wrong Card mounted, mount objective card below", {0.7,0,0})
+    createOptionButton("objective", "checkObjective", "Wrong Card", "Wrong Card mounted, mount secondary objective card below", {0.7,0,0})
     resetTimer("objective")
 end
 
 function nodeployment()
     clearButton("deployment")
-    createOptionButton("deployment", "checkDeployment", "Mount Deployment", "No Deployment selected, mount deployment card below", {0.7,0,0})
+    createOptionButton("deployment", "checkDeployment", "Mount Objective", "No Objective selected, mount objective card below", {0.7,0,0})
     resetTimer("deployment")
 end
 
 function wrongdeployment()
     clearButton("deployment")
-    createOptionButton("deployment", "checkDeployment", "Wrong Card", "Wrong Card mounted, mount deployment card below", {0.7,0,0})
+    createOptionButton("deployment", "checkDeployment", "Wrong Card", "Wrong Card mounted, mount objective card below", {0.7,0,0})
     resetTimer("deployment")
 end
 
 function noconditions()
     clearButton("conditions")
-    createOptionButton("conditions", "checkConditions", "Mount Conditions", "No Conditions selected, mount conditions card below", {0.7,0,0})
+    createOptionButton("conditions", "checkConditions", "Mount Advantage", "No Advantage selected, mount advantage card below", {0.7,0,0})
     resetTimer("conditions")
 end
 
 function wrongconditions()
     clearButton("conditions")
-    createOptionButton("conditions", "checkConditions", "Wrong Card", "Wrong Card mounted, mount conditions card below", {0.7,0,0})
+    createOptionButton("conditions", "checkConditions", "Wrong Card", "Wrong Card mounted, mount advantage card below", {0.7,0,0})
     resetTimer("conditions")
 end
 

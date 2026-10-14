@@ -1,5 +1,4 @@
 require('!/common/Stringx')
-require('!/common/Zonex')
 
 local __state = {}
 
@@ -15,7 +14,7 @@ function _onLoadShared(state)
     click_function = "defineBattlefield",
     function_owner = self,
     label          = "Battle Deck",
-    tooltip        = "Define Battlefield",
+    tooltip        = "Build Mission",
     position       = {-0.5, 0.3, -1.95},
     scale          = {0.5, 0.5, 0.5},
     width          = 2500,
@@ -29,7 +28,7 @@ function _onLoadShared(state)
     click_function = "defineBattlefield",
     function_owner = self,
     label          = "",
-    tooltip        = "Define Battlefield",
+    tooltip        = "Build Mission",
     position       = {0, 0.65, 0},
     width          = 1400,
     height         = 1400,
@@ -89,17 +88,8 @@ end
 
 function defineBattlefield()
   getObjectFromGUID(__state.guids.button).AssetBundle.playTriggerEffect(0)
-  local deck = zonex.firstWhereNot(getObjectFromGUID(__state.guids.zone), "Table")
-  if deck then
-    local game = getObjectFromGUID(Global.getTable("gameController").objGUID)
-    game.call("defineBattlefieldMenu", {
-      deck     = deck,
-      scenario = __state.scenario,
-    })
-  else
-    broadcastToAll(
-      "No Battlefield Deck. Insert Battlefield Deck to Define Battlefield",
-      {1,1,1}
-    )
-  end
+  -- The game controller reads both players' decks, so either mount's button
+  -- starts building the mission.
+  local game = getObjectFromGUID(Global.getTable("gameController").objGUID)
+  game.call("buildMissionMenu")
 end

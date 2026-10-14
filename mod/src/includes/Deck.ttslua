@@ -592,6 +592,51 @@ function Deck:getBattleCardType(name, scenario)
   return nil
 end
 
+-- The battle card data keeps its original (v1) keys so list imports keep
+-- working, but since the 2024 rules they hold different card types.
+Deck.BATTLE_KINDS = {
+  objective  = {key = "deployment", label = "Objective"},
+  secondary  = {key = "objective",  label = "Secondary"},
+  advantage  = {key = "condition",  label = "Advantage"},
+}
+
+-- Display label for a battle card data key ("objective", "deployment",
+-- "condition" or "conditions").
+function Deck.getBattleCardLabel(key)
+  if key == "conditions" then
+    key = "condition"
+  end
+  for _, kind in pairs(Deck.BATTLE_KINDS) do
+    if kind.key == key then
+      return kind.label
+    end
+  end
+  return key
+end
+
+-- Sorts a list of battle card names into mission kinds
+-- ({objective = {...}, secondary = {...}, advantage = {...}}), and returns the
+-- names that aren't battle cards for this scenario.
+function Deck:splitBattleDeck(names, scenario)
+  local result = {objective = {}, secondary = {}, advantage = {}}
+  local unknown = {}
+  for _, name in ipairs(names) do
+    local key = self:getBattleCardType(name, scenario)
+    local found = false
+    for kind, info in pairs(Deck.BATTLE_KINDS) do
+      if info.key == key then
+        table.insert(result[kind], name)
+        found = true
+        break
+      end
+    end
+    if not found then
+      table.insert(unknown, name)
+    end
+  end
+  return result, unknown
+end
+
 function Deck:getBattleCardNamesByType(name, scenario)
   if not scenario then
     scenario = 'standard'
