@@ -288,6 +288,11 @@ local function initListSpawner(params)
         objEntry.obj.use_snap_points = false
       end
 
+      -- new behaviour shared by every mini
+      if globals.miniSharedScript then
+        selectedMiniScript = selectedMiniScript .. "\n" .. globals.miniSharedScript
+      end
+
       -- SET SCRIPT
       local obj = objEntry.obj
       local script = selectedMiniScript

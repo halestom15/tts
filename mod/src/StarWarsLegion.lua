@@ -294,6 +294,10 @@ function onload(saveData)
 
     unitIDTokenBagGUID = "21550f"
 
+    -- Options for the behaviour shared by every mini (see includes/data/MiniShared):
+    --   upright:  stand a mini back up if it tips over after a drop or collision
+    miniOptions = {upright = true}
+
     Wait.time(initHotkeys, 1)
   
     -- LIST BUILDER info
