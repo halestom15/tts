@@ -21,6 +21,17 @@
       "required": ["image"]
     },
 
+    "SingleCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "card": {
+          "$ref": "#/definitions/Card"
+        }
+      },
+      "required": ["card"]
+    },
+
     "Deck": {
       "type": "object",
       "additionalProperties": false,
@@ -112,6 +123,7 @@
 
   "oneOf": [
     { "$ref": "#/definitions/Card" },
+    { "$ref": "#/definitions/SingleCard" },
     { "$ref": "#/definitions/Deck" },
     { "$ref": "#/definitions/Model" },
     { "$ref": "#/definitions/Token" }
