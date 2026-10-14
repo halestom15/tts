@@ -263,8 +263,6 @@ function onload(saveData)
       snail = 14.52755906
     }
 
-    templateInfo.attackLineMesh = "https://steamusercontent-a.akamaihd.net/ugc/785234780861452902/76204298AA245698319FD2EA590160AFFE1B488C/"
-
     highestPoint = 0
 
     -- POI snap points (only POI tokens snap to them), on unless the save
@@ -618,6 +616,10 @@ function onload(saveData)
 end
 
 function standbyTokens()
+    -- The line-of-sight witness lines live in Global's vector lines, which a
+    -- save keeps and a reload (or an undo) brings back with no attack to own
+    -- them: wipe them like the rulers below.
+    Global.setVectorLines({})
     local allObjs = getAllObjects()
     for i, obj in pairs(allObjs) do
         if obj.getVar("isAToken") == true then
@@ -625,7 +627,7 @@ function standbyTokens()
         -- "Maximum Move" joins the sweep: like the rulers, the only reference
         -- to the ring lives in volatile script state, so one that made it
         -- into a save can never be cleared again after a load or an undo.
-        elseif obj.getName() == "Cohesion Ruler" or obj.getName() == "Movement Template" or obj.getName() == "Range Ruler" or obj.getName() == "Deployment Boundary" or obj.getName() == "Maximum Move" then
+        elseif obj.getName() == "Cohesion Ruler" or obj.getName() == "Movement Template" or obj.getName() == "Range Ruler" or obj.getName() == "Deployment Boundary" or obj.getName() == "Maximum Move" or obj.getName() == "Height Guide" then
             destroyObject(obj)
         end
     end
@@ -649,6 +651,7 @@ end
 function initHotkeys()
   initRangebandHotkeys()
   initCohesionHotkeys()
+  initHeightHotkeys()
   initTokenHotkeys()
   initChessClockHotkeys()
 end
@@ -674,6 +677,35 @@ function initCohesionHotkeys()
    )
 end
 -- END Cohesion Hotkeys --
+
+-- Height Hotkeys --
+function initHeightHotkeys()
+  addHotkey(
+    "Toggle Height Guide On Hovered Model",
+    function (playerColor, hoverObject, cursorPosition)
+      toggleHeightGuideOnHoveredModel(hoverObject)
+    end
+  )
+end
+
+-- Works on any mini of a unit: non-leader minis forward to their leader.
+function toggleHeightGuideOnHoveredModel(hoverObject)
+  if hoverObject == nil then
+    return
+  end
+  local leader = hoverObject
+  if hoverObject.getVar("isAMini") ~= true then
+    local leaderGUID = hoverObject.getVar("leaderGUID")
+    if leaderGUID == nil then
+      return
+    end
+    leader = getObjectFromGUID(leaderGUID)
+  end
+  if leader ~= nil then
+    leader.call("toggleHeightGuide")
+  end
+end
+-- END Height Hotkeys --
 
 -- Token Hotkeys --
 function initTokenHotkeys()
