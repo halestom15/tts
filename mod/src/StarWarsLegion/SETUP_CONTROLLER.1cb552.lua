@@ -24,26 +24,26 @@ function onload(save_state)
     optionObjs.objective = getObjectFromGUID("9480a7")
     optionObjs.deployment = getObjectFromGUID("538f4d")
     optionObjs.conditions = getObjectFromGUID("c6b3a9")
-    -- 2024 missions have two Advantages: "conditions" holds the blue
-    -- player's, "advantageRed" the red player's.
-    optionObjs.advantageRed = getObjectFromGUID("07a89d")
+    -- 2024 missions have two Advantages, one per player. Each player's goes
+    -- on the mount nearer their seat: "conditions" is nearer the red seat,
+    -- "advantageBlueSeat" nearer the blue seat.
+    optionObjs.advantageBlueSeat = getObjectFromGUID("07a89d")
 
     optionButtons = {}
     optionButtons.objective = getObjectFromGUID("10483c")
     optionButtons.deployment = getObjectFromGUID("1e6398")
     optionButtons.conditions = getObjectFromGUID("337dc3")
-    optionButtons.advantageRed = getObjectFromGUID("5007f8")
+    optionButtons.advantageBlueSeat = getObjectFromGUID("5007f8")
 
     optionZones = {}
     optionZones.objective = getObjectFromGUID("d0ca46")
     optionZones.deployment = getObjectFromGUID("b74727")
     optionZones.conditions = getObjectFromGUID("ec8c41")
-    optionZones.advantageRed = getObjectFromGUID("00f1b3")
+    optionZones.advantageBlueSeat = getObjectFromGUID("00f1b3")
 
     objectiveMenu()
     deploymentMenu()
-    conditionsMenu()
-    advantageRedMenu()
+    setAdvantageLabels({})
 
     _G.selectedScenario = "standard"
     _G.mirrorDeployment = false
@@ -107,38 +107,60 @@ function deploymentMenu()
 end
 
 
+-- Labels for the two Advantage mounts. Both read "Advantage" until a mission
+-- is built; then each names the role of the player at that mount's seat.
+advantageLabels = {}
+
+-- params.blueSeat = "Blue" or "Red" (the seat of the blue player), or nil to
+-- reset both mounts to "Advantage".
+function setAdvantageLabels(params)
+  local blueSeat = params and params.blueSeat
+  if blueSeat == nil then
+    advantageLabels.conditions = "Advantage"
+    advantageLabels.advantageBlueSeat = "Advantage"
+  else
+    local role = function(seat)
+      return seat == blueSeat and "Blue Advantage" or "Red Advantage"
+    end
+    advantageLabels.conditions = role("Red")
+    advantageLabels.advantageBlueSeat = role("Blue")
+  end
+  conditionsMenu()
+  advantageBlueSeatMenu()
+end
+
 function conditionsMenu()
     clearButton("conditions")
-    createOptionButton("conditions", "checkConditions", "Blue Advantage", "Spawn Relevant Advantage Tokens for the blue player", {0,0.913,1})
+    createOptionButton("conditions", "checkConditions", advantageLabels.conditions, "Spawn Relevant Advantage Tokens for the player at the red seat", {0,0.913,1})
 end
 
-function advantageRedMenu()
-    clearButton("advantageRed")
-    createOptionButton("advantageRed", "checkAdvantageRed", "Red Advantage", "Spawn Relevant Advantage Tokens for the red player", {0,0.913,1})
+function advantageBlueSeatMenu()
+    clearButton("advantageBlueSeat")
+    createOptionButton("advantageBlueSeat", "checkAdvantageBlueSeat", advantageLabels.advantageBlueSeat, "Spawn Relevant Advantage Tokens for the player at the blue seat", {0,0.913,1})
 end
 
-function checkAdvantageRed()
-  local card = getObjectFromZone("advantageRed")
+function checkAdvantageBlueSeat()
+  local card = getObjectFromZone("advantageBlueSeat")
   if not card then
-    clearButton("advantageRed")
-    createOptionButton("advantageRed", "checkAdvantageRed", "Mount Advantage", "No Advantage selected, mount the red player's advantage card below", {0.7,0,0})
-    resetTimer("advantageRed")
+    clearButton("advantageBlueSeat")
+    createOptionButton("advantageBlueSeat", "checkAdvantageBlueSeat", "Mount Advantage", "No Advantage selected, mount the blue seat's advantage card below", {0.7,0,0})
+    resetTimer("advantageBlueSeat")
     return
   end
   local name = card.getName()
   if Deck:getBattleCardType(name, _G.selectedScenario) ~= "condition" then
-    clearButton("advantageRed")
-    createOptionButton("advantageRed", "checkAdvantageRed", "Wrong Card", "Wrong Card mounted, mount the red player's advantage card below", {0.7,0,0})
-    resetTimer("advantageRed")
+    clearButton("advantageBlueSeat")
+    createOptionButton("advantageBlueSeat", "checkAdvantageBlueSeat", "Wrong Card", "Wrong Card mounted, mount the blue seat's advantage card below", {0.7,0,0})
+    resetTimer("advantageBlueSeat")
     return
   end
-  spawnObjs("advantageRed", name)
-  advantageRedMenu()
+  spawnObjs("advantageBlueSeat", name)
+  advantageBlueSeatMenu()
 end
 
 function checkCardCall(cardTable)
-  if cardTable[1] == "advantageRed" then
-    return checkAdvantageRed()
+  if cardTable[1] == "advantageBlueSeat" then
+    return checkAdvantageBlueSeat()
   end
   return checkCard(cardTable[1])
 end
@@ -207,10 +229,10 @@ function clearMountedCards()
   end
 end
 
--- cardType is a card data key, or "advantageRed" for the red player's
--- Advantage (a "condition" card spawned beside its own mount).
+-- cardType is a card data key, or "advantageBlueSeat" for the Advantage on
+-- the mount nearer the blue seat (a "condition" card beside its own mount).
 function spawnObjs(cardType, selectedBattleCardName)
-  local dataType = cardType == "advantageRed" and "condition" or cardType
+  local dataType = cardType == "advantageBlueSeat" and "condition" or cardType
   local objects = Deck:getBattleCardObjects(
     selectedBattleCardName,
     dataType,
@@ -224,7 +246,7 @@ function spawnObjs(cardType, selectedBattleCardName)
     objective    = {49, 1, 16},
     deployment   = {49, 1, 20},
     condition    = {49, 1, 08},
-    advantagered = {49, 1, 12},
+    advantageblueseat = {49, 1, 12},
   })[cardType:lower()]
   Shelf:spawnAdditionalObjects({
     name     = selectedBattleCardName .. "'s Objects",

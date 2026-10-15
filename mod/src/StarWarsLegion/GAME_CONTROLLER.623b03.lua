@@ -24,7 +24,7 @@ function onload(save_state)
     setUpData = Global.getTable("setUpData")
     setUpData.deploymentMount = getObjectFromGUID(setUpData.deploymentMountGUID)
     setUpData.conditionsMount = getObjectFromGUID(setUpData.conditionsMountGUID)
-    setUpData.advantageRedMount = getObjectFromGUID(setUpData.advantageRedMountGUID)
+    setUpData.advantageBlueSeatMount = getObjectFromGUID(setUpData.advantageBlueSeatMountGUID)
     setUpData.objectiveMount = getObjectFromGUID(setUpData.objectiveMountGUID)
     commandTokenTrayData = Global.getTable("commandTokenTrayData")
     commandTokenData = Global.getTable("commandTokenData")
@@ -1948,6 +1948,7 @@ function buildMissionMenu()
     return
   end
   clearMissionCards()
+  setUpController.call("setAdvantageLabels", {})
   missionDecks = decks
   missionScenario = scenario
   mission = nil
@@ -2073,10 +2074,17 @@ function setUpMission(mirror)
 
   placeOnMount(setUpData.deploymentMount, "objective", result.objective)
   placeOnMount(setUpData.objectiveMount, "secondary", result.secondary)
-  local blueAdvantage = placeOnMount(setUpData.conditionsMount, "advantage", result.advantage[result.blueSeat])
-  blueAdvantage.setDescription("Blue player's Advantage (" .. result.blueSeat .. " seat)")
-  local redAdvantage = placeOnMount(setUpData.advantageRedMount, "advantage", result.advantage[red])
-  redAdvantage.setDescription("Red player's Advantage (" .. red .. " seat)")
+  -- Each player's Advantage goes on the mount nearer their seat.
+  local advantageMounts = {
+    Blue = {mount = setUpData.advantageBlueSeatMount, check = "advantageBlueSeat"},
+    Red  = {mount = setUpData.conditionsMount, check = "conditions"},
+  }
+  for _, seat in ipairs({"Blue", "Red"}) do
+    local role = seat == result.blueSeat and "Blue" or "Red"
+    local card = placeOnMount(advantageMounts[seat].mount, "advantage", result.advantage[seat])
+    card.setDescription(role .. " player's Advantage (" .. seat .. " seat)")
+  end
+  setUpController.call("setAdvantageLabels", {blueSeat = result.blueSeat})
 
   setUpController.call("changeScenario", {missionScenario})
   setUpController.call("setMirrorDeployment", {mirror = mirror})
@@ -2085,8 +2093,9 @@ function setUpMission(mirror)
   Wait.time(function()
     setUpController.call("checkCardCall", {"deployment"})
     setUpController.call("checkCardCall", {"objective"})
-    setUpController.call("checkCardCall", {"conditions"})
-    setUpController.call("checkCardCall", {"advantageRed"})
+    -- The blue player's Advantage sets up before the red player's.
+    setUpController.call("checkCardCall", {advantageMounts[result.blueSeat].check})
+    setUpController.call("checkCardCall", {advantageMounts[red].check})
   end, 1)
 
   local summary = missionSummary():gsub("\n", ". ")
