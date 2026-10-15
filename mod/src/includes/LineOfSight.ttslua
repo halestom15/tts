@@ -1,0 +1,864 @@
+-- Line of sight engine, run by Global for every order token.
+--
+-- The order token that ATTACKs builds a request (its unit's sample points,
+-- the defending minis, the vehicles that block) and hands it to Global with
+-- losStartVerdict; Global finds the witness lines, draws them, then calls the
+-- token's losVerdictDone so it can raise the silhouettes.
+--
+-- Why Global: every order token runs its own copy of the token script, so a
+-- mesh cache kept there was empty for every unit's first attack. Here the
+-- terrain meshes are downloaded and prepared once per session, and the ones
+-- on the battlefield are prepared in the background before anyone attacks.
+--
+-- The rules logic is unchanged from the token version: green = a line that
+-- crosses no terrain, red = one that does, judged against each piece's
+-- oriented visual box first and its real triangles when no box line is clear.
+-- The triangle pass now walks a bounding volume hierarchy instead of a flat
+-- grid, which tests a handful of triangles per line instead of thousands.
+
+-- Time budget per frame for a verdict the players are waiting on.
+local LOS_FRAME_BUDGET = 0.02
+-- Time budget per frame for preparing meshes in the background: small, so
+-- nobody notices the table working.
+local LOS_PREFETCH_BUDGET = 0.004
+-- How often the battlefield is checked for terrain to prepare.
+local LOS_PREFETCH_INTERVAL = 3
+-- Bump with every LoS change (printed with LOS_DEBUG).
+local LOS_BUILD = "v24"
+local LOS_DEBUG = false
+
+local function losLog(msg)
+  if LOS_DEBUG then print("[LOS] " .. msg) end
+end
+
+local function losBarSet(pct)
+  pcall(function()
+    UI.setAttribute("progressRuleFill", "width", math.floor(pct) .. "%")
+    UI.setAttribute("progressRule", "active", "true")
+  end)
+end
+
+local function losBarHide()
+  pcall(function() UI.setAttribute("progressRule", "active", "false") end)
+end
+
+losVerdictGen = 0
+losVerdictRequest = nil
+losVerdictRunning = false
+losFrameStart = 0
+
+---------------------------------------------------------------------------
+-- GEOMETRY
+---------------------------------------------------------------------------
+
+-- Only the boxes standing near this defender's corridor concern its rays.
+-- Judged flat, from the box's worst reach against the attacker-defender
+-- segment, padded by how far the sample points stray from the centers.
+local function losCorridorObbs(ctx, defPos, pad)
+  local ax, az = ctx.leaderPos.x, ctx.leaderPos.z
+  local dx, dz = defPos.x - ax, defPos.z - az
+  local len2 = dx * dx + dz * dz
+  local kept = {}
+  for _, obb in ipairs(ctx.obbs) do
+    local bx, bz = obb.pos.x - ax, obb.pos.z - az
+    local t = 0
+    if len2 > 0.000001 then
+      t = math.max(0, math.min(1, (bx * dx + bz * dz) / len2))
+    end
+    local ex, ez = bx - t * dx, bz - t * dz
+    local reach = obb.reach + pad
+    if ex * ex + ez * ez <= reach * reach then
+      table.insert(kept, obb)
+    end
+  end
+  return kept
+end
+
+-- Does a segment cross the silhouette cylinder of a third-party ground
+-- vehicle? A quadratic in the ground plane, then a height window.
+local function losSegmentHitsCylinder(p, q, cyl)
+  local dx, dz = q.x - p.x, q.z - p.z
+  local fx, fz = p.x - cyl.x, p.z - cyl.z
+  local a = dx * dx + dz * dz
+  local t0, t1
+  if a < 0.000001 then
+    if fx * fx + fz * fz > cyl.r * cyl.r then return false end
+    t0, t1 = 0, 1
+  else
+    local b = 2 * (fx * dx + fz * dz)
+    local c = fx * fx + fz * fz - cyl.r * cyl.r
+    local disc = b * b - 4 * a * c
+    if disc <= 0 then return false end
+    local s = math.sqrt(disc)
+    t0 = math.max((-b - s) / (2 * a), 0)
+    t1 = math.min((-b + s) / (2 * a), 1)
+    if t0 > t1 then return false end
+  end
+  local ya = p.y + (q.y - p.y) * t0
+  local yb = p.y + (q.y - p.y) * t1
+  return math.max(ya, yb) >= cyl.y0 and math.min(ya, yb) <= cyl.y1
+end
+
+local function losHitsCylinders(ctx, p, q)
+  for _, cyl in ipairs(ctx.blockers) do
+    if losSegmentHitsCylinder(p, q, cyl) then return true end
+  end
+  return false
+end
+
+-- What counts as terrain for a ray: not a mini (minis only block through the
+-- ground-vehicle cylinders), not a game aid, not something tiny.
+-- miniGuids may be nil (background preparation): then only isAMini is asked.
+local function losIsTerrain(miniGuids, o)
+  if miniGuids ~= nil and miniGuids[o.getGUID()] then return false end
+  if o.getVar("isAMini") == true then return false end
+  -- Asset bundles are game aids here, never terrain: silhouettes, smoke,
+  -- rulers, effects. (.name is the internal type name.)
+  if o.name == "Custom_Assetbundle" then return false end
+  local t = o.type
+  if t == "Card" or t == "Deck" or t == "Die" or t == "Bag" or t == "Infinite" then
+    return false
+  end
+  if t == "Scripting" or t == "Hand" or t == "FogOfWar" or t == "Randomize" or t == "Layout" then
+    return false
+  end
+  local name = string.lower(o.getName() or "")
+  if name == "table" or name == "battlefield" then
+    return false
+  end
+  -- The map annotates its pieces: [No Cover] pieces never block sight.
+  if string.find(name, "no cover") then
+    return false
+  end
+  if string.find(name, "token") or string.find(name, "ruler")
+    or string.find(name, "template") or string.find(name, "dice")
+    or string.find(name, "silhouette") or string.find(name, "objective") then
+    return false
+  end
+  local b = o.getBounds()
+  if b and b.size.x < 1.2 and b.size.z < 1.2 and b.size.y < 0.8 then
+    return false
+  end
+  return true
+end
+
+-- The oriented visual box of a terrain piece: its renderer bounds at zero
+-- rotation (the VISUAL mesh, never the collider -- terrain colliders in this
+-- mod can be flat resting plates) plus its rotation, precomputed.
+local function losMakeObb(obj)
+  local b = obj.getVisualBoundsNormalized()
+  local p = obj.getPosition()
+  local r = obj.getRotation()
+  local s = obj.getScale()
+  local url = nil
+  if obj.name == "Custom_Model" then
+    local ok, co = pcall(function() return obj.getCustomObject() end)
+    if ok and co ~= nil then url = co.mesh end
+  end
+  local rx, ry, rz = math.rad(r.x), math.rad(r.y), math.rad(r.z)
+  return {
+    name = obj.getName() or "?",
+    pos = p,
+    cosy = math.cos(ry), siny = math.sin(ry),
+    cosx = math.cos(rx), sinx = math.sin(rx),
+    cosz = math.cos(rz), sinz = math.sin(rz),
+    scx = (s.x ~= 0 and s.x or 1),
+    scy = (s.y ~= 0 and s.y or 1),
+    scz = (s.z ~= 0 and s.z or 1),
+    center = {x = b.center.x - p.x, y = b.center.y - p.y, z = b.center.z - p.z},
+    half = {x = b.size.x / 2, y = b.size.y / 2, z = b.size.z / 2},
+    reach = math.sqrt(b.size.x ^ 2 + b.size.y ^ 2 + b.size.z ^ 2) / 2
+      + math.sqrt((b.center.x - p.x) ^ 2 + (b.center.y - p.y) ^ 2 + (b.center.z - p.z) ^ 2),
+    url = url,
+  }
+end
+
+-- World point -> the box's local frame. Unity composes rotations as
+-- yaw(Y) * pitch(X) * roll(Z), so the inverse unwinds yaw, pitch, roll.
+local function losToObbFrame(obb, wx, wy, wz)
+  local x, y, z = wx - obb.pos.x, wy - obb.pos.y, wz - obb.pos.z
+  local c, s = obb.cosy, obb.siny
+  x, z = x * c - z * s, x * s + z * c
+  c, s = obb.cosx, obb.sinx
+  y, z = y * c + z * s, -y * s + z * c
+  c, s = obb.cosz, obb.sinz
+  x, y = x * c + y * s, -x * s + y * c
+  return x, y, z
+end
+
+-- Segment against the oriented visual box: slab test in the box's local
+-- frame. Returns nil on a miss, or the t interval of the crossing.
+local function losSegmentHitsObb(p, q, obb)
+  local lpx, lpy, lpz = losToObbFrame(obb, p.x, p.y, p.z)
+  local lqx, lqy, lqz = losToObbFrame(obb, q.x, q.y, q.z)
+  local c, h = obb.center, obb.half
+  local t0, t1 = 0, 1
+  local d = lqx - lpx
+  local lo, hi = c.x - h.x, c.x + h.x
+  if d < 0.000001 and d > -0.000001 then
+    if lpx < lo or lpx > hi then return nil end
+  else
+    local ta, tb = (lo - lpx) / d, (hi - lpx) / d
+    if ta > tb then ta, tb = tb, ta end
+    if ta > t0 then t0 = ta end
+    if tb < t1 then t1 = tb end
+    if t0 > t1 then return nil end
+  end
+  d = lqy - lpy
+  lo, hi = c.y - h.y, c.y + h.y
+  if d < 0.000001 and d > -0.000001 then
+    if lpy < lo or lpy > hi then return nil end
+  else
+    local ta, tb = (lo - lpy) / d, (hi - lpy) / d
+    if ta > tb then ta, tb = tb, ta end
+    if ta > t0 then t0 = ta end
+    if tb < t1 then t1 = tb end
+    if t0 > t1 then return nil end
+  end
+  d = lqz - lpz
+  lo, hi = c.z - h.z, c.z + h.z
+  if d < 0.000001 and d > -0.000001 then
+    if lpz < lo or lpz > hi then return nil end
+  else
+    local ta, tb = (lo - lpz) / d, (hi - lpz) / d
+    if ta > tb then ta, tb = tb, ta end
+    if ta > t0 then t0 = ta end
+    if tb < t1 then t1 = tb end
+    if t0 > t1 then return nil end
+  end
+  return t0, t1
+end
+
+---------------------------------------------------------------------------
+-- MESH CACHE (triangle precision)
+--
+-- One entry per mesh URL, shared by every attack: downloaded once
+-- (WebRequest on the OBJ URL the map declares), then parsed into triangles
+-- and a bounding volume hierarchy by a resumable job. Whoever needs the mesh
+-- next -- the background preparation or a verdict -- advances the job with
+-- its own time budget. Status: loading -> pending -> ready (or failed /
+-- toobig).
+---------------------------------------------------------------------------
+losMeshCache = {}
+local LOS_MESH_MAX_TRIS = 25000
+local LOS_MESH_MAX_RAYS = 8000
+local LOS_BVH_LEAF = 6
+
+-- The job yields when os.clock() passes losSliceEnd, set by its resumer.
+losSliceEnd = 0
+
+local function losMeshYield()
+  if os.clock() > losSliceEnd then
+    coroutine.yield()
+  end
+end
+
+-- Parses the OBJ text (fan-triangulating polygons) and builds the BVH.
+local function losMeshBuild(entry)
+  local vx, vy, vz = {}, {}, {}
+  local ax, ay, az, e1x, e1y, e1z, e2x, e2y, e2z = {}, {}, {}, {}, {}, {}, {}, {}, {}
+  local n, lines = 0, 0
+  for line in string.gmatch(entry.text, "[^\r\n]+") do
+    local head = string.sub(line, 1, 2)
+    if head == "v " then
+      local a, b, c = string.match(line, "^v%s+(%S+)%s+(%S+)%s+(%S+)")
+      if a ~= nil then
+        local k = #vx + 1
+        vx[k], vy[k], vz[k] = tonumber(a), tonumber(b), tonumber(c)
+      end
+    elseif head == "f " then
+      local idx, m = {}, 0
+      for tok in string.gmatch(line, "%S+") do
+        local i = string.match(tok, "^(%-?%d+)")
+        if i ~= nil then
+          i = tonumber(i)
+          if i < 0 then i = #vx + i + 1 end
+          m = m + 1
+          idx[m] = i
+        end
+      end
+      for k = 2, m - 1 do
+        local i1, i2, i3 = idx[1], idx[k], idx[k + 1]
+        if vx[i1] and vx[i2] and vx[i3] then
+          n = n + 1
+          ax[n], ay[n], az[n] = vx[i1], vy[i1], vz[i1]
+          e1x[n], e1y[n], e1z[n] = vx[i2] - vx[i1], vy[i2] - vy[i1], vz[i2] - vz[i1]
+          e2x[n], e2y[n], e2z[n] = vx[i3] - vx[i1], vy[i3] - vy[i1], vz[i3] - vz[i1]
+        end
+      end
+      if n > LOS_MESH_MAX_TRIS then
+        entry.status, entry.text = "toobig", nil
+        return
+      end
+    end
+    lines = lines + 1
+    if lines % 200 == 0 then losMeshYield() end
+  end
+  entry.text = nil
+  if n == 0 then
+    entry.status = "failed"
+    return
+  end
+
+  -- Triangle bounds and centroids, for the build only.
+  local tminx, tminy, tminz, tmaxx, tmaxy, tmaxz = {}, {}, {}, {}, {}, {}
+  local cx, cy, cz = {}, {}, {}
+  for i = 1, n do
+    local x1, y1, z1 = ax[i], ay[i], az[i]
+    local x2, y2, z2 = x1 + e1x[i], y1 + e1y[i], z1 + e1z[i]
+    local x3, y3, z3 = x1 + e2x[i], y1 + e2y[i], z1 + e2z[i]
+    tminx[i], tmaxx[i] = math.min(x1, x2, x3), math.max(x1, x2, x3)
+    tminy[i], tmaxy[i] = math.min(y1, y2, y3), math.max(y1, y2, y3)
+    tminz[i], tmaxz[i] = math.min(z1, z2, z3), math.max(z1, z2, z3)
+    cx[i], cy[i], cz[i] = (x1 + x2 + x3) / 3, (y1 + y2 + y3) / 3, (z1 + z2 + z3) / 3
+    if i % 500 == 0 then losMeshYield() end
+  end
+
+  -- Top-down build: each node splits its triangles at the middle of their
+  -- centroids' spread on the longest axis (in place, no sorting). Flat node
+  -- arrays; a leaf has left = -1 and owns order[start .. start + count - 1].
+  local order = {}
+  for i = 1, n do order[i] = i end
+  local bminx, bminy, bminz, bmaxx, bmaxy, bmaxz = {}, {}, {}, {}, {}, {}
+  local nleft, nright, nstart, ncount = {}, {}, {}, {}
+  local nodes, root, work = 0, nil, 0
+  local stack = {{1, n, 0}}
+  while #stack > 0 do
+    local item = table.remove(stack)
+    local s, e, parent = item[1], item[2], item[3]
+    nodes = nodes + 1
+    local node = nodes
+    if parent == 0 then
+      root = node
+    elseif nleft[parent] == 0 then
+      nleft[parent] = node
+    else
+      nright[parent] = node
+    end
+    local x0, y0, z0 = math.huge, math.huge, math.huge
+    local x1, y1, z1 = -math.huge, -math.huge, -math.huge
+    local c0x, c0y, c0z = math.huge, math.huge, math.huge
+    local c1x, c1y, c1z = -math.huge, -math.huge, -math.huge
+    for k = s, e do
+      local i = order[k]
+      if tminx[i] < x0 then x0 = tminx[i] end
+      if tminy[i] < y0 then y0 = tminy[i] end
+      if tminz[i] < z0 then z0 = tminz[i] end
+      if tmaxx[i] > x1 then x1 = tmaxx[i] end
+      if tmaxy[i] > y1 then y1 = tmaxy[i] end
+      if tmaxz[i] > z1 then z1 = tmaxz[i] end
+      if cx[i] < c0x then c0x = cx[i] end
+      if cy[i] < c0y then c0y = cy[i] end
+      if cz[i] < c0z then c0z = cz[i] end
+      if cx[i] > c1x then c1x = cx[i] end
+      if cy[i] > c1y then c1y = cy[i] end
+      if cz[i] > c1z then c1z = cz[i] end
+    end
+    bminx[node], bminy[node], bminz[node] = x0, y0, z0
+    bmaxx[node], bmaxy[node], bmaxz[node] = x1, y1, z1
+    local count = e - s + 1
+    work = work + count
+    if count <= LOS_BVH_LEAF then
+      nleft[node], nright[node], nstart[node], ncount[node] = -1, -1, s, count
+    else
+      local sx, sy, sz = c1x - c0x, c1y - c0y, c1z - c0z
+      local key, mid
+      if sx >= sy and sx >= sz then
+        key, mid = cx, (c0x + c1x) / 2
+      elseif sy >= sz then
+        key, mid = cy, (c0y + c1y) / 2
+      else
+        key, mid = cz, (c0z + c1z) / 2
+      end
+      local i, j = s, e
+      while i <= j do
+        if key[order[i]] < mid then
+          i = i + 1
+        else
+          order[i], order[j] = order[j], order[i]
+          j = j - 1
+        end
+      end
+      local split = i
+      -- All centroids on one side (duplicates): split by count instead.
+      if split == s or split > e then split = s + math.floor(count / 2) end
+      nleft[node], nright[node], nstart[node], ncount[node] = 0, 0, 0, 0
+      -- Right is pushed first so the left child gets built first.
+      table.insert(stack, {split, e, node})
+      table.insert(stack, {s, split - 1, node})
+    end
+    if work > 2000 then
+      work = 0
+      losMeshYield()
+    end
+  end
+
+  entry.n = n
+  entry.tris = {ax = ax, ay = ay, az = az, e1x = e1x, e1y = e1y, e1z = e1z, e2x = e2x, e2y = e2y, e2z = e2z}
+  entry.order = order
+  entry.bvh = {
+    minx = bminx, miny = bminy, minz = bminz, maxx = bmaxx, maxy = bmaxy, maxz = bmaxz,
+    left = nleft, right = nright, start = nstart, count = ncount, root = root,
+  }
+  entry.status = "ready"
+end
+
+-- Advances an entry's preparation by one time slice. Returns true once the
+-- entry is settled (ready, failed or toobig).
+local function losMeshAdvance(entry, budget)
+  if entry.job == nil then
+    return entry.status ~= "loading"
+  end
+  losSliceEnd = os.clock() + budget
+  local ok, err = coroutine.resume(entry.job)
+  if not ok then
+    entry.status = "failed"
+    entry.job = nil
+    losLog("mesh preparation failed: " .. tostring(err))
+    return true
+  end
+  if coroutine.status(entry.job) == "dead" then
+    entry.job = nil
+    return true
+  end
+  return false
+end
+
+local function losMeshRequest(url)
+  local entry = losMeshCache[url]
+  if entry ~= nil then return entry end
+  entry = {status = "loading"}
+  losMeshCache[url] = entry
+  WebRequest.get(url, function(req)
+    if entry.status ~= "loading" then return end
+    if req.is_error or req.text == nil or #req.text == 0 then
+      entry.status = "failed"
+    else
+      entry.text = req.text
+      entry.status = "pending"
+      entry.job = coroutine.create(function() losMeshBuild(entry) end)
+    end
+  end)
+  return entry
+end
+
+-- Does the segment hit an actual triangle of the piece? Works in the OBJ's
+-- local, unscaled frame, clipped to the box-crossing interval; the BVH
+-- leaves only a few Moller-Trumbore tests per line.
+local function losMeshBlocks(obb, entry, p, q, t0, t1)
+  local lpx, lpy, lpz = losToObbFrame(obb, p.x, p.y, p.z)
+  local lqx, lqy, lqz = losToObbFrame(obb, q.x, q.y, q.z)
+  lpx, lpy, lpz = lpx / obb.scx, lpy / obb.scy, lpz / obb.scz
+  lqx, lqy, lqz = lqx / obb.scx, lqy / obb.scy, lqz / obb.scz
+  local ta = math.max(0, t0 - 0.02)
+  local tb = math.min(1, t1 + 0.02)
+  local ox = lpx + (lqx - lpx) * ta
+  local oy = lpy + (lqy - lpy) * ta
+  local oz = lpz + (lqz - lpz) * ta
+  local dx = lpx + (lqx - lpx) * tb - ox
+  local dy = lpy + (lqy - lpy) * tb - oy
+  local dz = lpz + (lqz - lpz) * tb - oz
+  local ix = dx ~= 0 and 1 / dx or 0
+  local iy = dy ~= 0 and 1 / dy or 0
+  local iz = dz ~= 0 and 1 / dz or 0
+  local B, T, order = entry.bvh, entry.tris, entry.order
+  local bminx, bminy, bminz, bmaxx, bmaxy, bmaxz = B.minx, B.miny, B.minz, B.maxx, B.maxy, B.maxz
+  local left, right, start, count = B.left, B.right, B.start, B.count
+  local Tax, Tay, Taz = T.ax, T.ay, T.az
+  local Te1x, Te1y, Te1z, Te2x, Te2y, Te2z = T.e1x, T.e1y, T.e1z, T.e2x, T.e2y, T.e2z
+  local stack, top = {B.root}, 1
+  while top > 0 do
+    local node = stack[top]
+    top = top - 1
+    -- Slab test of the node's box against t in [0, 1].
+    local lo, hi = 0, 1
+    if dx == 0 then
+      if ox < bminx[node] or ox > bmaxx[node] then hi = -1 end
+    else
+      local a1, a2 = (bminx[node] - ox) * ix, (bmaxx[node] - ox) * ix
+      if a1 > a2 then a1, a2 = a2, a1 end
+      if a1 > lo then lo = a1 end
+      if a2 < hi then hi = a2 end
+    end
+    if lo <= hi then
+      if dy == 0 then
+        if oy < bminy[node] or oy > bmaxy[node] then hi = -1 end
+      else
+        local a1, a2 = (bminy[node] - oy) * iy, (bmaxy[node] - oy) * iy
+        if a1 > a2 then a1, a2 = a2, a1 end
+        if a1 > lo then lo = a1 end
+        if a2 < hi then hi = a2 end
+      end
+    end
+    if lo <= hi then
+      if dz == 0 then
+        if oz < bminz[node] or oz > bmaxz[node] then hi = -1 end
+      else
+        local a1, a2 = (bminz[node] - oz) * iz, (bmaxz[node] - oz) * iz
+        if a1 > a2 then a1, a2 = a2, a1 end
+        if a1 > lo then lo = a1 end
+        if a2 < hi then hi = a2 end
+      end
+    end
+    if lo <= hi then
+      if left[node] < 0 then
+        local s = start[node]
+        for k = s, s + count[node] - 1 do
+          local i = order[k]
+          local e2x, e2y, e2z = Te2x[i], Te2y[i], Te2z[i]
+          local pvx = dy * e2z - dz * e2y
+          local pvy = dz * e2x - dx * e2z
+          local pvz = dx * e2y - dy * e2x
+          local e1x, e1y, e1z = Te1x[i], Te1y[i], Te1z[i]
+          local det = e1x * pvx + e1y * pvy + e1z * pvz
+          if det > 0.000000001 or det < -0.000000001 then
+            local inv = 1 / det
+            local tvx, tvy, tvz = ox - Tax[i], oy - Tay[i], oz - Taz[i]
+            local u = (tvx * pvx + tvy * pvy + tvz * pvz) * inv
+            if u >= 0 and u <= 1 then
+              local qvx = tvy * e1z - tvz * e1y
+              local qvy = tvz * e1x - tvx * e1z
+              local qvz = tvx * e1y - tvy * e1x
+              local v = (dx * qvx + dy * qvy + dz * qvz) * inv
+              if v >= 0 and u + v <= 1 then
+                local t = (e2x * qvx + e2y * qvy + e2z * qvz) * inv
+                if t >= 0 and t <= 1 then
+                  return true
+                end
+              end
+            end
+          end
+        end
+      else
+        top = top + 1
+        stack[top] = left[node]
+        top = top + 1
+        stack[top] = right[node]
+      end
+    end
+  end
+  return false
+end
+
+---------------------------------------------------------------------------
+-- BACKGROUND PREPARATION
+--
+-- Every few seconds, the battlefield's terrain is checked for meshes not seen
+-- yet; those are downloaded and prepared a few milliseconds per frame, so an
+-- attack finds them ready. Paused while a verdict runs.
+---------------------------------------------------------------------------
+local losScanned = {}
+local losPrefetching = false
+
+local function losBattlefieldFootprint()
+  local zone = getObjectFromGUID(battlefieldZoneGUID)
+  if zone == nil then return nil end
+  return zone.getPosition(), zone.getScale()
+end
+
+local function losOnBattlefield(p, zonePos, zoneScale)
+  return math.abs(p.x - zonePos.x) <= zoneScale.x / 2 + 1
+    and math.abs(p.z - zonePos.z) <= zoneScale.z / 2 + 1
+end
+
+function losPrefetchScan()
+  local zonePos, zoneScale = losBattlefieldFootprint()
+  if zonePos == nil then return end
+  local pending = false
+  for _, obj in ipairs(getAllObjects()) do
+    if obj.name == "Custom_Model" then
+      local guid = obj.getGUID()
+      local seen = losScanned[guid]
+      if seen == nil and losOnBattlefield(obj.getPosition(), zonePos, zoneScale) then
+        -- Asked once per object: minis say no once and are never asked again.
+        seen = false
+        if losIsTerrain(nil, obj) then
+          local ok, co = pcall(function() return obj.getCustomObject() end)
+          if ok and co ~= nil and co.mesh ~= nil and co.mesh ~= "" then
+            seen = co.mesh
+          end
+        end
+        losScanned[guid] = seen
+      end
+      if seen then
+        local entry = losMeshRequest(seen)
+        if entry.job ~= nil or entry.status == "loading" then
+          pending = true
+        end
+      end
+    end
+  end
+  if pending and not losPrefetching then
+    losPrefetching = true
+    startLuaCoroutine(Global, "losPrefetchCoroutine")
+  end
+end
+
+function losPrefetchCoroutine()
+  local idle = 0
+  while true do
+    local busy = false
+    if not losVerdictRunning then
+      for _, entry in pairs(losMeshCache) do
+        if entry.job ~= nil then
+          busy = true
+          losMeshAdvance(entry, LOS_PREFETCH_BUDGET)
+          break
+        elseif entry.status == "loading" then
+          busy = true
+        end
+      end
+    else
+      busy = true
+    end
+    if not busy then
+      idle = idle + 1
+      if idle > 1 then break end
+    else
+      idle = 0
+    end
+    coroutine.yield(0)
+  end
+  losPrefetching = false
+  return 1
+end
+
+function losStartPrefetch()
+  Wait.time(losPrefetchScan, LOS_PREFETCH_INTERVAL, -1)
+end
+
+---------------------------------------------------------------------------
+-- VERDICT
+---------------------------------------------------------------------------
+
+-- Called by an order token's ATTACK. request = {
+--   gen, tokenGuid, attackerGuid, leaderPos, pad,
+--   miniGuids = {guid, ...}, blockers = {cylinder, ...},
+--   defenders = {{guid, name, apts, dpts}, ...},
+-- } (sample points as {x, y, z, lvl}, see the token's losSamplePoints).
+function losStartVerdict(request)
+  losVerdictGen = losVerdictGen + 1
+  local miniGuids = {}
+  for _, guid in ipairs(request.miniGuids or {}) do
+    miniGuids[guid] = true
+  end
+  -- Terrain blocks through its VISUAL oriented box, swept from the full
+  -- object list (the zone's trigger misses locked scenery that never moved).
+  local obbs = {}
+  local zonePos, zoneScale = losBattlefieldFootprint()
+  if zonePos ~= nil then
+    for _, obj in ipairs(getAllObjects()) do
+      if losOnBattlefield(obj.getPosition(), zonePos, zoneScale) and losIsTerrain(miniGuids, obj) then
+        table.insert(obbs, losMakeObb(obj))
+      end
+    end
+  end
+  losVerdictRequest = {
+    gen = losVerdictGen,
+    request = request,
+    leaderPos = request.leaderPos,
+    blockers = request.blockers or {},
+    obbs = obbs,
+  }
+  losLog(LOS_BUILD .. " - " .. #obbs .. " terrain box(es), "
+    .. #(request.blockers or {}) .. " vehicle cylinder(s), "
+    .. #(request.defenders or {}) .. " defender(s)")
+  startLuaCoroutine(Global, "losVerdictCoroutine")
+end
+
+-- Stops any verdict in progress and clears its lines.
+function losCancel()
+  losVerdictGen = losVerdictGen + 1
+  losBarHide()
+  Global.setVectorLines({})
+end
+
+local function losDrawWitnesses(witnesses)
+  -- Drawn a hair above their true height: a line laid exactly on the ground
+  -- is half-buried in the terrain and reads as missing.
+  local function lifted(pt)
+    return {x = pt.x, y = pt.y + 0.05, z = pt.z}
+  end
+  local lines = {}
+  for _, w in ipairs(witnesses) do
+    if w.clear ~= nil then
+      table.insert(lines, {
+        points = {lifted(w.clear[1]), lifted(w.clear[2])},
+        color = {0.2, 0.9, 0.2},
+        thickness = 0.06,
+      })
+    end
+    if w.blocked ~= nil then
+      table.insert(lines, {
+        points = {lifted(w.blocked[1]), lifted(w.blocked[2])},
+        color = {0.9, 0.15, 0.15},
+        thickness = 0.06,
+      })
+    end
+  end
+  Global.setVectorLines(lines)
+end
+
+-- For each defending mini, find the two witness lines: the first clear one
+-- and the first blocked one, then stop.
+function losVerdictCoroutine()
+  local ctx = losVerdictRequest
+  local request = ctx.request
+  local started = os.clock()
+  local witnesses = {}
+  local function stale()
+    return ctx.gen ~= losVerdictGen
+  end
+  local function attackerGone()
+    local attacker = getObjectFromGUID(request.attackerGuid)
+    return attacker == nil or attacker.isDestroyed()
+  end
+  local function finish()
+    losVerdictRunning = false
+    losBarHide()
+    return 1
+  end
+  losVerdictRunning = true
+  losFrameStart = os.clock()
+  local function pause(pct)
+    if os.clock() - losFrameStart > LOS_FRAME_BUDGET then
+      if pct then losBarSet(pct) end
+      coroutine.yield(0)
+      losFrameStart = os.clock()
+    end
+    return stale()
+  end
+
+  for _, def in ipairs(request.defenders or {}) do
+    if attackerGone() then return finish() end
+    local defObj = getObjectFromGUID(def.guid)
+    if defObj ~= nil and not defObj.isDestroyed() then
+      local apts, dpts = def.apts, def.dpts
+      local obbs = losCorridorObbs(ctx, defObj.getPosition(), request.pad or 1)
+      local totalPairs = #apts * #dpts
+      local clearLine, blockedLine = nil, nil
+      local rays = 0
+      local crossedSet = {}
+      for level = 1, 4 do
+        for _, ap in ipairs(apts) do
+          for _, dp in ipairs(dpts) do
+            if math.max(ap.lvl, dp.lvl) == level then
+              rays = rays + 1
+              local blocked = losHitsCylinders(ctx, ap, dp)
+              -- Every crossed box is recorded: the triangle pass must know
+              -- every mesh it may need.
+              for _, obb in ipairs(obbs) do
+                if losSegmentHitsObb(ap, dp, obb) then
+                  blocked = true
+                  crossedSet[obb] = true
+                end
+              end
+              if not blocked then
+                if clearLine == nil then clearLine = {ap, dp, level} end
+              elseif blockedLine == nil then
+                blockedLine = {ap, dp, level}
+              end
+              if pause(math.floor(40 * rays / totalPairs)) then return finish() end
+              if clearLine ~= nil and blockedLine ~= nil then break end
+            end
+          end
+          if clearLine ~= nil and blockedLine ~= nil then break end
+        end
+        if clearLine ~= nil and blockedLine ~= nil then break end
+      end
+      losLog((def.name or "mini") .. " (boxes): "
+        .. (clearLine and ("green lvl " .. clearLine[3]) or "NO green") .. ", "
+        .. (blockedLine and ("red lvl " .. blockedLine[3]) or "NO red")
+        .. " - " .. rays .. " rays, " .. #obbs .. " box(es) in the corridor")
+
+      -- No green from the boxes: the angle may exist in the empty part of a
+      -- box. Fine pass against the real triangles of the crossed pieces.
+      if clearLine == nil then
+        losBarSet(40)
+        local needed = {}
+        for obb in pairs(crossedSet) do
+          if obb.url ~= nil then
+            table.insert(needed, losMeshRequest(obb.url))
+          end
+        end
+        for i, entry in ipairs(needed) do
+          local waited = 0
+          while entry.status == "loading" and waited < 600 do
+            coroutine.yield(0)
+            losFrameStart = os.clock()
+            waited = waited + 1
+            if stale() then return finish() end
+          end
+          if entry.status == "loading" then entry.status = "failed" end
+          -- Usually already prepared in the background; if not, finish it
+          -- now at the verdict's own pace.
+          while not losMeshAdvance(entry, LOS_FRAME_BUDGET) do
+            coroutine.yield(0)
+            losFrameStart = os.clock()
+            if stale() then return finish() end
+          end
+          losBarSet(40 + math.floor(20 * i / #needed))
+        end
+
+        local meshRays = 0
+        local meshMax = math.min(totalPairs, LOS_MESH_MAX_RAYS)
+        local meshClear, meshRed = nil, nil
+        for level = 1, 4 do
+          for _, ap in ipairs(apts) do
+            for _, dp in ipairs(dpts) do
+              if math.max(ap.lvl, dp.lvl) == level then
+                meshRays = meshRays + 1
+                local blocked = losHitsCylinders(ctx, ap, dp)
+                if not blocked then
+                  for _, obb in ipairs(obbs) do
+                    local t0, t1 = losSegmentHitsObb(ap, dp, obb)
+                    if t0 ~= nil then
+                      local entry = obb.url ~= nil and losMeshCache[obb.url] or nil
+                      if entry ~= nil and entry.status == "ready" then
+                        if losMeshBlocks(obb, entry, ap, dp, t0, t1) then
+                          blocked = true
+                          break
+                        end
+                      else
+                        -- Mesh unavailable: the box rules, on the safe side.
+                        blocked = true
+                        break
+                      end
+                    end
+                  end
+                end
+                if not blocked then
+                  meshClear = {ap, dp, level}
+                elseif meshRed == nil then
+                  meshRed = {ap, dp, level}
+                end
+                if pause(60 + math.floor(40 * meshRays / meshMax)) then return finish() end
+                if meshClear ~= nil then break end
+                if meshRays >= LOS_MESH_MAX_RAYS then break end
+              end
+            end
+            if meshClear ~= nil or meshRays >= LOS_MESH_MAX_RAYS then break end
+          end
+          if meshClear ~= nil or meshRays >= LOS_MESH_MAX_RAYS then break end
+        end
+        if meshClear ~= nil then clearLine = meshClear end
+        if meshRed ~= nil then blockedLine = meshRed end
+        losLog((def.name or "mini") .. " (mesh): "
+          .. (meshClear and ("GREEN lvl " .. meshClear[3]) or "no green") .. ", "
+          .. (meshRed and ("red lvl " .. meshRed[3]) or "no red")
+          .. " - " .. meshRays .. " mesh rays")
+      end
+
+      table.insert(witnesses, {clear = clearLine, blocked = blockedLine})
+    end
+  end
+  finish()
+  if stale() then return 1 end
+  losDrawWitnesses(witnesses)
+  losLog(string.format("verdict done in %.2f s", os.clock() - started))
+  local token = getObjectFromGUID(request.tokenGuid)
+  if token ~= nil then
+    token.call("losVerdictDone", {gen = request.gen})
+  end
+  return 1
+end
