@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v28"
+local LOS_BUILD = "v29"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -199,6 +199,23 @@ local function losIsTerrain(miniGuids, o)
   return true
 end
 
+-- The cover a piece provides, when the map says so in its name or
+-- description ("- Heavy Cover", "Cover: Light", "Awning [Light Cover]").
+-- Returns "heavy", "light" or nil (not set: the players decide), plus any
+-- condition written after it ("for non-Creature Troopers").
+local function losCoverOf(obj)
+  local text = string.lower((obj.getName() or "") .. "\n" .. (obj.getDescription() or ""))
+  for _, kind in ipairs({"heavy", "light"}) do
+    local s1 = string.find(text, kind .. " cover")
+    local s2 = string.find(text, "cover:%s*" .. kind)
+    if s1 or s2 then
+      local note = string.match(text, kind .. " cover%s*%(([^)]*)%)")
+      return kind, note
+    end
+  end
+  return nil, nil
+end
+
 -- Points of interest: for the cover rules only, a POI is area terrain that
 -- provides heavy cover, its silhouette a cylinder as wide as the token and
 -- range 1/2 tall. For every other purpose POIs do not block line of sight.
@@ -215,7 +232,8 @@ local function losMakePoi(obj)
   local p = obj.getPosition()
   local y0 = b.center.y - b.size.y / 2
   return {
-    name = "POI (heavy cover)",
+    name = "POI",
+    cover = "heavy",
     x = p.x, z = p.z,
     y0 = y0, y1 = y0 + LOS_POI_HEIGHT,
     r = math.max(b.size.x, b.size.z) / 2,
@@ -236,8 +254,11 @@ local function losMakeObb(obj)
     if ok and co ~= nil then url = co.mesh end
   end
   local rx, ry, rz = math.rad(r.x), math.rad(r.y), math.rad(r.z)
+  local cover, coverNote = losCoverOf(obj)
   return {
     name = obj.getName() or "?",
+    cover = cover,
+    coverNote = coverNote,
     pos = p,
     cosy = math.cos(ry), siny = math.sin(ry),
     cosx = math.cos(rx), sinx = math.sin(rx),
@@ -1049,12 +1070,15 @@ local LOS_BASE_CONTACT = 0.05
 -- by terrain within range 1/2 of the defender that the leader is not in base
 -- contact with. POIs count as such terrain here (heavy cover) but never
 -- block line of sight. Ground vehicles block lines but are not terrain, so
--- they do not obscure. Returns a table, or nil when the verdict went stale:
+-- they do not obscure. A mini obscured by heavy cover gives its unit heavy
+-- cover, so pieces providing heavy cover are looked for first, and the
+-- search goes on until it knows whether one of them obscures the mini.
+-- Returns a table, or nil when the verdict went stale:
 --   clear     the first clear line (nil if completely blocked)
 --   obscured  true / false
---   red       the line to draw in red: the obscuring line, or any blocked
---             line when completely blocked (nil if not obscured)
---   by        the name of what obscures it
+--   red       the line to draw in red: the obscuring line (a heavy one when
+--             there is one), or any blocked line when completely blocked
+--   by        what obscures it: {name, cover = "heavy" / "light" / nil, note}
 --   rays      how many sample pairs were cast
 local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
   local apts = losSamplePoints(leaderPos, attSil, defPos)
@@ -1063,71 +1087,79 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
   local obbs = losCorridorObbs(ctx, leaderPos, defPos, pad)
   if not losPrepareCorridor(ctx, obbs, apts, dpts) then return nil end
 
-  -- Which POIs can obscure this mini: within range 1/2 of it, and not in
-  -- base contact with the leader.
-  local qualPois = {}
+  -- What can obscure this mini: pieces and POIs within range 1/2 of it that
+  -- the leader is not in base contact with. Heavy cover first.
+  local heavy, other, rest = {}, {}, {}
   for _, poi in ipairs(ctx.pois or {}) do
     local dd = math.sqrt((poi.x - defPos.x) ^ 2 + (poi.z - defPos.z) ^ 2) - poi.r - defSil.r
     local dl = math.sqrt((poi.x - leaderPos.x) ^ 2 + (poi.z - leaderPos.z) ^ 2) - poi.r - attSil.r
     if dd <= LOS_RANGE_HALF and dl > LOS_BASE_CONTACT then
-      table.insert(qualPois, poi)
+      table.insert(heavy, poi)
     end
   end
-
-  -- Which pieces in the corridor can obscure this mini.
-  local quals, others = {}, {}
   for _, obb in ipairs(obbs) do
     local near = losPieceWithin(obb, obb.mesh, defPos.x, defPos.z, LOS_RANGE_HALF + defSil.r)
     local contact = near and losPieceWithin(obb, obb.mesh, leaderPos.x, leaderPos.z, attSil.r + LOS_BASE_CONTACT)
     if near and not contact then
-      table.insert(quals, obb)
+      table.insert(obb.cover == "heavy" and heavy or other, obb)
     else
-      table.insert(others, obb)
+      table.insert(rest, obb)
+    end
+  end
+  local function obscures(piece, ai, di, ap, dp)
+    if piece.la == nil then
+      return losSegmentHitsCylinder(ap, dp, piece)
+    end
+    return losPieceBlocks(piece, ai, di)
+  end
+  -- Every piece that blocks sight (POIs never do), for the clear search.
+  local blockers = {}
+  for _, list in ipairs({heavy, other, rest}) do
+    for _, piece in ipairs(list) do
+      if piece.la ~= nil then table.insert(blockers, piece) end
     end
   end
 
   local totalPairs = math.min(#apts * #dpts, LOS_MAX_RAYS)
-  local clearLine, obscureLine, obscurer, blockedLine, blocker = nil, nil, nil, nil, nil
-  local rays = 0
-  local lastBlocker = nil
+  local clearLine, rays, lastBlocker = nil, 0, nil
+  local heavyLine, heavyBy, obscureLine, obscurer, blockedLine, blocker = nil, nil, nil, nil, nil, nil
   local function done()
-    return (clearLine ~= nil and (obscureLine ~= nil or (#quals == 0 and #qualPois == 0)))
-      or rays >= LOS_MAX_RAYS
+    if rays >= LOS_MAX_RAYS then return true end
+    if clearLine == nil then return false end
+    if heavyLine ~= nil then return true end
+    return #heavy == 0 and (obscureLine ~= nil or #other == 0)
   end
   for level = 1, 4 do
     for ai, ap in ipairs(apts) do
       for di, dp in ipairs(dpts) do
         if math.max(ap.lvl, dp.lvl) == level then
           rays = rays + 1
-          -- The pieces that can obscure come first: few, and decisive.
-          local by = nil
-          for _, obb in ipairs(quals) do
-            if losPieceBlocks(obb, ai, di) then by = obb break end
-          end
-          -- A POI obscures through the lines it crosses, but never blocks
-          -- line of sight.
-          if by == nil and obscureLine == nil then
-            for _, poi in ipairs(qualPois) do
-              if losSegmentHitsCylinder(ap, dp, poi) then
-                obscureLine, obscurer = {ap, dp, level}, poi.name
+          if heavyLine == nil then
+            for _, piece in ipairs(heavy) do
+              if obscures(piece, ai, di, ap, dp) then
+                heavyLine, heavyBy = {ap, dp, level}, piece
                 break
               end
             end
           end
-          if by ~= nil then
-            if obscureLine == nil then obscureLine, obscurer = {ap, dp, level}, by.name end
-            if blockedLine == nil then blockedLine, blocker = {ap, dp, level}, by.name end
-          elseif clearLine == nil then
-            -- Only worth asking while no clear line is known.
+          if obscureLine == nil and heavyLine == nil then
+            for _, piece in ipairs(other) do
+              if obscures(piece, ai, di, ap, dp) then
+                obscureLine, obscurer = {ap, dp, level}, piece
+                break
+              end
+            end
+          end
+          if clearLine == nil then
             local hit = nil
             if losHitsCylinders(ctx, ap, dp) then
-              hit = "a vehicle"
+              hit = {name = "a vehicle"}
             elseif lastBlocker ~= nil and losPieceBlocks(lastBlocker, ai, di) then
-              hit = lastBlocker.name
+              hit = lastBlocker
             else
-              for _, obb in ipairs(others) do
+              for _, obb in ipairs(blockers) do
                 if obb ~= lastBlocker and losPieceBlocks(obb, ai, di) then
-                  hit, lastBlocker = obb.name, obb
+                  hit, lastBlocker = obb, obb
                   break
                 end
               end
@@ -1152,11 +1184,17 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
     if done() then break end
   end
   losReleaseCorridor(obbs)
+  local function describe(piece)
+    return {name = piece.name, cover = piece.cover, note = piece.coverNote}
+  end
   local result = {clear = clearLine, rays = rays, obscured = false}
-  if obscureLine ~= nil then
-    result.obscured, result.red, result.by = true, obscureLine, obscurer
+  if heavyLine ~= nil then
+    result.obscured, result.red, result.by = true, heavyLine, describe(heavyBy)
+  elseif obscureLine ~= nil then
+    result.obscured, result.red, result.by = true, obscureLine, describe(obscurer)
   elseif clearLine == nil then
-    result.obscured, result.red, result.by = true, blockedLine, blocker
+    result.obscured, result.red = true, blockedLine
+    result.by = blocker and describe(blocker) or {name = "terrain"}
   end
   return result
 end
@@ -1217,15 +1255,17 @@ function losVerdictCoroutine()
       if result.obscured then
         obscured[def.guid] = true
         obscuredCount = obscuredCount + 1
-        local name = result.by or "terrain"
-        obscuredBy[def.guid] = name
-        if not byNames[name] then
-          byNames[name] = true
-          table.insert(byOrder, name)
+        local by = result.by
+        obscuredBy[def.guid] = by
+        local label = by.name
+        if by.note then label = label .. " (" .. by.note .. ")" end
+        if not byNames[label] then
+          byNames[label] = by
+          table.insert(byOrder, label)
         end
       end
       losLog((def.name or "mini") .. ": " .. (result.clear and "green" or "NO green") .. ", "
-        .. (result.obscured and ("obscured by " .. tostring(result.by)) or "not obscured")
+        .. (result.obscured and ("obscured by " .. tostring(result.by.name) .. " [" .. tostring(result.by.cover) .. "]") or "not obscured")
         .. " - " .. result.rays .. " rays")
       table.insert(witnesses, {clear = result.clear, blocked = result.red})
     end
@@ -1238,13 +1278,28 @@ function losVerdictCoroutine()
   end
   local coverText
   if alive > 0 and obscuredCount * 2 >= alive then
-    -- A POI always provides heavy cover, and one heavy obscurer is enough
-    -- to give the whole unit heavy cover.
-    if byNames["POI (heavy cover)"] then
-      coverText = string.format("Obscured %d / %d: HEAVY COVER (POI), from %s",
+    -- One mini obscured by heavy cover gives the unit heavy cover; light
+    -- only when every obscuring piece is known to be light. Pieces whose
+    -- cover the map does not set are left to the players.
+    local anyHeavy, anyUnknown, heavyNames, unknownNames = false, false, {}, {}
+    for _, label in ipairs(byOrder) do
+      local cover = byNames[label].cover
+      if cover == "heavy" then
+        anyHeavy = true
+        table.insert(heavyNames, label)
+      elseif cover == nil then
+        anyUnknown = true
+        table.insert(unknownNames, label)
+      end
+    end
+    if anyHeavy then
+      coverText = string.format("Obscured %d / %d: HEAVY COVER from %s",
+        obscuredCount, alive, table.concat(heavyNames, ", "))
+    elseif anyUnknown then
+      coverText = string.format("Obscured %d / %d: COVER, heavy or light? (%s)",
         obscuredCount, alive, table.concat(byOrder, ", "))
     else
-      coverText = string.format("Obscured %d / %d: COVER from %s (heavy or light as agreed)",
+      coverText = string.format("Obscured %d / %d: LIGHT COVER from %s",
         obscuredCount, alive, table.concat(byOrder, ", "))
     end
   else
