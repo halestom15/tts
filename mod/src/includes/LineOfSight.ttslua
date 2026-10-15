@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v26"
+local LOS_BUILD = "v27"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -162,9 +162,6 @@ end
 local function losIsTerrain(miniGuids, o)
   if miniGuids ~= nil and miniGuids[o.getGUID()] then return false end
   if o.getVar("isAMini") == true then return false end
-  -- Asset bundles are game aids here, never terrain: silhouettes, smoke,
-  -- rulers, effects. (.name is the internal type name.)
-  if o.name == "Custom_Assetbundle" then return false end
   local t = o.type
   if t == "Card" or t == "Deck" or t == "Die" or t == "Bag" or t == "Infinite" then
     return false
@@ -180,9 +177,19 @@ local function losIsTerrain(miniGuids, o)
   if string.find(name, "no cover") then
     return false
   end
+  -- Game aids, many of them asset bundles the mod spawns: tokens, rulers,
+  -- templates, silhouettes, deployment and masking boundaries, the POI and
+  -- height guides, smoke. Maps can build terrain from asset bundles too
+  -- (Alderaan's spires and landspeeders), so those are only skipped by name,
+  -- or when unnamed.
   if string.find(name, "token") or string.find(name, "ruler")
     or string.find(name, "template") or string.find(name, "dice")
-    or string.find(name, "silhouette") or string.find(name, "objective") then
+    or string.find(name, "silhouette") or string.find(name, "objective")
+    or string.find(name, "boundary") or string.find(name, "maximum move")
+    or string.find(name, "guide") or string.find(name, "smoke") then
+    return false
+  end
+  if o.name == "Custom_Assetbundle" and name == "" then
     return false
   end
   local b = o.getBounds()
