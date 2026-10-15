@@ -421,6 +421,8 @@ function onload(saveData)
     setUpData.deploymentMountGUID = "538f4d"
     setUpData.objectiveMountGUID = "9480a7"
     setUpData.conditionsMountGUID = "c6b3a9"
+    -- The red player's Advantage (2024 missions); conditions holds blue's.
+    setUpData.advantageRedMountGUID = "07a89d"
 
     setUpControllerGUID = "1cb552"
 

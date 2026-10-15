@@ -24,20 +24,26 @@ function onload(save_state)
     optionObjs.objective = getObjectFromGUID("9480a7")
     optionObjs.deployment = getObjectFromGUID("538f4d")
     optionObjs.conditions = getObjectFromGUID("c6b3a9")
+    -- 2024 missions have two Advantages: "conditions" holds the blue
+    -- player's, "advantageRed" the red player's.
+    optionObjs.advantageRed = getObjectFromGUID("07a89d")
 
     optionButtons = {}
     optionButtons.objective = getObjectFromGUID("10483c")
     optionButtons.deployment = getObjectFromGUID("1e6398")
     optionButtons.conditions = getObjectFromGUID("337dc3")
+    optionButtons.advantageRed = getObjectFromGUID("5007f8")
 
     optionZones = {}
     optionZones.objective = getObjectFromGUID("d0ca46")
     optionZones.deployment = getObjectFromGUID("b74727")
     optionZones.conditions = getObjectFromGUID("ec8c41")
+    optionZones.advantageRed = getObjectFromGUID("00f1b3")
 
     objectiveMenu()
     deploymentMenu()
     conditionsMenu()
+    advantageRedMenu()
 
     _G.selectedScenario = "standard"
     _G.mirrorDeployment = false
@@ -103,10 +109,37 @@ end
 
 function conditionsMenu()
     clearButton("conditions")
-    createOptionButton("conditions", "checkConditions", "Advantage", "Spawn Relevant Advantage Tokens", {0,0.913,1})
+    createOptionButton("conditions", "checkConditions", "Blue Advantage", "Spawn Relevant Advantage Tokens for the blue player", {0,0.913,1})
+end
+
+function advantageRedMenu()
+    clearButton("advantageRed")
+    createOptionButton("advantageRed", "checkAdvantageRed", "Red Advantage", "Spawn Relevant Advantage Tokens for the red player", {0,0.913,1})
+end
+
+function checkAdvantageRed()
+  local card = getObjectFromZone("advantageRed")
+  if not card then
+    clearButton("advantageRed")
+    createOptionButton("advantageRed", "checkAdvantageRed", "Mount Advantage", "No Advantage selected, mount the red player's advantage card below", {0.7,0,0})
+    resetTimer("advantageRed")
+    return
+  end
+  local name = card.getName()
+  if Deck:getBattleCardType(name, _G.selectedScenario) ~= "condition" then
+    clearButton("advantageRed")
+    createOptionButton("advantageRed", "checkAdvantageRed", "Wrong Card", "Wrong Card mounted, mount the red player's advantage card below", {0.7,0,0})
+    resetTimer("advantageRed")
+    return
+  end
+  spawnObjs("advantageRed", name)
+  advantageRedMenu()
 end
 
 function checkCardCall(cardTable)
+  if cardTable[1] == "advantageRed" then
+    return checkAdvantageRed()
+  end
   return checkCard(cardTable[1])
 end
 
@@ -174,25 +207,24 @@ function clearMountedCards()
   end
 end
 
--- Spawns the objects for an Advantage card that isn't on the Advantage mount
--- (the second player's Advantage in a 2024 mission).
-function activateAdvantageByName(params)
-  spawnObjs("condition", params.name, params.position)
-end
-
-function spawnObjs(cardType, selectedBattleCardName, position)
+-- cardType is a card data key, or "advantageRed" for the red player's
+-- Advantage (a "condition" card spawned beside its own mount).
+function spawnObjs(cardType, selectedBattleCardName)
+  local dataType = cardType == "advantageRed" and "condition" or cardType
   local objects = Deck:getBattleCardObjects(
     selectedBattleCardName,
-    cardType,
+    dataType,
     _G.selectedScenario
   )
   if #objects == 0 then
     return
   end
-  position = position or ({
-    objective  = {49, 1, 16},
-    deployment = {49, 1, 12},
-    condition  = {49, 1, 08}, 
+  -- Beside each card's mount.
+  local position = ({
+    objective    = {49, 1, 16},
+    deployment   = {49, 1, 20},
+    condition    = {49, 1, 08},
+    advantagered = {49, 1, 12},
   })[cardType:lower()]
   Shelf:spawnAdditionalObjects({
     name     = selectedBattleCardName .. "'s Objects",

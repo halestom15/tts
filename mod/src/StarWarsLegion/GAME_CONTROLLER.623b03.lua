@@ -24,6 +24,7 @@ function onload(save_state)
     setUpData = Global.getTable("setUpData")
     setUpData.deploymentMount = getObjectFromGUID(setUpData.deploymentMountGUID)
     setUpData.conditionsMount = getObjectFromGUID(setUpData.conditionsMountGUID)
+    setUpData.advantageRedMount = getObjectFromGUID(setUpData.advantageRedMountGUID)
     setUpData.objectiveMount = getObjectFromGUID(setUpData.objectiveMountGUID)
     commandTokenTrayData = Global.getTable("commandTokenTrayData")
     commandTokenData = Global.getTable("commandTokenData")
@@ -1770,11 +1771,6 @@ end
 
 MISSION_SCENARIOS = {standard = true, skirmish = true}
 
--- Where Red's Advantage card and tokens go until the table has a second
--- Advantage mount.
-RED_ADVANTAGE_CARD_OFFSET = {-5.7, 0.23, 0}
-RED_ADVANTAGE_OBJECTS_POS = {49, 1, 6}
-
 MISSION_ACTION_LABELS = {
   replaceObjective       = "Replace Objective",
   replaceSecondary       = "Replace Secondary",
@@ -2057,13 +2053,12 @@ function missionEdgeRed()
   setUpMission(true)
 end
 
-local function placeOnMount(mount, kind, name, offset)
+local function placeOnMount(mount, kind, name)
   local pos = mount.getPosition()
-  offset = offset or {0, 0.23, 0}
   local card = Deck:spawnBattleCard(Deck.BATTLE_KINDS[kind].key, name, missionScenario)
   card.setScale({0.83, 1, 0.83})
   card.setRotation(mount.getRotation())
-  card.setPosition({pos.x + offset[1], pos.y + offset[2], pos.z + offset[3]})
+  card.setPosition({pos.x, pos.y + 0.23, pos.z})
   return card
 end
 
@@ -2080,7 +2075,7 @@ function setUpMission(mirror)
   placeOnMount(setUpData.objectiveMount, "secondary", result.secondary)
   local blueAdvantage = placeOnMount(setUpData.conditionsMount, "advantage", result.advantage[result.blueSeat])
   blueAdvantage.setDescription("Blue player's Advantage (" .. result.blueSeat .. " seat)")
-  local redAdvantage = placeOnMount(setUpData.conditionsMount, "advantage", result.advantage[red], RED_ADVANTAGE_CARD_OFFSET)
+  local redAdvantage = placeOnMount(setUpData.advantageRedMount, "advantage", result.advantage[red])
   redAdvantage.setDescription("Red player's Advantage (" .. red .. " seat)")
 
   setUpController.call("changeScenario", {missionScenario})
@@ -2091,10 +2086,7 @@ function setUpMission(mirror)
     setUpController.call("checkCardCall", {"deployment"})
     setUpController.call("checkCardCall", {"objective"})
     setUpController.call("checkCardCall", {"conditions"})
-    setUpController.call("activateAdvantageByName", {
-      name     = result.advantage[red],
-      position = RED_ADVANTAGE_OBJECTS_POS,
-    })
+    setUpController.call("checkCardCall", {"advantageRed"})
   end, 1)
 
   local summary = missionSummary():gsub("\n", ". ")
