@@ -187,10 +187,9 @@ local function losToObbFrame(obb, wx, wy, wz)
 end
 
 -- Segment against the oriented visual box: slab test in the box's local
--- frame. Returns nil on a miss, or the t interval of the crossing.
-local function losSegmentHitsObb(p, q, obb)
-  local lpx, lpy, lpz = losToObbFrame(obb, p.x, p.y, p.z)
-  local lqx, lqy, lqz = losToObbFrame(obb, q.x, q.y, q.z)
+-- frame, on endpoints already in that frame. Returns nil on a miss, or the
+-- t interval of the crossing.
+local function losSlabLocal(lpx, lpy, lpz, lqx, lqy, lqz, obb)
   local c, h = obb.center, obb.half
   local t0, t1 = 0, 1
   local d = lqx - lpx
@@ -229,6 +228,18 @@ local function losSegmentHitsObb(p, q, obb)
   return t0, t1
 end
 
+-- A defender's sample points in one box's frame, computed once per defender
+-- instead of twice per line and box: {x, y, z} in the box frame, and the same
+-- divided by the piece's scale for the triangle pass.
+local function losLocalPoints(obb, points)
+  local result = {}
+  for i, pt in ipairs(points) do
+    local x, y, z = losToObbFrame(obb, pt.x, pt.y, pt.z)
+    result[i] = {x, y, z, x / obb.scx, y / obb.scy, z / obb.scz}
+  end
+  return result
+end
+
 ---------------------------------------------------------------------------
 -- MESH CACHE (triangle precision)
 --
@@ -241,7 +252,7 @@ end
 ---------------------------------------------------------------------------
 losMeshCache = {}
 local LOS_MESH_MAX_TRIS = 25000
-local LOS_MESH_MAX_RAYS = 8000
+local LOS_MAX_RAYS = 8000
 local LOS_BVH_LEAF = 6
 
 -- The job yields when os.clock() passes losSliceEnd, set by its resumer.
@@ -264,7 +275,10 @@ local function losMeshBuild(entry)
       local a, b, c = string.match(line, "^v%s+(%S+)%s+(%S+)%s+(%S+)")
       if a ~= nil then
         local k = #vx + 1
-        vx[k], vy[k], vz[k] = tonumber(a), tonumber(b), tonumber(c)
+        -- TTS mirrors an OBJ's X axis when it loads the model (as Unity
+        -- does), so the triangles must be mirrored too, or they disagree with
+        -- the visual box TTS reports and the pass tests a mirror image.
+        vx[k], vy[k], vz[k] = -tonumber(a), tonumber(b), tonumber(c)
       end
     elseif head == "f " then
       local idx, m = {}, 0
@@ -445,11 +459,10 @@ end
 -- Does the segment hit an actual triangle of the piece? Works in the OBJ's
 -- local, unscaled frame, clipped to the box-crossing interval; the BVH
 -- leaves only a few Moller-Trumbore tests per line.
-local function losMeshBlocks(obb, entry, p, q, t0, t1)
-  local lpx, lpy, lpz = losToObbFrame(obb, p.x, p.y, p.z)
-  local lqx, lqy, lqz = losToObbFrame(obb, q.x, q.y, q.z)
-  lpx, lpy, lpz = lpx / obb.scx, lpy / obb.scy, lpz / obb.scz
-  lqx, lqy, lqz = lqx / obb.scx, lqy / obb.scy, lqz / obb.scz
+-- lp / lq are sample points from losLocalPoints (scaled coordinates).
+local function losMeshBlocks(entry, lp, lq, t0, t1)
+  local lpx, lpy, lpz = lp[4], lp[5], lp[6]
+  local lqx, lqy, lqz = lq[4], lq[5], lq[6]
   local ta = math.max(0, t0 - 0.02)
   local tb = math.min(1, t1 + 0.02)
   local ox = lpx + (lqx - lpx) * ta
@@ -700,12 +713,17 @@ local function losDrawWitnesses(witnesses)
 end
 
 -- For each defending mini, find the two witness lines: the first clear one
--- and the first blocked one, then stop.
+-- and the first blocked one, then stop. One pass over the sample pairs,
+-- coarse levels first: a pair whose line crosses no terrain box is clear for
+-- sure; one that crosses a box is checked against that piece's triangles, so
+-- a red line always really hits something (or a piece whose mesh could not
+-- be loaded, judged by its box on the safe side).
 function losVerdictCoroutine()
   local ctx = losVerdictRequest
   local request = ctx.request
   local started = os.clock()
   local witnesses = {}
+  local totalRays = 0
   local function stale()
     return ctx.gen ~= losVerdictGen
   end
@@ -729,59 +747,19 @@ function losVerdictCoroutine()
     return stale()
   end
 
-  for _, def in ipairs(request.defenders or {}) do
+  local defenders = request.defenders or {}
+  for d, def in ipairs(defenders) do
     if attackerGone() then return finish() end
     local defObj = getObjectFromGUID(def.guid)
     if defObj ~= nil and not defObj.isDestroyed() then
       local apts, dpts = def.apts, def.dpts
       local obbs = losCorridorObbs(ctx, defObj.getPosition(), request.pad or 1)
-      local totalPairs = #apts * #dpts
-      local clearLine, blockedLine = nil, nil
-      local rays = 0
-      local crossedSet = {}
-      for level = 1, 4 do
-        for _, ap in ipairs(apts) do
-          for _, dp in ipairs(dpts) do
-            if math.max(ap.lvl, dp.lvl) == level then
-              rays = rays + 1
-              local blocked = losHitsCylinders(ctx, ap, dp)
-              -- Every crossed box is recorded: the triangle pass must know
-              -- every mesh it may need.
-              for _, obb in ipairs(obbs) do
-                if losSegmentHitsObb(ap, dp, obb) then
-                  blocked = true
-                  crossedSet[obb] = true
-                end
-              end
-              if not blocked then
-                if clearLine == nil then clearLine = {ap, dp, level} end
-              elseif blockedLine == nil then
-                blockedLine = {ap, dp, level}
-              end
-              if pause(math.floor(40 * rays / totalPairs)) then return finish() end
-              if clearLine ~= nil and blockedLine ~= nil then break end
-            end
-          end
-          if clearLine ~= nil and blockedLine ~= nil then break end
-        end
-        if clearLine ~= nil and blockedLine ~= nil then break end
-      end
-      losLog((def.name or "mini") .. " (boxes): "
-        .. (clearLine and ("green lvl " .. clearLine[3]) or "NO green") .. ", "
-        .. (blockedLine and ("red lvl " .. blockedLine[3]) or "NO red")
-        .. " - " .. rays .. " rays, " .. #obbs .. " box(es) in the corridor")
 
-      -- No green from the boxes: the angle may exist in the empty part of a
-      -- box. Fine pass against the real triangles of the crossed pieces.
-      if clearLine == nil then
-        losBarSet(40)
-        local needed = {}
-        for obb in pairs(crossedSet) do
-          if obb.url ~= nil then
-            table.insert(needed, losMeshRequest(obb.url))
-          end
-        end
-        for i, entry in ipairs(needed) do
+      -- The corridor's meshes: usually prepared in the background already;
+      -- if not, finish them now at the verdict's own pace.
+      for _, obb in ipairs(obbs) do
+        if obb.url ~= nil then
+          local entry = losMeshRequest(obb.url)
           local waited = 0
           while entry.status == "loading" and waited < 600 do
             coroutine.yield(0)
@@ -790,72 +768,66 @@ function losVerdictCoroutine()
             if stale() then return finish() end
           end
           if entry.status == "loading" then entry.status = "failed" end
-          -- Usually already prepared in the background; if not, finish it
-          -- now at the verdict's own pace.
           while not losMeshAdvance(entry, LOS_FRAME_BUDGET) do
             coroutine.yield(0)
             losFrameStart = os.clock()
             if stale() then return finish() end
           end
-          losBarSet(40 + math.floor(20 * i / #needed))
+          if entry.status == "ready" then obb.mesh = entry end
         end
-
-        local meshRays = 0
-        local meshMax = math.min(totalPairs, LOS_MESH_MAX_RAYS)
-        local meshClear, meshRed = nil, nil
-        for level = 1, 4 do
-          for _, ap in ipairs(apts) do
-            for _, dp in ipairs(dpts) do
-              if math.max(ap.lvl, dp.lvl) == level then
-                meshRays = meshRays + 1
-                local blocked = losHitsCylinders(ctx, ap, dp)
-                if not blocked then
-                  for _, obb in ipairs(obbs) do
-                    local t0, t1 = losSegmentHitsObb(ap, dp, obb)
-                    if t0 ~= nil then
-                      local entry = obb.url ~= nil and losMeshCache[obb.url] or nil
-                      if entry ~= nil and entry.status == "ready" then
-                        if losMeshBlocks(obb, entry, ap, dp, t0, t1) then
-                          blocked = true
-                          break
-                        end
-                      else
-                        -- Mesh unavailable: the box rules, on the safe side.
-                        blocked = true
-                        break
-                      end
-                    end
-                  end
-                end
-                if not blocked then
-                  meshClear = {ap, dp, level}
-                elseif meshRed == nil then
-                  meshRed = {ap, dp, level}
-                end
-                if pause(60 + math.floor(40 * meshRays / meshMax)) then return finish() end
-                if meshClear ~= nil then break end
-                if meshRays >= LOS_MESH_MAX_RAYS then break end
-              end
-            end
-            if meshClear ~= nil or meshRays >= LOS_MESH_MAX_RAYS then break end
-          end
-          if meshClear ~= nil or meshRays >= LOS_MESH_MAX_RAYS then break end
-        end
-        if meshClear ~= nil then clearLine = meshClear end
-        if meshRed ~= nil then blockedLine = meshRed end
-        losLog((def.name or "mini") .. " (mesh): "
-          .. (meshClear and ("GREEN lvl " .. meshClear[3]) or "no green") .. ", "
-          .. (meshRed and ("red lvl " .. meshRed[3]) or "no red")
-          .. " - " .. meshRays .. " mesh rays")
+        obb.la = losLocalPoints(obb, apts)
+        obb.ld = losLocalPoints(obb, dpts)
       end
 
+      local totalPairs = math.min(#apts * #dpts, LOS_MAX_RAYS)
+      local clearLine, blockedLine = nil, nil
+      local rays = 0
+      for level = 1, 4 do
+        for ai, ap in ipairs(apts) do
+          for di, dp in ipairs(dpts) do
+            if math.max(ap.lvl, dp.lvl) == level then
+              rays = rays + 1
+              local blocked = losHitsCylinders(ctx, ap, dp)
+              if not blocked then
+                for _, obb in ipairs(obbs) do
+                  local lp, lq = obb.la[ai], obb.ld[di]
+                  local t0, t1 = losSlabLocal(lp[1], lp[2], lp[3], lq[1], lq[2], lq[3], obb)
+                  if t0 ~= nil and (obb.mesh == nil or losMeshBlocks(obb.mesh, lp, lq, t0, t1)) then
+                    blocked = true
+                    break
+                  end
+                end
+              end
+              if not blocked then
+                if clearLine == nil then clearLine = {ap, dp, level} end
+              elseif blockedLine == nil then
+                blockedLine = {ap, dp, level}
+              end
+              if pause(math.floor(100 * ((d - 1) + rays / totalPairs) / #defenders)) then
+                return finish()
+              end
+              if (clearLine ~= nil and blockedLine ~= nil) or rays >= LOS_MAX_RAYS then break end
+            end
+          end
+          if (clearLine ~= nil and blockedLine ~= nil) or rays >= LOS_MAX_RAYS then break end
+        end
+        if (clearLine ~= nil and blockedLine ~= nil) or rays >= LOS_MAX_RAYS then break end
+      end
+      for _, obb in ipairs(obbs) do
+        obb.la, obb.ld, obb.mesh = nil, nil, nil
+      end
+      totalRays = totalRays + rays
+      losLog((def.name or "mini") .. ": "
+        .. (clearLine and ("green lvl " .. clearLine[3]) or "NO green") .. ", "
+        .. (blockedLine and ("red lvl " .. blockedLine[3]) or "NO red")
+        .. " - " .. rays .. " rays, " .. #obbs .. " piece(s) in the corridor")
       table.insert(witnesses, {clear = clearLine, blocked = blockedLine})
     end
   end
   finish()
   if stale() then return 1 end
   losDrawWitnesses(witnesses)
-  losLog(string.format("verdict done in %.2f s", os.clock() - started))
+  losLog(string.format("verdict done in %.2f s, %d rays", os.clock() - started, totalRays))
   local token = getObjectFromGUID(request.tokenGuid)
   if token ~= nil then
     token.call("losVerdictDone", {gen = request.gen})
