@@ -14,8 +14,8 @@
 Mission = {}
 Mission.__index = Mission
 
--- The current rules summary allows forcing your opponent to replace their
--- Advantage card; AMG's original 2024 preview did not. Set to false to disable.
+-- The current rules allow forcing your opponent to replace their Advantage
+-- card (AMG's original 2024 preview did not). Set to false to disable.
 ALLOW_FORCE_OPPONENT_ADVANTAGE = true
 
 MISSION_KINDS = {"objective", "secondary", "advantage"}
