@@ -2035,22 +2035,24 @@ function missionTurnMenu()
   printToScreen("MODIFY THE MISSION (turn " .. turn .. " of " .. MISSION_TURNS .. ")\n" .. missionSeatName(seat) .. " (" .. role .. ")\n\n" .. missionSummary() .. MISSION_TEXT_PADDING, 50, 2)
 end
 
--- Step 3: blue picks a long edge.
+-- Step 3: blue picks a long edge. Players never change seats: picking the
+-- far edge turns the battlefield around instead, so that edge's terrain ends
+-- up in front of the blue player.
 function missionSideMenu()
   clearAllButtons()
   changeBackButton("reset", "Cancel and go back to Main Menu")
   createMenu({
-    {functionName = "missionEdgeBlue", label = "Blue Seat's Edge", tooltip = "Blue deploys on the blue seat's long edge", buttonTint = {0, 0.4, 1}},
-    {functionName = "missionEdgeRed", label = "Red Seat's Edge", tooltip = "Blue deploys on the red seat's long edge", buttonTint = {1, 0.2, 0.2}},
+    {functionName = "missionEdgeNear", label = "Edge at My Seat", tooltip = "Keep the battlefield as it is: blue deploys on the edge in front of them", buttonTint = {0, 0.913, 1}},
+    {functionName = "missionEdgeFar", label = "Far Edge (Flip Map)", tooltip = "Turn the battlefield around so the far edge's terrain is in front of the blue player", buttonTint = {0, 0.913, 1}},
   }, 1)
-  printToScreen("MISSION BUILT\n" .. missionSeatName(mission.blueSeat) .. " (blue): choose your table edge.\n\n" .. missionSummary() .. MISSION_TEXT_PADDING, 50, 2)
+  printToScreen("MISSION BUILT\n" .. missionSeatName(mission.blueSeat) .. " (blue): choose your table edge.\nPlayers keep their seats: the far edge flips the map.\n" .. missionSummary() .. MISSION_TEXT_PADDING, 50, 2)
 end
 
-function missionEdgeBlue()
+function missionEdgeNear()
   setUpMission(false)
 end
 
-function missionEdgeRed()
+function missionEdgeFar()
   setUpMission(true)
 end
 
@@ -2065,7 +2067,9 @@ end
 
 -- Step 4: put the final cards on the setup mounts and run their setup in
 -- rules order: Objective, Secondary, blue's Advantage, red's Advantage.
-function setUpMission(mirror)
+-- flipBattlefield = true turns the battlefield around (blue picked the far
+-- edge).
+function setUpMission(flipBattlefield)
   ga_event("Game", "setUpMission")
   local result = mission:result()
   local red = Mission.otherSeat(result.blueSeat)
@@ -2086,8 +2090,14 @@ function setUpMission(mirror)
   end
   setUpController.call("setAdvantageLabels", {blueSeat = result.blueSeat})
 
+  -- Turn the terrain first, so the deployment zones drawn next stay put.
+  if flipBattlefield then
+    flipMap()
+  end
+
+  -- The blue player's zone is drawn on the blue player's side of the table.
   setUpController.call("changeScenario", {missionScenario})
-  setUpController.call("setMirrorDeployment", {mirror = mirror})
+  setUpController.call("setMirrorDeployment", {mirror = result.blueSeat == "Red"})
 
   -- Give the cards a moment to land in the mount zones before checking them.
   Wait.time(function()

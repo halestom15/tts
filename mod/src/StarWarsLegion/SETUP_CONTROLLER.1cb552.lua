@@ -210,8 +210,9 @@ function getObjectFromZone(selectedZone)
 end
 
 
--- Called by the game controller before setting up a mission: when the blue
--- player picks the red seat's edge, the deployment zones are mirrored.
+-- Called by the game controller before setting up a mission: when the red
+-- seat is the blue player, the deployment zones are mirrored so each
+-- player's zone is on their own side of the table.
 function setMirrorDeployment(params)
   _G.mirrorDeployment = params.mirror == true
 end
