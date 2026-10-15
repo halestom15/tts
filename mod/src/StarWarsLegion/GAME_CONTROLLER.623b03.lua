@@ -2041,9 +2041,11 @@ end
 function missionSideMenu()
   clearAllButtons()
   changeBackButton("reset", "Cancel and go back to Main Menu")
+  -- Tinted with the blue player's seat color, like the modify turns.
+  local tint = mission.blueSeat == "Red" and {1, 0.2, 0.2} or {0, 0.4, 1}
   createMenu({
-    {functionName = "missionEdgeNear", label = "Edge at My Seat", tooltip = "Keep the battlefield as it is: blue deploys on the edge in front of them", buttonTint = {0, 0.913, 1}},
-    {functionName = "missionEdgeFar", label = "Far Edge (Flip Map)", tooltip = "Turn the battlefield around so the far edge's terrain is in front of the blue player", buttonTint = {0, 0.913, 1}},
+    {functionName = "missionEdgeNear", label = "Edge at My Seat", tooltip = "Keep the battlefield as it is: blue deploys on the edge in front of them", buttonTint = tint},
+    {functionName = "missionEdgeFar", label = "Far Edge (Flip Map)", tooltip = "Turn the battlefield around so the far edge's terrain is in front of the blue player", buttonTint = tint},
   }, 1)
   printToScreen("MISSION BUILT\n" .. missionSeatName(mission.blueSeat) .. " (blue): choose your table edge.\nPlayers keep their seats: the far edge flips the map.\n" .. missionSummary() .. MISSION_TEXT_PADDING, 50, 2)
 end
