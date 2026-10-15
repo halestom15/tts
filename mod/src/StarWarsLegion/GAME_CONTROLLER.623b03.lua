@@ -1795,6 +1795,9 @@ MISSION_ACTION_TOOLTIPS = {
 
 missionCards = {}
 
+-- Blank lines after the TV text push it up, clear of the card row.
+MISSION_TEXT_PADDING = string.rep("\n", 19)
+
 local function missionSeatName(seat)
   return seat .. " Player"
 end
@@ -1889,9 +1892,16 @@ function clearMissionCards()
   missionCards = {}
 end
 
--- Shows a card on the TV. row = "objective", "deployment" or "conditions"
--- (the rows of gameController.setUpCardsPos), slot = 1..4.
-local function showMissionCard(slotKey, row, slot, kind, card)
+-- The mission's cards sit in one row along the bottom of the TV, left to
+-- right: Objective, Secondary, blue's Advantage, red's Advantage. Offsets are
+-- subtracted from the screen's position (as gameController.setUpCardsPos):
+-- x and y place the row on the tilted screen, z spaces the cards.
+MISSION_CARD_SCALE = 0.95
+MISSION_CARD_ROW = {1.68, -1.21}
+MISSION_CARD_COLUMNS = {-3.77, -1.17, 1.43, 4.03}
+
+-- Shows a card on the TV in column 1..4.
+local function showMissionCard(slotKey, column, kind, card)
   if missionCards[slotKey] and not missionCards[slotKey].isDestroyed() then
     destroyObject(missionCards[slotKey])
   end
@@ -1899,16 +1909,15 @@ local function showMissionCard(slotKey, row, slot, kind, card)
   if card == nil then
     return
   end
-  local offset = gameController.setUpCardsPos[row][slot]
   local screenPos = screen.getPosition()
   local obj = Deck:spawnBattleCard(Deck.BATTLE_KINDS[kind].key, card.name, missionScenario)
   obj.setLock(true)
-  obj.setScale({0.5, 1, 0.5})
+  obj.setScale({MISSION_CARD_SCALE, 1, MISSION_CARD_SCALE})
   obj.setRotation({55.91, 270.00, 0.00})
   obj.setPosition({
-    screenPos.x - offset[1],
-    screenPos.y - offset[2],
-    screenPos.z - offset[3],
+    screenPos.x - MISSION_CARD_ROW[1],
+    screenPos.y - MISSION_CARD_ROW[2],
+    screenPos.z - MISSION_CARD_COLUMNS[column],
   })
   obj.setDescription("From the " .. missionSeatName(card.owner) .. "'s battle deck")
   missionCards[slotKey] = obj
@@ -1917,10 +1926,10 @@ end
 local function showMission()
   local blue = mission.blueSeat
   local red = Mission.otherSeat(blue)
-  showMissionCard("objective", "objective", 2, "objective", mission.cards.objective)
-  showMissionCard("secondary", "deployment", 2, "secondary", mission.cards.secondary)
-  showMissionCard("advantageBlue", "conditions", 1, "advantage", mission.cards.advantage[blue])
-  showMissionCard("advantageRed", "conditions", 3, "advantage", mission.cards.advantage[red])
+  showMissionCard("objective", 1, "objective", mission.cards.objective)
+  showMissionCard("secondary", 2, "secondary", mission.cards.secondary)
+  showMissionCard("advantageBlue", 3, "advantage", mission.cards.advantage[blue])
+  showMissionCard("advantageRed", 4, "advantage", mission.cards.advantage[red])
 end
 
 local function missionSummary()
@@ -2026,7 +2035,7 @@ function missionTurnMenu()
   clearAllButtons()
   changeBackButton("reset", "Cancel and go back to Main Menu")
   createMenu(entries, 1)
-  printToScreen("MODIFY THE MISSION (turn " .. turn .. " of " .. MISSION_TURNS .. ")\n" .. missionSeatName(seat) .. " (" .. role .. ")\n\n" .. missionSummary() .. "\n\n\n\n\n\n\n\n\n\n\n", 55, 2)
+  printToScreen("MODIFY THE MISSION (turn " .. turn .. " of " .. MISSION_TURNS .. ")\n" .. missionSeatName(seat) .. " (" .. role .. ")\n\n" .. missionSummary() .. MISSION_TEXT_PADDING, 50, 2)
 end
 
 -- Step 3: blue picks a long edge.
@@ -2037,7 +2046,7 @@ function missionSideMenu()
     {functionName = "missionEdgeBlue", label = "Blue Seat's Edge", tooltip = "Blue deploys on the blue seat's long edge", buttonTint = {0, 0.4, 1}},
     {functionName = "missionEdgeRed", label = "Red Seat's Edge", tooltip = "Blue deploys on the red seat's long edge", buttonTint = {1, 0.2, 0.2}},
   }, 1)
-  printToScreen("MISSION BUILT\n" .. missionSeatName(mission.blueSeat) .. " (blue): choose your table edge.\n\n" .. missionSummary() .. "\n\n\n\n\n\n\n\n\n\n\n", 55, 2)
+  printToScreen("MISSION BUILT\n" .. missionSeatName(mission.blueSeat) .. " (blue): choose your table edge.\n\n" .. missionSummary() .. MISSION_TEXT_PADDING, 50, 2)
 end
 
 function missionEdgeBlue()
