@@ -22,7 +22,7 @@ function checkState()
         self.createButton(data)
     end
 
-    if stateNumber < 6 then
+    if stateNumber < 5 then
         local data = {click_function = "nextState", function_owner = self, label = ">", position = {0.95, 0.1, 0}, scale = {0.5, 0.5, 0.5}, width = 400, height = 500, font_size = 400, color = {0.1498, 0.1498, 0.1498, 1}, font_color = {1, 1, 1, 1}}
 
         self.createButton(data)

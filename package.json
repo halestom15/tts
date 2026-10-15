@@ -8,6 +8,7 @@
     "lint:fix": "prettier --ignore-path .prettierignore --write src tool contrib && eslint src tool --fix --ext .ts",
     "lint:lua": "luacheck mod/src",
     "start": "npx ts-node tool/main.ts develop mod/src/StarWarsLegion.json dist/StarWarsLegion.json",
+    "test:lua": "lua tool/test/Mission.test.lua",
     "validate": "ts-node ./tool/validate.ts"
   },
   "license": "MIT",
