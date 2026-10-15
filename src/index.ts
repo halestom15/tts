@@ -71,8 +71,8 @@ export async function compileSaveFile(
     await fs.mkdirp(outputDir);
   } else {
     console.info(`Clearing output directory "${outputDir}"`);
-    await fs.remove(outputDir);
-    await fs.mkdirp(outputDir);
+    // Empty rather than remove, so a symlinked output directory is preserved.
+    await fs.emptyDir(outputDir);
   }
   await generateFiles();
   await buildDeckSchemaLua(
@@ -131,8 +131,22 @@ export async function createSymlink(homeDir?: string): Promise<string> {
   if (!homeDir) {
     homeDir = defaultTTSHomeDir();
   }
-  await destroySymlink(homeDir);
   const from = path.join(homeDir, 'Saves', 'TTSDevLink');
+  if (os.platform() === 'darwin') {
+    // macOS blocks TTS from following links into protected folders (such as
+    // ~/Documents), so keep the real files in the save folder and link "dist"
+    // to them instead.
+    const dist = path.resolve('dist');
+    if ((await fs.lstat(dist)).isSymbolicLink()) {
+      return from;
+    }
+    await fs.remove(from);
+    await fs.copy(dist, from);
+    await fs.remove(dist);
+    await fs.symlink(from, dist, 'dir');
+    return from;
+  }
+  await destroySymlink(homeDir);
   await fs.symlink(
     path.resolve('dist'),
     from,
