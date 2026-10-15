@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v29"
+local LOS_BUILD = "v30"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -256,6 +256,8 @@ local function losMakeObb(obj)
   local rx, ry, rz = math.rad(r.x), math.rad(r.y), math.rad(r.z)
   local cover, coverNote = losCoverOf(obj)
   return {
+    obj = obj,
+    bundle = obj.name == "Custom_Assetbundle",
     name = obj.getName() or "?",
     cover = cover,
     coverNote = coverNote,
@@ -990,12 +992,41 @@ local function losReleaseCorridor(obbs)
   end
 end
 
--- Does the line between sample points ai and di cross this piece? Its box
--- first, then its triangles (a piece without a mesh blocks by its box).
-local function losPieceBlocks(obb, ai, di)
+-- Does TTS's physics raycast along p -> q (over the box-crossing interval
+-- t0..t1) hit this object's collider? Used for terrain built from asset
+-- bundles, whose shape the mod cannot read: their box is far too coarse (a
+-- round hut's square box corners), but their colliders follow the model.
+-- Returns nil if the raycast fails, so the box decides.
+local function losColliderBlocks(obj, p, q, t0, t1)
+  local ta, tb = math.max(0, t0 - 0.02), math.min(1, t1 + 0.02)
+  local dx, dy, dz = q.x - p.x, q.y - p.y, q.z - p.z
+  local origin = {x = p.x + dx * ta, y = p.y + dy * ta, z = p.z + dz * ta}
+  local len = math.sqrt(dx * dx + dy * dy + dz * dz) * (tb - ta)
+  if len <= 0 then return nil end
+  local ok, hits = pcall(Physics.cast, {
+    origin = origin, direction = {x = dx, y = dy, z = dz},
+    type = 1, max_distance = len, debug = false,
+  })
+  if not ok or hits == nil then return nil end
+  for _, hit in ipairs(hits) do
+    if hit.hit_object == obj then return true end
+  end
+  return false
+end
+
+-- Does the line between sample points ai and di (world points ap, dp) cross
+-- this piece? Its box first, then its triangles, or its collider for an
+-- asset bundle; a piece with neither blocks by its box.
+local function losPieceBlocks(obb, ai, di, ap, dp)
   local lp, lq = obb.la[ai], obb.ld[di]
   local t0, t1 = losSlabLocal(lp[1], lp[2], lp[3], lq[1], lq[2], lq[3], obb)
-  return t0 ~= nil and (obb.mesh == nil or losMeshBlocks(obb.mesh, lp, lq, t0, t1))
+  if t0 == nil then return false end
+  if obb.mesh ~= nil then return losMeshBlocks(obb.mesh, lp, lq, t0, t1) end
+  if obb.bundle and obb.obj ~= nil then
+    local hit = losColliderBlocks(obb.obj, ap, dp, t0, t1)
+    if hit ~= nil then return hit end
+  end
+  return true
 end
 
 local function losSearch(ctx, fromPos, fromSil, toPos, toSil, wantBlocked, maxLevel, progress)
@@ -1029,7 +1060,7 @@ local function losSearch(ctx, fromPos, fromSil, toPos, toSil, wantBlocked, maxLe
             -- last blocker is tried first.
             for k = 0, #obbs do
               local obb = k == 0 and lastBlocker or obbs[k]
-              if obb ~= nil and (k == 0 or obb ~= lastBlocker) and losPieceBlocks(obb, ai, di) then
+              if obb ~= nil and (k == 0 or obb ~= lastBlocker) and losPieceBlocks(obb, ai, di, ap, dp) then
                 blocked = true
                 lastBlocker = obb
                 break
@@ -1110,7 +1141,7 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
     if piece.la == nil then
       return losSegmentHitsCylinder(ap, dp, piece)
     end
-    return losPieceBlocks(piece, ai, di)
+    return losPieceBlocks(piece, ai, di, ap, dp)
   end
   -- Every piece that blocks sight (POIs never do), for the clear search.
   local blockers = {}
@@ -1154,11 +1185,11 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
             local hit = nil
             if losHitsCylinders(ctx, ap, dp) then
               hit = {name = "a vehicle"}
-            elseif lastBlocker ~= nil and losPieceBlocks(lastBlocker, ai, di) then
+            elseif lastBlocker ~= nil and losPieceBlocks(lastBlocker, ai, di, ap, dp) then
               hit = lastBlocker
             else
               for _, obb in ipairs(blockers) do
-                if obb ~= lastBlocker and losPieceBlocks(obb, ai, di) then
+                if obb ~= lastBlocker and losPieceBlocks(obb, ai, di, ap, dp) then
                   hit, lastBlocker = obb, obb
                   break
                 end
