@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v27"
+local LOS_BUILD = "v28"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -197,6 +197,29 @@ local function losIsTerrain(miniGuids, o)
     return false
   end
   return true
+end
+
+-- Points of interest: for the cover rules only, a POI is area terrain that
+-- provides heavy cover, its silhouette a cylinder as wide as the token and
+-- range 1/2 tall. For every other purpose POIs do not block line of sight.
+local LOS_POI_HEIGHT = 3
+
+local function losIsPoi(o)
+  local name = string.lower(o.getName() or "")
+  return name == "poi token" or name == "poi"
+    or (string.sub(name, 1, 4) == "poi " and not string.find(name, "guide"))
+end
+
+local function losMakePoi(obj)
+  local b = obj.getBounds()
+  local p = obj.getPosition()
+  local y0 = b.center.y - b.size.y / 2
+  return {
+    name = "POI (heavy cover)",
+    x = p.x, z = p.z,
+    y0 = y0, y1 = y0 + LOS_POI_HEIGHT,
+    r = math.max(b.size.x, b.size.z) / 2,
+  }
 end
 
 -- The oriented visual box of a terrain piece: its renderer bounds at zero
@@ -792,12 +815,16 @@ function losStartVerdict(request)
   end
   -- Terrain blocks through its VISUAL oriented box, swept from the full
   -- object list (the zone's trigger misses locked scenery that never moved).
-  local obbs = {}
+  local obbs, pois = {}, {}
   local zonePos, zoneScale = losBattlefieldFootprint()
   if zonePos ~= nil then
     for _, obj in ipairs(getAllObjects()) do
-      if losOnBattlefield(obj.getPosition(), zonePos, zoneScale) and losIsTerrain(miniGuids, obj) then
-        table.insert(obbs, losMakeObb(obj))
+      if losOnBattlefield(obj.getPosition(), zonePos, zoneScale) then
+        if losIsPoi(obj) then
+          table.insert(pois, losMakePoi(obj))
+        elseif losIsTerrain(miniGuids, obj) then
+          table.insert(obbs, losMakeObb(obj))
+        end
       end
     end
   end
@@ -806,6 +833,7 @@ function losStartVerdict(request)
     request = request,
     blockers = request.blockers or {},
     obbs = obbs,
+    pois = pois,
   }
   losLog(LOS_BUILD .. " - " .. #obbs .. " terrain box(es), "
     .. #(request.blockers or {}) .. " vehicle cylinder(s), "
@@ -1019,8 +1047,9 @@ local LOS_BASE_CONTACT = 0.05
 -- The leader's search toward one defending mini, following the cover rules:
 -- the mini is obscured when no line is clear, or when some line is blocked
 -- by terrain within range 1/2 of the defender that the leader is not in base
--- contact with. Ground vehicles block lines but are not terrain, so they do
--- not obscure. Returns a table, or nil when the verdict went stale:
+-- contact with. POIs count as such terrain here (heavy cover) but never
+-- block line of sight. Ground vehicles block lines but are not terrain, so
+-- they do not obscure. Returns a table, or nil when the verdict went stale:
 --   clear     the first clear line (nil if completely blocked)
 --   obscured  true / false
 --   red       the line to draw in red: the obscuring line, or any blocked
@@ -1033,6 +1062,17 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
   local pad = math.max(attSil.r, defSil.r) + 0.5
   local obbs = losCorridorObbs(ctx, leaderPos, defPos, pad)
   if not losPrepareCorridor(ctx, obbs, apts, dpts) then return nil end
+
+  -- Which POIs can obscure this mini: within range 1/2 of it, and not in
+  -- base contact with the leader.
+  local qualPois = {}
+  for _, poi in ipairs(ctx.pois or {}) do
+    local dd = math.sqrt((poi.x - defPos.x) ^ 2 + (poi.z - defPos.z) ^ 2) - poi.r - defSil.r
+    local dl = math.sqrt((poi.x - leaderPos.x) ^ 2 + (poi.z - leaderPos.z) ^ 2) - poi.r - attSil.r
+    if dd <= LOS_RANGE_HALF and dl > LOS_BASE_CONTACT then
+      table.insert(qualPois, poi)
+    end
+  end
 
   -- Which pieces in the corridor can obscure this mini.
   local quals, others = {}, {}
@@ -1051,7 +1091,8 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
   local rays = 0
   local lastBlocker = nil
   local function done()
-    return (clearLine ~= nil and (obscureLine ~= nil or #quals == 0)) or rays >= LOS_MAX_RAYS
+    return (clearLine ~= nil and (obscureLine ~= nil or (#quals == 0 and #qualPois == 0)))
+      or rays >= LOS_MAX_RAYS
   end
   for level = 1, 4 do
     for ai, ap in ipairs(apts) do
@@ -1062,6 +1103,16 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
           local by = nil
           for _, obb in ipairs(quals) do
             if losPieceBlocks(obb, ai, di) then by = obb break end
+          end
+          -- A POI obscures through the lines it crosses, but never blocks
+          -- line of sight.
+          if by == nil and obscureLine == nil then
+            for _, poi in ipairs(qualPois) do
+              if losSegmentHitsCylinder(ap, dp, poi) then
+                obscureLine, obscurer = {ap, dp, level}, poi.name
+                break
+              end
+            end
           end
           if by ~= nil then
             if obscureLine == nil then obscureLine, obscurer = {ap, dp, level}, by.name end
@@ -1187,8 +1238,15 @@ function losVerdictCoroutine()
   end
   local coverText
   if alive > 0 and obscuredCount * 2 >= alive then
-    coverText = string.format("Obscured %d / %d: COVER from %s (heavy or light as agreed)",
-      obscuredCount, alive, table.concat(byOrder, ", "))
+    -- A POI always provides heavy cover, and one heavy obscurer is enough
+    -- to give the whole unit heavy cover.
+    if byNames["POI (heavy cover)"] then
+      coverText = string.format("Obscured %d / %d: HEAVY COVER (POI), from %s",
+        obscuredCount, alive, table.concat(byOrder, ", "))
+    else
+      coverText = string.format("Obscured %d / %d: COVER from %s (heavy or light as agreed)",
+        obscuredCount, alive, table.concat(byOrder, ", "))
+    end
   else
     coverText = string.format("Obscured %d / %d: no cover", obscuredCount, alive)
   end
