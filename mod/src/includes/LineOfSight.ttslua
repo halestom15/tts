@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v24"
+local LOS_BUILD = "v25"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -48,15 +48,65 @@ losVerdictRunning = false
 losFrameStart = 0
 
 ---------------------------------------------------------------------------
+-- SAMPLE POINTS
+--
+-- Points on a mini's silhouette (a cylinder on its base), refined level by
+-- level the way a render sharpens: a narrow gap the coarse grid misses is
+-- caught by the finer passes, without ever paying the full grid on an open
+-- shot. Azimuths spread over the half facing the other mini, heights over
+-- the whole silhouette; each coordinate carries the level it first appears
+-- at, and a pair of points is cast once, at the level its newest point
+-- joins. Level 1 is a 3x3 grid per silhouette; level 4 reaches 81 points.
+---------------------------------------------------------------------------
+local LOS_AZIMUTHS = {
+  {0, 1}, {-90, 1}, {90, 1},
+  {-45, 2}, {45, 2},
+  {-22.5, 3}, {22.5, 3}, {-67.5, 3}, {67.5, 3},
+}
+-- Mid height leads: the first clear line found is the one drawn, and a
+-- waist-high witness reads well on the table. The bottom stops a twentieth
+-- short: terrain meshes are not sealed against the bumpy ground, and a true
+-- base-level ray sneaks under a rock's skirt.
+local LOS_HEIGHTS = {
+  {0.5, 1}, {1.0, 1}, {0.05, 1},
+  {0.25, 2}, {0.75, 2},
+  {0.125, 4}, {0.375, 4}, {0.625, 4}, {0.875, 4},
+}
+
+-- sil = {r = radius, h = height, o = offset} of the mini's unit silhouette.
+local function losSamplePoints(pos, sil, towardPos)
+  local baseY = pos.y + sil.o
+  local dx, dz = towardPos.x - pos.x, towardPos.z - pos.z
+  local g = math.sqrt(dx * dx + dz * dz)
+  if g < 0.001 then dx, dz, g = 1, 0, 1 end
+  dx, dz = dx / g, dz / g
+  local points = {}
+  for _, az in ipairs(LOS_AZIMUTHS) do
+    local a = math.rad(az[1])
+    local c, s = math.cos(a), math.sin(a)
+    local ux, uz = dx * c - dz * s, dx * s + dz * c
+    for _, hf in ipairs(LOS_HEIGHTS) do
+      table.insert(points, {
+        x = pos.x + ux * sil.r,
+        y = baseY + sil.h * hf[1],
+        z = pos.z + uz * sil.r,
+        lvl = math.max(az[2], hf[2]),
+      })
+    end
+  end
+  return points
+end
+
+---------------------------------------------------------------------------
 -- GEOMETRY
 ---------------------------------------------------------------------------
 
--- Only the boxes standing near this defender's corridor concern its rays.
--- Judged flat, from the box's worst reach against the attacker-defender
--- segment, padded by how far the sample points stray from the centers.
-local function losCorridorObbs(ctx, defPos, pad)
-  local ax, az = ctx.leaderPos.x, ctx.leaderPos.z
-  local dx, dz = defPos.x - ax, defPos.z - az
+-- Only the boxes standing near a corridor concern its rays. Judged flat,
+-- from the box's worst reach against the segment between the two minis,
+-- padded by how far the sample points stray from the centers.
+local function losCorridorObbs(ctx, fromPos, toPos, pad)
+  local ax, az = fromPos.x, fromPos.z
+  local dx, dz = toPos.x - ax, toPos.z - az
   local len2 = dx * dx + dz * dz
   local kept = {}
   for _, obb in ipairs(ctx.obbs) do
@@ -645,10 +695,13 @@ end
 ---------------------------------------------------------------------------
 
 -- Called by an order token's ATTACK. request = {
---   gen, tokenGuid, attackerGuid, leaderPos, pad,
---   miniGuids = {guid, ...}, blockers = {cylinder, ...},
---   defenders = {{guid, name, apts, dpts}, ...},
--- } (sample points as {x, y, z, lvl}, see the token's losSamplePoints).
+--   gen, tokenGuid, leaderGuid, pad,
+--   attackerSil, defenderSil = {r, h, o} (each unit's silhouette),
+--   attackers = {{guid, pos}, ...} (the leader included),
+--   defenders = {{guid, name, pos}, ...},
+--   miniGuids = {guid, ...} (minis never block rays),
+--   blockers = {cylinder, ...} (third-party ground vehicles),
+-- }
 function losStartVerdict(request)
   losVerdictGen = losVerdictGen + 1
   local miniGuids = {}
@@ -669,32 +722,70 @@ function losStartVerdict(request)
   losVerdictRequest = {
     gen = losVerdictGen,
     request = request,
-    leaderPos = request.leaderPos,
     blockers = request.blockers or {},
     obbs = obbs,
   }
   losLog(LOS_BUILD .. " - " .. #obbs .. " terrain box(es), "
     .. #(request.blockers or {}) .. " vehicle cylinder(s), "
+    .. #(request.attackers or {}) .. " attacker(s), "
     .. #(request.defenders or {}) .. " defender(s)")
   startLuaCoroutine(Global, "losVerdictCoroutine")
 end
 
--- Stops any verdict in progress and clears its lines.
+local function losSummaryHide()
+  pcall(function() UI.setAttribute("losSummary", "active", "false") end)
+end
+
+local function losSummaryShow(green, red, modelText)
+  pcall(function()
+    UI.setValue("losGreenCount", green .. " green")
+    UI.setValue("losRedCount", red .. " red")
+    UI.setValue("losModelCounts", modelText)
+    UI.setAttribute("losSummary", "active", "true")
+  end)
+end
+
+-- Stops any verdict in progress and clears its lines, rings and summary.
 function losCancel()
   losVerdictGen = losVerdictGen + 1
   losBarHide()
+  losSummaryHide()
   Global.setVectorLines({})
 end
 
-local function losDrawWitnesses(witnesses)
+-- A ring around a mini's base: green when it is in sight of at least one
+-- enemy mini, red when it is not.
+local LOS_RING_SEGMENTS = 24
+-- How fine the sample grid gets when checking whether each mini sees (or is
+-- seen by) any enemy mini. Level 3 is 45 points per silhouette (heights in
+-- quarters); the leader's witness lines always use the full level 4. Proving
+-- that a mini sees nobody needs every pair, so this sets most of the cost.
+local LOS_MODEL_LEVEL = 3
+local function losRing(pos, radius, seen)
+  local points = {}
+  for i = 0, LOS_RING_SEGMENTS do
+    local a = 2 * math.pi * i / LOS_RING_SEGMENTS
+    table.insert(points, {x = pos.x + math.cos(a) * radius, y = pos.y + 0.12, z = pos.z + math.sin(a) * radius})
+  end
+  return {
+    points = points,
+    color = seen and {0.2, 0.9, 0.2} or {0.9, 0.15, 0.15},
+    thickness = 0.05,
+  }
+end
+
+-- Draws the witness lines (and the rings, once known). Returns the counts.
+local function losDraw(witnesses, rings)
   -- Drawn a hair above their true height: a line laid exactly on the ground
   -- is half-buried in the terrain and reads as missing.
   local function lifted(pt)
     return {x = pt.x, y = pt.y + 0.05, z = pt.z}
   end
   local lines = {}
+  local green, red = 0, 0
   for _, w in ipairs(witnesses) do
     if w.clear ~= nil then
+      green = green + 1
       table.insert(lines, {
         points = {lifted(w.clear[1]), lifted(w.clear[2])},
         color = {0.2, 0.9, 0.2},
@@ -702,6 +793,7 @@ local function losDrawWitnesses(witnesses)
       })
     end
     if w.blocked ~= nil then
+      red = red + 1
       table.insert(lines, {
         points = {lifted(w.blocked[1]), lifted(w.blocked[2])},
         color = {0.9, 0.15, 0.15},
@@ -709,27 +801,128 @@ local function losDrawWitnesses(witnesses)
       })
     end
   end
+  for _, ring in ipairs(rings or {}) do
+    table.insert(lines, ring)
+  end
   Global.setVectorLines(lines)
+  return green, red
 end
 
--- For each defending mini, find the two witness lines: the first clear one
--- and the first blocked one, then stop. One pass over the sample pairs,
--- coarse levels first: a pair whose line crosses no terrain box is clear for
--- sure; one that crosses a box is checked against that piece's triangles, so
--- a red line always really hits something (or a piece whose mesh could not
--- be loaded, judged by its box on the safe side).
+-- Searches the sample pairs between two minis, coarse levels first. A pair
+-- whose line crosses no terrain box is clear for sure; one that crosses a
+-- box is checked against that piece's triangles, so a red line always
+-- really hits something (or a piece whose mesh could not be loaded, judged
+-- by its box on the safe side). Stops at the first clear line, and also
+-- needs a blocked one when wantBlocked. Returns clear, blocked, rays -- or
+-- nil when the verdict went stale. maxLevel (1..4) limits how fine the
+-- sample grid gets.
+local function losSearch(ctx, fromPos, fromSil, toPos, toSil, wantBlocked, maxLevel, progress)
+  local apts = losSamplePoints(fromPos, fromSil, toPos)
+  local dpts = losSamplePoints(toPos, toSil, fromPos)
+  local pad = math.max(fromSil.r, toSil.r) + 0.5
+  local obbs = losCorridorObbs(ctx, fromPos, toPos, pad)
+
+  -- The corridor's meshes: usually prepared in the background already; if
+  -- not, finish them now at the verdict's own pace.
+  for _, obb in ipairs(obbs) do
+    if obb.url ~= nil then
+      local entry = losMeshRequest(obb.url)
+      local waited = 0
+      while entry.status == "loading" and waited < 600 do
+        coroutine.yield(0)
+        losFrameStart = os.clock()
+        waited = waited + 1
+        if ctx.gen ~= losVerdictGen then return nil end
+      end
+      if entry.status == "loading" then entry.status = "failed" end
+      while not losMeshAdvance(entry, LOS_FRAME_BUDGET) do
+        coroutine.yield(0)
+        losFrameStart = os.clock()
+        if ctx.gen ~= losVerdictGen then return nil end
+      end
+      obb.mesh = entry.status == "ready" and entry or nil
+    end
+    obb.la = losLocalPoints(obb, apts)
+    obb.ld = losLocalPoints(obb, dpts)
+  end
+
+  local totalPairs = 0
+  for _, ap in ipairs(apts) do
+    for _, dp in ipairs(dpts) do
+      if math.max(ap.lvl, dp.lvl) <= maxLevel then totalPairs = totalPairs + 1 end
+    end
+  end
+  totalPairs = math.min(totalPairs, LOS_MAX_RAYS)
+  local clearLine, blockedLine = nil, nil
+  local rays = 0
+  local lastBlocker = nil
+  local function done()
+    return (clearLine ~= nil and (blockedLine ~= nil or not wantBlocked)) or rays >= LOS_MAX_RAYS
+  end
+  for level = 1, maxLevel do
+    for ai, ap in ipairs(apts) do
+      for di, dp in ipairs(dpts) do
+        if math.max(ap.lvl, dp.lvl) == level then
+          rays = rays + 1
+          local blocked = losHitsCylinders(ctx, ap, dp)
+          if not blocked then
+            -- Neighbouring lines are usually blocked by the same piece: the
+            -- last blocker is tried first.
+            for k = 0, #obbs do
+              local obb = k == 0 and lastBlocker or obbs[k]
+              if obb ~= nil and (k == 0 or obb ~= lastBlocker) then
+                local lp, lq = obb.la[ai], obb.ld[di]
+                local t0, t1 = losSlabLocal(lp[1], lp[2], lp[3], lq[1], lq[2], lq[3], obb)
+                if t0 ~= nil and (obb.mesh == nil or losMeshBlocks(obb.mesh, lp, lq, t0, t1)) then
+                  blocked = true
+                  lastBlocker = obb
+                  break
+                end
+              end
+            end
+          end
+          if not blocked then
+            if clearLine == nil then clearLine = {ap, dp, level} end
+          elseif blockedLine == nil then
+            blockedLine = {ap, dp, level}
+          end
+          if os.clock() - losFrameStart > LOS_FRAME_BUDGET then
+            if progress then losBarSet(progress(rays / totalPairs)) end
+            coroutine.yield(0)
+            losFrameStart = os.clock()
+            if ctx.gen ~= losVerdictGen then return nil end
+          end
+          if done() then break end
+        end
+      end
+      if done() then break end
+    end
+    if done() then break end
+  end
+  for _, obb in ipairs(obbs) do
+    obb.la, obb.ld, obb.mesh = nil, nil, nil
+  end
+  return clearLine, blockedLine, rays
+end
+
+local function losAlive(guid)
+  local obj = getObjectFromGUID(guid)
+  return obj ~= nil and not obj.isDestroyed()
+end
+
+-- Two steps, so the lines show up as soon as possible:
+-- 1. From the attacking leader to each defending mini, the two witness lines
+--    (the first clear one and the first blocked one), drawn right away.
+-- 2. Which attacking minis see at least one defender (they can contribute to
+--    the attack) and which defenders are seen by at least one attacker (only
+--    those can be removed): rings around every mini, and the summary.
 function losVerdictCoroutine()
   local ctx = losVerdictRequest
   local request = ctx.request
   local started = os.clock()
-  local witnesses = {}
   local totalRays = 0
   local function stale()
     return ctx.gen ~= losVerdictGen
-  end
-  local function attackerGone()
-    local attacker = getObjectFromGUID(request.attackerGuid)
-    return attacker == nil or attacker.isDestroyed()
   end
   local function finish()
     losVerdictRunning = false
@@ -738,95 +931,94 @@ function losVerdictCoroutine()
   end
   losVerdictRunning = true
   losFrameStart = os.clock()
-  local function pause(pct)
-    if os.clock() - losFrameStart > LOS_FRAME_BUDGET then
-      if pct then losBarSet(pct) end
-      coroutine.yield(0)
-      losFrameStart = os.clock()
-    end
-    return stale()
-  end
-
+  local attackers = request.attackers or {}
   local defenders = request.defenders or {}
+  local attSil, defSil = request.attackerSil, request.defenderSil
+  local leader = nil
+  for _, a in ipairs(attackers) do
+    if a.guid == request.leaderGuid then leader = a end
+  end
+  if leader == nil then return finish() end
+
+  -- seen[a][d]: attacker a sees defender d (only filled as far as needed).
+  local attackerSees, defenderSeen = {}, {}
+
+  -- Step 1: the leader's witness lines.
+  local witnesses = {}
   for d, def in ipairs(defenders) do
-    if attackerGone() then return finish() end
-    local defObj = getObjectFromGUID(def.guid)
-    if defObj ~= nil and not defObj.isDestroyed() then
-      local apts, dpts = def.apts, def.dpts
-      local obbs = losCorridorObbs(ctx, defObj.getPosition(), request.pad or 1)
-
-      -- The corridor's meshes: usually prepared in the background already;
-      -- if not, finish them now at the verdict's own pace.
-      for _, obb in ipairs(obbs) do
-        if obb.url ~= nil then
-          local entry = losMeshRequest(obb.url)
-          local waited = 0
-          while entry.status == "loading" and waited < 600 do
-            coroutine.yield(0)
-            losFrameStart = os.clock()
-            waited = waited + 1
-            if stale() then return finish() end
-          end
-          if entry.status == "loading" then entry.status = "failed" end
-          while not losMeshAdvance(entry, LOS_FRAME_BUDGET) do
-            coroutine.yield(0)
-            losFrameStart = os.clock()
-            if stale() then return finish() end
-          end
-          if entry.status == "ready" then obb.mesh = entry end
-        end
-        obb.la = losLocalPoints(obb, apts)
-        obb.ld = losLocalPoints(obb, dpts)
-      end
-
-      local totalPairs = math.min(#apts * #dpts, LOS_MAX_RAYS)
-      local clearLine, blockedLine = nil, nil
-      local rays = 0
-      for level = 1, 4 do
-        for ai, ap in ipairs(apts) do
-          for di, dp in ipairs(dpts) do
-            if math.max(ap.lvl, dp.lvl) == level then
-              rays = rays + 1
-              local blocked = losHitsCylinders(ctx, ap, dp)
-              if not blocked then
-                for _, obb in ipairs(obbs) do
-                  local lp, lq = obb.la[ai], obb.ld[di]
-                  local t0, t1 = losSlabLocal(lp[1], lp[2], lp[3], lq[1], lq[2], lq[3], obb)
-                  if t0 ~= nil and (obb.mesh == nil or losMeshBlocks(obb.mesh, lp, lq, t0, t1)) then
-                    blocked = true
-                    break
-                  end
-                end
-              end
-              if not blocked then
-                if clearLine == nil then clearLine = {ap, dp, level} end
-              elseif blockedLine == nil then
-                blockedLine = {ap, dp, level}
-              end
-              if pause(math.floor(100 * ((d - 1) + rays / totalPairs) / #defenders)) then
-                return finish()
-              end
-              if (clearLine ~= nil and blockedLine ~= nil) or rays >= LOS_MAX_RAYS then break end
-            end
-          end
-          if (clearLine ~= nil and blockedLine ~= nil) or rays >= LOS_MAX_RAYS then break end
-        end
-        if (clearLine ~= nil and blockedLine ~= nil) or rays >= LOS_MAX_RAYS then break end
-      end
-      for _, obb in ipairs(obbs) do
-        obb.la, obb.ld, obb.mesh = nil, nil, nil
-      end
+    if not losAlive(request.leaderGuid) then return finish() end
+    if losAlive(def.guid) then
+      local clear, blocked, rays = losSearch(ctx, leader.pos, attSil, def.pos, defSil, true, 4,
+        function(f) return 60 * ((d - 1) + f) / #defenders end)
+      if clear == nil and rays == nil then return finish() end
       totalRays = totalRays + rays
-      losLog((def.name or "mini") .. ": "
-        .. (clearLine and ("green lvl " .. clearLine[3]) or "NO green") .. ", "
-        .. (blockedLine and ("red lvl " .. blockedLine[3]) or "NO red")
-        .. " - " .. rays .. " rays, " .. #obbs .. " piece(s) in the corridor")
-      table.insert(witnesses, {clear = clearLine, blocked = blockedLine})
+      if clear ~= nil then
+        attackerSees[leader.guid] = true
+        defenderSeen[def.guid] = true
+      end
+      losLog((def.name or "mini") .. ": " .. (clear and "green" or "NO green") .. ", "
+        .. (blocked and "red" or "NO red") .. " - " .. rays .. " rays")
+      table.insert(witnesses, {clear = clear, blocked = blocked})
+    end
+  end
+  if stale() then return finish() end
+  local green, red = losDraw(witnesses, nil)
+  losSummaryShow(green, red, "Checking which models are in sight...")
+
+  -- Step 2: every other attacking mini. A pair is only searched when it can
+  -- still tell us something: once an attacker sees someone and a defender is
+  -- seen, that pair adds nothing. Nearest defenders first.
+  local others = {}
+  for _, a in ipairs(attackers) do
+    if a.guid ~= leader.guid and losAlive(a.guid) then table.insert(others, a) end
+  end
+  for i, a in ipairs(others) do
+    local order = {}
+    for _, def in ipairs(defenders) do
+      if losAlive(def.guid) then table.insert(order, def) end
+    end
+    table.sort(order, function(x, y)
+      local dx1, dz1 = x.pos.x - a.pos.x, x.pos.z - a.pos.z
+      local dx2, dz2 = y.pos.x - a.pos.x, y.pos.z - a.pos.z
+      return dx1 * dx1 + dz1 * dz1 < dx2 * dx2 + dz2 * dz2
+    end)
+    for _, def in ipairs(order) do
+      if not (attackerSees[a.guid] and defenderSeen[def.guid]) then
+        local clear, _, rays = losSearch(ctx, a.pos, attSil, def.pos, defSil, false, LOS_MODEL_LEVEL,
+          function(f) return 60 + 40 * ((i - 1) + f) / #others end)
+        if clear == nil and rays == nil then return finish() end
+        totalRays = totalRays + rays
+        if clear ~= nil then
+          attackerSees[a.guid] = true
+          defenderSeen[def.guid] = true
+        end
+      end
+    end
+  end
+  if stale() then return finish() end
+
+  -- Rings and summary.
+  local rings = {}
+  local attackersIn, defendersIn, attackersAll, defendersAll = 0, 0, 0, 0
+  for _, a in ipairs(attackers) do
+    if losAlive(a.guid) then
+      attackersAll = attackersAll + 1
+      if attackerSees[a.guid] then attackersIn = attackersIn + 1 end
+      table.insert(rings, losRing(a.pos, attSil.r + 0.12, attackerSees[a.guid] == true))
+    end
+  end
+  for _, def in ipairs(defenders) do
+    if losAlive(def.guid) then
+      defendersAll = defendersAll + 1
+      if defenderSeen[def.guid] then defendersIn = defendersIn + 1 end
+      table.insert(rings, losRing(def.pos, defSil.r + 0.12, defenderSeen[def.guid] == true))
     end
   end
   finish()
-  if stale() then return 1 end
-  losDrawWitnesses(witnesses)
+  losDraw(witnesses, rings)
+  losSummaryShow(green, red, string.format(
+    "Attackers in sight of an enemy: %d / %d     Defenders in sight: %d / %d",
+    attackersIn, attackersAll, defendersIn, defendersAll))
   losLog(string.format("verdict done in %.2f s, %d rays", os.clock() - started, totalRays))
   local token = getObjectFromGUID(request.tokenGuid)
   if token ~= nil then

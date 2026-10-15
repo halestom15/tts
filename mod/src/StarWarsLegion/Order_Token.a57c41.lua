@@ -1317,79 +1317,47 @@ end
 
 losGeneration = 0
 
--- Sample points refine level by level, the way a render sharpens: a narrow
--- sight gap the coarse grid misses is caught by the finer passes, without
--- ever paying the full grid on an open shot. Azimuths spread over the
--- facing half of the contour, heights over the whole silhouette; each
--- coordinate carries the level it first appears at, and a pair of points is
--- cast exactly once, at the level its newest point joins. Level 1 is a 3x3
--- grid per silhouette; level 4 reaches 81 points per silhouette, more than
--- six thousand pairs, but the search still stops at the first witnesses.
-local LOS_AZIMUTHS = {
-    {0, 1}, {-90, 1}, {90, 1},
-    {-45, 2}, {45, 2},
-    {-22.5, 3}, {22.5, 3}, {-67.5, 3}, {67.5, 3},
-}
--- Heights and radius sample the EXACT silhouette contour: the rule judges
--- silhouette to silhouette, and a sliver of visibility hugging the top or
--- the side edge lives precisely in the last percents. The old 0.95/0.97
--- insets were Physics.cast-era self-hit protection and ate those slivers.
--- Mid height leads: the first clear line found is the one drawn, and a
--- waist-high witness reads well on the table where a ground-level one
--- drowns in the terrain. The top stays at the exact silhouette summit --
--- that is the extreme players hunt lines with -- but the bottom stops a
--- twentieth short: terrain meshes are not sealed against the bumpy ground,
--- and a true base-level ray sneaks UNDER a rock's skirt and comes out
--- "clear" through what the eye reads as solid stone.
-local LOS_HEIGHTS = {
-    {0.5, 1}, {1.0, 1}, {0.05, 1},
-    {0.25, 2}, {0.75, 2},
-    {0.125, 4}, {0.375, 4}, {0.625, 4}, {0.875, 4},
-}
-local LOS_MAX_LEVEL = 4
-
-function losSamplePoints(obj, leaderObj, towardPos)
-    local radius, height, offset = silhouetteOf(leaderObj)
-    local p = obj.getPosition()
-    local baseY = p.y + offset
-    local dx, dz = towardPos.x - p.x, towardPos.z - p.z
-    local g = math.sqrt(dx * dx + dz * dz)
-    if g < 0.001 then dx, dz, g = 1, 0, 1 end
-    dx, dz = dx / g, dz / g
-    local r = radius
-    local points = {}
-    for _, az in ipairs(LOS_AZIMUTHS) do
-        local a = math.rad(az[1])
-        local c, s = math.cos(a), math.sin(a)
-        local ux, uz = dx * c - dz * s, dx * s + dz * c
-        for _, hf in ipairs(LOS_HEIGHTS) do
-            table.insert(points, {
-                x = p.x + ux * r,
-                y = baseY + height * hf[1],
-                z = p.z + uz * r,
-                lvl = math.max(az[2], hf[2]),
-            })
-        end
-    end
-    return points
-end
-
--- A snapshot of the table for one verdict, handed to Global: every mini to
--- ignore in the rays, the silhouette cylinders of third-party ground vehicles
--- (the only minis that block sight), and each defending mini still on the
--- battlefield with both sets of sample points.
+-- A snapshot of the table for one verdict, handed to Global: each unit's
+-- silhouette and the position of every mini in the attack, every mini to
+-- ignore in the rays, and the silhouette cylinders of third-party ground
+-- vehicles (the only minis that block sight).
 function buildLosRequest(attackTargetObj)
-    local leaderPos = selectedUnitObj.getPosition()
+    local zoneObjects = battlefieldZone.getObjects()
+    local function silhouette(leaderObj)
+        local radius, height, offset = silhouetteOf(leaderObj)
+        return {r = radius, h = height, o = offset}
+    end
+    local function minisOnTable(leaderObj)
+        local result = {}
+        for _, guid in pairs(leaderObj.getTable("miniGUIDs") or {}) do
+            local m = getObjectFromGUID(guid)
+            if m ~= nil and isMiniOnTable(m, zoneObjects) then
+                local p = m.getPosition()
+                table.insert(result, {guid = guid, name = m.getName(), pos = {x = p.x, y = p.y, z = p.z}})
+            end
+        end
+        return result
+    end
     local request = {
         gen = losGeneration,
         tokenGuid = self.getGUID(),
-        attackerGuid = selectedUnitObj.getGUID(),
-        leaderPos = {x = leaderPos.x, y = leaderPos.y, z = leaderPos.z},
+        leaderGuid = selectedUnitObj.getGUID(),
+        attackerSil = silhouette(selectedUnitObj),
+        defenderSil = silhouette(attackTargetObj),
+        attackers = minisOnTable(selectedUnitObj),
+        defenders = minisOnTable(attackTargetObj),
         miniGuids = {},
         blockers = {},
-        defenders = {},
     }
-    local zoneObjects = battlefieldZone.getObjects()
+    -- The leader is always an attacker, even if its unit's list misses it.
+    local hasLeader = false
+    for _, a in ipairs(request.attackers) do
+        if a.guid == request.leaderGuid then hasLeader = true end
+    end
+    if not hasLeader then
+        local p = selectedUnitObj.getPosition()
+        table.insert(request.attackers, {guid = request.leaderGuid, name = selectedUnitObj.getName(), pos = {x = p.x, y = p.y, z = p.z}})
+    end
     local attackerGUID = selectedUnitObj.getGUID()
     local targetGUID = attackTargetObj.getGUID()
     for _, obj in pairs(zoneObjects) do
@@ -1415,20 +1383,6 @@ function buildLosRequest(attackTargetObj)
             end
         end
     end
-    for _, guid in pairs(attackTargetObj.getTable("miniGUIDs") or {}) do
-        local m = getObjectFromGUID(guid)
-        if m ~= nil and isMiniOnTable(m, zoneObjects) then
-            table.insert(request.defenders, {
-                guid = guid,
-                name = m.getName(),
-                apts = losSamplePoints(selectedUnitObj, selectedUnitObj, m.getPosition()),
-                dpts = losSamplePoints(m, attackTargetObj, leaderPos),
-            })
-        end
-    end
-    local attackerRadius = silhouetteOf(selectedUnitObj)
-    local targetRadius = silhouetteOf(attackTargetObj)
-    request.pad = math.max(attackerRadius, targetRadius) + 0.5
     return request
 end
 
