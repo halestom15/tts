@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v25"
+local LOS_BUILD = "v26"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -603,6 +603,81 @@ local function losMeshBlocks(entry, lp, lq, t0, t1)
   return false
 end
 
+-- Horizontal distance tests, for the cover rules (terrain within range 1/2
+-- of a defender, terrain in base contact with the attacking leader). Worked
+-- in the piece's frame unrotated but at world scale -- the frame the box
+-- test uses -- so distances are in table inches. Exact for pieces turned
+-- about the vertical only, which is how terrain sits on the table.
+
+-- 2D distance from (px, pz) to the segment (ax, az)-(bx, bz).
+local function losPointSegment2(px, pz, ax, az, bx, bz)
+  local dx, dz = bx - ax, bz - az
+  local len2 = dx * dx + dz * dz
+  local t = 0
+  if len2 > 0 then
+    t = ((px - ax) * dx + (pz - az) * dz) / len2
+    if t < 0 then t = 0 elseif t > 1 then t = 1 end
+  end
+  local ex, ez = ax + t * dx - px, az + t * dz - pz
+  return ex * ex + ez * ez
+end
+
+-- Is any part of the piece within dist (horizontally) of the world point?
+-- Against the real triangles when the mesh is ready, else the visual box.
+local function losPieceWithin(obb, entry, wx, wz, dist)
+  local px, _, pz = losToObbFrame(obb, wx, obb.pos.y, wz)
+  local dist2 = dist * dist
+  if entry == nil then
+    local c, h = obb.center, obb.half
+    local ex = math.max(math.abs(px - c.x) - h.x, 0)
+    local ez = math.max(math.abs(pz - c.z) - h.z, 0)
+    return ex * ex + ez * ez <= dist2
+  end
+  local sx, sz = obb.scx, obb.scz
+  local B, T, order = entry.bvh, entry.tris, entry.order
+  local stack, top = {B.root}, 1
+  while top > 0 do
+    local node = stack[top]
+    top = top - 1
+    -- Node rectangle at world scale (a negative scale swaps its edges).
+    local x0, x1 = B.minx[node] * sx, B.maxx[node] * sx
+    if x0 > x1 then x0, x1 = x1, x0 end
+    local z0, z1 = B.minz[node] * sz, B.maxz[node] * sz
+    if z0 > z1 then z0, z1 = z1, z0 end
+    local ex = math.max(x0 - px, 0, px - x1)
+    local ez = math.max(z0 - pz, 0, pz - z1)
+    if ex * ex + ez * ez <= dist2 then
+      if B.left[node] < 0 then
+        local st = B.start[node]
+        for k = st, st + B.count[node] - 1 do
+          local i = order[k]
+          local ax, az = T.ax[i] * sx, T.az[i] * sz
+          local bx, bz = (T.ax[i] + T.e1x[i]) * sx, (T.az[i] + T.e1z[i]) * sz
+          local cx, cz = (T.ax[i] + T.e2x[i]) * sx, (T.az[i] + T.e2z[i]) * sz
+          -- Inside the triangle's footprint: distance 0.
+          local d1 = (px - bx) * (az - bz) - (ax - bx) * (pz - bz)
+          local d2 = (px - cx) * (bz - cz) - (bx - cx) * (pz - cz)
+          local d3 = (px - ax) * (cz - az) - (cx - ax) * (pz - az)
+          local neg = d1 < 0 or d2 < 0 or d3 < 0
+          local pos = d1 > 0 or d2 > 0 or d3 > 0
+          if not (neg and pos) then return true end
+          if losPointSegment2(px, pz, ax, az, bx, bz) <= dist2
+            or losPointSegment2(px, pz, bx, bz, cx, cz) <= dist2
+            or losPointSegment2(px, pz, cx, cz, ax, az) <= dist2 then
+            return true
+          end
+        end
+      else
+        top = top + 1
+        stack[top] = B.left[node]
+        top = top + 1
+        stack[top] = B.right[node]
+      end
+    end
+  end
+  return false
+end
+
 ---------------------------------------------------------------------------
 -- BACKGROUND PREPARATION
 --
@@ -736,10 +811,11 @@ local function losSummaryHide()
   pcall(function() UI.setAttribute("losSummary", "active", "false") end)
 end
 
-local function losSummaryShow(green, red, modelText)
+local function losSummaryShow(green, red, coverText, modelText)
   pcall(function()
     UI.setValue("losGreenCount", green .. " green")
     UI.setValue("losRedCount", red .. " red")
+    UI.setValue("losCover", coverText)
     UI.setValue("losModelCounts", modelText)
     UI.setAttribute("losSummary", "active", "true")
   end)
@@ -753,15 +829,21 @@ function losCancel()
   Global.setVectorLines({})
 end
 
--- A ring around a mini's base: green when it is in sight of at least one
--- enemy mini, red when it is not.
+-- A ring around a mini's base. Attackers: green when they see at least one
+-- defender, red when not. Defenders: green when seen and not obscured,
+-- yellow when seen but obscured, red when no attacker sees them.
+local LOS_RING_COLORS = {
+  green = {0.2, 0.9, 0.2},
+  yellow = {0.95, 0.8, 0.1},
+  red = {0.9, 0.15, 0.15},
+}
 local LOS_RING_SEGMENTS = 24
 -- How fine the sample grid gets when checking whether each mini sees (or is
 -- seen by) any enemy mini. Level 3 is 45 points per silhouette (heights in
 -- quarters); the leader's witness lines always use the full level 4. Proving
 -- that a mini sees nobody needs every pair, so this sets most of the cost.
 local LOS_MODEL_LEVEL = 3
-local function losRing(pos, radius, seen)
+local function losRing(pos, radius, color)
   local points = {}
   for i = 0, LOS_RING_SEGMENTS do
     local a = 2 * math.pi * i / LOS_RING_SEGMENTS
@@ -769,7 +851,7 @@ local function losRing(pos, radius, seen)
   end
   return {
     points = points,
-    color = seen and {0.2, 0.9, 0.2} or {0.9, 0.15, 0.15},
+    color = LOS_RING_COLORS[color],
     thickness = 0.05,
   }
 end
@@ -816,15 +898,13 @@ end
 -- needs a blocked one when wantBlocked. Returns clear, blocked, rays -- or
 -- nil when the verdict went stale. maxLevel (1..4) limits how fine the
 -- sample grid gets.
-local function losSearch(ctx, fromPos, fromSil, toPos, toSil, wantBlocked, maxLevel, progress)
-  local apts = losSamplePoints(fromPos, fromSil, toPos)
-  local dpts = losSamplePoints(toPos, toSil, fromPos)
-  local pad = math.max(fromSil.r, toSil.r) + 0.5
-  local obbs = losCorridorObbs(ctx, fromPos, toPos, pad)
-
-  -- The corridor's meshes: usually prepared in the background already; if
-  -- not, finish them now at the verdict's own pace.
+-- Gets a corridor's pieces ready for a search: their meshes (usually
+-- prepared in the background already; if not, finished now at the verdict's
+-- own pace) and both minis' sample points in each piece's frame. Returns
+-- false when the verdict went stale.
+local function losPrepareCorridor(ctx, obbs, apts, dpts)
   for _, obb in ipairs(obbs) do
+    obb.mesh = nil
     if obb.url ~= nil then
       local entry = losMeshRequest(obb.url)
       local waited = 0
@@ -832,19 +912,42 @@ local function losSearch(ctx, fromPos, fromSil, toPos, toSil, wantBlocked, maxLe
         coroutine.yield(0)
         losFrameStart = os.clock()
         waited = waited + 1
-        if ctx.gen ~= losVerdictGen then return nil end
+        if ctx.gen ~= losVerdictGen then return false end
       end
       if entry.status == "loading" then entry.status = "failed" end
       while not losMeshAdvance(entry, LOS_FRAME_BUDGET) do
         coroutine.yield(0)
         losFrameStart = os.clock()
-        if ctx.gen ~= losVerdictGen then return nil end
+        if ctx.gen ~= losVerdictGen then return false end
       end
       obb.mesh = entry.status == "ready" and entry or nil
     end
     obb.la = losLocalPoints(obb, apts)
     obb.ld = losLocalPoints(obb, dpts)
   end
+  return true
+end
+
+local function losReleaseCorridor(obbs)
+  for _, obb in ipairs(obbs) do
+    obb.la, obb.ld, obb.mesh = nil, nil, nil
+  end
+end
+
+-- Does the line between sample points ai and di cross this piece? Its box
+-- first, then its triangles (a piece without a mesh blocks by its box).
+local function losPieceBlocks(obb, ai, di)
+  local lp, lq = obb.la[ai], obb.ld[di]
+  local t0, t1 = losSlabLocal(lp[1], lp[2], lp[3], lq[1], lq[2], lq[3], obb)
+  return t0 ~= nil and (obb.mesh == nil or losMeshBlocks(obb.mesh, lp, lq, t0, t1))
+end
+
+local function losSearch(ctx, fromPos, fromSil, toPos, toSil, wantBlocked, maxLevel, progress)
+  local apts = losSamplePoints(fromPos, fromSil, toPos)
+  local dpts = losSamplePoints(toPos, toSil, fromPos)
+  local pad = math.max(fromSil.r, toSil.r) + 0.5
+  local obbs = losCorridorObbs(ctx, fromPos, toPos, pad)
+  if not losPrepareCorridor(ctx, obbs, apts, dpts) then return nil end
 
   local totalPairs = 0
   for _, ap in ipairs(apts) do
@@ -870,14 +973,10 @@ local function losSearch(ctx, fromPos, fromSil, toPos, toSil, wantBlocked, maxLe
             -- last blocker is tried first.
             for k = 0, #obbs do
               local obb = k == 0 and lastBlocker or obbs[k]
-              if obb ~= nil and (k == 0 or obb ~= lastBlocker) then
-                local lp, lq = obb.la[ai], obb.ld[di]
-                local t0, t1 = losSlabLocal(lp[1], lp[2], lp[3], lq[1], lq[2], lq[3], obb)
-                if t0 ~= nil and (obb.mesh == nil or losMeshBlocks(obb.mesh, lp, lq, t0, t1)) then
-                  blocked = true
-                  lastBlocker = obb
-                  break
-                end
+              if obb ~= nil and (k == 0 or obb ~= lastBlocker) and losPieceBlocks(obb, ai, di) then
+                blocked = true
+                lastBlocker = obb
+                break
               end
             end
           end
@@ -899,10 +998,109 @@ local function losSearch(ctx, fromPos, fromSil, toPos, toSil, wantBlocked, maxLe
     end
     if done() then break end
   end
-  for _, obb in ipairs(obbs) do
-    obb.la, obb.ld, obb.mesh = nil, nil, nil
-  end
+  losReleaseCorridor(obbs)
   return clearLine, blockedLine, rays
+end
+
+-- Range 1/2, in table inches: terrain this close to a defending mini's base
+-- can obscure it.
+local LOS_RANGE_HALF = 3
+-- How close a piece must come to the leader's base edge to be in base
+-- contact with it.
+local LOS_BASE_CONTACT = 0.05
+
+-- The leader's search toward one defending mini, following the cover rules:
+-- the mini is obscured when no line is clear, or when some line is blocked
+-- by terrain within range 1/2 of the defender that the leader is not in base
+-- contact with. Ground vehicles block lines but are not terrain, so they do
+-- not obscure. Returns a table, or nil when the verdict went stale:
+--   clear     the first clear line (nil if completely blocked)
+--   obscured  true / false
+--   red       the line to draw in red: the obscuring line, or any blocked
+--             line when completely blocked (nil if not obscured)
+--   by        the name of what obscures it
+--   rays      how many sample pairs were cast
+local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
+  local apts = losSamplePoints(leaderPos, attSil, defPos)
+  local dpts = losSamplePoints(defPos, defSil, leaderPos)
+  local pad = math.max(attSil.r, defSil.r) + 0.5
+  local obbs = losCorridorObbs(ctx, leaderPos, defPos, pad)
+  if not losPrepareCorridor(ctx, obbs, apts, dpts) then return nil end
+
+  -- Which pieces in the corridor can obscure this mini.
+  local quals, others = {}, {}
+  for _, obb in ipairs(obbs) do
+    local near = losPieceWithin(obb, obb.mesh, defPos.x, defPos.z, LOS_RANGE_HALF + defSil.r)
+    local contact = near and losPieceWithin(obb, obb.mesh, leaderPos.x, leaderPos.z, attSil.r + LOS_BASE_CONTACT)
+    if near and not contact then
+      table.insert(quals, obb)
+    else
+      table.insert(others, obb)
+    end
+  end
+
+  local totalPairs = math.min(#apts * #dpts, LOS_MAX_RAYS)
+  local clearLine, obscureLine, obscurer, blockedLine, blocker = nil, nil, nil, nil, nil
+  local rays = 0
+  local lastBlocker = nil
+  local function done()
+    return (clearLine ~= nil and (obscureLine ~= nil or #quals == 0)) or rays >= LOS_MAX_RAYS
+  end
+  for level = 1, 4 do
+    for ai, ap in ipairs(apts) do
+      for di, dp in ipairs(dpts) do
+        if math.max(ap.lvl, dp.lvl) == level then
+          rays = rays + 1
+          -- The pieces that can obscure come first: few, and decisive.
+          local by = nil
+          for _, obb in ipairs(quals) do
+            if losPieceBlocks(obb, ai, di) then by = obb break end
+          end
+          if by ~= nil then
+            if obscureLine == nil then obscureLine, obscurer = {ap, dp, level}, by.name end
+            if blockedLine == nil then blockedLine, blocker = {ap, dp, level}, by.name end
+          elseif clearLine == nil then
+            -- Only worth asking while no clear line is known.
+            local hit = nil
+            if losHitsCylinders(ctx, ap, dp) then
+              hit = "a vehicle"
+            elseif lastBlocker ~= nil and losPieceBlocks(lastBlocker, ai, di) then
+              hit = lastBlocker.name
+            else
+              for _, obb in ipairs(others) do
+                if obb ~= lastBlocker and losPieceBlocks(obb, ai, di) then
+                  hit, lastBlocker = obb.name, obb
+                  break
+                end
+              end
+            end
+            if hit == nil then
+              clearLine = {ap, dp, level}
+            elseif blockedLine == nil then
+              blockedLine, blocker = {ap, dp, level}, hit
+            end
+          end
+          if os.clock() - losFrameStart > LOS_FRAME_BUDGET then
+            if progress then losBarSet(progress(rays / totalPairs)) end
+            coroutine.yield(0)
+            losFrameStart = os.clock()
+            if ctx.gen ~= losVerdictGen then return nil end
+          end
+          if done() then break end
+        end
+      end
+      if done() then break end
+    end
+    if done() then break end
+  end
+  losReleaseCorridor(obbs)
+  local result = {clear = clearLine, rays = rays, obscured = false}
+  if obscureLine ~= nil then
+    result.obscured, result.red, result.by = true, obscureLine, obscurer
+  elseif clearLine == nil then
+    result.obscured, result.red, result.by = true, blockedLine, blocker
+  end
+  return result
 end
 
 local function losAlive(guid)
@@ -943,27 +1141,52 @@ function losVerdictCoroutine()
   -- seen[a][d]: attacker a sees defender d (only filled as far as needed).
   local attackerSees, defenderSeen = {}, {}
 
-  -- Step 1: the leader's witness lines.
+  -- Step 1: the leader's witness lines, and which defenders are obscured.
   local witnesses = {}
+  local obscured, obscuredBy = {}, {}
+  local obscuredCount, byNames, byOrder = 0, {}, {}
   for d, def in ipairs(defenders) do
     if not losAlive(request.leaderGuid) then return finish() end
     if losAlive(def.guid) then
-      local clear, blocked, rays = losSearch(ctx, leader.pos, attSil, def.pos, defSil, true, 4,
+      local result = losLeaderSearch(ctx, leader.pos, attSil, def.pos, defSil,
         function(f) return 60 * ((d - 1) + f) / #defenders end)
-      if clear == nil and rays == nil then return finish() end
-      totalRays = totalRays + rays
-      if clear ~= nil then
+      if result == nil then return finish() end
+      totalRays = totalRays + result.rays
+      if result.clear ~= nil then
         attackerSees[leader.guid] = true
         defenderSeen[def.guid] = true
       end
-      losLog((def.name or "mini") .. ": " .. (clear and "green" or "NO green") .. ", "
-        .. (blocked and "red" or "NO red") .. " - " .. rays .. " rays")
-      table.insert(witnesses, {clear = clear, blocked = blocked})
+      if result.obscured then
+        obscured[def.guid] = true
+        obscuredCount = obscuredCount + 1
+        local name = result.by or "terrain"
+        obscuredBy[def.guid] = name
+        if not byNames[name] then
+          byNames[name] = true
+          table.insert(byOrder, name)
+        end
+      end
+      losLog((def.name or "mini") .. ": " .. (result.clear and "green" or "NO green") .. ", "
+        .. (result.obscured and ("obscured by " .. tostring(result.by)) or "not obscured")
+        .. " - " .. result.rays .. " rays")
+      table.insert(witnesses, {clear = result.clear, blocked = result.red})
     end
   end
   if stale() then return finish() end
+  -- Cover: at least half of the defending unit's minis obscured.
+  local alive = 0
+  for _, def in ipairs(defenders) do
+    if losAlive(def.guid) then alive = alive + 1 end
+  end
+  local coverText
+  if alive > 0 and obscuredCount * 2 >= alive then
+    coverText = string.format("Obscured %d / %d: COVER from %s (heavy or light as agreed)",
+      obscuredCount, alive, table.concat(byOrder, ", "))
+  else
+    coverText = string.format("Obscured %d / %d: no cover", obscuredCount, alive)
+  end
   local green, red = losDraw(witnesses, nil)
-  losSummaryShow(green, red, "Checking which models are in sight...")
+  losSummaryShow(green, red, coverText, "Checking which models are in sight...")
 
   -- Step 2: every other attacking mini. A pair is only searched when it can
   -- still tell us something: once an attacker sees someone and a defender is
@@ -1004,19 +1227,23 @@ function losVerdictCoroutine()
     if losAlive(a.guid) then
       attackersAll = attackersAll + 1
       if attackerSees[a.guid] then attackersIn = attackersIn + 1 end
-      table.insert(rings, losRing(a.pos, attSil.r + 0.12, attackerSees[a.guid] == true))
+      table.insert(rings, losRing(a.pos, attSil.r + 0.12, attackerSees[a.guid] and "green" or "red"))
     end
   end
   for _, def in ipairs(defenders) do
     if losAlive(def.guid) then
       defendersAll = defendersAll + 1
       if defenderSeen[def.guid] then defendersIn = defendersIn + 1 end
-      table.insert(rings, losRing(def.pos, defSil.r + 0.12, defenderSeen[def.guid] == true))
+      local color = "red"
+      if defenderSeen[def.guid] then
+        color = obscured[def.guid] and "yellow" or "green"
+      end
+      table.insert(rings, losRing(def.pos, defSil.r + 0.12, color))
     end
   end
   finish()
   losDraw(witnesses, rings)
-  losSummaryShow(green, red, string.format(
+  losSummaryShow(green, red, coverText, string.format(
     "Attackers in sight of an enemy: %d / %d     Defenders in sight: %d / %d",
     attackersIn, attackersAll, defendersIn, defendersAll))
   losLog(string.format("verdict done in %.2f s, %d rays", os.clock() - started, totalRays))

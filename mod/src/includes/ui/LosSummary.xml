@@ -1,13 +1,14 @@
 <!-- Line of sight summary, shown while an ATTACK's lines are up (see
      includes/LineOfSight.ttslua): how many green and red lines are drawn, and
-     how many models of each unit are in sight of the other. -->
+     whether the defending unit has cover, and how many models of each unit
+     are in sight of the other. -->
 <Panel
   id="losSummary"
   active="false"
   rectAlignment="UpperCenter"
   offsetXY="0 -12"
-  width="440"
-  height="54"
+  width="520"
+  height="76"
   color="#000000CC"
   outlineSize="1 1"
   outline="#303030"
@@ -20,6 +21,7 @@
       <Text id="losGreenCount" fontSize="15" fontStyle="Bold" color="#33E633" alignment="MiddleLeft" preferredWidth="110">0 green</Text>
       <Text id="losRedCount" fontSize="15" fontStyle="Bold" color="#E62626" alignment="MiddleLeft" preferredWidth="110">0 red</Text>
     </HorizontalLayout>
+    <Text id="losCover" fontSize="13" color="#F2CC1A" alignment="MiddleLeft" preferredHeight="20">Checking cover...</Text>
     <Text id="losModelCounts" fontSize="13" color="#DDDDDD" alignment="MiddleLeft" preferredHeight="20">Checking models...</Text>
   </VerticalLayout>
 </Panel>
