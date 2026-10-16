@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v31"
+local LOS_BUILD = "v32"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -1164,12 +1164,16 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
       table.insert(heavy, poi)
     end
   end
-  -- Vehicles provide cover too (their type is left to the players).
+  -- Vehicles block line of sight at any distance, but only provide cover
+  -- (their type left to the players) like terrain: within range 1/2 of the
+  -- defender and not in base contact with the leader.
+  local closeVehicles = {}
   for _, cyl in ipairs(ctx.blockers or {}) do
     local dd = math.sqrt((cyl.x - defPos.x) ^ 2 + (cyl.z - defPos.z) ^ 2) - cyl.r - defSil.r
     local dl = math.sqrt((cyl.x - leaderPos.x) ^ 2 + (cyl.z - leaderPos.z) ^ 2) - cyl.r - attSil.r
     if dd <= LOS_RANGE_HALF and dl > LOS_BASE_CONTACT then
       table.insert(other, cyl)
+      closeVehicles[cyl] = true
     end
   end
   for _, obb in ipairs(obbs) do
@@ -1197,6 +1201,9 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
 
   local totalPairs = math.min(#apts * #dpts, LOS_MAX_RAYS)
   local clearLine, rays, lastBlocker = nil, 0, nil
+  -- A line blocked by nothing but far vehicles: sight is blocked, but the
+  -- mini is not completely blocked as far as cover is concerned.
+  local farVehicleOnly = false
   local heavyLine, heavyBy, obscureLine, obscurer, blockedLine, blocker = nil, nil, nil, nil, nil, nil
   local function done()
     if rays >= LOS_MAX_RAYS then return true end
@@ -1226,10 +1233,8 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
             end
           end
           if clearLine == nil then
-            local hit = losHitsCylinders(ctx, ap, dp)
-            if hit ~= nil then
-              -- blocked by a vehicle
-            elseif lastBlocker ~= nil and losPieceBlocks(lastBlocker, ai, di, ap, dp) then
+            local hit = nil
+            if lastBlocker ~= nil and losPieceBlocks(lastBlocker, ai, di, ap, dp) then
               hit = lastBlocker
             else
               for _, obb in ipairs(blockers) do
@@ -1237,6 +1242,12 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
                   hit, lastBlocker = obb, obb
                   break
                 end
+              end
+            end
+            if hit == nil then
+              hit = losHitsCylinders(ctx, ap, dp)
+              if hit ~= nil and not closeVehicles[hit] then
+                farVehicleOnly = true
               end
             end
             if hit == nil then
@@ -1267,7 +1278,7 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
     result.obscured, result.red, result.by = true, heavyLine, describe(heavyBy)
   elseif obscureLine ~= nil then
     result.obscured, result.red, result.by = true, obscureLine, describe(obscurer)
-  elseif clearLine == nil then
+  elseif clearLine == nil and not farVehicleOnly then
     result.obscured, result.red = true, blockedLine
     result.by = blocker and describe(blocker) or {name = "terrain"}
   end
