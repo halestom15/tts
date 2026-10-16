@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v35"
+local LOS_BUILD = "v36"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -210,12 +210,42 @@ local function losHitsCylinders(ctx, p, q)
   return nil
 end
 
--- Every vehicle on the battlefield that is in neither unit of the attack,
--- with its silhouette: the base outline (from its collider, which matches
--- the base) rising to the unit's silhouette height (from its card data).
--- Vehicles block line of sight; strictly that is ground vehicles and
--- repulsors with Hover: Ground, but the card data has no Hover keyword, so
--- every vehicle counts.
+-- A unit's card by its name (as spawned units carry it in unitName), from
+-- the card data Global loads. Cached; nil when not found.
+local losCardCache = {}
+local function losUnitCard(name)
+  if name == nil or name == "" then return nil end
+  local key = string.lower(name)
+  if losCardCache[key] ~= nil then return losCardCache[key] or nil end
+  local found = false
+  for _, units in pairs((CardsSchema or {}).units or {}) do
+    for _, unit in pairs(units) do
+      if type(unit) == "table" and unit.name and string.lower(unit.name) == key then
+        found = unit
+        break
+      end
+    end
+    if found then break end
+  end
+  losCardCache[key] = found
+  return found or nil
+end
+
+-- Does this vehicle block line of sight (and so provide cover)? Ground
+-- vehicles do; repulsor vehicles only with Hover: Ground ("hover": "ground"
+-- in their card data). A repulsor whose card can't be found is assumed to
+-- block, so players correct it rather than miss it.
+local function losVehicleBlocks(leader, unitType)
+  if not string.find(unitType, "Repulsor") then return true end
+  local card = losUnitCard(leader.getVar("unitName"))
+  if card == nil then return true end
+  return card.hover == "ground"
+end
+
+-- Every vehicle on the battlefield that blocks line of sight and is in
+-- neither unit of the attack, with its silhouette: the base outline (from
+-- its collider, which matches the base) rising to the unit's silhouette
+-- height (from its card data).
 local function losFindVehicles(request, zonePos, zoneScale)
   local skip = {}
   for _, m in ipairs(request.attackers or {}) do skip[m.guid] = true end
@@ -227,7 +257,7 @@ local function losFindVehicles(request, zonePos, zoneScale)
       if math.abs(p.x - zonePos.x) <= zoneScale.x / 2 + 1 and math.abs(p.z - zonePos.z) <= zoneScale.z / 2 + 1 then
         local leader = getObjectFromGUID(obj.getVar("leaderGUID") or "") or obj
         local unitType = leader.getVar("unitType") or ""
-        if string.find(unitType, "Vehicle") then
+        if string.find(unitType, "Vehicle") and losVehicleBlocks(leader, unitType) then
           local height = tonumber(leader.getVar("silhHeight"))
           local offset = tonumber(leader.getVar("silhOffset")) or 0
           if height == nil or height <= 0 then
