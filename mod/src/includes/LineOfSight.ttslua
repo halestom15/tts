@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v32"
+local LOS_BUILD = "v34"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -149,12 +149,112 @@ local function losSegmentHitsCylinder(p, q, cyl)
   return math.max(ya, yb) >= cyl.y0 and math.min(ya, yb) <= cyl.y1
 end
 
+-- A vehicle's silhouette: its base outline rising to the top of the hull.
+-- Round bases are a cylinder; oblong ones (long, snail, LAAT...) a stadium:
+-- a rectangle of width 2r and length 2h along the axis (ax, az), with a
+-- half circle at each end. v = {x, z, y0, y1, r, h, ax, az}; h = 0 is a
+-- plain cylinder.
+local function losSegmentHitsVehicle(p, q, v)
+  if (v.h or 0) <= 0.01 then
+    return losSegmentHitsCylinder(p, q, v)
+  end
+  local ends = {
+    {x = v.x + v.ax * v.h, z = v.z + v.az * v.h, y0 = v.y0, y1 = v.y1, r = v.r},
+    {x = v.x - v.ax * v.h, z = v.z - v.az * v.h, y0 = v.y0, y1 = v.y1, r = v.r},
+  }
+  if losSegmentHitsCylinder(p, q, ends[1]) or losSegmentHitsCylinder(p, q, ends[2]) then
+    return true
+  end
+  -- The rectangle between the end circles, as a slab test in the vehicle's
+  -- frame: u across the base, w along it.
+  local function toLocal(pt)
+    local dx, dz = pt.x - v.x, pt.z - v.z
+    return -dx * v.az + dz * v.ax, pt.y, dx * v.ax + dz * v.az
+  end
+  local pu, py, pw = toLocal(p)
+  local qu, qy, qw = toLocal(q)
+  local t0, t1 = 0, 1
+  for _, axis in ipairs({{pu, qu, -v.r, v.r}, {py, qy, v.y0, v.y1}, {pw, qw, -v.h, v.h}}) do
+    local a, d = axis[1], axis[2] - axis[1]
+    if d < 0.000001 and d > -0.000001 then
+      if a < axis[3] or a > axis[4] then return false end
+    else
+      local ta, tb = (axis[3] - a) / d, (axis[4] - a) / d
+      if ta > tb then ta, tb = tb, ta end
+      if ta > t0 then t0 = ta end
+      if tb < t1 then t1 = tb end
+      if t0 > t1 then return false end
+    end
+  end
+  return true
+end
+
+-- Horizontal gap from a point to the edge of a vehicle's base outline
+-- (negative inside).
+local function losVehicleGap(v, px, pz)
+  local dx, dz = px - v.x, pz - v.z
+  local h = v.h or 0
+  if h > 0.01 then
+    local along = dx * v.ax + dz * v.az
+    if along > h then along = h elseif along < -h then along = -h end
+    dx, dz = dx - along * v.ax, dz - along * v.az
+  end
+  return math.sqrt(dx * dx + dz * dz) - v.r
+end
+
 -- The third-party vehicle whose silhouette the line crosses, or nil.
 local function losHitsCylinders(ctx, p, q)
   for _, cyl in ipairs(ctx.blockers) do
-    if losSegmentHitsCylinder(p, q, cyl) then return cyl end
+    if losSegmentHitsVehicle(p, q, cyl) then return cyl end
   end
   return nil
+end
+
+-- Every vehicle on the battlefield that is in neither unit of the attack,
+-- with its silhouette: the base outline (from its collider, which matches
+-- the base) rising to the unit's silhouette height (from its card data).
+-- Vehicles block line of sight; strictly that is ground vehicles and
+-- repulsors with Hover: Ground, but the card data has no Hover keyword, so
+-- every vehicle counts.
+local function losFindVehicles(request, zonePos, zoneScale)
+  local skip = {}
+  for _, m in ipairs(request.attackers or {}) do skip[m.guid] = true end
+  for _, m in ipairs(request.defenders or {}) do skip[m.guid] = true end
+  local vehicles = {}
+  for _, obj in ipairs(getAllObjects()) do
+    if obj.getVar("isAMini") == true and not skip[obj.getGUID()] then
+      local p = obj.getPosition()
+      if math.abs(p.x - zonePos.x) <= zoneScale.x / 2 + 1 and math.abs(p.z - zonePos.z) <= zoneScale.z / 2 + 1 then
+        local leader = getObjectFromGUID(obj.getVar("leaderGUID") or "") or obj
+        local unitType = leader.getVar("unitType") or ""
+        if string.find(unitType, "Vehicle") then
+          local height = tonumber(leader.getVar("silhHeight"))
+          local offset = tonumber(leader.getVar("silhOffset")) or 0
+          if height == nil or height <= 0 then
+            height = obj.getVisualBoundsNormalized().size.y
+          end
+          local b = obj.getBoundsNormalized()
+          local wb = obj.getBounds()
+          local width, length = b.size.x, b.size.z
+          local ry = math.rad(obj.getRotation().y)
+          -- Long axis in world space (local z, or local x if wider).
+          local ax, az = math.sin(ry), math.cos(ry)
+          if width > length then
+            width, length = length, width
+            ax, az = math.cos(ry), -math.sin(ry)
+          end
+          table.insert(vehicles, {
+            name = leader.getName() or "a vehicle",
+            x = wb.center.x, z = wb.center.z,
+            y0 = p.y + offset, y1 = p.y + offset + height,
+            r = width / 2, h = math.max(length - width, 0) / 2,
+            ax = ax, az = az,
+          })
+        end
+      end
+    end
+  end
+  return vehicles
 end
 
 -- What counts as terrain for a ray: not a mini (minis only block through the
@@ -858,7 +958,7 @@ function losStartVerdict(request)
   losVerdictRequest = {
     gen = losVerdictGen,
     request = request,
-    blockers = request.blockers or {},
+    blockers = zonePos and losFindVehicles(request, zonePos, zoneScale) or {},
     obbs = obbs,
     pois = pois,
   }
@@ -1169,8 +1269,8 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
   -- defender and not in base contact with the leader.
   local closeVehicles = {}
   for _, cyl in ipairs(ctx.blockers or {}) do
-    local dd = math.sqrt((cyl.x - defPos.x) ^ 2 + (cyl.z - defPos.z) ^ 2) - cyl.r - defSil.r
-    local dl = math.sqrt((cyl.x - leaderPos.x) ^ 2 + (cyl.z - leaderPos.z) ^ 2) - cyl.r - attSil.r
+    local dd = losVehicleGap(cyl, defPos.x, defPos.z) - defSil.r
+    local dl = losVehicleGap(cyl, leaderPos.x, leaderPos.z) - attSil.r
     if dd <= LOS_RANGE_HALF and dl > LOS_BASE_CONTACT then
       table.insert(other, cyl)
       closeVehicles[cyl] = true
@@ -1187,7 +1287,7 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
   end
   local function obscures(piece, ai, di, ap, dp)
     if piece.la == nil then
-      return losSegmentHitsCylinder(ap, dp, piece)
+      return losSegmentHitsVehicle(ap, dp, piece)
     end
     return losPieceBlocks(piece, ai, di, ap, dp)
   end
