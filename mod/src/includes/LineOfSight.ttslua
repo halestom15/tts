@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v33"
+local LOS_BUILD = "v32"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -1340,19 +1340,6 @@ function losVerdictCoroutine()
       if area ~= nil and not (result.obscured and result.by and result.by.cover == "heavy") then
         result.obscured = true
         result.by = {name = area.name, cover = area.cover, note = area.coverNote}
-      end
-      -- Vehicles block as area terrain made of their silhouette cylinder
-      -- (base to top of hull, from the unit's card data): a mini touching
-      -- one is obscured by it too.
-      if not result.obscured then
-        for _, cyl in ipairs(ctx.blockers or {}) do
-          local gap = math.sqrt((cyl.x - def.pos.x) ^ 2 + (cyl.z - def.pos.z) ^ 2) - cyl.r - defSil.r
-          if gap <= LOS_BASE_CONTACT then
-            result.obscured = true
-            result.by = {name = cyl.name or "a vehicle"}
-            break
-          end
-        end
       end
       totalRays = totalRays + result.rays
       if result.clear ~= nil then
