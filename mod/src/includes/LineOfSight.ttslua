@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v34"
+local LOS_BUILD = "v35"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -245,6 +245,8 @@ local function losFindVehicles(request, zonePos, zoneScale)
           end
           table.insert(vehicles, {
             name = leader.getName() or "a vehicle",
+            -- Vehicles always provide heavy cover.
+            cover = "heavy",
             x = wb.center.x, z = wb.center.z,
             y0 = p.y + offset, y1 = p.y + offset + height,
             r = width / 2, h = math.max(length - width, 0) / 2,
@@ -1265,14 +1267,14 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
     end
   end
   -- Vehicles block line of sight at any distance, but only provide cover
-  -- (their type left to the players) like terrain: within range 1/2 of the
-  -- defender and not in base contact with the leader.
+  -- (always heavy) like terrain: within range 1/2 of the defender and not in
+  -- base contact with the leader.
   local closeVehicles = {}
   for _, cyl in ipairs(ctx.blockers or {}) do
     local dd = losVehicleGap(cyl, defPos.x, defPos.z) - defSil.r
     local dl = losVehicleGap(cyl, leaderPos.x, leaderPos.z) - attSil.r
     if dd <= LOS_RANGE_HALF and dl > LOS_BASE_CONTACT then
-      table.insert(other, cyl)
+      table.insert(cyl.cover == "heavy" and heavy or other, cyl)
       closeVehicles[cyl] = true
     end
   end
