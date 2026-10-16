@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v36"
+local LOS_BUILD = "v37"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -273,12 +273,15 @@ local function losFindVehicles(request, zonePos, zoneScale)
             width, length = length, width
             ax, az = math.cos(ry), -math.sin(ry)
           end
+          -- The silhouette rises from the bottom of the base, which can sit
+          -- below the model's origin (a repulsor's hull floats above it).
+          local baseY = math.min(p.y, wb.center.y - wb.size.y / 2)
           table.insert(vehicles, {
             name = leader.getName() or "a vehicle",
             -- Vehicles always provide heavy cover.
             cover = "heavy",
             x = wb.center.x, z = wb.center.z,
-            y0 = p.y + offset, y1 = p.y + offset + height,
+            y0 = baseY + offset, y1 = baseY + offset + height,
             r = width / 2, h = math.max(length - width, 0) / 2,
             ax = ax, az = az,
           })
