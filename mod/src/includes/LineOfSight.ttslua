@@ -1602,3 +1602,20 @@ function losVerdictCoroutine()
   end
   return 1
 end
+
+-- Test hook (tool/los): the pure geometry, exposed only when a test sets
+-- LOS_EXPOSE_FOR_TESTS before loading this file. Nothing happens in TTS.
+if LOS_EXPOSE_FOR_TESTS then
+  LOS_TEST = {
+    samplePoints = losSamplePoints,
+    segmentHitsVehicle = losSegmentHitsVehicle,
+    vehicleGap = losVehicleGap,
+    coverOf = losCoverOf,
+    toObbFrame = losToObbFrame,
+    slabLocal = losSlabLocal,
+    localPoints = losLocalPoints,
+    meshBuild = losMeshBuild,
+    meshBlocks = losMeshBlocks,
+    pieceWithin = losPieceWithin,
+  }
+end
