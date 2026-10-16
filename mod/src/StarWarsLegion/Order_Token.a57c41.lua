@@ -1363,9 +1363,13 @@ function buildLosRequest(attackTargetObj)
     for _, obj in pairs(zoneObjects) do
         if obj.getVar("isAMini") == true then
             table.insert(request.miniGuids, obj.getGUID())
+            -- Vehicles block line of sight and provide cover. Strictly that is
+            -- ground vehicles and repulsors with Hover: Ground, but the card
+            -- data has no Hover keyword, so every vehicle counts.
             local thirdParty = obj.getGUID() ~= attackerGUID and obj.getGUID() ~= targetGUID
             local unitType = obj.getVar("unitType") or ""
-            local blocks = thirdParty and string.find(unitType, "Ground Vehicle") ~= nil
+            local blocks = thirdParty and string.find(unitType, "Vehicle") ~= nil
+            local unitName = obj.getName() or "a vehicle"
             local radius, height, offset = silhouetteOf(obj)
             for _, guid in pairs(obj.getTable("miniGUIDs") or {}) do
                 table.insert(request.miniGuids, guid)
@@ -1374,6 +1378,7 @@ function buildLosRequest(attackTargetObj)
                     if m ~= nil and isMiniOnTable(m, zoneObjects) then
                         local mp = m.getPosition()
                         table.insert(request.blockers, {
+                            name = unitName,
                             x = mp.x, z = mp.z,
                             y0 = mp.y + offset, y1 = mp.y + offset + height,
                             r = radius,

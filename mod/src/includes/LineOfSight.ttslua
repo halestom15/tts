@@ -24,7 +24,7 @@ local LOS_PREFETCH_BUDGET = 0.004
 -- How often the battlefield is checked for terrain to prepare.
 local LOS_PREFETCH_INTERVAL = 3
 -- Bump with every LoS change (printed with LOS_DEBUG).
-local LOS_BUILD = "v30"
+local LOS_BUILD = "v31"
 local LOS_DEBUG = false
 
 local function losLog(msg)
@@ -149,11 +149,12 @@ local function losSegmentHitsCylinder(p, q, cyl)
   return math.max(ya, yb) >= cyl.y0 and math.min(ya, yb) <= cyl.y1
 end
 
+-- The third-party vehicle whose silhouette the line crosses, or nil.
 local function losHitsCylinders(ctx, p, q)
   for _, cyl in ipairs(ctx.blockers) do
-    if losSegmentHitsCylinder(p, q, cyl) then return true end
+    if losSegmentHitsCylinder(p, q, cyl) then return cyl end
   end
-  return false
+  return nil
 end
 
 -- What counts as terrain for a ray: not a mini (minis only block through the
@@ -255,8 +256,11 @@ local function losMakeObb(obj)
   end
   local rx, ry, rz = math.rad(r.x), math.rad(r.y), math.rad(r.z)
   local cover, coverNote = losCoverOf(obj)
+  local description = string.lower(obj.getDescription() or "")
   return {
     obj = obj,
+    -- Area terrain gives cover to minis touching or inside it.
+    area = string.find(description, "area terrain") ~= nil,
     bundle = obj.name == "Custom_Assetbundle",
     name = obj.getName() or "?",
     cover = cover,
@@ -960,30 +964,68 @@ end
 -- prepared in the background already; if not, finished now at the verdict's
 -- own pace) and both minis' sample points in each piece's frame. Returns
 -- false when the verdict went stale.
+-- Range 1/2, in table inches: terrain this close to a defending mini's base
+-- can obscure it.
+local LOS_RANGE_HALF = 3
+-- How close a piece must come to the leader's base edge to be in base
+-- contact with it.
+local LOS_BASE_CONTACT = 0.05
+
+-- A piece's mesh, ready to use: usually prepared in the background already;
+-- if not, finished now at the verdict's own pace. Returns the entry (nil if
+-- the piece has none or it failed), and false when the verdict went stale.
+local function losReadyMesh(ctx, obb)
+  if obb.url == nil then return nil, true end
+  local entry = losMeshRequest(obb.url)
+  local waited = 0
+  while entry.status == "loading" and waited < 600 do
+    coroutine.yield(0)
+    losFrameStart = os.clock()
+    waited = waited + 1
+    if ctx.gen ~= losVerdictGen then return nil, false end
+  end
+  if entry.status == "loading" then entry.status = "failed" end
+  while not losMeshAdvance(entry, LOS_FRAME_BUDGET) do
+    coroutine.yield(0)
+    losFrameStart = os.clock()
+    if ctx.gen ~= losVerdictGen then return nil, false end
+  end
+  return entry.status == "ready" and entry or nil, true
+end
+
 local function losPrepareCorridor(ctx, obbs, apts, dpts)
   for _, obb in ipairs(obbs) do
-    obb.mesh = nil
-    if obb.url ~= nil then
-      local entry = losMeshRequest(obb.url)
-      local waited = 0
-      while entry.status == "loading" and waited < 600 do
-        coroutine.yield(0)
-        losFrameStart = os.clock()
-        waited = waited + 1
-        if ctx.gen ~= losVerdictGen then return false end
-      end
-      if entry.status == "loading" then entry.status = "failed" end
-      while not losMeshAdvance(entry, LOS_FRAME_BUDGET) do
-        coroutine.yield(0)
-        losFrameStart = os.clock()
-        if ctx.gen ~= losVerdictGen then return false end
-      end
-      obb.mesh = entry.status == "ready" and entry or nil
-    end
+    local entry, live = losReadyMesh(ctx, obb)
+    if not live then return false end
+    obb.mesh = entry
     obb.la = losLocalPoints(obb, apts)
     obb.ld = losLocalPoints(obb, dpts)
   end
   return true
+end
+
+-- The area terrain a defending mini is touching or inside (its footprint,
+-- not its height): such a mini is obscured by it, no line needed. Heavy
+-- cover preferred. Returns the piece, nil, or false when the verdict went
+-- stale.
+local function losAreaTerrain(ctx, defPos, defSil)
+  local found = nil
+  for _, obb in ipairs(ctx.obbs) do
+    if obb.area then
+      local dx, dz = obb.pos.x - defPos.x, obb.pos.z - defPos.z
+      local reach = obb.reach + defSil.r + LOS_BASE_CONTACT
+      if dx * dx + dz * dz <= reach * reach then
+        local entry, live = losReadyMesh(ctx, obb)
+        if not live then return false end
+        if losPieceWithin(obb, entry, defPos.x, defPos.z, defSil.r + LOS_BASE_CONTACT) then
+          if found == nil or (obb.cover == "heavy" and found.cover ~= "heavy") then
+            found = obb
+          end
+        end
+      end
+    end
+  end
+  return found
 end
 
 local function losReleaseCorridor(obbs)
@@ -1089,12 +1131,6 @@ local function losSearch(ctx, fromPos, fromSil, toPos, toSil, wantBlocked, maxLe
   return clearLine, blockedLine, rays
 end
 
--- Range 1/2, in table inches: terrain this close to a defending mini's base
--- can obscure it.
-local LOS_RANGE_HALF = 3
--- How close a piece must come to the leader's base edge to be in base
--- contact with it.
-local LOS_BASE_CONTACT = 0.05
 
 -- The leader's search toward one defending mini, following the cover rules:
 -- the mini is obscured when no line is clear, or when some line is blocked
@@ -1126,6 +1162,14 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
     local dl = math.sqrt((poi.x - leaderPos.x) ^ 2 + (poi.z - leaderPos.z) ^ 2) - poi.r - attSil.r
     if dd <= LOS_RANGE_HALF and dl > LOS_BASE_CONTACT then
       table.insert(heavy, poi)
+    end
+  end
+  -- Vehicles provide cover too (their type is left to the players).
+  for _, cyl in ipairs(ctx.blockers or {}) do
+    local dd = math.sqrt((cyl.x - defPos.x) ^ 2 + (cyl.z - defPos.z) ^ 2) - cyl.r - defSil.r
+    local dl = math.sqrt((cyl.x - leaderPos.x) ^ 2 + (cyl.z - leaderPos.z) ^ 2) - cyl.r - attSil.r
+    if dd <= LOS_RANGE_HALF and dl > LOS_BASE_CONTACT then
+      table.insert(other, cyl)
     end
   end
   for _, obb in ipairs(obbs) do
@@ -1182,9 +1226,9 @@ local function losLeaderSearch(ctx, leaderPos, attSil, defPos, defSil, progress)
             end
           end
           if clearLine == nil then
-            local hit = nil
-            if losHitsCylinders(ctx, ap, dp) then
-              hit = {name = "a vehicle"}
+            local hit = losHitsCylinders(ctx, ap, dp)
+            if hit ~= nil then
+              -- blocked by a vehicle
             elseif lastBlocker ~= nil and losPieceBlocks(lastBlocker, ai, di, ap, dp) then
               hit = lastBlocker
             else
@@ -1278,6 +1322,14 @@ function losVerdictCoroutine()
       local result = losLeaderSearch(ctx, leader.pos, attSil, def.pos, defSil,
         function(f) return 60 * ((d - 1) + f) / #defenders end)
       if result == nil then return finish() end
+      -- Touching or inside area terrain: obscured by it, whatever the lines
+      -- say (keeping a heavy obscurer found by the lines).
+      local area = losAreaTerrain(ctx, def.pos, defSil)
+      if area == false then return finish() end
+      if area ~= nil and not (result.obscured and result.by and result.by.cover == "heavy") then
+        result.obscured = true
+        result.by = {name = area.name, cover = area.cover, note = area.coverNote}
+      end
       totalRays = totalRays + result.rays
       if result.clear ~= nil then
         attackerSees[leader.guid] = true
