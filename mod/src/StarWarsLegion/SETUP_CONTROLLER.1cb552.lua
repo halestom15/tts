@@ -217,6 +217,123 @@ function setMirrorDeployment(params)
   _G.mirrorDeployment = params.mirror == true
 end
 
+-- Called by the game controller before setting up a mission: the Objective's
+-- POIs then go on the battlefield instead of staying in its bag.
+function setPlaceMissionPois(params)
+  _G.missionPoisOnMap = params.place == true
+end
+
+-- A POI is put exactly on its spot, flat, and locked at once: letting it fall
+-- could clip an arch beside it and knock it away. It goes on the ground when
+-- nothing stands there, even under an arch, and on top of a hill or a building
+-- when one does. Players can unlock one with the usual L key to adjust it.
+local POI_ORIGIN_HEIGHT = 0.08 -- the token's origin is on its top face
+local POI_CLEARANCE_CENTER = 0.6
+local POI_CLEARANCE_SIZE = {1.6, 0.9, 1.6} -- under the POI's 2": grazing a wall is fine
+local POI_FOOTPRINT = {1.6, 0.1, 1.6}
+local POI_CAST_HEIGHT = 30
+local MISSION_POI_TAG = "MissionPOI"
+-- A mound's collider can sit well below what is drawn, which would sink the
+-- POI into it, so low terrain counts by its visible top. Not taller terrain:
+-- the visible top of a wood is its treetops, its collider the ground to stand on.
+local POI_LOW_TERRAIN = 1
+
+function isReconSelected()
+  return Deck:_scenarioKey(_G.selectedScenario) == "skirmish"
+end
+
+local function terrainOnSpot(p)
+  local hits = Physics.cast({
+    origin       = {p.x, p.y + POI_CLEARANCE_CENTER, p.z},
+    direction    = {0, 1, 0},
+    type         = 3,
+    size         = POI_CLEARANCE_SIZE,
+    max_distance = 0,
+  })
+  local terrain = {}
+  for _, hit in ipairs(hits or {}) do
+    local obj = hit.hit_object
+    if obj ~= nil and obj.getName() ~= "POI Token" and obj.getName() ~= "BATTLEFIELD" then
+      terrain[obj.getGUID()] = true
+    end
+  end
+  return terrain
+end
+
+-- The height of the surface a POI rests on: the top of what stands on its spot.
+local function poiRestHeight(p)
+  local terrain = terrainOnSpot(p)
+  local height = p.y
+  local hits = Physics.cast({
+    origin       = {p.x, p.y + POI_CAST_HEIGHT, p.z},
+    direction    = {0, -1, 0},
+    type         = 3,
+    size         = POI_FOOTPRINT,
+    max_distance = POI_CAST_HEIGHT + 1,
+  })
+  for _, hit in ipairs(hits or {}) do
+    local obj = hit.hit_object
+    if obj ~= nil and terrain[obj.getGUID()] then
+      local visual = obj.getVisualBoundsNormalized()
+      local visualTop = visual.center.y + visual.size.y / 2
+      if visualTop - p.y <= POI_LOW_TERRAIN then
+        height = math.max(height, visualTop)
+      end
+      height = math.max(height, hit.point.y)
+    end
+  end
+  return height
+end
+
+local function poisInBag(bag)
+  local pois = {}
+  for _, entry in ipairs(bag.getObjects()) do
+    if entry.name == "POI Token" then
+      table.insert(pois, entry)
+    end
+  end
+  return pois
+end
+
+local function placeMissionPois(bag, cardName)
+  local positions = Global.call("getMissionPoiPositions", {
+    cardName = cardName,
+    isRecon  = isReconSelected(),
+  })
+  if positions == nil then
+    broadcastToAll("The map doesn't match this mission: the POIs stay in the Objective's bag.", {1, 0.8, 0.4})
+    return
+  end
+  -- A mission built again must not leave the last one's POIs on the map.
+  for _, poi in ipairs(getObjectsWithTag(MISSION_POI_TAG)) do
+    destroyObject(poi)
+  end
+  Wait.condition(function()
+    for i, entry in ipairs(poisInBag(bag)) do
+      local p = positions[i]
+      if p ~= nil then
+        local target = {p.x, poiRestHeight(p) + POI_ORIGIN_HEIGHT, p.z}
+        bag.takeObject({
+          guid              = entry.guid,
+          position          = target,
+          rotation          = {0, 0, 0},
+          smooth            = false,
+          callback_function = function(poi)
+            poi.addTag(MISSION_POI_TAG)
+            poi.setLock(true)
+            poi.setPosition(target)
+            poi.setRotation({0, 0, 0})
+          end,
+        })
+      end
+    end
+  end, function()
+    return #poisInBag(bag) >= #positions
+  end, 10, function()
+    broadcastToAll("The POIs took too long to load: they stay in the Objective's bag.", {1, 0.8, 0.4})
+  end)
+end
+
 -- Removes battle cards from the setup mounts (before the game controller
 -- places a new mission).
 function clearMountedCards()
@@ -473,13 +590,27 @@ function activatedeployment(name)
     if zone and #zone > 0 then
       spawnDeploymentBoundary(zone, _G.mirrorDeployment)
     end
+    Global.call("setPoiPlacementAids", {
+      show    = true,
+      isRecon = isReconSelected(),
+    })
     deactivateDeploymentMenu()
-    spawnObjs("deployment", name)
+    local callback = nil
+    if _G.missionPoisOnMap then
+      _G.missionPoisOnMap = false
+      callback = function(bag) placeMissionPois(bag, name) end
+    end
+    spawnObjs("deployment", name, callback)
+end
+
+function removeDeploymentOverlay()
+    Global.call("setPoiPlacementAids", {show = false})
+    deploymentMenu()
 end
 
 function deactivateDeploymentMenu()
     clearButton("deployment")
-    createOptionButton("deployment", "deploymentMenu", "Remove Overlay", "Remove Deployment Overlay", {0.7,0,0})
+    createOptionButton("deployment", "removeDeploymentOverlay", "Remove Overlay", "Remove Deployment Overlay", {0.7,0,0})
 end
 
 function activateconditions(name)
