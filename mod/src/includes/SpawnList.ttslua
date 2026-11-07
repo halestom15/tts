@@ -251,6 +251,8 @@ local function initListSpawner(params)
 
       -- SET LEADER GUID
       selectedMiniScript = selectedMiniScript .. "leaderGUID = \"" .. leaderGUID .. "\"\n"
+      -- Read by the line of sight (vehicles block it).
+      selectedMiniScript = selectedMiniScript .. "unitType = " .. string.format("%q", pMiniTable.type or "") .. "\n"
 
       if i == leaderInt then
         -- DESCRIPTION
