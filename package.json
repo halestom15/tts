@@ -9,6 +9,7 @@
     "lint:lua": "luacheck mod/src",
     "start": "npx ts-node tool/main.ts develop mod/src/StarWarsLegion.json dist/StarWarsLegion.json",
     "test:los": "lua tool/los/geometry.test.lua",
+    "test:lua": "lua tool/test/Mission.test.lua",
     "validate": "ts-node ./tool/validate.ts"
   },
   "license": "MIT",

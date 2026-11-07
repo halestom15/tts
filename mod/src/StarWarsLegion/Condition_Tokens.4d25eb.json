@@ -6,14 +6,14 @@
       "posX": 57.69312,
       "posY": 0.9395281,
       "posZ": 14.0338182,
-      "rotX": -8.219864e-7,
+      "rotX": -8.219864e-07,
       "rotY": 90.00001,
       "rotZ": -0.00160648522,
       "scaleX": 1.99999917,
       "scaleY": 1.99999917,
       "scaleZ": 1.99999917
     },
-    "Nickname": "Condition Tokens",
+    "Nickname": "Advantage / Asset Tokens",
     "Description": "",
     "GMNotes": "",
     "ColorDiffuse": {
@@ -38,7 +38,7 @@
     "MeshIndex": -1,
     "CustomMesh": {
       "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441794/A5214853EF5CF66714FC230767A634761777F6A9/",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/advantage_asset_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,

@@ -6,12 +6,12 @@
       "posX": -45.4451447,
       "posY": 0.946672738,
       "posZ": 16.5068321,
-      "rotX": -0.0000181217056,
+      "rotX": -1.81217056e-05,
       "rotY": 90.00843,
-      "rotZ": 0.000018564313,
-      "scaleX": 1.99999917,
-      "scaleY": 1.99999917,
-      "scaleZ": 1.99999917
+      "rotZ": 1.8564313e-05,
+      "scaleX": 1.8592449,
+      "scaleY": 1.8592449,
+      "scaleZ": 1.8592449
     },
     "Nickname": "Smoke Tokens",
     "Description": "",
@@ -38,7 +38,7 @@
     "MeshIndex": -1,
     "CustomMesh": {
       "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/785236717874061016/BB4832A82AEEA19EE9B1E9498380E7D3850DB0B6/",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/smoke_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,

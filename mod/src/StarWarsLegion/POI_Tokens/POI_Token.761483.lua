@@ -9,7 +9,20 @@ require('!/RangeRulers')
 -- token = 25.1mm diameter (range 1)
 -- poi = 50.8mm diameter (range 0.5 aka 3in)
 
+-- The POI keeps its own copy of the range button (its own position, size and
+-- tint) and does not go through !/TokenWithRangeRuler, so it gets the same
+-- treatment by hand: one button that follows the visible face, instead of two
+-- superposed ones. The helpers come from !/RangeRulers. The look is unchanged:
+-- position, width, height, font and tint are kept as they were.
+-- Just above the face. Buttons count in the POI's bounds: higher up, on a
+-- token 0.08 thick, they hung below it once turned over and the next flip
+-- threw it through the table. Both states have their origin on the top
+-- face, so the same height suits the new POI and the old one.
+BUTTON_HEIGHT = 0.005
+
 function onLoad()
+  -- Only tagged objects snap to the POI points on the battlefield.
+  self.addTag("POI")
   rangeOn = false
   -- Explicit, like Unit_Leader and BombCarts do: silhouettes are attachments
   -- and never survive a save, so a load always starts with none up.
@@ -19,7 +32,17 @@ function onLoad()
   addSilhouetteButton()
 end
 
+function onRotate(spin, flip, player_color, old_spin, old_flip)
+  reorientButtons(flip)
+end
+
+-- onLoad still asks for its two buttons, one per face, exactly as it always
+-- did: the first call builds the single reoriented button, the second is a
+-- no-op. The requested rotation is ignored, the visible face decides.
+local rangeButtonBuilt = false
 function createButton(rotation)
+  if rangeButtonBuilt then return end
+  rangeButtonBuilt = true
   local gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
   local btnTint = gameData.getTable("battlefieldTint")
   self.createButton({
@@ -27,14 +50,15 @@ function createButton(rotation)
     function_owner = self,
     label = "R",
     tooltip = "Spawn Range Ruler",
-    position = {-0.2, 0.1, 1.15},
-    rotation = rotation,
+    position = {-0.2, BUTTON_HEIGHT, 1.15},
+    rotation = uprightButtonRotation(0),
     width = 230,
     height = 180,
     font_size = 100,
     color= {btnTint["r"], btnTint["g"], btnTint["b"], 0.7},
     font_color= {1, 1, 1, 100}
   })
+  registerOrientedButton("R", 0)
 end
 
 function onDestroy()
@@ -83,7 +107,8 @@ function addSilhouetteButton()
       function_owner = self,
       label = "SIL",
       tooltip = "Toggle silhouettes on this unit",
-      position = {0.2, 0.1, 1.15},
+      position = {0.2, BUTTON_HEIGHT, 1.15},
+      rotation = uprightButtonRotation(0),
       width = 230,
       height = 180,
       font_size = 100,
@@ -91,6 +116,8 @@ function addSilhouetteButton()
       font_color= {1, 1, 1, 100}
     }
     self.createButton(btnData)
+    -- It had no rotation at all, so it read mirrored on the back face too.
+    registerOrientedButton("SIL", 0)
   end    
 
   function toggleSilhouettes()
@@ -128,7 +155,7 @@ function addSilhouetteButton()
     local scale = 2.0
     local height = 3.0
     local offset = 0.0
-    local silhouetteData = "https://steamusercontent-a.akamaihd.net/ugc/5063766435505471684/D97103C9FFB76016DDF9CE66A7622BDB3E810160/"
+    local silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/sihl_metal_v2.unity3d"
     if obj ~= nil then
       local objUp = obj.getTransformUp()
       local offsetVector = Vector.new(objUp.x * offset, objUp.y * offset, objUp.z * offset)

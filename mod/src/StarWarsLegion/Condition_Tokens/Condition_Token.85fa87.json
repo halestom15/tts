@@ -13,7 +13,7 @@
       "scaleY": 1,
       "scaleZ": 1
     },
-    "Nickname": "Condition Token",
+    "Nickname": "Advantage / Asset Token",
     "Description": "",
     "GMNotes": "",
     "ColorDiffuse": {
@@ -36,7 +36,7 @@
     "Hands": false,
     "CustomMesh": {
       "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/786360308354563594/D7CA9A23D1F8610544A092594F1CFF19C8C0A578/",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/advantage_asset_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
@@ -50,10 +50,7 @@
     "States": {}
   },
   "StatesPaths": {
-    "2": "Condition_Token.7970ad.json",
-    "3": "Condition_Token.6d7d77.json",
-    "4": "Condition_Token.e7d4e1.json",
-    "5": "Condition_Token.2f908d.json",
-    "6": "Condition_Token.ca106f.json"
+    "2": "Condition_Token.416a7a.json",
+    "3": "Objective_Token.2a96f4.json"
   }
 }

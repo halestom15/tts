@@ -40,7 +40,11 @@ historically that made concurrent edits and collaboration much more difficult:
 instead we have a series of scripts that "compile" it on demand from individual
 scripts and objects.
 
-> _WARNING_: Currently only Windows-based development is fully supported.
+> _WARNING_: Currently only Windows and macOS development is supported.
+>
+> On macOS, TTS cannot follow links into protected folders (such as
+> `~/Documents`), so `npm start` instead stores the compiled mod in
+> `~/Library/Tabletop Simulator/Saves/TTSDevLink` and links `dist/` to it.
 
 Once you've cloned the repository, you can build the mod:
 
