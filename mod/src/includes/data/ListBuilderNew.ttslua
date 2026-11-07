@@ -403,7 +403,7 @@ function _createArmy(faction)
       tint      = {0, 0.913, 1},
     },
     {
-      title     = stringx.titleCase(_getSelectedScenario()) .. " Battle Deck",
+      title     = stringx.titleCase(scenarioLabel(_getSelectedScenario())) .. " Battle Deck",
       tooltip   = "Change battle deck",
       secondary = "→",
       callback  = _changeBattleDeck,
@@ -486,7 +486,7 @@ function _saveArmy()
       "%s Army: %d Points (%s)",
       stringx.titleCase(__state.faction),
       __state.points,
-      stringx.titleCase(_getSelectedScenario())
+      stringx.titleCase(scenarioLabel(_getSelectedScenario()))
     )
   )
   dataDisk.script_state = JSON.encode(listData)

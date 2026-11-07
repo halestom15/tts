@@ -77,6 +77,33 @@ function Mission:create(params)
   return meta
 end
 
+-- A Recon mission has no modify turns: from one shared set of cards, the blue
+-- player draws the Objective and the Secondary, and each player an Advantage.
+--
+-- params.pool     = {objective = {...}, secondary = {...}, advantage = {...}}
+-- params.blueSeat = "Red" or "Blue" (who is the blue player)
+-- params.random   = optional function(n) returning 1..n (for tests)
+function Mission:createRecon(params)
+  local random = params.random or math.random
+  local blue = params.blueSeat
+  local red = otherSeat(blue)
+  local mission = Mission:create({blueSeat = blue, random = random})
+  local pool = {}
+  local function draw(kind, seat)
+    return {name = table.remove(pool[kind]), owner = seat}
+  end
+  for _, kind in ipairs(MISSION_KINDS) do
+    pool[kind] = shuffle(copyList(params.pool[kind]), random)
+  end
+  mission.cards.objective = draw("objective", blue)
+  mission.cards.secondary = draw("secondary", blue)
+  mission.cards.advantage[blue] = draw("advantage", blue)
+  mission.cards.advantage[red] = draw("advantage", red)
+  mission._first = blue
+  mission._turn = MISSION_TURNS
+  return mission
+end
+
 function Mission.otherSeat(seat)
   return otherSeat(seat)
 end
