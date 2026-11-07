@@ -11,16 +11,12 @@ function getMiniSharedScript()
 local _shared = {
   tiltLimit     = 0.34, -- roughly cos(70deg); below this the mini is tipped (vehicles may stand at 45deg)
   pendingSettle = false,
+  flippedTag    = "Flipped", -- a tag, so a mini turned over on purpose stays so through a save or an undo
 }
 
-local function _options()
-  return Global.getTable("miniOptions") or {}
-end
-
--- Make sure the model stands uprht
-
-function sharedFixUpright()
-  if self.held_by_color ~= nil then
+-- Make sure the model stands upright
+local function fixUpright()
+  if self.held_by_color ~= nil or self.hasTag(_shared.flippedTag) then
     return
   end
   local up = self.getTransformUp()
@@ -43,17 +39,21 @@ function sharedFixUpright()
 end
 
 local function _scheduleSettle()
-  if _shared.pendingSettle or _options().upright == false then
+  if _shared.pendingSettle then
     return
   end
   _shared.pendingSettle = true
   Wait.condition(
     function()
       _shared.pendingSettle = false
-      sharedFixUpright()
+      pcall(fixUpright)
     end,
     function()
-      return self.resting or self.held_by_color ~= nil
+      -- A Wait outlives its object, and a dead handle throws on any access.
+      local ok, done = pcall(function()
+        return self.resting or self.held_by_color ~= nil
+      end)
+      return not ok or done
     end,
     6,
     function()
@@ -62,41 +62,37 @@ local function _scheduleSettle()
   )
 end
 
--- Shared functions
-function sharedOnDropped(_color)
-  _scheduleSettle()
-end
-
-function sharedOnCollisionEnter(_info)
-  if self.held_by_color ~= nil or self.resting then
-    return
-  end
-  _scheduleSettle()
-end
-
-local _prevOnLoad = onload or onLoad
 local _prevOnDropped = onDropped
 local _prevOnCollisionEnter = onCollisionEnter
-onload = nil
-
-function onLoad(saveState)
-  if _prevOnLoad then
-    _prevOnLoad(saveState)
-  end
-end
+local _prevOnRotate = onRotate
 
 function onDropped(color)
   if _prevOnDropped then
     _prevOnDropped(color)
   end
-  sharedOnDropped(color)
+  _scheduleSettle()
 end
 
 function onCollisionEnter(info)
   if _prevOnCollisionEnter then
     _prevOnCollisionEnter(info)
   end
-  sharedOnCollisionEnter(info)
+  if self.held_by_color == nil and not self.resting then
+    _scheduleSettle()
+  end
+end
+
+function onRotate(spin, flip, player_color, old_spin, old_flip)
+  if _prevOnRotate then
+    _prevOnRotate(spin, flip, player_color, old_spin, old_flip)
+  end
+  if flip ~= old_flip then
+    if flip > 90 and flip < 270 then
+      self.addTag(_shared.flippedTag)
+    else
+      self.removeTag(_shared.flippedTag)
+    end
+  end
 end
 -- END MINI SHARED -----------------------------------------------------------
 ]==]
