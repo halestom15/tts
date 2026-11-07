@@ -1226,26 +1226,28 @@ function attackMenu(attackTargetObj)
 
 end
 
+-- Suppression and wound are counters (see !/TokenCounters in the Global):
+-- +1 on the unit's token, or a new one where these buttons always dropped it.
 function addSuppression(selectedSuppressionObj)
     local suppressionPos = selectedSuppressionObj.getPosition()
     suppressionPos.y = suppressionPos.y + 1
-    suppressionBag = getObjectFromGUID(Global.getVar("suppressionBagGUID"))
-    suppressionBag.takeObject({
-        position = suppressionPos,
-        rotation = selectedSuppressionObj.getRotation()
+    Global.call("gAddCounterToUnit", {
+        kind = "Suppression Token",
+        leaderGUID = selectedSuppressionObj.getGUID(),
+        spawnPos = suppressionPos,
+        spawnRot = selectedSuppressionObj.getRotation(),
     })
 end
 
 function addWound(selectedWoundObj)
     local woundPos = selectedWoundObj.getPosition()
     woundPos.y = woundPos.y + 1
-    woundBag = getObjectFromGUID(Global.getVar("woundBagGUID"))
-
     woundPos = translatePos(woundPos,selectedWoundObj.getRotation(),1, 0)
-
-    woundBag.takeObject({
-        position = woundPos,
-        rotation = selectedWoundObj.getRotation()
+    Global.call("gAddCounterToUnit", {
+        kind = "Wound Token",
+        leaderGUID = selectedWoundObj.getGUID(),
+        spawnPos = woundPos,
+        spawnRot = selectedWoundObj.getRotation(),
     })
 end
 
