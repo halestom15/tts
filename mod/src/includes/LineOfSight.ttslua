@@ -1,8 +1,7 @@
 -- Line of sight engine, run by Global for every order token.
 --
--- The order token that ATTACKs builds a request (its unit's sample points,
--- the defending minis, the vehicles that block) and hands it to Global with
--- losStartVerdict; Global finds the witness lines, draws them, then calls the
+-- The order token that ATTACKs builds a request (its unit's minis, the
+-- defending minis) and hands it to Global with losStartVerdict; Global finds the witness lines, draws them, then calls the
 -- token's losVerdictDone so it can raise the silhouettes.
 --
 -- Why Global: every order token runs its own copy of the token script, so a
@@ -31,14 +30,21 @@ local function losLog(msg)
   if LOS_DEBUG then print("[LOS] " .. msg) end
 end
 
+local losBarShown = nil
+
+-- Only when the percentage changes: a UI write on every frame is not free.
 local function losBarSet(pct)
+  local whole = math.floor(pct)
+  if whole == losBarShown then return end
+  losBarShown = whole
   pcall(function()
-    UI.setAttribute("progressRuleFill", "width", math.floor(pct) .. "%")
+    UI.setAttribute("progressRuleFill", "width", whole .. "%")
     UI.setAttribute("progressRule", "active", "true")
   end)
 end
 
 local function losBarHide()
+  losBarShown = nil
   pcall(function() UI.setAttribute("progressRule", "active", "false") end)
 end
 
@@ -297,7 +303,8 @@ end
 -- miniGuids may be nil (background preparation): then only isAMini is asked.
 local function losIsTerrain(miniGuids, o)
   if miniGuids ~= nil and miniGuids[o.getGUID()] then return false end
-  if o.getVar("isAMini") == true then return false end
+  -- isAMini only marks leaders: the other minis carry leaderGUID.
+  if o.getVar("isAMini") == true or o.getVar("leaderGUID") ~= nil then return false end
   local t = o.type
   if t == "Card" or t == "Deck" or t == "Die" or t == "Bag" or t == "Infinite" then
     return false
@@ -315,14 +322,15 @@ local function losIsTerrain(miniGuids, o)
   end
   -- Game aids, many of them asset bundles the mod spawns: tokens, rulers,
   -- templates, silhouettes, deployment and masking boundaries, the POI and
-  -- height guides, smoke. Maps can build terrain from asset bundles too
+  -- height guides, smoke, and a map's dust, fog or mist. Maps can build terrain from asset bundles too
   -- (Alderaan's spires and landspeeders), so those are only skipped by name,
   -- or when unnamed.
   if string.find(name, "token") or string.find(name, "ruler")
     or string.find(name, "template") or string.find(name, "dice")
     or string.find(name, "silhouette") or string.find(name, "objective")
     or string.find(name, "boundary") or string.find(name, "maximum move")
-    or string.find(name, "guide") or string.find(name, "smoke") then
+    or string.find(name, "guide") or string.find(name, "smoke")
+    or string.find(name, "dust") or string.find(name, "fog") or string.find(name, "mist") then
     return false
   end
   if o.name == "Custom_Assetbundle" and name == "" then
@@ -548,7 +556,7 @@ local function losMeshBuild(entry)
       end
     end
     lines = lines + 1
-    if lines % 200 == 0 then losMeshYield() end
+    if lines % 20 == 0 then losMeshYield() end
   end
   entry.text = nil
   if n == 0 then
@@ -596,6 +604,7 @@ local function losMeshBuild(entry)
     local c0x, c0y, c0z = math.huge, math.huge, math.huge
     local c1x, c1y, c1z = -math.huge, -math.huge, -math.huge
     for k = s, e do
+      if k % 500 == 0 then losMeshYield() end
       local i = order[k]
       if tminx[i] < x0 then x0 = tminx[i] end
       if tminy[i] < y0 then y0 = tminy[i] end
@@ -627,7 +636,10 @@ local function losMeshBuild(entry)
         key, mid = cz, (c0z + c1z) / 2
       end
       local i, j = s, e
+      local swept = 0
       while i <= j do
+        swept = swept + 1
+        if swept % 500 == 0 then losMeshYield() end
         if key[order[i]] < mid then
           i = i + 1
         else
@@ -891,9 +903,11 @@ local function losOnBattlefield(p, zonePos, zoneScale)
     and math.abs(p.z - zonePos.z) <= zoneScale.z / 2 + 1
 end
 
+-- Returns true while there is work: terrain seen for the first time, or a
+-- mesh still downloading or being prepared.
 function losPrefetchScan()
   local zonePos, zoneScale = losBattlefieldFootprint()
-  if zonePos == nil then return end
+  if zonePos == nil then return false end
   local pending = false
   for _, obj in ipairs(getAllObjects()) do
     if obj.name == "Custom_Model" then
@@ -909,6 +923,7 @@ function losPrefetchScan()
           end
         end
         losScanned[guid] = seen
+        if seen then pending = true end
       end
       if seen then
         local entry = losMeshRequest(seen)
@@ -922,6 +937,7 @@ function losPrefetchScan()
     losPrefetching = true
     startLuaCoroutine(Global, "losPrefetchCoroutine")
   end
+  return pending
 end
 
 function losPrefetchCoroutine()
@@ -953,8 +969,65 @@ function losPrefetchCoroutine()
   return 1
 end
 
+-- Scans every few seconds while there is something to prepare, and for a while
+-- after the last change: a map unpacks its terrain over many frames and moves
+-- pieces into place after they appear. Once quiet it stops, and anything placed
+-- on the table wakes it up again.
+-- One table rather than separate locals: Global sits at Lua's limit of 200
+-- top-level locals.
+local losScan = {quietLimit = 10, quiet = 0, running = false}
+
+function losScanLoop()
+  if losPrefetchScan() then
+    losScan.quiet = 0
+  else
+    losScan.quiet = losScan.quiet + 1
+  end
+  if losScan.quiet < losScan.quietLimit then
+    Wait.time(losScanLoop, LOS_PREFETCH_INTERVAL)
+  else
+    losScan.running = false
+  end
+end
+
+function losWakeScan()
+  losScan.quiet = 0
+  if not losScan.running then
+    losScan.running = true
+    Wait.time(losScanLoop, LOS_PREFETCH_INTERVAL)
+  end
+end
+
 function losStartPrefetch()
-  Wait.time(losPrefetchScan, LOS_PREFETCH_INTERVAL, -1)
+  losWakeScan()
+end
+
+-- From the Global's onObjectSpawn and onObjectDrop.
+function losOnObjectPlaced(obj)
+  if obj ~= nil and obj.name == "Custom_Model" then
+    losWakeScan()
+  end
+end
+
+local function losSummaryHide()
+  pcall(function() UI.setAttribute("losSummary", "active", "false") end)
+end
+
+function losCancelButton(shown)
+  pcall(function() UI.setAttribute("losCancelButton", "active", shown and "true" or "false") end)
+end
+
+-- The panel comes up as soon as an attack starts, saying it is working, with a
+-- button to stop it: on big lists a verdict takes a while.
+function losSummaryCalculating()
+  pcall(function()
+    UI.setValue("losGreenCount", "")
+    UI.setValue("losRedCount", "")
+    UI.setValue("losCover", "Calculating line of sight...")
+    UI.setValue("losModelCounts", "")
+    UI.setAttribute("losSummary", "active", "true")
+  end)
+  losCancelButton(true)
 end
 
 ---------------------------------------------------------------------------
@@ -962,15 +1035,15 @@ end
 ---------------------------------------------------------------------------
 
 -- Called by an order token's ATTACK. request = {
---   gen, tokenGuid, leaderGuid, pad,
+--   gen, tokenGuid, leaderGuid,
 --   attackerSil, defenderSil = {r, h, o} (each unit's silhouette),
 --   attackers = {{guid, pos}, ...} (the leader included),
 --   defenders = {{guid, name, pos}, ...},
 --   miniGuids = {guid, ...} (minis never block rays),
---   blockers = {cylinder, ...} (third-party ground vehicles),
 -- }
 function losStartVerdict(request)
   losVerdictGen = losVerdictGen + 1
+  losVerdictOwner = request.tokenGuid
   local miniGuids = {}
   for _, guid in ipairs(request.miniGuids or {}) do
     miniGuids[guid] = true
@@ -990,40 +1063,49 @@ function losStartVerdict(request)
       end
     end
   end
+  local blockers = zonePos and losFindVehicles(request, zonePos, zoneScale) or {}
   losVerdictRequest = {
     gen = losVerdictGen,
     request = request,
-    blockers = zonePos and losFindVehicles(request, zonePos, zoneScale) or {},
+    blockers = blockers,
     obbs = obbs,
     pois = pois,
   }
   losLog(LOS_BUILD .. " - " .. #obbs .. " terrain box(es), "
-    .. #(request.blockers or {}) .. " vehicle cylinder(s), "
+    .. #blockers .. " vehicle cylinder(s), "
     .. #(request.attackers or {}) .. " attacker(s), "
     .. #(request.defenders or {}) .. " defender(s)")
+  losSummaryCalculating()
   startLuaCoroutine(Global, "losVerdictCoroutine")
-end
-
-local function losSummaryHide()
-  pcall(function() UI.setAttribute("losSummary", "active", "false") end)
 end
 
 local function losSummaryShow(green, red, coverText, modelText)
   pcall(function()
-    UI.setValue("losGreenCount", green .. " green")
-    UI.setValue("losRedCount", red .. " red")
+    UI.setValue("losGreenCount", green .. " GREEN")
+    UI.setValue("losRedCount", red .. " RED")
     UI.setValue("losCover", coverText)
     UI.setValue("losModelCounts", modelText)
     UI.setAttribute("losSummary", "active", "true")
   end)
 end
 
--- Stops any verdict in progress and clears its lines, rings and summary.
-function losCancel()
+-- Stops any verdict in progress and clears its lines, rings and summary, when
+-- it belongs to this token: another token leaving its own attack mode must not
+-- wipe the lines someone else is reading. params = {tokenGuid = "..."}
+function losCancel(params)
+  if params and losVerdictOwner and params.tokenGuid ~= losVerdictOwner then return end
+  losVerdictOwner = nil
   losVerdictGen = losVerdictGen + 1
+  losVerdictRunning = false
+  losCancelButton(false)
   losBarHide()
   losSummaryHide()
   Global.setVectorLines({})
+end
+
+-- The panel's CANCEL button: stops the verdict, whoever started it.
+function losCancelClicked()
+  losCancel()
 end
 
 -- A ring around a mini's base. Attackers: green when they see at least one
@@ -1440,8 +1522,12 @@ function losVerdictCoroutine()
     return ctx.gen ~= losVerdictGen
   end
   local function finish()
-    losVerdictRunning = false
-    losBarHide()
+    -- A run overtaken by a newer one must not reset what that one is using.
+    if ctx.gen == losVerdictGen then
+      losVerdictRunning = false
+      losBarHide()
+      losCancelButton(false)
+    end
     return 1
   end
   losVerdictRunning = true

@@ -1,27 +1,41 @@
 <!-- Line of sight summary, shown while an ATTACK's lines are up (see
      includes/LineOfSight.ttslua): how many green and red lines are drawn, and
      whether the defending unit has cover, and how many models of each unit
-     are in sight of the other. -->
+     are in sight of the other. The plate is the loading toast's, widened; its
+     sprite carries 24 px of shadow margin on every side. -->
 <Panel
   id="losSummary"
   active="false"
   rectAlignment="UpperCenter"
-  offsetXY="0 -12"
-  width="520"
-  height="76"
-  color="#000000CC"
-  outlineSize="1 1"
-  outline="#303030"
+  offsetXY="0 -28"
+  width="640"
+  height="152"
+  image="losPanelPlate"
   allowDragging="true"
   returnToOriginalPositionWhenReleased="false"
 >
-  <VerticalLayout padding="10 10 4 4" spacing="2" childForceExpandHeight="false">
-    <HorizontalLayout spacing="14" childForceExpandWidth="false" preferredHeight="22">
-      <Text fontSize="15" fontStyle="Bold" color="#FFFFFF" alignment="MiddleLeft" preferredWidth="110">Line of sight</Text>
-      <Text id="losGreenCount" fontSize="15" fontStyle="Bold" color="#33E633" alignment="MiddleLeft" preferredWidth="110">0 green</Text>
-      <Text id="losRedCount" fontSize="15" fontStyle="Bold" color="#E62626" alignment="MiddleLeft" preferredWidth="110">0 red</Text>
+  <VerticalLayout padding="36 36 34 34" spacing="4" childForceExpandHeight="false">
+    <HorizontalLayout spacing="20" childAlignment="MiddleCenter" childForceExpandWidth="false" preferredHeight="22">
+      <Text fontSize="15" fontStyle="Bold" color="#EDEDF2" alignment="MiddleCenter" preferredWidth="130">LINE OF SIGHT</Text>
+      <Text id="losGreenCount" fontSize="15" fontStyle="Bold" color="#5BE35B" alignment="MiddleCenter" preferredWidth="90">0 GREEN</Text>
+      <Text id="losRedCount" fontSize="15" fontStyle="Bold" color="#FF5A5A" alignment="MiddleCenter" preferredWidth="70">0 RED</Text>
     </HorizontalLayout>
-    <Text id="losCover" fontSize="13" color="#F2CC1A" alignment="MiddleLeft" preferredHeight="20">Checking cover...</Text>
-    <Text id="losModelCounts" fontSize="13" color="#DDDDDD" alignment="MiddleLeft" preferredHeight="20">Checking models...</Text>
+    <Text id="losCover" fontSize="15" fontStyle="Bold" color="#E8801A" alignment="MiddleCenter" preferredHeight="22" resizeTextForBestFit="true" resizeTextMinSize="11" resizeTextMaxSize="15">Checking cover...</Text>
+    <Text id="losModelCounts" fontSize="13" color="#B4B4BC" alignment="MiddleCenter" preferredHeight="20" resizeTextForBestFit="true" resizeTextMinSize="10" resizeTextMaxSize="13">Checking models...</Text>
   </VerticalLayout>
+  <!-- Shown while a verdict computes (big lists can take a while), under the
+       "Calculating" line, where the model counts go once it is done. -->
+  <Button
+    id="losCancelButton"
+    active="false"
+    rectAlignment="LowerCenter"
+    offsetXY="0 34"
+    width="92"
+    height="24"
+    fontSize="12"
+    fontStyle="Bold"
+    textColor="#EDEDF2"
+    color="#E8801A"
+    onClick="losCancelClicked"
+  >CANCEL</Button>
 </Panel>
