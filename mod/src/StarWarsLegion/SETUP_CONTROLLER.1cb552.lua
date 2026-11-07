@@ -43,7 +43,8 @@ function onload(save_state)
 
     objectiveMenu()
     deploymentMenu()
-    setAdvantageLabels({})
+    conditionsMenu()
+    advantageBlueSeatMenu()
 
     _G.selectedScenario = "standard"
     _G.mirrorDeployment = false
@@ -107,36 +108,14 @@ function deploymentMenu()
 end
 
 
--- Labels for the two Advantage mounts. Both read "Advantage" until a mission
--- is built; then each names the role of the player at that mount's seat.
-advantageLabels = {}
-
--- params.blueSeat = "Blue" or "Red" (the seat of the blue player), or nil to
--- reset both mounts to "Advantage".
-function setAdvantageLabels(params)
-  local blueSeat = params and params.blueSeat
-  if blueSeat == nil then
-    advantageLabels.conditions = "Advantage"
-    advantageLabels.advantageBlueSeat = "Advantage"
-  else
-    local role = function(seat)
-      return seat == blueSeat and "Blue Advantage" or "Red Advantage"
-    end
-    advantageLabels.conditions = role("Red")
-    advantageLabels.advantageBlueSeat = role("Blue")
-  end
-  conditionsMenu()
-  advantageBlueSeatMenu()
-end
-
 function conditionsMenu()
     clearButton("conditions")
-    createOptionButton("conditions", "checkConditions", advantageLabels.conditions, "Spawn Relevant Advantage Tokens for the player at the red seat", {0,0.913,1})
+    createOptionButton("conditions", "checkConditions", "Red Seat Advantage", "Spawn Relevant Advantage Tokens for the player at the red seat", {0,0.913,1})
 end
 
 function advantageBlueSeatMenu()
     clearButton("advantageBlueSeat")
-    createOptionButton("advantageBlueSeat", "checkAdvantageBlueSeat", advantageLabels.advantageBlueSeat, "Spawn Relevant Advantage Tokens for the player at the blue seat", {0,0.913,1})
+    createOptionButton("advantageBlueSeat", "checkAdvantageBlueSeat", "Blue Seat Advantage", "Spawn Relevant Advantage Tokens for the player at the blue seat", {0,0.913,1})
 end
 
 function checkAdvantageBlueSeat()
@@ -232,7 +211,7 @@ end
 
 -- cardType is a card data key, or "advantageBlueSeat" for the Advantage on
 -- the mount nearer the blue seat (a "condition" card beside its own mount).
-function spawnObjs(cardType, selectedBattleCardName)
+function spawnObjs(cardType, selectedBattleCardName, callback)
   local dataType = cardType == "advantageBlueSeat" and "condition" or cardType
   local objects = Deck:getBattleCardObjects(
     selectedBattleCardName,
@@ -244,15 +223,16 @@ function spawnObjs(cardType, selectedBattleCardName)
   end
   -- Beside each card's mount.
   local position = ({
-    objective    = {49, 1, 16},
-    deployment   = {49, 1, 20},
+    advantageblueseat = {49, 1, 20},
+    deployment   = {49, 1, 16},
+    objective    = {49, 1, 12},
     condition    = {49, 1, 08},
-    advantageblueseat = {49, 1, 12},
   })[cardType:lower()]
   Shelf:spawnAdditionalObjects({
     name     = selectedBattleCardName .. "'s Objects",
     position = position,
     objects  = objects,
+    callback = callback,
     -- TODO: Make this global somehow instead.
     scripts  = {
       ["toggle-range-1"] = _G.scriptRange1Token,
@@ -551,7 +531,7 @@ function createOptionButton(optionType, optionClickFunction, optionLabel, option
         _G[optionClickFunction]()
     end
     optionObj.createButton({
-        click_function = "setupControllerOptionFunction"..optionType, function_owner = self, label = optionLabel, position = {-0.5, 0.3, -1.95}, scale = {0.5, 0.5, 0.5}, width = 2500, height = 600, font_size = 300, color = {0.7573, 0.7573, 0.7573, 0.01}, font_color = {0, 0, 0, 100},tooltip = optionToolTip
+        click_function = "setupControllerOptionFunction"..optionType, function_owner = self, label = optionLabel, position = {-0.5, 0.3, -1.95}, scale = {0.5, 0.5, 0.5}, width = 2500, height = 600, font_size = #optionLabel > 16 and 240 or 300, color = {0.7573, 0.7573, 0.7573, 0.01}, font_color = {0, 0, 0, 100},tooltip = optionToolTip
     })
 
     optionButton.createButton({

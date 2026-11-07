@@ -146,6 +146,8 @@ test("an empty deck reshuffles discards including the card just discarded", func
   m:modify("Blue", "replaceOwnAdvantage")
   eq(m.cards.advantage.Blue.name, "B-Adv1", "redrawn from discards")
   eq(#m._discards.Blue.advantage, 0, "discards emptied")
+  eq(m.reshuffled.seat, "Blue", "reshuffle reported: seat")
+  eq(m.reshuffled.kind, "advantage", "reshuffle reported: kind")
 end)
 
 test("a player with no cards of a kind can't replace the other's card", function()
