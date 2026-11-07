@@ -985,7 +985,7 @@ function clearAttackLine()
     -- Any verdict still computing is now stale: the coroutine checks the
     -- generation at every resume point and bows out.
     losGeneration = (losGeneration or 0) + 1
-    Global.call("losCancel")
+    Global.call("losCancel", {tokenGuid = self.getGUID()})
     if losSilhouetteGUIDs then
         for _, guid in pairs(losSilhouetteGUIDs) do
             local leader = getObjectFromGUID(guid)
@@ -1304,7 +1304,7 @@ function silhouetteOf(leaderObj)
     return radius, height, offset
 end
 
-------------------------------------------------- LIGNE DE VUE ------------------------------------------------------------
+------------------------------------------------- LINE OF SIGHT ----------------------------------------------------------
 -- The tool shows evidence, the players make the ruling. For each defending
 -- mini it draws up to two lines from the attacking leader's silhouette to
 -- that mini's silhouette: a green one that crosses no terrain, and a red one
@@ -1347,7 +1347,6 @@ function buildLosRequest(attackTargetObj)
         attackers = minisOnTable(selectedUnitObj),
         defenders = minisOnTable(attackTargetObj),
         miniGuids = {},
-        blockers = {},
     }
     -- The leader is always an attacker, even if its unit's list misses it.
     local hasLeader = false
@@ -1358,33 +1357,11 @@ function buildLosRequest(attackTargetObj)
         local p = selectedUnitObj.getPosition()
         table.insert(request.attackers, {guid = request.leaderGuid, name = selectedUnitObj.getName(), pos = {x = p.x, y = p.y, z = p.z}})
     end
-    local attackerGUID = selectedUnitObj.getGUID()
-    local targetGUID = attackTargetObj.getGUID()
     for _, obj in pairs(zoneObjects) do
         if obj.getVar("isAMini") == true then
             table.insert(request.miniGuids, obj.getGUID())
-            -- Vehicles block line of sight and provide cover. Strictly that is
-            -- ground vehicles and repulsors with Hover: Ground, but the card
-            -- data has no Hover keyword, so every vehicle counts.
-            local thirdParty = obj.getGUID() ~= attackerGUID and obj.getGUID() ~= targetGUID
-            local unitType = obj.getVar("unitType") or ""
-            local blocks = thirdParty and string.find(unitType, "Vehicle") ~= nil
-            local unitName = obj.getName() or "a vehicle"
-            local radius, height, offset = silhouetteOf(obj)
             for _, guid in pairs(obj.getTable("miniGUIDs") or {}) do
                 table.insert(request.miniGuids, guid)
-                if blocks then
-                    local m = getObjectFromGUID(guid)
-                    if m ~= nil and isMiniOnTable(m, zoneObjects) then
-                        local mp = m.getPosition()
-                        table.insert(request.blockers, {
-                            name = unitName,
-                            x = mp.x, z = mp.z,
-                            y0 = mp.y + offset, y1 = mp.y + offset + height,
-                            r = radius,
-                        })
-                    end
-                end
             end
         end
     end

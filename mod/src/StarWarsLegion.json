@@ -303,6 +303,10 @@
     "XmlUI": "#include ./StarWarsLegion.xml",
     "CustomUIAssets": [
       {
+        "Name": "losPanelPlate",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/los-panel-pill.png"
+      },
+      {
         "Name": "progressPill",
         "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/import-toast-pill.png"
       },

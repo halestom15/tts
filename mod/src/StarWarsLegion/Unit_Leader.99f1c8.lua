@@ -20,10 +20,11 @@ function setUp()
 
     -- A silhouette attached before a save comes back as a phantom: the
     -- attachment is restored but the script state is not, so nothing knows
-    -- it is up. Purge them so the leader always starts clean.
+    -- it is up. Purge them so the whole unit always starts clean.
     pcall(function()
-      for _, phantom in ipairs(self.removeAttachments() or {}) do
-        if phantom then phantom.destruct() end
+      for _, guid in pairs(miniGUIDs or {}) do
+        local mini = getObjectFromGUID(guid)
+        if mini then removeAttachmentsNamed(mini, "Silhouette", true) end
       end
     end)
 
@@ -90,12 +91,16 @@ function scheduleOblongButtonFix()
   end, 3)
 end
 
+function battlefieldButtonTint()
+  local gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
+  return gameData ~= nil and gameData.getTable("battlefieldTint")
+      or {r = 0.3, g = 0.3, b = 0.3}
+end
+
 function addSilhouetteButton()
   -- A missing game data object must not abort the button rebuild: a leader
   -- left without buttons throws on every later recolor.
-  local gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
-  local btnTint = gameData ~= nil and gameData.getTable("battlefieldTint")
-      or {r = 0.3, g = 0.3, b = 0.3}
+  local btnTint = battlefieldButtonTint()
   local buttonOffset = calculateButtonZOffset(templateInfo.baseRadius[unitData.baseSize])
   btnData = {
     click_function = "toggleSilhouettes",
@@ -115,9 +120,7 @@ end
 
 function addLockButton()
     -- Same guard as addSilhouetteButton: never abort the button rebuild.
-    local gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
-    local btnTint = gameData ~= nil and gameData.getTable("battlefieldTint")
-        or {r = 0.3, g = 0.3, b = 0.3}
+    local btnTint = battlefieldButtonTint()
     local templateInfo = Global.getTable("templateInfo")
     local buttonOffset = calculateButtonZOffset(templateInfo.baseRadius[unitData.baseSize])
     lockBtnData = {
@@ -259,13 +262,32 @@ function clearSilhouette()
 
     -- Guard against players who delete their minis!
     if obj then
-      -- May be empty: silhouettes are attachments and never survive a save
-      -- (setUp resets silhouetteState accordingly), and a mid-session reload
-      -- or state drift can leave nothing attached with the state still true.
+      -- May be empty: a mid-session reload or state drift can leave nothing
+      -- attached with the state still true.
       removeAttachmentsNamed(obj, "Silhouette", true)
     end
   end
   silhouetteState = false
+end
+
+-- Removes a spawned aid's colliders once its bundle has loaded, then runs
+-- onReady. A dead handle can throw on any access, hence the shielded wait.
+function whenLoadedWithoutColliders(obj, onReady)
+  Wait.condition(function()
+    pcall(function()
+      for _, colliderName in ipairs({"MeshCollider", "BoxCollider"}) do
+        for _, collider in ipairs(obj.getComponentsInChildren(colliderName) or {}) do
+          collider.set("enabled", false)
+        end
+      end
+      if onReady then onReady() end
+    end)
+  end, function()
+    local ok, ready = pcall(function()
+      return obj.isDestroyed() or not obj.loading_custom
+    end)
+    return not ok or ready
+  end)
 end
 
 -- HEIGHT GUIDE ----------------------------------------------------------------
@@ -337,21 +359,8 @@ function showHeightGuide()
   pillar.setName(HEIGHT_GUIDE_NAME)
   pillar.setLock(true)
   pillar.use_gravity = false
-  -- A guide must not push minis around: its colliders go once they exist.
-  Wait.condition(function()
-    pcall(function()
-      for _, colliderName in ipairs({"MeshCollider", "BoxCollider"}) do
-        for _, collider in ipairs(pillar.getComponentsInChildren(colliderName) or {}) do
-          collider.set("enabled", false)
-        end
-      end
-    end)
-  end, function()
-    local ok, ready = pcall(function()
-      return pillar.isDestroyed() or not pillar.loading_custom
-    end)
-    return not ok or ready
-  end)
+  -- A guide must not push minis around.
+  whenLoadedWithoutColliders(pillar)
   heightGuideGUID = pillar.getGUID()
   heightGuideFrom = {pos = pos, rotY = self.getRotation().y}
 end
@@ -417,7 +426,7 @@ function spawnSilhouette(obj, pos, rot)
   silhouette.setColorTint({0.47,0.76,0.8,0.3})
   silhouette.setName("Silhouette")
   -- A silhouette is a visual aid: it must not collide with minis, and it
-  -- must never block the line of sight rays Order_Token casts. Colliders
+  -- must never block the line of sight rays. Colliders
   -- only exist once the bundle has loaded, and a dead handle can throw on
   -- any access, hence the shielded wait. Attaching also waits for the load:
   -- attaching a still-loading custom object made the engine throw a bare
@@ -425,26 +434,14 @@ function spawnSilhouette(obj, pos, rot)
   -- the meantime, so the collider-less bundle cannot fall through the world.
   silhouette.setLock(true)
   silhouette.use_gravity = false
-  Wait.condition(function()
-    pcall(function()
-      for _, colliderName in ipairs({"MeshCollider", "BoxCollider"}) do
-        for _, collider in ipairs(silhouette.getComponentsInChildren(colliderName) or {}) do
-          collider.set("enabled", false)
-        end
-      end
-      -- The player may have lowered the silhouettes while this one was
-      -- still loading: an orphan must die, not float unattached forever.
-      if not silhouetteState then
-        silhouette.destruct()
-      elseif obj ~= nil then
-        obj.addAttachment(silhouette)
-      end
-    end)
-  end, function()
-    local ok, ready = pcall(function()
-      return silhouette.isDestroyed() or not silhouette.loading_custom
-    end)
-    return not ok or ready
+  whenLoadedWithoutColliders(silhouette, function()
+    -- The player may have lowered the silhouettes while this one was
+    -- still loading: an orphan must die, not float unattached forever.
+    if not silhouetteState then
+      silhouette.destruct()
+    elseif obj ~= nil then
+      obj.addAttachment(silhouette)
+    end
   end)
   return silhouette
 end
@@ -499,5 +496,3 @@ function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
 end
-
-
