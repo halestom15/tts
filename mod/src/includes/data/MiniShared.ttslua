@@ -1,0 +1,99 @@
+-- Script appended to every miniature (leader or not) when a unit is spawned.
+--
+-- Kept as a string so it can be concatenated at runtime by SpawnList without
+-- reading it from a template object. It wraps any event handlers already
+-- defined by the leader script rather than replacing them.
+function getMiniSharedScript()
+  return [==[
+
+-- avoid minis being flipped upside down when dropped on terrain.
+
+local _shared = {
+  tiltLimit     = 0.34, -- roughly cos(70deg); below this the mini is tipped (vehicles may stand at 45deg)
+  pendingSettle = false,
+  flippedTag    = "Flipped", -- a tag, so a mini turned over on purpose stays so through a save or an undo
+}
+
+-- Make sure the model stands upright
+local function fixUpright()
+  if self.held_by_color ~= nil or self.hasTag(_shared.flippedTag) then
+    return
+  end
+  local up = self.getTransformUp()
+  if up.y >= _shared.tiltLimit then
+    return
+  end
+  local forward = self.getTransformForward()
+  local yaw
+  if math.abs(forward.y) < 0.9 then
+    yaw = math.deg(math.atan2(forward.x, forward.z))
+  else
+    local right = self.getTransformRight()
+    yaw = math.deg(math.atan2(right.x, right.z)) - 90
+  end
+  local pos = self.getPosition()
+  self.setVelocity({0, 0, 0})
+  self.setAngularVelocity({0, 0, 0})
+  self.setRotation({0, yaw, 0})
+  self.setPosition({pos.x, pos.y + 0.3, pos.z})
+end
+
+local function _scheduleSettle()
+  if _shared.pendingSettle then
+    return
+  end
+  _shared.pendingSettle = true
+  Wait.condition(
+    function()
+      _shared.pendingSettle = false
+      pcall(fixUpright)
+    end,
+    function()
+      -- A Wait outlives its object, and a dead handle throws on any access.
+      local ok, done = pcall(function()
+        return self.resting or self.held_by_color ~= nil
+      end)
+      return not ok or done
+    end,
+    6,
+    function()
+      _shared.pendingSettle = false
+    end
+  )
+end
+
+local _prevOnDropped = onDropped
+local _prevOnCollisionEnter = onCollisionEnter
+local _prevOnRotate = onRotate
+
+function onDropped(color)
+  if _prevOnDropped then
+    _prevOnDropped(color)
+  end
+  _scheduleSettle()
+end
+
+function onCollisionEnter(info)
+  if _prevOnCollisionEnter then
+    _prevOnCollisionEnter(info)
+  end
+  if self.held_by_color == nil and not self.resting then
+    _scheduleSettle()
+  end
+end
+
+function onRotate(spin, flip, player_color, old_spin, old_flip)
+  if _prevOnRotate then
+    _prevOnRotate(spin, flip, player_color, old_spin, old_flip)
+  end
+  if flip ~= old_flip then
+    if flip > 90 and flip < 270 then
+      self.addTag(_shared.flippedTag)
+    else
+      self.removeTag(_shared.flippedTag)
+    end
+  end
+end
+-- END MINI SHARED -----------------------------------------------------------
+]==]
+end
