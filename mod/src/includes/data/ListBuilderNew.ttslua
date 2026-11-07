@@ -549,11 +549,57 @@ function _loadArmy()
   )
 end
 
+-- Checked before anything is cleared: a bad list must not cost the player the
+-- army on the table, nor leave the import half started. A list may leave parts
+-- out (no command cards, no battle deck): those are filled in empty. Only a
+-- value of the wrong kind is refused, since a list is a file from someone else.
+function _isValidList(data)
+  local function listOf(value)
+    if value == nil then return {} end
+    if type(value) == "string" then return {value} end
+    if type(value) == "table" then return value end
+    return nil
+  end
+  if data.armyFaction ~= nil and type(data.armyFaction) ~= "string" then
+    return false
+  end
+  data.battlefieldDeck = data.battlefieldDeck or {}
+  local deck = data.battlefieldDeck
+  if type(deck) ~= "table" then
+    return false
+  end
+  if deck.scenario ~= nil and type(deck.scenario) ~= "string" then
+    return false
+  end
+  deck.scenario = deck.scenario or "standard"
+  deck.objective = listOf(deck.objective)
+  deck.deployment = listOf(deck.deployment)
+  deck.condition = listOf(deck.condition or deck.conditions)
+  deck.conditions = nil
+  data.units = listOf(data.units)
+  data.commandCards = listOf(data.commandCards)
+  data.contingencies = listOf(data.contingencies)
+  if not (deck.objective and deck.deployment and deck.condition and data.units
+      and data.commandCards and data.contingencies) then
+    return false
+  end
+  for _, unit in ipairs(data.units) do
+    if type(unit) ~= "table" or type(unit.name) ~= "string" then
+      return false
+    end
+  end
+  return true
+end
+
 function _loadArmyFromJson(data)
   -- Blurring the import field while it is empty or holds invalid text fires
   -- onEndEdit -> importFromText -> JSON.decode("") -> nil, and everything below
   -- reads data directly, so the script errored out on a stray click.
-  if not data then return end
+  if not data or isListImportBusy() then return end
+  if not _isValidList(data) then
+    broadcastToAll('List import: that list is incomplete, nothing was changed.', {0.9, 0.4, 0.4})
+    return
+  end
   _clearZone()
   if data.armyFaction == "" then
     data.armyFaction = "mercenary"
