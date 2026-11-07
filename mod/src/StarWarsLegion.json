@@ -343,6 +343,26 @@
       {
         "Name": "overlayToggleIcon",
         "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/iron_squadron_logo_v2.png"
+      },
+      {
+        "Name": "uiWelcomePanel",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ui_welcome_panel_v2.png"
+      },
+      {
+        "Name": "uiButton",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ui_button_v2.png"
+      },
+      {
+        "Name": "uiButtonActive",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ui_button_active_v2.png"
+      },
+      {
+        "Name": "uiTab",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ui_tab_v2.png"
+      },
+      {
+        "Name": "uiTabActive",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ui_tab_active_v2.png"
       }
     ],
     "ObjectStates": []
