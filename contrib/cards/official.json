@@ -7172,7 +7172,8 @@
     },
     "POI Token": {
       "token": {
-        "mesh": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_v2.obj", "diffuse": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_v2.jpg"
+        "mesh": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_v2.obj",
+        "diffuse": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_v2.jpg"
       },
       "target": "table",
       "stacks": false,
