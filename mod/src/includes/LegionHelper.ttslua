@@ -1,0 +1,597 @@
+-- Card art from Legion Helper (legion.takras.net), by takras. Reached from the
+-- computer: Config > Card Art.
+--
+-- Only the art. Legion Helper's files also carry points, restrictions and
+-- miniatures, and those stay the mod's own: taking the whole entry put 52
+-- units back on models the mod has since repaired (12 Oct 2026) and changed
+-- points. A card the mod does not know is left out.
+--
+-- Only Legion Helper's own art, hosted on takras.net: the files also repeat
+-- the mod's Steam scans for cards Legion Helper has not redrawn, sometimes
+-- next to the redrawn one under the same name (179 commands, 12 Oct 2026).
+--
+-- The files are read for their names and images only, never decoded:
+-- JSON.decode of the full file freezes the table for 41 s in TTS, the
+-- upgrades file for 7.6 s (measured 12 Oct 2026).
+
+-- One set of addresses per language; a language selector on the computer
+-- only has to set LEGION_HELPER_LANGUAGE.
+LEGION_HELPER_LANGUAGE = "en"
+LEGION_HELPER_FEEDS = {
+  en = {
+    cards    = "https://legion.takras.net/tts/sideload.json",
+    upgrades = "https://legion.takras.net/tts/sideload-upgrades.json",
+    active   = "https://takras.net/legionbff/tts-sideload-active.php",
+  },
+}
+
+LEGION_HELPER_ART_HOST = "://takras.net/legionhelper/"
+
+-- Raised each time art is applied: Deck rebuilds its command cache when it
+-- changes (unit and upgrade cards are read fresh at every spawn).
+CardsSchemaRevision = 0
+
+local function feed(kind)
+  local feeds = LEGION_HELPER_FEEDS[LEGION_HELPER_LANGUAGE] or LEGION_HELPER_FEEDS.en
+  return feeds[kind]
+end
+
+------------------------------------------------------------------- READING --
+
+-- In TTS a search through the whole file costs about 0.4 ms whatever the
+-- distance (the string seems to be converted at every call), while cutting a
+-- piece out of it is nearly free: search one window of it at a time.
+local WINDOW = 4096
+local function findIn(text, needle, from, isPattern)
+  local size = #text
+  local overlap = isPattern and 0 or (#needle - 1)
+  from = from or 1
+  while from <= size do
+    local at = text:sub(from, from + WINDOW - 1):find(needle, 1, not isPattern)
+    if at then
+      return from + at - 1
+    end
+    if from + WINDOW - 1 >= size then
+      return nil
+    end
+    from = from + WINDOW - overlap
+  end
+end
+
+local UNESCAPE = {['"'] = '"', ["\\"] = "\\", ["/"] = "/", n = "\n", t = "\t"}
+
+-- The JSON string whose opening quote is at `open`: its text, unescaped.
+local function readString(text, open)
+  local from = open + 1
+  while true do
+    local quote = findIn(text, '"', from)
+    if not quote then
+      return nil
+    end
+    -- Escaped when preceded by an odd run of backslashes.
+    local back, run = quote - 1, 0
+    while text:sub(back, back) == "\\" do
+      run, back = run + 1, back - 1
+    end
+    if run % 2 == 0 then
+      local raw = text:sub(open + 1, quote - 1)
+      return (raw:gsub("\\(.)", function(c) return UNESCAPE[c] or ("\\" .. c) end))
+    end
+    from = quote + 1
+  end
+end
+
+-- The string value of "key" in `text` (one card's fields), or nil.
+local function stringField(text, key)
+  local at = findIn(text, '"' .. key .. '"', 1)
+  local open = at and findIn(text, '"', at + #key + 2)
+  return open and readString(text, open)
+end
+
+-- No pattern runs over the whole file: MoonSharp gives up on them ("pattern
+-- too complex") where stock Lua does not. Plain finds and single classes.
+
+-- The first non-blank character at or after `pos`, and its position.
+local function nextChar(text, pos)
+  local at = findIn(text, "%S", pos, true)
+  return at, at and text:sub(at, at)
+end
+
+-- The first non-blank character at or before `pos`, and its position.
+local function previousChar(text, pos)
+  while pos > 0 do
+    local c = text:sub(pos, pos)
+    if c ~= " " and c ~= "\n" and c ~= "\r" and c ~= "\t" then
+      return pos, c
+    end
+    pos = pos - 1
+  end
+end
+
+-- Each place "key" is used as a key whose value opens with `opener`, between
+-- `first` and `last`: {pos = the key, value = where its value starts}.
+local function keysOpening(text, key, opener, first, last)
+  local found, from = {}, first or 1
+  local quoted = '"' .. key .. '"'
+  while true do
+    local at = findIn(text, quoted, from)
+    if not at or (last and at > last) then
+      break
+    end
+    local colon, c = nextChar(text, at + #quoted)
+    if c == ":" then
+      local value, v = nextChar(text, colon + 1)
+      if v == opener then
+        table.insert(found, {pos = at, value = value})
+      end
+    end
+    from = at + #quoted
+  end
+  return found
+end
+
+-- Positions of the top-level sections. Inside a unit, "upgrades" is an object
+-- of slot counts and "commands" an array; at the top level they are an object
+-- of arrays and an object.
+local function sections(text)
+  local found = {}
+  local units = keysOpening(text, "units", "{")[1]
+  if units then
+    table.insert(found, {pos = units.pos, name = "units"})
+  end
+  for _, key in ipairs(keysOpening(text, "upgrades", "{")) do
+    local inner, c = nextChar(text, key.value + 1)
+    local close = c == '"' and findIn(text, '"', inner + 1)
+    if close then
+      local colon, d = nextChar(text, close + 1)
+      if d == ":" and select(2, nextChar(text, colon + 1)) == "[" then
+        table.insert(found, {pos = key.pos, name = "upgrades"})
+      end
+    end
+  end
+  for _, key in ipairs(keysOpening(text, "commands", "{")) do
+    table.insert(found, {pos = key.pos, name = "commands"})
+  end
+  table.sort(found, function(a, b) return a.pos < b.pos end)
+  return found
+end
+
+-- Faction keys of the units section, among the factions the mod knows (a
+-- faction it does not know has no cards to take art anyway).
+local function factionsIn(text, marks, known)
+  local units
+  for index, mark in ipairs(marks) do
+    if mark.name == "units" then
+      units = {first = mark.pos, last = marks[index + 1] and marks[index + 1].pos}
+    end
+  end
+  local found = {}
+  if not units then
+    return found
+  end
+  for _, faction in ipairs(known) do
+    local spellings = {faction, faction:sub(1, 1):upper() .. faction:sub(2):lower()}
+    for _, spelling in ipairs(spellings) do
+      for _, key in ipairs(keysOpening(text, spelling, "{", units.first, units.last)) do
+        table.insert(found, {pos = key.pos, name = faction:upper()})
+      end
+    end
+  end
+  table.sort(found, function(a, b) return a.pos < b.pos end)
+  return found
+end
+
+-- The last entry of `marks` (sorted by pos) starting before `pos`.
+local function markAt(marks, pos)
+  local current
+  for _, mark in ipairs(marks) do
+    if mark.pos >= pos then
+      break
+    end
+    current = mark
+  end
+  return current
+end
+
+-- Every card of a Legion Helper file as {units = {FACTION = {KEY = art}},
+-- upgrades = {NAME = art}, commands = {NAME = image}}. Each card is a "name"
+-- followed by an "image", a unit's "title" in between; a double-sided upgrade
+-- gives its back as a "flip" object, and commands are the ones with a "pip".
+-- With `yieldEvery`, run as a coroutine: it yields every that many cards so
+-- reading the full file never holds a frame.
+function readLegionHelperArt(text, knownFactions, yieldEvery)
+  if not knownFactions then
+    knownFactions = {}
+    for faction in pairs(_G.CardsSchema.units) do
+      table.insert(knownFactions, faction)
+    end
+  end
+  local art = {units = {}, upgrades = {}, commands = {}}
+  local marks = sections(text)
+  local factions = factionsIn(text, marks, knownFactions)
+
+  local names, from = {}, 1
+  while true do
+    local at = findIn(text, '"name"', from)
+    if not at then
+      break
+    end
+    table.insert(names, at)
+    from = at + 6
+    if yieldEvery and #names % (yieldEvery * 5) == 0 then
+      coroutine.yield(0)
+    end
+  end
+
+  local lastUpgrade
+  for index, at in ipairs(names) do
+    if yieldEvery and index % yieldEvery == 0 then
+      coroutine.yield(0)
+    end
+    -- Everything after this name up to the next one: the card's own fields
+    -- (and its miniatures). Searched alone, so a search for a field the card
+    -- lacks stops at its end instead of running on through the file.
+    local card = text:sub(at, (names[index + 1] or (#text + 1)) - 1)
+    local name = readString(card, card:find('"', 7, true))
+    local image = stringField(card, "image")
+    if image and not image:find(LEGION_HELPER_ART_HOST, 1, true) then
+      image = nil
+    end
+    local section = name and markAt(marks, at)
+    local brace, b = previousChar(text, at - 1)
+    local colon, c = previousChar(text, (brace or 1) - 1)
+    local key = colon and previousChar(text, colon - 1)
+    local isBack = b == "{" and c == ":" and key and text:sub(key - 5, key) == '"flip"'
+    if name and isBack then
+      -- The back of the upgrade just read. Its name is kept even without
+      -- art of its own: on the table the card is called "Front / Back".
+      if lastUpgrade then
+        lastUpgrade.back, lastUpgrade.backName = image, name
+      end
+    elseif name and not image then
+      if section and section.name == "upgrades" then
+        lastUpgrade = nil
+      end
+    elseif name then
+      if card:find('"pip"', 1, true) then
+        art.commands[name:upper()] = image
+      elseif section and section.name == "units" then
+        local faction = markAt(factions, at)
+        if faction then
+          local title = stringField(card, "title")
+          local key = title and (name .. " " .. title) or name
+          art.units[faction.name] = art.units[faction.name] or {}
+          art.units[faction.name][key:upper()] = {
+            image = image,
+            shown = title and (name .. ": " .. title) or name,
+          }
+        end
+      elseif section and section.name == "upgrades" then
+        lastUpgrade = {image = image, name = name}
+        art.upgrades[name:upper()] = lastUpgrade
+      elseif section and section.name == "commands" then
+        art.commands[name:upper()] = image
+      end
+    end
+  end
+  return art
+end
+
+------------------------------------------------------------------ APPLYING --
+
+-- Jobs run from `head` to `tail`. Both are kept by hand: the length of a
+-- table whose first slots have been emptied is not reliable (TTS saw this one
+-- empty after the first batch, and the rest of the queue was silently lost).
+local queue, head, tail, queueRunning = {}, 1, 0, false
+
+-- One load at a time, numbered: a late answer to a load that has already
+-- been given up on is ignored.
+local loading, loadNumber = false, 0
+
+-- Every way a load can go wrong ends here, in the chat, and frees the next
+-- load: an error inside a coroutine is otherwise silent in TTS, and a load
+-- that failed that way kept answering "already loading" until a reload.
+local function fail(message)
+  broadcastToAll("Legion Helper: " .. message, {0.9, 0.4, 0.4})
+  loading = false
+end
+
+local function enqueue(job)
+  tail = tail + 1
+  queue[tail] = job
+end
+
+-- Runs the queue a few jobs per frame: re-skinning every card on the table at
+-- once is a visible stall.
+function legionHelperRunQueue()
+  local done = 0
+  while head <= tail do
+    local job = queue[head]
+    queue[head] = nil
+    head = head + 1
+    local ok, err = pcall(job)
+    if not ok then
+      broadcastToAll("Legion Helper: " .. tostring(err), {0.9, 0.4, 0.4})
+    end
+    done = done + 1
+    if done % 15 == 0 then
+      coroutine.yield(0)
+    end
+  end
+  queue, head, tail, queueRunning = {}, 1, 0, false
+  return 1
+end
+
+local function startQueue()
+  if not queueRunning and head <= tail then
+    queueRunning = true
+    startLuaCoroutine(Global, "legionHelperRunQueue")
+  end
+end
+
+-- Writes the art into the cards the mod knows; returns how many took it.
+local function applyArt(art)
+  local schema = _G.CardsSchema
+  local count = 0
+  for faction, units in pairs(art.units) do
+    local known = schema.units[faction]
+    if known then
+      for key, card in pairs(units) do
+        if known[key] then
+          known[key].image = card.image
+          count = count + 1
+        end
+      end
+    end
+  end
+  for name, card in pairs(art.upgrades) do
+    local upgrade = schema.upgrades[name]
+    if upgrade then
+      upgrade.image = card.image
+      if card.back and upgrade.flip then
+        upgrade.flip.image = card.back
+      end
+      count = count + 1
+    end
+  end
+  local function command(card)
+    local image = art.commands[card.name:upper()]
+    if image then
+      card.image = image
+      count = count + 1
+    end
+  end
+  for _, units in pairs(schema.units) do
+    for _, unit in pairs(units) do
+      for _, card in ipairs(unit.commands or {}) do
+        command(card)
+      end
+    end
+  end
+  for _, card in pairs(schema.commands) do
+    command(card)
+  end
+  CardsSchemaRevision = CardsSchemaRevision + 1
+  return count
+end
+
+-- Cards already on the table take the new art, under the names Deck gives
+-- them: "Name: Title" for units, "Front / Back" for double-sided upgrades.
+-- Miniatures are left alone. A command keeps its card back.
+local function reskinTable(art)
+  local byName = {}
+  for _, units in pairs(art.units) do
+    for _, card in pairs(units) do
+      byName[card.shown:upper()] = {card.image, card.image}
+    end
+  end
+  for _, card in pairs(art.upgrades) do
+    if card.backName then
+      byName[(card.name .. " / " .. card.backName):upper()] = {card.image, card.back}
+    else
+      byName[card.name:upper()] = {card.image, card.image}
+    end
+  end
+  for name, image in pairs(art.commands) do
+    byName[name] = {image}
+  end
+  for _, obj in ipairs(getAllObjects()) do
+    enqueue(function()
+      if obj.isDestroyed() or obj.type ~= "Card" then
+        return
+      end
+      local card = byName[obj.getName():upper()]
+      if card then
+        local custom = obj.getCustomObject()
+        if custom.face ~= card[1] then
+          obj.setCustomObject({face = card[1], back = card[2] or custom.back})
+          obj.reload()
+        end
+      end
+    end)
+  end
+end
+
+local function finish(art, number)
+  if number ~= loadNumber then
+    return
+  end
+  local count = applyArt(art)
+  if count == 0 then
+    fail("no card art matched the mod's cards.")
+    return
+  end
+  reskinTable(art)
+  enqueue(function()
+    if number == loadNumber then
+      broadcastToAll("Legion Helper: art loaded for " .. count .. " cards.", {0.4, 0.9, 0.4})
+      loading = false
+    end
+  end)
+  startQueue()
+end
+
+local pending = {}
+
+-- Reads the file a few dozen cards per frame (about a second in all for the
+-- full file in TTS, measured 12 Oct 2026), then applies it. The reader runs
+-- as a coroutine of its own so that its errors come back here instead of
+-- ending this one silently.
+function legionHelperReadPending()
+  local text, number = pending.text, pending.number
+  pending = {}
+  local reader = coroutine.create(function()
+    return readLegionHelperArt(text, nil, 60)
+  end)
+  while true do
+    local ok, result = coroutine.resume(reader)
+    if not ok then
+      fail("could not read the card art (" .. tostring(result) .. ").")
+      return 1
+    end
+    if coroutine.status(reader) == "dead" then
+      local applied, err = pcall(finish, result, number)
+      if not applied then
+        fail("could not apply the card art (" .. tostring(err) .. ").")
+      end
+      return 1
+    end
+    coroutine.yield(0)
+  end
+end
+
+local function receive(req, label, number)
+  if number ~= loadNumber then
+    return
+  end
+  if req.is_error or req.text == nil or req.text == "" then
+    fail("could not load " .. label .. ". Check your connection, or try again later.")
+    return
+  end
+  -- Keep the text now: TTS drops the request once the callback returns.
+  pending = {text = req.text, number = number}
+  startLuaCoroutine(Global, "legionHelperReadPending")
+end
+
+-- Starts a load and returns its number, or nil if one is already running. A
+-- load still going after a minute is given up on.
+local function start(label)
+  if loading then
+    broadcastToAll("Legion Helper: already loading, wait for it to finish.", {0.9, 0.4, 0.4})
+    return nil
+  end
+  loading = true
+  loadNumber = loadNumber + 1
+  local number = loadNumber
+  broadcastToAll("Legion Helper: loading " .. label .. "...", {1, 1, 1})
+  Wait.time(function()
+    if loading and number == loadNumber then
+      loadNumber = loadNumber + 1
+      fail("no result after a minute, given up. Try again later.")
+    end
+  end, 60)
+  return number
+end
+
+function loadLegionHelperCards()
+  local number = start("all card art")
+  if number then
+    WebRequest.get(feed("cards"), function(req) receive(req, "the card art", number) end)
+  end
+end
+
+function loadLegionHelperUpgrades()
+  local number = start("upgrade art")
+  if number then
+    WebRequest.get(feed("upgrades"), function(req) receive(req, "the upgrade art", number) end)
+  end
+end
+
+---------------------------------------------------------------- ACTIVE ONLY --
+
+-- Names the cards and miniatures on the table under the names Legion Helper
+-- knows: a unit by faction and name, the rest by name.
+local function tableIndex()
+  local schema = _G.CardsSchema
+  local cards, minis = {}, {}
+  for faction, units in pairs(schema.units) do
+    for _, unit in pairs(units) do
+      local entry = {category = "unit", faction = faction, name = unit.name}
+      cards[(unit.title and (unit.name .. ": " .. unit.title) or unit.name):upper()] = entry
+      minis[unit.name:upper()] = entry
+      for _, card in ipairs(unit.commands or {}) do
+        cards[card.name:upper()] = {category = "command", name = card.name}
+      end
+    end
+  end
+  for _, upgrade in pairs(schema.upgrades) do
+    local entry = {category = "upgrade", name = upgrade.name}
+    cards[(upgrade.flip and (upgrade.name .. " / " .. upgrade.flip.name) or upgrade.name):upper()] = entry
+    minis[upgrade.name:upper()] = entry
+  end
+  for _, card in pairs(schema.commands) do
+    cards[card.name:upper()] = {category = "command", name = card.name}
+  end
+  return cards, minis
+end
+
+local LEADER = " (Unit Leader)"
+
+-- Sends only what is on the table, so Legion Helper answers with just that
+-- art: a few kilobytes instead of the whole file.
+function loadLegionHelperActiveArmy()
+  local number = start("the art of the cards on the table")
+  if not number then
+    return
+  end
+  local indexed, cards, minis = pcall(tableIndex)
+  if not indexed then
+    fail("could not list the mod's cards (" .. tostring(cards) .. ").")
+    return
+  end
+  local seen = {}
+  local active = {units = {}, upgrades = {}, commands = {}, battlefield = {}}
+  for _, obj in ipairs(getAllObjects()) do
+    enqueue(function()
+      if obj.isDestroyed() then
+        return
+      end
+      local name = obj.getName()
+      local entry
+      if obj.type == "Card" then
+        entry = cards[name:upper()]
+      else
+        if name:sub(-#LEADER) == LEADER then
+          name = name:sub(1, -#LEADER - 1)
+        end
+        entry = minis[name:upper()]
+      end
+      if entry then
+        local key = entry.category .. ":" .. (entry.faction or "") .. ":" .. entry.name:upper()
+        if not seen[key] then
+          seen[key] = true
+          if entry.category == "unit" then
+            table.insert(active.units, {faction = entry.faction, name = entry.name})
+          elseif entry.category == "upgrade" then
+            table.insert(active.upgrades, entry.name)
+          else
+            table.insert(active.commands, entry.name)
+          end
+        end
+      end
+    end)
+  end
+  enqueue(function()
+    if #active.units + #active.upgrades + #active.commands == 0 then
+      fail("no known cards or units on the table. Load an army first.")
+      return
+    end
+    local sent, err = pcall(WebRequest.custom, feed("active"), "POST", true, JSON.encode(active),
+      {["Content-Type"] = "application/json"},
+      function(req) receive(req, "the art of the cards on the table", number) end)
+    if not sent then
+      fail("could not reach Legion Helper (" .. tostring(err) .. ").")
+    end
+  end)
+  startQueue()
+end

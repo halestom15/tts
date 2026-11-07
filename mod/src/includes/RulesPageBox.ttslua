@@ -9,8 +9,8 @@
 -- that lectern by the mark in its GMNotes rather than by GUID: swapping a
 -- document destroys and respawns the lectern, which can change its GUID.
 
-local BOX_MARK = '^isq%-page%-(%d+)$'
-local LECTERN_MARK = 'isq-lectern-'
+local BOX_MARK = '^rules%-page%-(%d+)$'
+local LECTERN_MARK = 'rules-lectern-'
 
 local function myLectern()
   local index = string.match(self.getGMNotes() or '', BOX_MARK)

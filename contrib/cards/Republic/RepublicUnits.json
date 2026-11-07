@@ -28,7 +28,7 @@
         {
           "name": "Into the Breach",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/13514604391333567265/068A6D0F659E5AF9C42021A8D74997C1806B3D1D/",
-          "pip": "1"
+          "pip": 1
         }
       ]
     },
@@ -470,7 +470,7 @@
         {
           "name": "I'm Sorry Master, I Didn't Catch That",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/12381841884309099006/44EF3B0C9E11A51E5EC7B08879472BAF976C1EF8/",
-          "pip": "2"
+          "pip": 2
         }
       ]
     },

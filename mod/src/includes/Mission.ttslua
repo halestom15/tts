@@ -1,0 +1,243 @@
+-- Builds a mission from both players' battle decks, following the 2024 rules:
+-- reveal an opening Objective, Secondary and one Advantage per player, then
+-- alternate modifying the mission (blue first) until each player has had two
+-- turns.
+--
+-- This is pure logic with no TTS calls, so it can be tested outside of TTS
+-- (see tool/test/Mission.test.lua). Seats are "Red" and "Blue" (the player
+-- colors); the blue *role* can move between them via "takeBlue".
+--
+-- Card kinds are "objective", "secondary" and "advantage". These map to the
+-- card data keys "deployment", "objective" and "condition" (see
+-- Deck.BATTLE_KINDS).
+
+Mission = {}
+Mission.__index = Mission
+
+-- The current rules allow forcing your opponent to replace their Advantage
+-- card (AMG's original 2024 preview did not). Set to false to disable.
+ALLOW_FORCE_OPPONENT_ADVANTAGE = true
+
+MISSION_KINDS = {"objective", "secondary", "advantage"}
+MISSION_TURNS = 4
+
+local function otherSeat(seat)
+  if seat == "Red" then
+    return "Blue"
+  end
+  return "Red"
+end
+
+local function shuffle(list, random)
+  for i = #list, 2, -1 do
+    local j = random(i)
+    list[i], list[j] = list[j], list[i]
+  end
+  return list
+end
+
+local function copyList(list)
+  local result = {}
+  for i, v in ipairs(list or {}) do
+    result[i] = v
+  end
+  return result
+end
+
+-- Creates a new mission.
+--
+-- params.red / params.blue = {objective = {...}, secondary = {...}, advantage = {...}}
+-- params.blueSeat          = "Red" or "Blue" (who is the blue player)
+-- params.random            = optional function(n) returning 1..n (for tests)
+function Mission:create(params)
+  local meta = {
+    _random   = params.random or math.random,
+    _decks    = {},
+    _discards = {},
+    _turn     = 0,
+    _first    = nil,
+    blueSeat  = params.blueSeat or "Blue",
+    cards     = {
+      objective = nil,
+      secondary = nil,
+      advantage = {},
+    },
+    history   = {},
+  }
+  setmetatable(meta, Mission)
+  for _, seat in ipairs({"Red", "Blue"}) do
+    local lists = params[seat:lower()] or {}
+    meta._decks[seat] = {}
+    meta._discards[seat] = {}
+    for _, kind in ipairs(MISSION_KINDS) do
+      meta._decks[seat][kind] = shuffle(copyList(lists[kind]), meta._random)
+      meta._discards[seat][kind] = {}
+    end
+  end
+  return meta
+end
+
+function Mission.otherSeat(seat)
+  return otherSeat(seat)
+end
+
+-- Number of cards that could still be drawn by seat for kind.
+function Mission:_available(seat, kind)
+  return #self._decks[seat][kind] + #self._discards[seat][kind]
+end
+
+-- Draws the top card of seat's deck of kind; an empty deck is rebuilt by
+-- shuffling that player's discards of the same kind.
+function Mission:_draw(seat, kind)
+  local deck = self._decks[seat][kind]
+  if #deck == 0 then
+    local discards = self._discards[seat][kind]
+    self._decks[seat][kind] = shuffle(discards, self._random)
+    self._discards[seat][kind] = {}
+    deck = self._decks[seat][kind]
+  end
+  return table.remove(deck)
+end
+
+function Mission:_discard(card, kind)
+  if card then
+    table.insert(self._discards[card.owner][kind], card.name)
+  end
+end
+
+-- Replaces the card in a mission slot: the old card goes to its owner's
+-- discards, then seat draws the replacement from their own deck.
+function Mission:_replace(seat, kind, current)
+  self:_discard(current, kind)
+  local name = self:_draw(seat, kind)
+  if name == nil then
+    return nil
+  end
+  return {name = name, owner = seat}
+end
+
+-- Reveals the opening cards. The blue player picks which of "objective" or
+-- "secondary" they reveal; the red player reveals the other.
+function Mission:revealOpening(blueKind)
+  assert(blueKind == "objective" or blueKind == "secondary", "Invalid kind: " .. tostring(blueKind))
+  assert(self._first == nil, "Opening cards were already revealed")
+  local blue = self.blueSeat
+  local red = otherSeat(blue)
+  local redKind = blueKind == "objective" and "secondary" or "objective"
+  self.cards[blueKind] = self:_replace(blue, blueKind, nil)
+  self.cards[redKind] = self:_replace(red, redKind, nil)
+  self.cards.advantage[blue] = self:_replace(blue, "advantage", nil)
+  self.cards.advantage[red] = self:_replace(red, "advantage", nil)
+  self._first = blue
+end
+
+function Mission:isRevealed()
+  return self._first ~= nil
+end
+
+function Mission:turnsLeft()
+  return MISSION_TURNS - self._turn
+end
+
+function Mission:isBuilt()
+  return self:isRevealed() and self._turn >= MISSION_TURNS
+end
+
+-- Seat whose turn it is to modify the mission (turn order is fixed once the
+-- opening cards are revealed, even if the blue role changes hands).
+function Mission:currentSeat()
+  if not self:isRevealed() or self:isBuilt() then
+    return nil
+  end
+  if self._turn % 2 == 0 then
+    return self._first
+  end
+  return otherSeat(self._first)
+end
+
+-- Actions seat may take right now, in display order.
+function Mission:availableActions(seat)
+  if seat ~= self:currentSeat() then
+    return {}
+  end
+  local opponent = otherSeat(seat)
+  local function canReplace(kind, current)
+    local returned = (current and current.owner == seat) and 1 or 0
+    return self:_available(seat, kind) + returned > 0
+  end
+  local actions = {}
+  if canReplace("objective", self.cards.objective) then
+    table.insert(actions, "replaceObjective")
+  end
+  if canReplace("secondary", self.cards.secondary) then
+    table.insert(actions, "replaceSecondary")
+  end
+  if canReplace("advantage", self.cards.advantage[seat]) then
+    table.insert(actions, "replaceOwnAdvantage")
+  end
+  -- The opponent's discarded Advantage can always be redrawn, so this is
+  -- never blocked by an empty deck.
+  if ALLOW_FORCE_OPPONENT_ADVANTAGE and self.cards.advantage[opponent] then
+    table.insert(actions, "forceOpponentAdvantage")
+  end
+  if self.blueSeat ~= seat then
+    table.insert(actions, "takeBlue")
+  end
+  table.insert(actions, "pass")
+  return actions
+end
+
+-- Applies one modification turn for seat. Returns the card that came into
+-- play (if any).
+function Mission:modify(seat, action)
+  local allowed = false
+  for _, a in ipairs(self:availableActions(seat)) do
+    if a == action then
+      allowed = true
+      break
+    end
+  end
+  assert(allowed, tostring(seat) .. " cannot " .. tostring(action) .. " now")
+
+  local drawn = nil
+  if action == "replaceObjective" then
+    self.cards.objective = self:_replace(seat, "objective", self.cards.objective)
+    drawn = self.cards.objective
+  elseif action == "replaceSecondary" then
+    self.cards.secondary = self:_replace(seat, "secondary", self.cards.secondary)
+    drawn = self.cards.secondary
+  elseif action == "replaceOwnAdvantage" then
+    self.cards.advantage[seat] = self:_replace(seat, "advantage", self.cards.advantage[seat])
+    drawn = self.cards.advantage[seat]
+  elseif action == "forceOpponentAdvantage" then
+    local opponent = otherSeat(seat)
+    self.cards.advantage[opponent] = self:_replace(opponent, "advantage", self.cards.advantage[opponent])
+    drawn = self.cards.advantage[opponent]
+  elseif action == "takeBlue" then
+    self.blueSeat = seat
+  end
+
+  self._turn = self._turn + 1
+  table.insert(self.history, {
+    seat   = seat,
+    action = action,
+    card   = drawn and drawn.name or nil,
+  })
+  return drawn
+end
+
+-- The finished mission.
+function Mission:result()
+  local function name(card)
+    return card and card.name or nil
+  end
+  return {
+    objective = name(self.cards.objective),
+    secondary = name(self.cards.secondary),
+    advantage = {
+      Red  = name(self.cards.advantage.Red),
+      Blue = name(self.cards.advantage.Blue),
+    },
+    blueSeat  = self.blueSeat,
+  }
+end

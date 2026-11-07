@@ -1,0 +1,150 @@
+require('!/data/PoiLayout')
+
+-- Battlefield geometry helpers and POI snap points. Bundled into Global.
+
+-- Set to true if the projected POI guide appears mirrored across the long
+-- axis compared to the snap points.
+POI_MIRROR = false
+
+-- Fallback rectangle for a standard 6x3 battlefield (1 unit == 1 inch).
+local _fallbackRect = {
+  minX = -28, maxX = 44,
+  minZ = -18, maxZ = 18,
+  top  = 1.0,
+}
+
+function findBattlefieldObject()
+  local zone = getObjectFromGUID(Global.getVar("battlefieldZoneGUID"))
+  if zone ~= nil then
+    for _, obj in ipairs(zone.getObjects()) do
+      if obj.getName() == "BATTLEFIELD" then
+        return obj
+      end
+    end
+  end
+  for _, obj in ipairs(getAllObjects()) do
+    if obj.getName() == "BATTLEFIELD" then
+      return obj
+    end
+  end
+  return nil
+end
+
+-- Returns minX, maxX, minZ, maxZ, top for current map
+-- Not cached: every custom map spawns its BATTLEFIELD with the same GUID, so
+-- a cache keyed on it would keep the previous map's size.
+function getBattlefieldRect()
+  local battlefield = findBattlefieldObject()
+  if battlefield == nil then
+    return _fallbackRect
+  end
+  local bounds = battlefield.getBounds()
+  local half = {x = bounds.size.x / 2, y = bounds.size.y / 2, z = bounds.size.z / 2}
+  -- Guard against a mesh that has not finished loading yet.
+  if bounds.size.x < 10 or bounds.size.z < 10 then
+    return _fallbackRect
+  end
+  return {
+    minX = bounds.center.x - half.x,
+    maxX = bounds.center.x + half.x,
+    minZ = bounds.center.z - half.z,
+    maxZ = bounds.center.z + half.z,
+    top  = bounds.center.y + half.y,
+  }
+end
+
+function isInsideBattlefield(pos)
+  local rect = getBattlefieldRect()
+  return pos.x >= rect.minX and pos.x <= rect.maxX
+    and pos.z >= rect.minZ and pos.z <= rect.maxZ
+end
+
+-- POI SNAP POINTS -----------------------------------------------------------
+
+POI_SNAP_TAG = "POI"
+local HALF_LENGTH_WIDTH_THRESHOLD = 54
+
+function getPoiLayoutForBattlefield(rect)
+  if (rect.maxX - rect.minX) < HALF_LENGTH_WIDTH_THRESHOLD then
+    return getPoiLayout3x3()
+  end
+  return getPoiLayout6x3()
+end
+
+function getPoiWorldPositions()
+  local rect = getBattlefieldRect()
+  local positions = {}
+  for _, p in ipairs(getPoiLayoutForBattlefield(rect)) do
+    local gx, gy = p[1], p[2]
+    if POI_MIRROR then
+      gy = 6 - gy
+    end
+    table.insert(positions, {
+      x = rect.minX + gx * 6,
+      y = rect.top,
+      z = rect.minZ + gy * 6,
+    })
+  end
+  return positions
+end
+
+local function _hasPoiTag(snapPoint)
+  for _, tag in ipairs(snapPoint.tags or {}) do
+    if tag == POI_SNAP_TAG then
+      return true
+    end
+  end
+  return false
+end
+
+-- Toggle tagged global snap points on the POI guide circles for objects with POI tag
+function setPoiSnapPoints(enabled)
+  local kept = {}
+  for _, snapPoint in ipairs(Global.getSnapPoints() or {}) do
+    if not _hasPoiTag(snapPoint) then
+      table.insert(kept, snapPoint)
+    end
+  end
+  if enabled then
+    for _, pos in ipairs(getPoiWorldPositions()) do
+      table.insert(kept, {
+        position      = pos,
+        rotation      = {0, 0, 0},
+        rotation_snap = false,
+        tags          = {POI_SNAP_TAG},
+      })
+    end
+  end
+  Global.setSnapPoints(kept)
+  poiSnapEnabled = enabled
+end
+
+function isPoiSnapEnabled()
+  return poiSnapEnabled == true
+end
+
+function togglePoiSnapPoints()
+  setPoiSnapPoints(not isPoiSnapEnabled())
+  if isPoiSnapEnabled() then
+    broadcastToAll("POI snap points enabled", {1, 1, 1})
+  else
+    broadcastToAll("POI snap points disabled", {1, 1, 1})
+  end
+  return isPoiSnapEnabled()
+end
+
+-- A map load brings its own BATTLEFIELD, possibly of another size (a 3x3
+-- Recon table): the points follow it once its mesh has a size.
+function refreshPoiSnapForMap(obj)
+  if not isPoiSnapEnabled() or obj.getName() ~= "BATTLEFIELD" then
+    return
+  end
+  Wait.condition(function()
+    setPoiSnapPoints(true)
+  end, function()
+    -- A destroyed object compares equal to nil in TTS.
+    return obj == nil or not obj.loading_custom
+  end, 10, function()
+    setPoiSnapPoints(true)
+  end)
+end

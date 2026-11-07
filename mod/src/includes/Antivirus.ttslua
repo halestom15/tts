@@ -1,0 +1,178 @@
+-- Removes the self-spreading script that some Workshop map packs carry. It
+-- appends itself to every object's script between two markers, copies itself
+-- onto anything that spawns and, a second after starting, onto every object
+-- on the table, and pulls updates from a glitch.me server.
+--
+-- What TTS does with a running copy (measured in game):
+-- - setLuaScript runs the new text in the object's existing environment: the
+--   copy's functions stay defined, and any copy written this way starts.
+-- - A pending Wait.time outlives a reload and even the object's destruction.
+-- So a copy is never reloaded: its handlers are removed with setVar, then
+-- its text. Its timer still fires once and throws a red Lua error, as every
+-- copy is made from the object's own text, which no longer holds anything to
+-- copy. Nothing being reloaded, no reference held by an import or a map
+-- loader goes dead.
+
+-- Built at runtime so that this file never matches a search for the script,
+-- nor a cleaner that cuts everything between the two markers.
+local VIRUS_SIGNATURE = ("Spawning object"):reverse()
+local VIRUS_START = "--[[" .. "Object base code]]"
+local VIRUS_END = "--[[" .. "Spawning object]]"
+
+local function stripVirus(script)
+  -- A copy can sit after another one: strip until none is left.
+  for _ = 1, 50 do
+    local first = script:find(VIRUS_START, 1, true)
+    if not first then
+      break
+    end
+    local before = script:sub(1, first - 1):gsub("%s+$", "")
+    local last = script:find(VIRUS_END, first, true)
+    if not last then
+      -- Some packs carry copies cut short, end marker included: such a copy
+      -- runs to the end of the script.
+      script = before
+      break
+    end
+    local after = script:sub(last + #VIRUS_END):gsub("^%s+", "\n")
+    script = before .. after
+  end
+  -- A variant this does not recognize would be found again by every sweep:
+  -- the whole script goes.
+  if not script:find("%S") or script:find(VIRUS_SIGNATURE, 1, true) then
+    return ""
+  end
+  return script
+end
+
+local function hasVirus(script)
+  return type(script) == "string" and script:find(VIRUS_SIGNATURE, 1, true) ~= nil
+end
+
+-- Strips every copy from an object's data, contents and states included.
+local function stripData(data)
+  local count = 0
+  if hasVirus(data.LuaScript) then
+    data.LuaScript = stripVirus(data.LuaScript)
+    count = count + 1
+  end
+  for _, key in ipairs({ "ContainedObjects", "ChildObjects" }) do
+    for _, child in ipairs(data[key] or {}) do
+      count = count + stripData(child)
+    end
+  end
+  for _, state in pairs(data.States or {}) do
+    count = count + stripData(state)
+  end
+  return count
+end
+
+-- The copy only defines onObjectSpawn and onPlayerAction when the script had
+-- none: a legitimate one comes back when the clean text runs.
+local function defuse(obj, script)
+  obj.setVar("onObjectSpawn", nil)
+  obj.setVar("onPlayerAction", nil)
+  obj.setLuaScript(stripVirus(script))
+end
+
+-- Returns the number of copies removed from the object itself.
+local function defuseObject(obj)
+  if obj == nil or obj.isDestroyed() then
+    return 0
+  end
+  local script = obj.getLuaScript()
+  if not hasVirus(script) then
+    return 0
+  end
+  defuse(obj, script)
+  return 1
+end
+
+-- A bag, a deck or a map whose contents carry the script is replaced by a
+-- clean copy, so nothing comes out of it infected. Only done on arrival,
+-- never on load, as the copy gets a new GUID.
+local function replaceInfectedContainer(obj)
+  if obj == nil or obj.isDestroyed() or obj.getQuantity() <= 0 then
+    return 0
+  end
+  local data = obj.getData()
+  local count = stripData(data)
+  if count > 0 then
+    obj.destruct()
+    spawnObjectData({ data = data })
+  end
+  return count
+end
+
+-- Every copy on the table, wherever it came from: a save, arrivals TTS has
+-- not reported yet, or a timer that fired before its object was defused.
+local function sweepTable()
+  local count = 0
+  for _, obj in ipairs(getObjects()) do
+    count = count + defuseObject(obj)
+  end
+  return count
+end
+
+-- A bag emptied or an additive load spawns its objects over several frames,
+-- and TTS may freeze meanwhile: the first message goes out on the first copy,
+-- before the freeze, and says what is going on. The wave ends after two quiet
+-- seconds and a sweep of the table that finds nothing: copies start their
+-- one-second timer as they arrive, and the sweep catches what those wrote.
+local wave = nil
+
+local function closeWaveWhenQuiet()
+  if Time.time - wave.last < 2 then
+    Wait.time(closeWaveWhenQuiet, 0.5)
+    return
+  end
+  local found = sweepTable()
+  if found > 0 then
+    wave.count = wave.count + found
+    wave.last = Time.time
+    Wait.time(closeWaveWhenQuiet, 0.5)
+    return
+  end
+  broadcastToAll(
+    "Antivirus: done, the script was removed from " .. wave.count .. " object(s).",
+    { 0.4, 1, 0.4 }
+  )
+  wave = nil
+end
+
+local function addToWave(count)
+  if count == 0 then
+    return
+  end
+  if not wave then
+    wave = { count = 0 }
+    broadcastToAll(
+      "Antivirus: some objects carry a self-spreading malicious script."
+        .. " Removing it now, the game may freeze for a moment. Red Lua errors"
+        .. " from these objects are harmless.",
+      { 1, 0.6, 0.2 }
+    )
+    Wait.time(closeWaveWhenQuiet, 0.5)
+  end
+  wave.count = wave.count + count
+  wave.last = Time.time
+end
+
+-- On load (save, autosave, undo), all copies are defused in the same frame,
+-- before their one-second timer. sweepTable uses getObjects(), like the
+-- copies themselves: zones carry scripts too.
+function disinfectTable()
+  addToWave(sweepTable())
+end
+
+function disinfectSpawnedObject(obj)
+  -- Defused first: its text is what the copy's timer copies from.
+  local count = defuseObject(obj)
+  -- TTS reports a batch of arrivals over a few seconds, while their copies
+  -- already run: on the first one, the rest of the batch is defused at once,
+  -- before their timers rewrite the table.
+  if count > 0 and not wave then
+    count = count + sweepTable()
+  end
+  addToWave(count + replaceInfectedContainer(obj))
+end

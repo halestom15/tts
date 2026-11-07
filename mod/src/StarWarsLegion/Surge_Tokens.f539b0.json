@@ -6,12 +6,12 @@
       "posX": -45.310482,
       "posY": 0.949066341,
       "posZ": -7.51215839,
-      "rotX": 0.0000169048453,
+      "rotX": 1.69048453e-05,
       "rotY": 180.006256,
-      "rotZ": -0.00000408573533,
-      "scaleX": 1.64999962,
-      "scaleY": 1.64999962,
-      "scaleZ": 1.64999962
+      "rotZ": -4.08573533e-06,
+      "scaleX": 0.97883,
+      "scaleY": 1.680461,
+      "scaleZ": 0.97883
     },
     "Nickname": "Surge Tokens",
     "Description": "",
@@ -37,8 +37,8 @@
     "MaterialIndex": -1,
     "MeshIndex": -1,
     "CustomMesh": {
-      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/785236717874060749/314173062C289E83F826F78FC7FD0FF0D2E6E418/",
-      "DiffuseURL": "https://steamusercontent-a.akamaihd.net/ugc/785236717874060915/75B609A561604CAF66D7BD2868211D40F18B74E3/",
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/surge_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/surge_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,

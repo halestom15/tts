@@ -15,9 +15,9 @@ function onload(save_state)
     battlefieldEntry.clickFunction[3] = "conditionsSubMenu"
 
     battlefieldEntry.labelString = {}
-    battlefieldEntry.labelString[1] = "Objective"
-    battlefieldEntry.labelString[2] = "Deployment"
-    battlefieldEntry.labelString[3] = "Conditions"
+    battlefieldEntry.labelString[1] = Deck.getBattleCardLabel("objective")
+    battlefieldEntry.labelString[2] = Deck.getBattleCardLabel("deployment")
+    battlefieldEntry.labelString[3] = Deck.getBattleCardLabel("conditions")
 
     selectedCommanders = {}
 

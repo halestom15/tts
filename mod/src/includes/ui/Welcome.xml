@@ -46,9 +46,7 @@
           <b>CHANGELOG</b>
           (Since last <i>Beta</i>)
           <!--(Since last <i>Stable</i>)-->
-          - Add: Guerilla Troopers
-          - Add: Wet-Weather Gear Stormtroopers
-          - Add: Imperial Mudtroopers
+          - Test: Martin Upgrades V1
         </Text>
       </VerticalLayout>
     </VerticalScrollView>

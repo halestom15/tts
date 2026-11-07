@@ -585,14 +585,45 @@ end
 -- way whether the player pressed Enter or clicked away, so the two cannot be
 -- told apart there. With lineType MultiLineNewLine, Enter no longer ends the
 -- edit: it inserts a newline, which reaches us here as a single character added
--- at the end of the text. That is the signal we import on. Pasting adds many
--- characters at once and is never mistaken for it.
+-- at the end of the text. That is the signal we import on.
+--
+-- Pasting does not arrive in one piece: TTS reports a multi-line paste line by
+-- line, so each line break of a pretty-printed export (LegionHQ's, for one)
+-- looks like Enter too. A newline therefore only counts as Enter once the text
+-- before it is a whole JSON object.
+function _isWholeJsonObject(text)
+  -- Walked by hand: braces inside strings (a list name, say) must not count,
+  -- and TTS rejects a pattern such as ^%s*({.*})%s*$ on a whole list as "too
+  -- complex".
+  local depth, inString, escaped, closed = 0, false, false, false
+  for i = 1, #text do
+    local c = text:sub(i, i)
+    local blank = c == ' ' or c == '\n' or c == '\r' or c == '\t'
+    if closed then
+      if not blank then return false end
+    elseif inString then
+      if escaped then escaped = false
+      elseif c == '\\' then escaped = true
+      elseif c == '"' then inString = false end
+    elseif depth == 0 and c ~= '{' then
+      if not blank then return false end
+    elseif c == '"' then inString = true
+    elseif c == '{' then depth = depth + 1
+    elseif c == '}' then
+      depth = depth - 1
+      closed = depth == 0
+    end
+  end
+  return closed
+end
+
 function listImportFieldChanged(_, text, id)
   if __listImportSuppress then return end
   local previous = __listImportText or ''
   __listImportText = text
   _refreshListImportButton()
   if text ~= previous .. '\n' then return end
+  if not _isWholeJsonObject(previous) then return end
 
   -- Enter: take the newline back out of the field, then load.
   __listImportText = previous

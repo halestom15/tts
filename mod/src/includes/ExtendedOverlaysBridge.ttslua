@@ -1,0 +1,74 @@
+-- Bridge to the optional extended overlay module (see !/ExtendedOverlays).
+--
+-- The module itself lives in Global. The files that need to reach it are
+-- included both by Global and by object scripts (Unit Leader, Order Token,
+-- POI tokens, objective and condition tokens, bomb carts), and a Global
+-- function is not visible from an object script, so every call has to go
+-- through Global.call there. These helpers pick the right path for the scope
+-- they end up in, and report the module as off when it is not installed at
+-- all, which keeps the mod working with this file present and ExtendedOverlays
+-- absent.
+
+-- True only when a player has turned the overlays on for the table.
+function extendedOverlaysOn()
+  if gGetMode then
+    return gGetMode() ~= 'original'
+  end
+  local ok, mode = pcall(function() return Global.call('gGetMode') end)
+  return ok and mode ~= nil and mode ~= 'original'
+end
+
+function toggleOverlayRange(params)
+  if gToggleRange then return gToggleRange(params) end
+  return Global.call('gToggleRange', params)
+end
+
+function clearOverlayRange(params)
+  if gClearRange then return gClearRange(params) end
+  return Global.call('gClearRange', params)
+end
+
+function triggerOverlayRange(params)
+  if gRangeTrigger then return gRangeTrigger(params) end
+  return Global.call('gRangeTrigger', params)
+end
+
+function toggleOverlayCohesion(params)
+  if gToggleCohesion then return gToggleCohesion(params) end
+  return Global.call('gToggleCohesion', params)
+end
+
+function clearOverlayCohesion(params)
+  if gClearCohesion then return gClearCohesion(params) end
+  return Global.call('gClearCohesion', params)
+end
+
+-- Probe a script-global on a foreign object; pcall keeps a hostile or
+-- scriptless object from throwing. Returns the value, or nil.
+local function readScriptVar(obj, name)
+  local ok, v = pcall(function() return obj.getVar(name) end)
+  if ok then return v end
+end
+
+-- What a hovered object IS, for the hover hotkeys. Holding unitData is not
+-- enough: an ASSIGNED order token copies the selected unit's unitData into
+-- its script globals, so it passes for a unit and gets an overlay drawn
+-- around the token itself. Ask for unit markers instead: leaders carry
+-- miniGUIDs, minis carry leaderGUID, order tokens carry neither.
+function isUnitFigure(obj)
+  local ok, minis = pcall(function() return obj.getTable('miniGUIDs') end)
+  if ok and minis then return true end
+  return readScriptVar(obj, 'leaderGUID') ~= nil
+end
+
+-- Everything the range hover hotkey may draw for: unit figures; tokens with
+-- a range of their own, which all declare a script-global rangeKey ("each
+-- token must define 'rangeKey'", see the POI token): POI, objective,
+-- condition, Bane, mission, smoke; and bomb carts, which declare a
+-- script-global baseSize. An order token declares none of these -- its
+-- baseSize only ever lives in locals.
+function isRangeHoverTarget(obj)
+  return isUnitFigure(obj)
+      or readScriptVar(obj, 'rangeKey') ~= nil
+      or readScriptVar(obj, 'baseSize') ~= nil
+end

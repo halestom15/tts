@@ -21,7 +21,7 @@ local BACK_GUID = 'e0d00c'
 -- Swapping a document means destroying and respawning the object, which can
 -- hand it a fresh GUID; GMNotes travel with the serialised data and do not
 -- change. Nearest the panel is lectern 1, which is the order they read in.
-local LECTERN_MARK = '^isq%-lectern%-(%d+)$'
+local LECTERN_MARK = '^rules%-lectern%-(%d+)$'
 
 -- The three lecterns take the first rows, the two languages the rest.
 local LECTERN_ROWS = 3
@@ -253,7 +253,7 @@ function rulesPanelSend(index)
   rulesPanelDocuments()
 end
 
-function onLoad()
+local function indexTheCorner()
   -- Indexed rather than appended: getObjectFromGUID returns nil for anything
   -- missing, table.insert refuses a nil, and appending would renumber every
   -- plate after the gap so row three would draw on plate four.
@@ -266,4 +266,15 @@ function onLoad()
   -- Imposed, never toggled: undoing reruns this handler with the state of the
   -- snapshot, so anything that flipped here would flip back on the next undo.
   rulesPanelDocuments()
+end
+
+function onLoad()
+  indexTheCorner()
+end
+
+-- The lecterns are found by scanning the table, which the setup crate can
+-- only satisfy once everything is out: whichever order the corner deploys
+-- in, this second pass indexes it correctly.
+function onSetupComplete()
+  indexTheCorner()
 end
