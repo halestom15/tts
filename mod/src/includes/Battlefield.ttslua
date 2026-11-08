@@ -71,21 +71,60 @@ function getPoiLayoutForBattlefield(rect)
   return getPoiLayout6x3()
 end
 
-function getPoiWorldPositions()
-  local rect = getBattlefieldRect()
+-- A Recon table is the 3x3 at the middle of the map, whatever the map's size.
+local function _poiWorldPositions(rect, layout, isThreeByThree)
+  local originX, originZ = rect.minX, rect.minZ
+  if isThreeByThree then
+    originX = (rect.minX + rect.maxX) / 2 - 18
+    originZ = (rect.minZ + rect.maxZ) / 2 - 18
+  end
   local positions = {}
-  for _, p in ipairs(getPoiLayoutForBattlefield(rect)) do
+  for _, p in ipairs(layout) do
     local gx, gy = p[1], p[2]
     if POI_MIRROR then
       gy = 6 - gy
     end
     table.insert(positions, {
-      x = rect.minX + gx * 6,
+      x = originX + gx * 6,
       y = rect.top,
-      z = rect.minZ + gy * 6,
+      z = originZ + gy * 6,
     })
   end
   return positions
+end
+
+-- True while a Recon mission is being set up, on a map of any size. Saved, so
+-- a reload during setup keeps the right snap points.
+local poiReconPlacement = false
+
+function isPoiReconPlacement()
+  return poiReconPlacement
+end
+
+function setPoiReconPlacement(value)
+  poiReconPlacement = value
+end
+
+function getPoiWorldPositions()
+  local rect = getBattlefieldRect()
+  if poiReconPlacement then
+    return _poiWorldPositions(rect, getPoiLayout3x3(), true)
+  end
+  return _poiWorldPositions(rect, getPoiLayoutForBattlefield(rect))
+end
+
+-- Where an Objective's POIs go on the current map, or nil if the mission does
+-- not fit it (a Standard mission on a 3x3 map). The map cards are the same
+-- turned 180 degrees, so neither side of the table nor a flipped map changes
+-- the answer. params = {cardName = "...", isRecon = true/false}
+function getMissionPoiPositions(params)
+  local rect = getBattlefieldRect()
+  local isRecon = params.isRecon == true
+  if not isRecon and (rect.maxX - rect.minX) < HALF_LENGTH_WIDTH_THRESHOLD then
+    return nil
+  end
+  local layout = getMissionPoiLayout(params.cardName, isRecon)
+  return layout and _poiWorldPositions(rect, layout, isRecon) or nil
 end
 
 local function _hasPoiTag(snapPoint)
@@ -117,6 +156,62 @@ function setPoiSnapPoints(enabled)
   end
   Global.setSnapPoints(kept)
   poiSnapEnabled = enabled
+end
+
+-- POI GUIDE -----------------------------------------------------------------
+
+local function _poiGuides()
+  local guides = {}
+  for _, obj in ipairs(getAllObjects()) do
+    if obj.getName() == "Poi Guide" then
+      table.insert(guides, obj)
+    end
+  end
+  return guides
+end
+
+local POI_GUIDE_STANDARD = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_guide_isq_v3.unity3d"
+local POI_GUIDE_RECON = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_guide_recon_isq_v1.unity3d"
+
+local function _showPoiGuide(asset)
+  local projector = spawnObject({
+    type     = "Custom_AssetBundle",
+    position = {8, 30, 0},
+    scale    = {0, 0, 0},
+  })
+  projector.setName("Poi Guide")
+  projector.setLock(true)
+  projector.setCustomObject({
+    assetbundle = asset,
+  })
+end
+
+local function _hidePoiGuide(guides)
+  for _, obj in ipairs(guides) do
+    destroyObject(obj)
+  end
+end
+
+function togglePoiGuideProjector()
+  local guides = _poiGuides()
+  if #guides > 0 then
+    _hidePoiGuide(guides)
+  else
+    _showPoiGuide(POI_GUIDE_STANDARD)
+  end
+end
+
+-- The POI guide and snap points are there to set up the battlefield: they come
+-- with the deployment zones and leave with them, so a POI moved during the game
+-- does not jump back onto a guide circle.
+-- params = {show = true/false, isRecon = true/false}
+function setPoiPlacementAids(params)
+  _hidePoiGuide(_poiGuides())
+  poiReconPlacement = params.show == true and params.isRecon == true
+  if params.show then
+    _showPoiGuide(poiReconPlacement and POI_GUIDE_RECON or POI_GUIDE_STANDARD)
+  end
+  setPoiSnapPoints(params.show == true)
 end
 
 function isPoiSnapEnabled()

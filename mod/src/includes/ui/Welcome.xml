@@ -1,41 +1,53 @@
-<!-- Welcome/Help/Changelog Dialog -->
+<!-- Welcome/Help/Changelog Dialog. Its style (one dark fill, one thin grey
+     outline, the same small cut on every corner, orange as the only accent)
+     comes from sprites, since a panel cannot cut its own corners. -->
 
 <Panel
   active="false"
   allowDragging="true"
-  color="#40404080"
+  image="uiWelcomePanel"
+  color="#FFFFFF"
   height="300"
   id="welcomeDialog"
-  outline="#202020"
   rectAlignment="CenterCenter"
   returnToOriginalPositionWhenReleased="false"
   width="500"
 >
   <Panel 
-    color="#202020"
+    color="#00000000"
     height="30"
     padding="5"
     rectAlignment="UpperCenter"
     width="500"
   >
-    <Text color="#ffffff">Star Wars Legion for TTS</Text>
+    <Text color="#E6E8EE" fontStyle="Bold" fontSize="13">STAR WARS LEGION FOR TTS</Text>
   </Panel>
+  <Panel color="#E8801A" height="1" width="480" rectAlignment="UpperCenter" offsetXY="0 -30" />
   <Panel
     height="30"
     width="30"
     rectAlignment="UpperRight"
     padding="2"
   >
-    <Button onClick="toggleWelcomeDialog">X</Button>
+    <Button onClick="toggleWelcomeDialog" image="uiButton" colors="#FFFFFF|#D8D8D8|#B8B8B8|#808080" textColor="#E6E8EE" fontStyle="Bold" fontSize="11">X</Button>
   </Panel>
   <Panel
     height="240"
     padding="5"
     width="500"
   >
-    <VerticalScrollView id="welcomeTab1" active="true" color="40404080">
-      <VerticalLayout padding="5">
-        <Text alignment="UpperLeft" color="#ffffff" fontSize="12">
+    <VerticalScrollView
+      id="welcomeTab1"
+      active="true"
+      color="#00000000"
+      verticalScrollbarVisibility="AutoHideAndExpandViewport"
+      scrollbarBackgroundColor="#00000000"
+      scrollbarColors="#3A4652|#4A5866|#5A6A7A|#3A4652"
+    >
+      <!-- Sized to its text, so the scrollbar only shows when the text is
+           taller than the window. -->
+      <VerticalLayout padding="5" childForceExpandHeight="false" contentSizeFitter="vertical">
+        <Text alignment="UpperLeft" color="#E6E8EE" fontSize="12">
           <!--Welcome to Star Wars: Legion for TTS, <b>v8.0.0</b>.-->
           Welcome to Star Wars: Legion for TTS, <b>v8.0.21-beta</b>.
 
@@ -43,7 +55,7 @@
 
           To access the stable version of the mod visit <i>https://go.swlegion.dev/mod</i>.
 
-          <b>CHANGELOG</b>
+          <textcolor color="#E8801A"><b>CHANGELOG</b></textcolor>
           (Since last <i>Beta</i>)
           <!--(Since last <i>Stable</i>)-->
           - Test: Martin Upgrades V1
@@ -51,21 +63,22 @@
       </VerticalLayout>
     </VerticalScrollView>
     <VerticalLayout id="welcomeTab3" active="false" padding="5 5 5 5" spacing="5" childForceExpandHeight="false">
-      <Text alignment="UpperLeft" color="#ffffff" fontSize="12" preferredHeight="60">Add your own cards - units, upgrades and command cards - from a file in the mod's cards.json format. Paste its URL below, press Load, then Create Army on your LIST BUILDER panel. They are lost when the mod reloads, and the file must host its own images and models.</Text>
+      <Text alignment="UpperLeft" color="#E6E8EE" fontSize="12" preferredHeight="60">Add your own cards - units, upgrades and command cards - from a file in the mod's cards.json format. Paste its URL below, press Load, then Create Army on your LIST BUILDER panel. They are lost when the mod reloads, and the file must host its own images and models.</Text>
       <InputField
         minHeight="40"
         preferredHeight="40"
         placeholder="URL of a cards.json file"
         onValueChanged="sideLoadUrlChanged"></InputField>
       <Button minHeight="40" preferredHeight="40" onClick="experimentalSideLoad">Load</Button>
-      <Text alignment="UpperLeft" color="#ffffff" fontSize="12" preferredHeight="16">How to make one - select and copy this link:</Text>
+      <Text alignment="UpperLeft" color="#E6E8EE" fontSize="12" preferredHeight="16">How to make one - select and copy this link:</Text>
       <InputField
         minHeight="40"
         preferredHeight="40">https://github.com/swlegion/tts/blob/main/contrib/cards/README.md</InputField>
     </VerticalLayout>
   </Panel>
+  <Panel color="#3A4652" height="1" width="480" rectAlignment="UpperCenter" offsetXY="0 -268" />
   <Panel 
-    color="#202020"
+    color="#00000000"
     height="30"
     offsetXY="0 -270"
     padding="5"
@@ -73,14 +86,11 @@
     width="500"
   >
     <HorizontalLayout height="30">
-      <Button onClick="showWelcomeTab1">
-        <Text fontSize="10" fontStyle="bold">What's New</Text>
+      <Button id="welcomeTabButton1" onClick="showWelcomeTab1" image="uiTabActive" colors="#FFFFFF|#D8D8D8|#B8B8B8|#808080">
+        <Text id="welcomeTabText1" fontSize="10" fontStyle="bold" color="#E8801A">What's New</Text>
       </Button>
-      <Button onClick="showWelcomeTab3">
-        <Text fontSize="10">Custom Cards Load (beta)</Text>
-      </Button>
-      <Button interactable="false">
-        <Text fontSize="10">-</Text>
+      <Button id="welcomeTabButton3" onClick="showWelcomeTab3" image="uiTab" colors="#FFFFFF|#D8D8D8|#B8B8B8|#808080">
+        <Text id="welcomeTabText3" fontSize="10" color="#9AA0AA">Custom Cards Load (beta)</Text>
       </Button>
     </HorizontalLayout>
   </Panel>

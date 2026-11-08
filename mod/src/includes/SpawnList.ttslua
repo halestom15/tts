@@ -1,5 +1,29 @@
 require('!/common/Tablex')
 
+-- Values written into a mini's or a token's script come from the list, and a
+-- list is a file from someone else: quoted, they stay data and cannot run.
+local function luaString(value)
+  return string.format("%q", tostring(value))
+end
+
+local function luaNumber(value)
+  return tostring(tonumber(value) or 0)
+end
+
+local IMPORT_BLOCK_SECONDS = 60
+
+-- Enter can be pressed again before anything shows, and every press would clear
+-- the table and spawn the list again: check this before touching anything. An
+-- import that never closed stops blocking after a while, so a failed one cannot
+-- lock the player out.
+function isListImportBusy()
+  if __importInFlight and os.time() - (__importStartedAt or 0) < IMPORT_BLOCK_SECONDS then
+    broadcastToAll("List already importing, please wait.", {1, 0.8, 0.4})
+    return true
+  end
+  return false
+end
+
 -- How many lists are spawning right now, red's and blue's together. The two
 -- list builders are separate objects with separate scripts, so neither can see
 -- the other's state: the count lives on the Global, which both reach. Pass 0 to
@@ -223,7 +247,7 @@ local function initListSpawner(params)
       -- SET NAME
       local displayName = pMiniTable.displayName or objEntry.name
       objEntry.obj.setName(strColor.. " "..displayName)
-      selectedMiniScript = selectedMiniScript .. "colorSide = '"..pMiniTable.colorSide.."'\nminiName = \""..objEntry.name.."\"\n"
+      selectedMiniScript = selectedMiniScript .. "colorSide = " .. luaString(pMiniTable.colorSide) .. "\nminiName = " .. luaString(objEntry.name) .. "\n"
 
       -- SET LEADER GUID
       selectedMiniScript = selectedMiniScript .. "leaderGUID = \"" .. leaderGUID .. "\"\n"
@@ -272,18 +296,18 @@ local function initListSpawner(params)
         end
 
         selectedMiniScript = selectedMiniScript .. miniGUIDsScript ..
-          "cardGUID = \"" .. pMiniTable.unitCardGUID ..
-          "\"\n unitName = \"".. miniName ..
-          "\"\n silhType = \"".. silhType ..
-          "\"\n silhHeight = \"".. silhHeight ..
-          "\"\n silhOffset = \"".. silhOffset ..
-          "\"\n commandName = \"".. pMiniTable.commandName ..
-          "\"\n commandType = \"".. pMiniTable.commandType ..
-          "\"\n selectedSpeed = ".. pMiniTable.selectedSpeed ..
-          "\n baseSize = \"".. pMiniTable.baseSize ..
-          "\"\n unitID = " .. pMiniTable.unitID ..
-          "\n unitIDTokenGUID = \"".. pMiniTable.unitIDTokenGUID ..
-          "\"\n" .. globals.modelMiniScript
+          "cardGUID = " .. luaString(pMiniTable.unitCardGUID) ..
+          "\n unitName = " .. luaString(miniName) ..
+          "\n silhType = " .. luaString(silhType) ..
+          "\n silhHeight = " .. luaString(silhHeight) ..
+          "\n silhOffset = " .. luaString(silhOffset) ..
+          "\n commandName = " .. luaString(pMiniTable.commandName) ..
+          "\n commandType = " .. luaString(pMiniTable.commandType) ..
+          "\n selectedSpeed = " .. luaNumber(pMiniTable.selectedSpeed) ..
+          "\n baseSize = " .. luaString(pMiniTable.baseSize) ..
+          "\n unitID = " .. luaNumber(pMiniTable.unitID) ..
+          "\n unitIDTokenGUID = " .. luaString(pMiniTable.unitIDTokenGUID) ..
+          "\n" .. globals.modelMiniScript
       else
         objEntry.obj.use_snap_points = false
       end
@@ -318,20 +342,20 @@ local function initListSpawner(params)
     -- Note this is used instead of "setTable()" because onLoad/onSave is buggy with stuff that stacks.
     local luaScript = string.format(
       "_G.unitData = {" ..
-      "  baseSize      = [[%s]],\n" ..
-      "  colorSide     = [[%s]],\n" ..
-      "  commandType   = [[%s]],\n" ..
+      "  baseSize      = %s,\n" ..
+      "  colorSide     = %s,\n" ..
+      "  commandType   = %s,\n" ..
       "  fixedArc      = %s,\n" ..
       "  fixedMove     = %s,\n" ..
       "  selectedSpeed = %s,\n" ..
       "  strafeMove    = %s,\n" ..
       "}\n\n",
-      cData.baseSize,
-      color:lower(),
-      cData.commandType,
+      luaString(cData.baseSize),
+      luaString(color:lower()),
+      luaString(cData.commandType),
       tostring(cData.baseSize:lower() ~= "small"),
       tostring(cData.baseSize:lower() ~= "small"),
-      tostring(cData.selectedSpeed),
+      luaNumber(cData.selectedSpeed),
       tostring(cData.baseSize:lower() ~= "small")
     )
     push(function()
@@ -599,6 +623,8 @@ local function initListSpawner(params)
   end
 
   return function(listData)
+    __importStartedAt = os.time()
+
     -- The synchronous version spawned the whole list in the frame of the
     -- import: ~120 objects instantiated at once froze the table for
     -- seconds. Instead the import builds a queue of jobs and a pump spawns

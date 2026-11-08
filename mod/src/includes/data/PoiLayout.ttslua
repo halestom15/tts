@@ -57,3 +57,29 @@ function getPoiLayout3x3()
     {5, 4},
   }
 end
+
+-- The POIs of each primary Objective's map card, on the grids above. Keys are
+-- upper case card names.
+local MISSION_POIS_6X3 = {
+  ["CLOSE THE POCKET"]     = {{3, 3}, {6, 3}, {9, 3}},
+  ["BUNKER ASSAULT"]       = {{4, 2}, {4, 4}, {8, 2}, {8, 4}},
+  ["BREAKTHROUGH"]         = {{1, 3}, {4, 1}, {8, 5}, {11, 3}},
+  ["INTERCEPT SIGNALS"]    = {{3, 3}, {6, 1}, {6, 5}, {9, 3}},
+  ["RECOVER THE RESEARCH"] = {{2, 4}, {3, 2}, {5, 4}, {7, 2}, {9, 4}, {10, 2}},
+  ["SHIFTING PRIORITIES"]  = {{1, 2}, {3, 3}, {6, 3}, {9, 3}, {11, 4}},
+  ["OUTFLANK"]             = {{2, 4}, {6, 2}, {6, 4}, {10, 2}},
+  ["CAULDRON"]             = {{3, 1.5}, {3, 4.5}, {4.5, 3}, {7.5, 3}, {9, 1.5}, {9, 4.5}},
+  ["CONTACT, CONTACT!"]    = {{3, 5}, {6, 1}, {6, 3}, {6, 5}, {9, 1}},
+  ["PAYLOAD"]              = {{2.5, 2}, {6, 3}, {9.5, 4}},
+}
+
+local MISSION_POIS_3X3 = {
+  ["CLOSE THE POCKET"]  = {{1, 3}, {3, 3}, {5, 3}},
+  ["BUNKER ASSAULT"]    = {{1, 2}, {1, 4}, {5, 2}, {5, 4}},
+  ["INTERCEPT SIGNALS"] = {{1, 3}, {3, 1}, {3, 5}, {5, 3}},
+}
+
+function getMissionPoiLayout(cardName, isThreeByThree)
+  local cards = isThreeByThree and MISSION_POIS_3X3 or MISSION_POIS_6X3
+  return cards[cardName:upper()]
+end

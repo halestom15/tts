@@ -25,6 +25,7 @@ function onSave()
     welcome = welcomeDialogActive,
     overlays = overlayMode,
     poiSnap = isPoiSnapEnabled(),
+    poiRecon = isPoiReconPlacement(),
   })
 end
 
@@ -40,6 +41,10 @@ end
 -- Suppression and wound tokens add up when stacked (see !/TokenCounters).
 function onObjectDrop(_, obj)
   counterTokensOnObject(obj)
+end
+
+function onObjectPickUp(color, obj)
+  counterTokensOnPickUp(color, obj)
 end
 
 function onload(saveData)
@@ -275,10 +280,12 @@ function onload(saveData)
 
     highestPoint = 0
 
-    -- POI snap points (only POI tokens snap to them), on unless the save
-    -- turned them off. Left a moment for a saved map to report its size.
+    -- POI snap points (only POI tokens snap to them) stay off until a mission
+    -- is set up, unless the save was made during one. Left a moment for a saved
+    -- map to report its size.
     Wait.time(function()
-      setPoiSnapPoints(loadData.poiSnap ~= false)
+      setPoiReconPlacement(loadData.poiRecon == true)
+      setPoiSnapPoints(loadData.poiSnap == true)
     end, 2)
 
     -- token Bags

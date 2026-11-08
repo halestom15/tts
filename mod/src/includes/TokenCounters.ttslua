@@ -209,6 +209,51 @@ function counterTokensOnObject(obj)
   end
 end
 
+-- A long press takes one off a token: held still for a moment, what is left
+-- appears where the token stood and the token in hand turns into a token worth
+-- one, still held (measured: setState keeps the hold). A normal drag moves the
+-- whole token.
+local LONG_PRESS_TIME, LONG_PRESS_STEP, LONG_PRESS_REACH = 0.6, 0.1, 0.5
+
+local function takeOneFromToken(o, start)
+  local bag = bagFor(o.getName())
+  if not bag or count(o) > 1 then return end
+  local rest, rot, memo = value(o) - 1, o.getRotation(), o.memo
+  bag.takeObject({
+    position = {start.x, start.y + 0.2, start.z},
+    rotation = {0, rot.y, 0},
+    smooth = false,
+    callback_function = function(t)
+      if memo then t.memo = memo end
+      register(t)
+      if rest > 1 then t.setState(rest) end -- the bag hands out face 1
+    end,
+  })
+  o.memo = nil
+  local held = o.setState(1) or o
+  register(held)
+  Wait.condition(scanSoon, function()
+    return not isCounter(held) or held.held_by_color == nil
+  end)
+end
+
+function counterTokensOnPickUp(color, o)
+  if not isCounter(o) or value(o) <= 1 then return end
+  local start = o.getPosition()
+  local elapsed = 0
+  local function watch()
+    if o == nil or o.isDestroyed() or o.held_by_color ~= color then return end
+    if distXZ(o.getPosition(), start) > LONG_PRESS_REACH then return end
+    elapsed = elapsed + LONG_PRESS_STEP
+    if elapsed >= LONG_PRESS_TIME then
+      takeOneFromToken(o, start)
+    else
+      Wait.time(watch, LONG_PRESS_STEP)
+    end
+  end
+  Wait.time(watch, LONG_PRESS_STEP)
+end
+
 -- The "Deliver Suppression / Wound to Cursor" hotkeys: +1 on the hovered or
 -- nearby token, else a new token at the cursor.
 function deliverCounterToCursor(kind, hover, pos)
