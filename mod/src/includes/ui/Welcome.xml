@@ -46,7 +46,11 @@
           <b>CHANGELOG</b>
           (Since last <i>Beta</i>)
           <!--(Since last <i>Stable</i>)-->
-          - Test: Martin Upgrades V1
+          - Fix: Mission Dashboard
+          - Fix: Mac Compatibility
+          - Fix: Deployment button snaps to board edge
+          - Add: Takras Card art compatibility
+          - Add: New Token art
         </Text>
       </VerticalLayout>
     </VerticalScrollView>
