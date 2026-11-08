@@ -95,6 +95,9 @@ function Mission:_draw(seat, kind)
     self._decks[seat][kind] = shuffle(discards, self._random)
     self._discards[seat][kind] = {}
     deck = self._decks[seat][kind]
+    if #deck > 0 then
+      self.reshuffled = {seat = seat, kind = kind}
+    end
   end
   return table.remove(deck)
 end
