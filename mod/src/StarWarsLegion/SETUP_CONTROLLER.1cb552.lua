@@ -64,7 +64,7 @@ function drawInput()
     height         = 350,
     font_size      = 323,
     validation     = 4,
-    value          = _G.selectedScenario,
+    value          = scenarioLabel(_G.selectedScenario),
     tooltip        = "Battlefield Deck Type",
   })
 end

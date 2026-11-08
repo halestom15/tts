@@ -150,6 +150,22 @@ test("an empty deck reshuffles discards including the card just discarded", func
   eq(m.reshuffled.kind, "advantage", "reshuffle reported: kind")
 end)
 
+test("a Recon mission draws from one shared set, with no modify turns", function()
+  local m = Mission:createRecon({
+    pool = {objective = {"O1", "O2", "O3"}, secondary = {"S1", "S2", "S3"}, advantage = {"A1", "A2", "A3"}},
+    blueSeat = "Red",
+    random = noShuffle,
+  })
+  eq(m:isBuilt(), true, "built at once")
+  eq(m:currentSeat(), nil, "no modify turns")
+  local r = m:result()
+  eq(r.blueSeat, "Red", "blue seat")
+  eq(m.cards.objective.owner, "Red", "blue draws the objective")
+  eq(m.cards.secondary.owner, "Red", "blue draws the secondary")
+  eq(r.advantage.Red ~= nil and r.advantage.Blue ~= nil, true, "one advantage each")
+  eq(r.advantage.Red ~= r.advantage.Blue, true, "no duplicate advantage")
+end)
+
 test("a player with no cards of a kind can't replace the other's card", function()
   local d = decks()
   d.red.objective = {"R-Obj1"}

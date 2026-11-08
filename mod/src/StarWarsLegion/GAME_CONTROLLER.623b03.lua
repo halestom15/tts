@@ -1908,26 +1908,29 @@ local function readMissionDecks()
     end
     scenario = seatScenario
 
-    local names, err = readBattleDeck(seat)
-    if not names then
-      broadcastToAll(err, {1, 0.4, 0.4})
-      ok = false
-    else
-      local split, unknown = Deck:splitBattleDeck(names, scenario)
-      if #unknown > 0 then
-        broadcastToAll(missionSeatName(seat) .. ": ignoring cards that aren't " .. scenario .. " battle cards: " .. table.concat(unknown, ", "), {1, 0.8, 0.4})
-      end
-      for _, kind in ipairs(MISSION_KINDS) do
-        local label = Deck.BATTLE_KINDS[kind].label
-        local count = #split[kind]
-        if count == 0 or (scenario == "standard" and count ~= 3) then
-          broadcastToAll(missionSeatName(seat) .. ": your battle deck needs 3 " .. label .. " cards (found " .. count .. ").", {1, 0.4, 0.4})
-          ok = false
-        elseif count ~= 3 then
-          broadcastToAll(missionSeatName(seat) .. ": battle decks normally have 3 " .. label .. " cards (found " .. count .. ").", {1, 0.8, 0.4})
+    -- Recon players share one set of cards: there are no decks to read.
+    if scenario ~= "skirmish" then
+      local names, err = readBattleDeck(seat)
+      if not names then
+        broadcastToAll(err, {1, 0.4, 0.4})
+        ok = false
+      else
+        local split, unknown = Deck:splitBattleDeck(names, scenario)
+        if #unknown > 0 then
+          broadcastToAll(missionSeatName(seat) .. ": ignoring cards that aren't " .. scenario .. " battle cards: " .. table.concat(unknown, ", "), {1, 0.8, 0.4})
         end
+        for _, kind in ipairs(MISSION_KINDS) do
+          local label = Deck.BATTLE_KINDS[kind].label
+          local count = #split[kind]
+          if count == 0 or (scenario == "standard" and count ~= 3) then
+            broadcastToAll(missionSeatName(seat) .. ": your battle deck needs 3 " .. label .. " cards (found " .. count .. ").", {1, 0.4, 0.4})
+            ok = false
+          elseif count ~= 3 then
+            broadcastToAll(missionSeatName(seat) .. ": battle decks normally have 3 " .. label .. " cards (found " .. count .. ").", {1, 0.8, 0.4})
+          end
+        end
+        decks[seat] = split
       end
-      decks[seat] = split
     end
   end
   if not ok then
@@ -2149,6 +2152,11 @@ local function showMissionDecks(blueSeat)
 end
 
 local function startMission(blueSeat)
+  if missionScenario == "skirmish" then
+    mission = Mission:createRecon({pool = Deck:getBattleCardPool(missionScenario), blueSeat = blueSeat})
+    missionReconSideMenu()
+    return
+  end
   mission = Mission:create({
     red      = missionDecks.Red,
     blue     = missionDecks.Blue,
@@ -2232,7 +2240,8 @@ end
 -- Step 3: blue picks a long edge. Players never change seats: picking the
 -- far edge turns the battlefield around instead, so that edge's terrain ends
 -- up in front of the blue player.
-function missionSideMenu()
+local function createMissionSideButtons()
+  missionActingSeat = mission.blueSeat
   clearAllButtons()
   changeBackButton("reset", "Cancel and go back to Main Menu")
   -- Tinted with the blue player's seat color, like the modify turns.
@@ -2241,6 +2250,17 @@ function missionSideMenu()
     {functionName = "missionEdgeNear", label = "Keep This Side", tooltip = "Keep the battlefield as it is: blue deploys on the edge in front of them", buttonTint = tint},
     {functionName = "missionEdgeFar", label = "Take the Other Side (Flip Map)", tooltip = "Turn the battlefield around so the far edge's terrain is in front of the blue player", buttonTint = tint},
   }, 1)
+end
+
+-- In Recon the blue player picks their edge before the mission is drawn: it
+-- stays hidden until then, and the cards go straight to the setup mounts.
+function missionReconSideMenu()
+  createMissionSideButtons()
+  printToScreen("BUILD MISSION (RECON)\n\nBlue player (" .. mission.blueSeat .. " seat):\nchoose your table edge\n\nPlayers keep their seats:\ntaking the other side flips the map", 60, 3)
+end
+
+function missionSideMenu()
+  createMissionSideButtons()
   showMissionScreen({
     {text = "MISSION BUILT", size = 75},
     {text = "Blue player: choose your table edge", size = 60, color = MISSION_SEAT_COLORS[mission.blueSeat]},
