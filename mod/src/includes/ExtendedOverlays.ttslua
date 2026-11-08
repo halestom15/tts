@@ -518,21 +518,21 @@ function refreshOverlayToggleUI()
                 and "Extended range and cohesion overlays: ON"
                 or  "Extended range and cohesion overlays: OFF",
         }
-        -- OFF keeps the sibling buttons' default light-grey look (Welcome,
-        -- Chess Clocks); ON switches to green.
-        if isExtended then attrs.color = "#1e7a3a" end
+        -- Same plate as its siblings (Welcome, Chess Clocks); ON is outlined
+        -- in orange.
+        attrs.image = isExtended and "uiButtonActive" or "uiButton"
+        attrs.colors = "#FFFFFF|#D8D8D8|#B8B8B8|#FFFFFF"
         local button = {
             tag = "Button",
             attributes = attrs,
             children = {{
                 -- White PNG sprite (CustomUIAssets "overlayToggleIcon"), tinted per
-                -- state: dark on the grey button, white on green. The shape
-                -- lives in the alpha channel, which is what makes the tint
-                -- work.
+                -- state: grey when off, orange when on. The shape lives in the
+                -- alpha channel, which is what makes the tint work.
                 tag = "Image",
                 attributes = {
                     image = "overlayToggleIcon",
-                    color = isExtended and "#FFFFFF" or "#2b2b2b",
+                    color = isExtended and "#E8801A" or "#9AA0AA",
                     preserveAspect = "true",
                     raycastTarget = "false",
                 },

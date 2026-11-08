@@ -4,6 +4,9 @@ require('!/Mission')
 require('!/common/Zonex')
 
 function onload(save_state)
+    -- So mission draws differ from one load to the next.
+    math.randomseed(os.time())
+    Wait.time(clearMissionCards, 1)
     _G.Deck = Deck:create()
 
     -- init values
@@ -113,6 +116,8 @@ end
 function reset()
     clearMissionCards()
     mission = nil
+    missionMenuOpen = false
+    missionActingSeat = nil
     mainMenu()
 end
 
@@ -223,13 +228,14 @@ end
 -- of the cards the mod knows changes, for this session.
 function cardArtMenu()
     ga_view("game_controller/config_menu/card_art")
-    printToScreen("CARD ART\n\nArt by Legion Helper (legion.takras.net).\nOnly the art changes, for this session.", 80, 3)
+    printToScreen("CARD ART\n\nArt by Legion Helper (legion.takras.net).\nOnly the art changes, for this session.\nMod Art puts the mod's own back.", 80, 3)
     clearAllButtons()
     changeBackButton("configMenu", "Go back to Config Menu")
     local menuEntries = {}
     menuEntries[1] = {functionName = "loadCardArtActive", label = "Load Active", tooltip = "Art for the cards and units on the table only - quick", buttonTint = {0,0.913,1}}
     menuEntries[2] = {functionName = "loadCardArtUpgrades", label = "All Upgrades", tooltip = "Art for every upgrade card", buttonTint = {0,0.913,1}}
     menuEntries[3] = {functionName = "loadCardArtAll", label = "All Cards", tooltip = "Art for every unit, upgrade and command card", buttonTint = {0,0.913,1}}
+    menuEntries[4] = {functionName = "restoreCardArtMod", label = "Mod Art", tooltip = "Back to the mod's own card art", buttonTint = {0,0.913,1}}
     createMenu(menuEntries, 1)
 end
 
@@ -241,6 +247,11 @@ end
 function loadCardArtUpgrades()
     ga_event("Game", "loadLegionHelperUpgrades")
     Global.call("loadLegionHelperUpgrades")
+end
+
+function restoreCardArtMod()
+    ga_event("Game", "restoreModCardArt")
+    Global.call("restoreModCardArt")
 end
 
 function loadCardArtAll()
@@ -393,6 +404,15 @@ function spawnCardDecks()
   Deck:spawnBattleDeck({52.43, 1.42, 23})
 end
 
+-- A map's dust, fog or mist covers the whole battlefield from its centre, and
+-- its particles are built for the way the map places it: turned around, its
+-- gusts swing out in huge circles. It stays as it is when the map flips.
+function isMapAmbience(obj)
+  local name = string.lower(obj.getName() or "")
+  return string.find(name, "dust") ~= nil or string.find(name, "fog") ~= nil
+    or string.find(name, "mist") ~= nil
+end
+
 function flipObjPos(pObj)
     local objPos = pObj.getPosition()
     local newPos = objPos
@@ -415,7 +435,7 @@ function flipMap()
     else
         for _, obj in ipairs(allObjs) do
             -- flip obj
-            if obj ~= battlefieldTable then
+            if obj ~= battlefieldTable and not isMapAmbience(obj) then
                 flipObjPos(obj)
             end
         end
@@ -755,7 +775,8 @@ function createOptionButton(optionNumber, optionClickFunction, optionLabel, opti
     optionObj = optionObjs["gameControllerOption"..optionNumber]
     optionButton = optionButtons["gameControllerOption"..optionNumber.."Button"]
 
-    _G["gameControllerOptionFunction"..optionNumber] = function()
+    _G["gameControllerOptionFunction"..optionNumber] = function(_, playerColor)
+        if not missionClickAllowed(playerColor) then return end
         optionButtons["gameControllerOption"..optionNumber.."Button"].AssetBundle.playTriggerEffect(0)
         _G[optionClickFunction](optionNumber)
     end
@@ -780,7 +801,8 @@ function createOptionButton(optionNumber, optionClickFunction, optionLabel, opti
 end
 
 function changeBackButton(optionClickFunction, optionToolTip)
-    _G["gameControllerBackButtonFunction"] = function()
+    _G["gameControllerBackButtonFunction"] = function(_, playerColor)
+        if missionMenuOpen and playerColor == "Grey" then return end
         backButton.AssetBundle.playTriggerEffect(0)
         _G[optionClickFunction]()
     end
@@ -1636,6 +1658,7 @@ function unpackMap(text)
 end
 
 function createMenu(optionTable, selectedIndex)
+    menuDrawnAt = os.clock()
     clearAllButtons(backButton)
 
     if #optionTable > 5 then
@@ -1766,24 +1789,7 @@ function placeMask(x, z)
 end
 
 function togglePoiGuide()
-    local existing = findObjectsByName("Poi Guide")
-    if #existing > 0 then
-        for _, obj in ipairs(existing) do
-            destroyObject(obj)
-        end
-    else
-        local projector = spawnObject({
-            type = "Custom_AssetBundle",
-            position = { 8, 30, 0 },
-            scale = {0,0,0}
-        })
-        local asset = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_guide_isq_v3.unity3d"
-        projector.setName("Poi Guide")
-        projector.setLock(true)
-        projector.setCustomObject({
-            assetbundle = asset
-        })
-    end
+    Global.call("togglePoiGuideProjector")
 end
 -- MISSION (2024 rules)
 --
@@ -1813,6 +1819,24 @@ MISSION_ACTION_TOOLTIPS = {
 }
 
 missionCards = {}
+
+-- Who may press the mission buttons: not a spectator, and only the player whose
+-- choice it is when that seat is taken (a seat left empty stays open, so one
+-- person can still set up both sides). A button redrawn under a double click
+-- must not take the second click: it would answer a question nobody has read.
+local MISSION_REDRAW_GUARD = 0.5
+
+function missionClickAllowed(playerColor)
+  if not missionMenuOpen then return true end
+  if playerColor == nil or playerColor == "Grey" then return false end
+  if os.clock() - (menuDrawnAt or 0) < MISSION_REDRAW_GUARD then return false end
+  local seat = missionActingSeat
+  if seat ~= nil and Player[seat].seated and playerColor ~= seat then
+    Player[playerColor].broadcast("It is the " .. seat .. " player's choice.", {1, 0.8, 0.4})
+    return false
+  end
+  return true
+end
 
 -- Blank lines after the TV text push it up, clear of the card row.
 
@@ -1873,26 +1897,29 @@ local function readMissionDecks()
     end
     scenario = seatScenario
 
-    local names, err = readBattleDeck(seat)
-    if not names then
-      broadcastToAll(err, {1, 0.4, 0.4})
-      ok = false
-    else
-      local split, unknown = Deck:splitBattleDeck(names, scenario)
-      if #unknown > 0 then
-        broadcastToAll(missionSeatName(seat) .. ": ignoring cards that aren't " .. scenario .. " battle cards: " .. table.concat(unknown, ", "), {1, 0.8, 0.4})
-      end
-      for _, kind in ipairs(MISSION_KINDS) do
-        local label = Deck.BATTLE_KINDS[kind].label
-        local count = #split[kind]
-        if count == 0 or (scenario == "standard" and count ~= 3) then
-          broadcastToAll(missionSeatName(seat) .. ": your battle deck needs 3 " .. label .. " cards (found " .. count .. ").", {1, 0.4, 0.4})
-          ok = false
-        elseif count ~= 3 then
-          broadcastToAll(missionSeatName(seat) .. ": battle decks normally have 3 " .. label .. " cards (found " .. count .. ").", {1, 0.8, 0.4})
+    -- Recon players share one set of cards: there are no decks to read.
+    if scenario ~= "skirmish" then
+      local names, err = readBattleDeck(seat)
+      if not names then
+        broadcastToAll(err, {1, 0.4, 0.4})
+        ok = false
+      else
+        local split, unknown = Deck:splitBattleDeck(names, scenario)
+        if #unknown > 0 then
+          broadcastToAll(missionSeatName(seat) .. ": ignoring cards that aren't " .. scenario .. " battle cards: " .. table.concat(unknown, ", "), {1, 0.8, 0.4})
         end
+        for _, kind in ipairs(MISSION_KINDS) do
+          local label = Deck.BATTLE_KINDS[kind].label
+          local count = #split[kind]
+          if count == 0 or (scenario == "standard" and count ~= 3) then
+            broadcastToAll(missionSeatName(seat) .. ": your battle deck needs 3 " .. label .. " cards (found " .. count .. ").", {1, 0.4, 0.4})
+            ok = false
+          elseif count ~= 3 then
+            broadcastToAll(missionSeatName(seat) .. ": battle decks normally have 3 " .. label .. " cards (found " .. count .. ").", {1, 0.8, 0.4})
+          end
+        end
+        decks[seat] = split
       end
-      decks[seat] = split
     end
   end
   if not ok then
@@ -1901,51 +1928,99 @@ local function readMissionDecks()
   return decks, scenario
 end
 
+-- Tagged so a reload can find the cards left on the TV: missionCards is not saved.
+MISSION_CARD_TAG = "MissionCard"
+
 function clearMissionCards()
-  for _, card in pairs(missionCards) do
-    if card ~= nil and not card.isDestroyed() then
-      destroyObject(card)
+  for _, card in ipairs(getObjectsWithTag(MISSION_CARD_TAG)) do
+    destroyObject(card)
+  end
+  for _, stack in pairs(missionCards) do
+    for _, entry in ipairs(stack) do
+      if not entry.obj.isDestroyed() then
+        destroyObject(entry.obj)
+      end
     end
   end
   missionCards = {}
 end
 
 -- The mission's cards sit in one row along the bottom of the TV, left to
--- right: Objective, Secondary, the blue seat's Advantage, the red seat's
+-- right: the blue seat's Advantage, Objective, Secondary, the red seat's
 -- Advantage (by seat, not role, so each sits on its owner's side). Offsets are
 -- subtracted from the screen's position (as gameController.setUpCardsPos):
 -- x and y place the row on the tilted screen, z spaces the cards.
 MISSION_CARD_SCALE = 0.95
-MISSION_CARD_ROW = {1.68, -1.21}
+MISSION_CARD_ROW = {1.54, -1.417}
 MISSION_CARD_COLUMNS = {-3.75, -1.25, 1.25, 3.75}
+MISSION_CARD_STACK_STEP = 0.2
+MISSION_CARD_STACK_LIFT = 0.02
+MISSION_CARD_STACK_MAX = 5
+-- Along the tilted screen (55.91 degrees): down it, and out towards the players.
+MISSION_CARD_DOWN = {x = -0.561, y = -0.828}
+MISSION_CARD_OUT = {x = -0.828, y = 0.561}
 
--- Shows a card on the TV in column 1..4.
-local function showMissionCard(slotKey, column, kind, card)
-  if missionCards[slotKey] and not missionCards[slotKey].isDestroyed() then
-    destroyObject(missionCards[slotKey])
-  end
-  missionCards[slotKey] = nil
-  if card == nil then
-    return
-  end
+-- Puts a card on the TV in its column. Each replacement sits lower than the
+-- card it covers, so the names of the cards underneath stay readable.
+local function positionMissionCard(obj, column, level)
   local screenPos = screen.getPosition()
-  local obj = Deck:spawnBattleCard(Deck.BATTLE_KINDS[kind].key, card.name, missionScenario)
-  obj.setLock(true)
-  obj.setScale({MISSION_CARD_SCALE, 1, MISSION_CARD_SCALE})
+  local step = (level - 1) * MISSION_CARD_STACK_STEP
+  local lift = (level - 1) * MISSION_CARD_STACK_LIFT
   obj.setRotation({55.91, 270.00, 0.00})
   obj.setPosition({
-    screenPos.x - MISSION_CARD_ROW[1],
-    screenPos.y - MISSION_CARD_ROW[2],
+    screenPos.x - MISSION_CARD_ROW[1] + MISSION_CARD_DOWN.x * step + MISSION_CARD_OUT.x * lift,
+    screenPos.y - MISSION_CARD_ROW[2] + MISSION_CARD_DOWN.y * step + MISSION_CARD_OUT.y * lift,
     screenPos.z - MISSION_CARD_COLUMNS[column],
   })
+end
+
+-- Shows a card on the TV in column 1..4, over the card it replaces.
+local function showMissionCard(slotKey, column, kind, card)
+  -- A player may have deleted a card off the TV.
+  local stack = {}
+  for _, entry in ipairs(missionCards[slotKey] or {}) do
+    if not entry.obj.isDestroyed() then table.insert(stack, entry) end
+  end
+  missionCards[slotKey] = stack
+  if card == nil or (stack[#stack] and stack[#stack].card == card) then
+    return
+  end
+  local obj = Deck:spawnBattleCard(Deck.BATTLE_KINDS[kind].key, card.name, missionScenario)
+  obj.addTag(MISSION_CARD_TAG)
+  obj.setLock(true)
+  obj.setScale({MISSION_CARD_SCALE, 1, MISSION_CARD_SCALE})
   obj.setDescription("From the " .. missionSeatName(card.owner) .. "'s battle deck")
-  missionCards[slotKey] = obj
+  table.insert(stack, {card = card, obj = obj})
+  if #stack > MISSION_CARD_STACK_MAX then
+    destroyObject(table.remove(stack, 1).obj)
+  end
+  for level, entry in ipairs(stack) do
+    positionMissionCard(entry.obj, column, level)
+  end
+end
+
+-- The cards of a reshuffled deck are back in it, so they leave the TV: the
+-- card drawn next must not sit on top of a copy of itself.
+local function clearReshuffledCards(reshuffled)
+  local slotKey = reshuffled.kind
+  if slotKey == "advantage" then
+    slotKey = "advantage" .. reshuffled.seat
+  end
+  local kept = {}
+  for _, entry in ipairs(missionCards[slotKey] or {}) do
+    if entry.card.owner == reshuffled.seat then
+      if not entry.obj.isDestroyed() then destroyObject(entry.obj) end
+    else
+      table.insert(kept, entry)
+    end
+  end
+  missionCards[slotKey] = kept
 end
 
 local function showMission()
-  showMissionCard("objective", 1, "objective", mission.cards.objective)
-  showMissionCard("secondary", 2, "secondary", mission.cards.secondary)
-  showMissionCard("advantageBlue", 3, "advantage", mission.cards.advantage.Blue)
+  showMissionCard("advantageBlue", 1, "advantage", mission.cards.advantage.Blue)
+  showMissionCard("objective", 2, "objective", mission.cards.objective)
+  showMissionCard("secondary", 3, "secondary", mission.cards.secondary)
   showMissionCard("advantageRed", 4, "advantage", mission.cards.advantage.Red)
 end
 
@@ -1962,9 +2037,9 @@ local function missionSummary()
 end
 
 -- Layout in screen-local units (see printScreenLines).
-MISSION_HEADER_Y = {0.84, 0.72, 0.62}
-MISSION_BLUE_PLAYER_Y = 0.52
-MISSION_LABEL_Y = 0.40
+MISSION_HEADER_Y = {0.85, 0.74, 0.65}
+MISSION_BLUE_PLAYER_Y = 0.56
+MISSION_LABEL_Y = 0.46
 
 -- Shows the header lines (list of {text, color, size}) at the top of the TV,
 -- which seat is the blue player, and a label over each mission card.
@@ -1978,9 +2053,9 @@ local function showMissionScreen(header)
   end
   add(mission.blueSeat:upper() .. " SEAT IS THE BLUE PLAYER", MISSION_BLUE_PLAYER_Y, 0, 55, MISSION_SEAT_COLORS[mission.blueSeat])
   local labels = {
+    {text = "BLUE SEAT", color = MISSION_SEAT_COLORS.Blue},
     {text = "OBJECTIVE"},
     {text = "SECONDARY"},
-    {text = "BLUE SEAT", color = MISSION_SEAT_COLORS.Blue},
     {text = "RED SEAT", color = MISSION_SEAT_COLORS.Red},
   }
   local scaleZ = screen.getScale().z
@@ -2001,19 +2076,23 @@ function buildMissionMenu()
     return
   end
   clearMissionCards()
-  setUpController.call("setAdvantageLabels", {})
   missionDecks = decks
   missionScenario = scenario
   mission = nil
+  missionMenuOpen = true
+  missionActingSeat = nil
 
   clearAllButtons()
   changeBackButton("reset", "Cancel and go back to Main Menu")
   createMenu({
-    {functionName = "missionBlueIsBlue", label = "Blue Seat is Blue", tooltip = "The player at the blue seat is the blue player", buttonTint = {0, 0.4, 1}},
-    {functionName = "missionRedIsBlue", label = "Red Seat is Blue", tooltip = "The player at the red seat is the blue player", buttonTint = {1, 0.2, 0.2}},
+    {functionName = "missionBlueIsBlue", label = "Blue Seat: Blue Player", tooltip = "The player at the blue seat is the blue player", buttonTint = {0, 0.4, 1}},
+    {functionName = "missionRedIsBlue", label = "Red Seat: Blue Player", tooltip = "The player at the red seat is the blue player", buttonTint = {1, 0.2, 0.2}},
   }, 1)
   local modeName = scenario == "skirmish" and "RECON" or scenario:upper()
-  printToScreen("BUILD MISSION (" .. modeName .. ")\n\nWho is the blue player?\n\nRoll off as the rules describe, then pick the winner below.", 70, 3)
+  local rollOff = scenario == "skirmish"
+    and "One player rolls a red defense die:\non a Block they are the blue player,\notherwise the red player. Pick below."
+    or "Each player rolls 4 black attack dice:\nmost Criticals, then Hits, then Surges.\nReroll ties, then pick the winner below."
+  printToScreen("BUILD MISSION (" .. modeName .. ")\n\nWho is the blue player?\n\n" .. rollOff, 60, 3)
 end
 
 -- Shows the Objectives and Secondaries in both players' battle decks side by
@@ -2062,6 +2141,11 @@ local function showMissionDecks(blueSeat)
 end
 
 local function startMission(blueSeat)
+  if missionScenario == "skirmish" then
+    mission = Mission:createRecon({pool = Deck:getBattleCardPool(missionScenario), blueSeat = blueSeat})
+    missionReconSideMenu()
+    return
+  end
   mission = Mission:create({
     red      = missionDecks.Red,
     blue     = missionDecks.Blue,
@@ -2105,6 +2189,7 @@ function missionTurnMenu()
     return
   end
   local seat = mission:currentSeat()
+  missionActingSeat = seat
   local turn = MISSION_TURNS - mission:turnsLeft() + 1
   local entries = {}
   for _, action in ipairs(mission:availableActions(seat)) do
@@ -2116,6 +2201,12 @@ function missionTurnMenu()
         message = message .. " -> " .. drawn.name
       end
       broadcastToAll(message, {0.8, 0.9, 1})
+      if mission.reshuffled then
+        local reshuffled = mission.reshuffled
+        mission.reshuffled = nil
+        clearReshuffledCards(reshuffled)
+        broadcastToAll(missionSeatName(reshuffled.seat) .. ": " .. Deck.BATTLE_KINDS[reshuffled.kind].label .. " deck reshuffled", {0.8, 0.9, 1})
+      end
       showMission()
       missionTurnMenu()
     end
@@ -2138,19 +2229,31 @@ end
 -- Step 3: blue picks a long edge. Players never change seats: picking the
 -- far edge turns the battlefield around instead, so that edge's terrain ends
 -- up in front of the blue player.
-function missionSideMenu()
+local function createMissionSideButtons()
+  missionActingSeat = mission.blueSeat
   clearAllButtons()
   changeBackButton("reset", "Cancel and go back to Main Menu")
   -- Tinted with the blue player's seat color, like the modify turns.
   local tint = mission.blueSeat == "Red" and {1, 0.2, 0.2} or {0, 0.4, 1}
   createMenu({
-    {functionName = "missionEdgeNear", label = "Edge at My Seat", tooltip = "Keep the battlefield as it is: blue deploys on the edge in front of them", buttonTint = tint},
-    {functionName = "missionEdgeFar", label = "Far Edge (Flip Map)", tooltip = "Turn the battlefield around so the far edge's terrain is in front of the blue player", buttonTint = tint},
+    {functionName = "missionEdgeNear", label = "Keep This Side", tooltip = "Keep the battlefield as it is: blue deploys on the edge in front of them", buttonTint = tint},
+    {functionName = "missionEdgeFar", label = "Take the Other Side (Flip Map)", tooltip = "Turn the battlefield around so the far edge's terrain is in front of the blue player", buttonTint = tint},
   }, 1)
+end
+
+-- In Recon the blue player picks their edge before the mission is drawn: it
+-- stays hidden until then, and the cards go straight to the setup mounts.
+function missionReconSideMenu()
+  createMissionSideButtons()
+  printToScreen("BUILD MISSION (RECON)\n\nBlue player (" .. mission.blueSeat .. " seat):\nchoose your table edge\n\nPlayers keep their seats:\ntaking the other side flips the map", 60, 3)
+end
+
+function missionSideMenu()
+  createMissionSideButtons()
   showMissionScreen({
     {text = "MISSION BUILT", size = 75},
     {text = "Blue player: choose your table edge", size = 60, color = MISSION_SEAT_COLORS[mission.blueSeat]},
-    {text = "Players keep their seats: the far edge flips the map", size = 50},
+    {text = "Players keep their seats: taking the other side flips the map", size = 50},
   })
 end
 
@@ -2194,7 +2297,6 @@ function setUpMission(flipBattlefield)
     local card = placeOnMount(advantageMounts[seat].mount, "advantage", result.advantage[seat])
     card.setDescription(role .. " player's Advantage (" .. seat .. " seat)")
   end
-  setUpController.call("setAdvantageLabels", {blueSeat = result.blueSeat})
 
   -- Turn the terrain first, so the deployment zones drawn next stay put.
   if flipBattlefield then
@@ -2204,6 +2306,7 @@ function setUpMission(flipBattlefield)
   -- The blue player's zone is drawn on the blue player's side of the table.
   setUpController.call("changeScenario", {missionScenario})
   setUpController.call("setMirrorDeployment", {mirror = result.blueSeat == "Red"})
+  setUpController.call("setPlaceMissionPois", {place = true})
 
   -- Give the cards a moment to land in the mount zones before checking them.
   Wait.time(function()
@@ -2217,5 +2320,7 @@ function setUpMission(flipBattlefield)
   local summary = missionSummary():gsub("\n", ". ")
   broadcastToAll("Mission set up. " .. summary, {0.8, 0.9, 1})
   mission = nil
+  missionMenuOpen = false
+  missionActingSeat = nil
   mainMenu()
 end

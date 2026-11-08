@@ -59,7 +59,8 @@ function _updateInput()
     height         = 350,
     font_size      = 323,
     validation     = 4,
-    value          = __state.scenario,
+    -- The data's "skirmish" is shown under its current name.
+    value          = (__state.scenario or ""):lower() == "skirmish" and "Recon" or __state.scenario,
     readonly       = true,
     tooltip        = "Battlefield Deck Type",
   })

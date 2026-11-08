@@ -55,6 +55,14 @@ Deck.SCENARIO_ALIASES = {
   recon = "skirmish",
 }
 
+-- What players read: the data's "skirmish" is shown under its current name.
+function scenarioLabel(scenario)
+  if scenario ~= nil and scenario:lower() == "skirmish" then
+    return "Recon"
+  end
+  return scenario
+end
+
 function Deck:_scenarioKey(scenario)
   if scenario == nil then
     return "standard"
@@ -635,6 +643,15 @@ function Deck:splitBattleDeck(names, scenario)
     end
   end
   return result, unknown
+end
+
+-- All of a scenario's battle cards, by mission kind.
+function Deck:getBattleCardPool(scenario)
+  local pool = {}
+  for kind, info in pairs(Deck.BATTLE_KINDS) do
+    pool[kind] = self:getBattleCardNamesByType(info.key, scenario)
+  end
+  return pool
 end
 
 function Deck:getBattleCardNamesByType(name, scenario)
