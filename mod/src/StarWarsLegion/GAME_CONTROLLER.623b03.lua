@@ -228,13 +228,14 @@ end
 -- of the cards the mod knows changes, for this session.
 function cardArtMenu()
     ga_view("game_controller/config_menu/card_art")
-    printToScreen("CARD ART\n\nArt by Legion Helper (legion.takras.net).\nOnly the art changes, for this session.", 80, 3)
+    printToScreen("CARD ART\n\nArt by Legion Helper (legion.takras.net).\nOnly the art changes, for this session.\nMod Art puts the mod's own back.", 80, 3)
     clearAllButtons()
     changeBackButton("configMenu", "Go back to Config Menu")
     local menuEntries = {}
     menuEntries[1] = {functionName = "loadCardArtActive", label = "Load Active", tooltip = "Art for the cards and units on the table only - quick", buttonTint = {0,0.913,1}}
     menuEntries[2] = {functionName = "loadCardArtUpgrades", label = "All Upgrades", tooltip = "Art for every upgrade card", buttonTint = {0,0.913,1}}
     menuEntries[3] = {functionName = "loadCardArtAll", label = "All Cards", tooltip = "Art for every unit, upgrade and command card", buttonTint = {0,0.913,1}}
+    menuEntries[4] = {functionName = "restoreCardArtMod", label = "Mod Art", tooltip = "Back to the mod's own card art", buttonTint = {0,0.913,1}}
     createMenu(menuEntries, 1)
 end
 
@@ -246,6 +247,11 @@ end
 function loadCardArtUpgrades()
     ga_event("Game", "loadLegionHelperUpgrades")
     Global.call("loadLegionHelperUpgrades")
+end
+
+function restoreCardArtMod()
+    ga_event("Game", "restoreModCardArt")
+    Global.call("restoreModCardArt")
 end
 
 function loadCardArtAll()

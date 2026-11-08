@@ -31,6 +31,45 @@ LEGION_HELPER_ART_HOST = "://takras.net/legionhelper/"
 -- changes (unit and upgrade cards are read fresh at every spawn).
 CardsSchemaRevision = 0
 
+-- What the art replaced, so the computer's Mod Art button can put it back:
+-- the mod's own images in the card data, and the faces of the cards already
+-- on the table, by name. A global table rather than locals: Global sits at
+-- Lua's limit of 200 top-level locals.
+LegionHelperOriginal = {fields = {}, seen = {}, cards = {}}
+
+-- A card is spawned again from its data with new art, not changed in place:
+-- after setCustomObject + reload the host sees the art but the other players
+-- get a blank card (tested with a guest on 8 Nov 2026). The GUID is kept,
+-- since a unit's minis find their card by it; it is free again once the old
+-- card is gone, two frames later. `paint(deck)` changes the data's faces and
+-- says whether anything changed.
+function LegionHelperOriginal.respawn(obj, paint)
+  if obj.isDestroyed() then
+    return false
+  end
+  local data = obj.getData()
+  local changed = false
+  for _, deck in pairs(data.CustomDeck or {}) do
+    if paint(deck) then
+      changed = true
+    end
+  end
+  if changed then
+    obj.destruct()
+    Wait.frames(function() spawnObjectData({data = data}) end, 2)
+  end
+  return changed
+end
+
+function LegionHelperOriginal.remember(owner, field)
+  local seen = LegionHelperOriginal.seen
+  seen[owner] = seen[owner] or {}
+  if not seen[owner][field] then
+    seen[owner][field] = true
+    table.insert(LegionHelperOriginal.fields, {owner = owner, field = field, value = owner[field]})
+  end
+end
+
 local function feed(kind)
   local feeds = LEGION_HELPER_FEEDS[LEGION_HELPER_LANGUAGE] or LEGION_HELPER_FEEDS.en
   return feeds[kind]
@@ -338,6 +377,7 @@ local function applyArt(art)
     if known then
       for key, card in pairs(units) do
         if known[key] then
+          LegionHelperOriginal.remember(known[key], "image")
           known[key].image = card.image
           count = count + 1
         end
@@ -347,8 +387,10 @@ local function applyArt(art)
   for name, card in pairs(art.upgrades) do
     local upgrade = schema.upgrades[name]
     if upgrade then
+      LegionHelperOriginal.remember(upgrade, "image")
       upgrade.image = card.image
       if card.back and upgrade.flip then
+        LegionHelperOriginal.remember(upgrade.flip, "image")
         upgrade.flip.image = card.back
       end
       count = count + 1
@@ -357,6 +399,7 @@ local function applyArt(art)
   local function command(card)
     local image = art.commands[card.name:upper()]
     if image then
+      LegionHelperOriginal.remember(card, "image")
       card.image = image
       count = count + 1
     end
@@ -378,6 +421,7 @@ end
 -- Cards already on the table take the new art, under the names Deck gives
 -- them: "Name: Title" for units, "Front / Back" for double-sided upgrades.
 -- Miniatures are left alone. A command keeps its card back.
+-- A card is spawned again with the art (see LegionHelperOriginal.respawn).
 local function reskinTable(art)
   local byName = {}
   for _, units in pairs(art.units) do
@@ -401,15 +445,66 @@ local function reskinTable(art)
         return
       end
       local card = byName[obj.getName():upper()]
-      if card then
-        local custom = obj.getCustomObject()
-        if custom.face ~= card[1] then
-          obj.setCustomObject({face = card[1], back = card[2] or custom.back})
-          obj.reload()
-        end
+      if not card then
+        return
       end
+      local name = obj.getName():upper()
+      LegionHelperOriginal.respawn(obj, function(deck)
+        if not LegionHelperOriginal.cards[name] and not (deck.FaceURL or ""):find(LEGION_HELPER_ART_HOST, 1, true) then
+          LegionHelperOriginal.cards[name] = {face = deck.FaceURL, back = deck.BackURL}
+        end
+        if deck.FaceURL == card[1] then
+          return false
+        end
+        deck.FaceURL = card[1]
+        deck.BackURL = card[2] or deck.BackURL
+        return true
+      end)
     end)
   end
+end
+
+-- The computer's Mod Art button: the mod's own images again, in the card data
+-- for the cards spawned from now on, and on the cards already on the table
+-- (spawned again, as reskinTable does). A card whose original face was never
+-- seen here (spawned with Legion Helper art already loaded) keeps that art.
+function restoreModCardArt()
+  if loading then
+    broadcastToAll("Legion Helper: art is still loading, try Mod Art again once it is done.", {1, 0.8, 0.4})
+    return
+  end
+  for _, entry in ipairs(LegionHelperOriginal.fields) do
+    entry.owner[entry.field] = entry.value
+  end
+  LegionHelperOriginal.fields, LegionHelperOriginal.seen = {}, {}
+  CardsSchemaRevision = CardsSchemaRevision + 1
+  -- The face alone says whether a card wears Legion Helper art: cheap to
+  -- read; the card's whole data is read only when it is spawned again.
+  local restored, kept = 0, 0
+  for _, obj in ipairs(getAllObjects()) do
+    if obj.type == "Card" and (obj.getCustomObject().face or ""):find(LEGION_HELPER_ART_HOST, 1, true) then
+      local original = LegionHelperOriginal.cards[obj.getName():upper()]
+      if original then
+        restored = restored + 1
+        enqueue(function()
+          LegionHelperOriginal.respawn(obj, function(deck)
+            deck.FaceURL, deck.BackURL = original.face, original.back
+            return true
+          end)
+        end)
+      else
+        kept = kept + 1
+      end
+    end
+  end
+  enqueue(function()
+    local message = "Mod card art back: " .. restored .. " cards on the table."
+    if kept > 0 then
+      message = message .. " " .. kept .. " spawned with Legion Helper art keep it: import them again."
+    end
+    broadcastToAll(message, {0.4, 0.9, 0.4})
+  end)
+  startQueue()
 end
 
 local function finish(art, number)
