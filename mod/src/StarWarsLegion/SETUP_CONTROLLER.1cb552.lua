@@ -230,7 +230,6 @@ end
 local POI_ORIGIN_HEIGHT = 0.08 -- the token's origin is on its top face
 local POI_CLEARANCE_CENTER = 0.6
 local POI_CLEARANCE_SIZE = {1.6, 0.9, 1.6} -- under the POI's 2": grazing a wall is fine
-local POI_FOOTPRINT = {1.6, 0.1, 1.6}
 local POI_CAST_HEIGHT = 30
 local MISSION_POI_TAG = "MissionPOI"
 -- A mound's collider can sit well below what is drawn, which would sink the
@@ -260,27 +259,66 @@ local function terrainOnSpot(p)
   return terrain
 end
 
--- The height of the surface a POI rests on: the top of what stands on its spot.
-local function poiRestHeight(p)
-  local terrain = terrainOnSpot(p)
-  local height = p.y
-  local hits = Physics.cast({
-    origin       = {p.x, p.y + POI_CAST_HEIGHT, p.z},
-    direction    = {0, -1, 0},
-    type         = 3,
-    size         = POI_FOOTPRINT,
-    max_distance = POI_CAST_HEIGHT + 1,
-  })
-  for _, hit in ipairs(hits or {}) do
-    local obj = hit.hit_object
-    if obj ~= nil and terrain[obj.getGUID()] then
-      local visual = obj.getVisualBoundsNormalized()
-      local visualTop = visual.center.y + visual.size.y / 2
-      if visualTop - p.y <= POI_LOW_TERRAIN then
-        height = math.max(height, visualTop)
+-- A POI only rests on terrain that carries most of it, as a real token
+-- would: the height is read under 5 points (its centre and 4 towards its
+-- edges), and the terrain counts only when it is under at least 3 of them. A
+-- thin tree trunk beside the spot, under one point or none, leaves the POI on
+-- the ground; a cliff or a roof under it holds it.
+local POI_SAMPLE_OFFSET = 0.6
+local POI_SAMPLES = {{0, 0}, {POI_SAMPLE_OFFSET, 0}, {-POI_SAMPLE_OFFSET, 0}, {0, POI_SAMPLE_OFFSET}, {0, -POI_SAMPLE_OFFSET}}
+local POI_SAMPLES_NEEDED = 3
+
+-- The top of what stands on the spot, from a surface at height `base`.
+local function topOfTerrain(p, base)
+  local terrain = terrainOnSpot({x = p.x, y = base, z = p.z})
+  if next(terrain) == nil then
+    return base
+  end
+  local height, carried = base, 0
+  for _, offset in ipairs(POI_SAMPLES) do
+    local top = nil
+    local hits = Physics.cast({
+      origin       = {p.x + offset[1], base + POI_CAST_HEIGHT, p.z + offset[2]},
+      direction    = {0, -1, 0},
+      type         = 1,
+      max_distance = POI_CAST_HEIGHT + 1,
+    })
+    for _, hit in ipairs(hits or {}) do
+      local obj = hit.hit_object
+      if obj ~= nil and terrain[obj.getGUID()] and hit.point.y > base + 0.01 then
+        local surface = hit.point.y
+        local visual = obj.getVisualBoundsNormalized()
+        local visualTop = visual.center.y + visual.size.y / 2
+        if visualTop - base <= POI_LOW_TERRAIN then
+          surface = math.max(surface, visualTop)
+        end
+        top = math.max(top or surface, surface)
       end
-      height = math.max(height, hit.point.y)
     end
+    if top then
+      carried = carried + 1
+      height = math.max(height, top)
+    end
+  end
+  if carried < POI_SAMPLES_NEEDED then
+    return base
+  end
+  return height
+end
+
+-- The height of the surface a POI rests on. Terrain can be stacked (a crate
+-- on a platform): once on top of one piece, look again from there, until
+-- nothing stands on the spot any more. An arch high above stays ignored, as
+-- on the ground.
+local POI_MAX_LEVELS = 5
+local function poiRestHeight(p)
+  local height = p.y
+  for _ = 1, POI_MAX_LEVELS do
+    local top = topOfTerrain(p, height)
+    if top <= height + 0.01 then
+      break
+    end
+    height = top
   end
   return height
 end
