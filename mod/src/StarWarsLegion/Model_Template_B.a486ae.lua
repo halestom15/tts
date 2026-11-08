@@ -85,14 +85,14 @@ function positionTemplate()
             self.setRotation({0,lastY,0})
         end
 
-    elseif baseRot2 > 90 then
+    elseif baseRot2 >= 90 then
         if q > baseRot2 - 90 or q < baseRot2 - 270 then
             templateRot.y = q
             self.setRotation({0,templateRot.y,0})
         else
             self.setRotation({0,lastY,0})
         end
-    elseif baseRot2 < -90 then
+    elseif baseRot2 <= -90 then
         if q < baseRot2 + 90 or q > baseRot2 + 270 then
             templateRot.y = q
             self.setRotation({0,templateRot.y,0})

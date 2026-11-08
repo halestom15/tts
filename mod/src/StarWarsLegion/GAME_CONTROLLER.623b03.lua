@@ -393,6 +393,15 @@ function spawnCardDecks()
   Deck:spawnBattleDeck({52.43, 1.42, 23})
 end
 
+-- A map's dust, fog or mist covers the whole battlefield from its centre, and
+-- its particles are built for the way the map places it: turned around, its
+-- gusts swing out in huge circles. It stays as it is when the map flips.
+function isMapAmbience(obj)
+  local name = string.lower(obj.getName() or "")
+  return string.find(name, "dust") ~= nil or string.find(name, "fog") ~= nil
+    or string.find(name, "mist") ~= nil
+end
+
 function flipObjPos(pObj)
     local objPos = pObj.getPosition()
     local newPos = objPos
@@ -415,7 +424,7 @@ function flipMap()
     else
         for _, obj in ipairs(allObjs) do
             -- flip obj
-            if obj ~= battlefieldTable then
+            if obj ~= battlefieldTable and not isMapAmbience(obj) then
                 flipObjPos(obj)
             end
         end
