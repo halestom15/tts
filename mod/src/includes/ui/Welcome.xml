@@ -49,7 +49,7 @@
       <VerticalLayout padding="5" childForceExpandHeight="false" contentSizeFitter="vertical">
         <Text alignment="UpperLeft" color="#E6E8EE" fontSize="12">
           <!--Welcome to Star Wars: Legion for TTS, <b>v8.0.0</b>.-->
-          Welcome to Star Wars: Legion for TTS, <b>v8.0.21-beta</b>.
+          Welcome to Star Wars: Legion for TTS, <b>v9.0.0-beta</b>.
 
           This is a <b>beta release</b> <textcolor color="#f03333"><b></b></textcolor>.
 
@@ -58,7 +58,12 @@
           <textcolor color="#E8801A"><b>CHANGELOG</b></textcolor>
           (Since last <i>Beta</i>)
           <!--(Since last <i>Stable</i>)-->
-          - Test: Martin Upgrades V1
+          - Fix: Mission Dashboard
+          - Fix: Mac Compatibility
+          - Fix: Deployment button snaps to board edge
+          - Add: Takras Card art compatibility
+          - Add: New Token art
+          - Add: Much more!
         </Text>
       </VerticalLayout>
     </VerticalScrollView>

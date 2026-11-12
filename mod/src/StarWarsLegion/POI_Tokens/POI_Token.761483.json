@@ -38,7 +38,7 @@
       "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_v2.obj",
       "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_v2.jpg",
       "NormalURL": "",
-      "ColliderURL": "",
+      "ColliderURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_v2.obj",
       "Convex": true,
       "MaterialIndex": 3,
       "TypeIndex": 0,

@@ -22,7 +22,11 @@ function onload(save_state)
     -- buttonObjs
     optionObjs = {}
     optionObjs.objective = getObjectFromGUID("9480a7")
-    optionObjs.deployment = getObjectFromGUID("538f4d")
+    -- The Objective's mount has two columns: the outer one sets the mission
+    -- up, then shows or hides the deployment zones; the one beside the card
+    -- shows or hides the POI guide.
+    optionObjs.deployment = getObjectFromGUID("5ee1a1")
+    optionObjs.poi = getObjectFromGUID("538f4d")
     optionObjs.conditions = getObjectFromGUID("c6b3a9")
     -- 2024 missions have two Advantages, one per player. Each player's goes
     -- on the mount nearer their seat: "conditions" is nearer the red seat,
@@ -31,9 +35,15 @@ function onload(save_state)
 
     optionButtons = {}
     optionButtons.objective = getObjectFromGUID("10483c")
-    optionButtons.deployment = getObjectFromGUID("1e6398")
+    optionButtons.deployment = getObjectFromGUID("5ee1a2")
+    optionButtons.poi = getObjectFromGUID("1e6398")
     optionButtons.conditions = getObjectFromGUID("337dc3")
     optionButtons.advantageBlueSeat = getObjectFromGUID("5007f8")
+
+    -- The mounts and buttons, which a zone also holds: never taken for a card.
+    panelParts = {}
+    for _, o in pairs(optionObjs) do panelParts[o] = true end
+    for _, o in pairs(optionButtons) do panelParts[o] = true end
 
     optionZones = {}
     optionZones.objective = getObjectFromGUID("d0ca46")
@@ -103,7 +113,9 @@ end
 
 function deploymentMenu()
     clearDeploymentBoundary()
+    overlay = nil
     clearButton("deployment")
+    clearButton("poi")
     createOptionButton("deployment", "checkDeployment", "Objective", "Create Deployment overlay and spawn Objective map and tokens", {0,0.913,1})
 end
 
@@ -172,20 +184,12 @@ function checkCard(cardType)
 end
 
 function getObjectFromZone(selectedZone)
-    local zoneObjs = nil
-    local selectedObj =  nil
-    local zoneObjs = optionZones[selectedZone].getObjects()
-    for i, obj in pairs(zoneObjs) do
-        if obj ~= optionObjs[selectedZone] then
-            selectedObj = obj
-            break
+    for _, obj in pairs(optionZones[selectedZone].getObjects()) do
+        if not panelParts[obj] then
+            return obj
         end
     end
-    if selectedObj ~= nil then
-        return selectedObj
-    else
-        return nil
-    end
+    return nil
 end
 
 
@@ -207,8 +211,8 @@ end
 -- nothing stands there, even under an arch, and on top of a hill or a building
 -- when one does. Players can unlock one with the usual L key to adjust it.
 local POI_ORIGIN_HEIGHT = 0.08 -- the token's origin is on its top face
-local POI_CLEARANCE_CENTER = 0.6
-local POI_CLEARANCE_SIZE = {1.6, 0.9, 1.6} -- under the POI's 2": grazing a wall is fine
+-- Terrain with more than this gap under it, at the spot, is an arch.
+local POI_ARCH_GAP = 1.05
 local POI_CAST_HEIGHT = 30
 local MISSION_POI_TAG = "MissionPOI"
 -- A mound's collider can sit well below what is drawn, which would sink the
@@ -220,22 +224,31 @@ function isReconSelected()
   return Deck:_scenarioKey(_G.selectedScenario) == "skirmish"
 end
 
-local function terrainOnSpot(p)
-  local hits = Physics.cast({
-    origin       = {p.x, p.y + POI_CLEARANCE_CENTER, p.z},
+-- Which objects a POI may rest on: terrain only, not what the mod itself puts
+-- on the table.
+local NOT_TERRAIN = {
+  ["POI Token"] = true, BATTLEFIELD = true, TABLE = true,
+  ["Poi Guide"] = true, ["Deployment Boundary"] = true,
+}
+
+-- False when the object only passes over the point with a gap of more than
+-- POI_ARCH_GAP under it (an arch, a wing high above). Rays, not a box: a box
+-- cast misses mesh colliders it sits inside (measured 12 Nov 2026: Forward
+-- Command Center, Destroyed LAAT), and a ray from inside a solid finds no
+-- underside, which counts as standing on the spot.
+local function standsOnSpot(obj, x, z, base)
+  local underside = nil
+  for _, hit in ipairs(Physics.cast({
+    origin       = {x, base + 0.15, z},
     direction    = {0, 1, 0},
-    type         = 3,
-    size         = POI_CLEARANCE_SIZE,
-    max_distance = 0,
-  })
-  local terrain = {}
-  for _, hit in ipairs(hits or {}) do
-    local obj = hit.hit_object
-    if obj ~= nil and obj.getName() ~= "POI Token" and obj.getName() ~= "BATTLEFIELD" then
-      terrain[obj.getGUID()] = true
+    type         = 1,
+    max_distance = POI_CAST_HEIGHT,
+  }) or {}) do
+    if hit.hit_object == obj then
+      underside = math.min(underside or hit.point.y, hit.point.y)
     end
   end
-  return terrain
+  return underside == nil or underside <= base + POI_ARCH_GAP
 end
 
 -- A POI only rests on terrain that carries most of it, as a real token
@@ -249,22 +262,20 @@ local POI_SAMPLES_NEEDED = 3
 
 -- The top of what stands on the spot, from a surface at height `base`.
 local function topOfTerrain(p, base)
-  local terrain = terrainOnSpot({x = p.x, y = base, z = p.z})
-  if next(terrain) == nil then
-    return base
-  end
   local height, carried = base, 0
   for _, offset in ipairs(POI_SAMPLES) do
     local top = nil
+    local x, z = p.x + offset[1], p.z + offset[2]
     local hits = Physics.cast({
-      origin       = {p.x + offset[1], base + POI_CAST_HEIGHT, p.z + offset[2]},
+      origin       = {x, base + POI_CAST_HEIGHT, z},
       direction    = {0, -1, 0},
       type         = 1,
       max_distance = POI_CAST_HEIGHT + 1,
     })
     for _, hit in ipairs(hits or {}) do
       local obj = hit.hit_object
-      if obj ~= nil and terrain[obj.getGUID()] and hit.point.y > base + 0.01 then
+      if obj ~= nil and not NOT_TERRAIN[obj.getName()] and hit.point.y > base + 0.01
+          and standsOnSpot(obj, x, z, base) then
         local surface = hit.point.y
         local visual = obj.getVisualBoundsNormalized()
         local visualTop = visual.center.y + visual.size.y / 2
@@ -378,10 +389,10 @@ function spawnObjs(cardType, selectedBattleCardName, callback)
   end
   -- Beside each card's mount.
   local position = ({
-    advantageblueseat = {49, 1, 20},
-    deployment   = {49, 1, 16},
-    objective    = {49, 1, 12},
-    condition    = {49, 1, 08},
+    advantageblueseat = {49, 1, 20.5},
+    deployment   = {49, 1, 15.5},
+    objective    = {49, 1, 11.5},
+    condition    = {49, 1, 07.5},
   })[cardType:lower()]
   Shelf:spawnAdditionalObjects({
     name     = selectedBattleCardName .. "'s Objects",
@@ -603,32 +614,76 @@ function noDeploymentMenu()
 end
 
 function activatedeployment(name)
-    clearDeploymentBoundary()
-    local zone = Deck:getDeploymentBoundary(name, _G.selectedScenario)
-    if zone and #zone > 0 then
-      spawnDeploymentBoundary(zone, _G.mirrorDeployment)
-    end
-    Global.call("setPoiPlacementAids", {
-      show    = true,
-      isRecon = isReconSelected(),
-    })
-    deactivateDeploymentMenu()
+    local placePois = _G.missionPoisOnMap
+    _G.missionPoisOnMap = false
+    overlay = {
+      name     = name,
+      scenario = _G.selectedScenario,
+      mirror   = _G.mirrorDeployment,
+      isRecon  = isReconSelected(),
+      deploy   = true,
+      poi      = true,
+    }
+    showDeploymentZones()
+    showPoiOverlay(true)
+    overlayMenu()
     local callback = nil
-    if _G.missionPoisOnMap then
-      _G.missionPoisOnMap = false
+    if placePois then
       callback = function(bag) placeMissionPois(bag, name) end
     end
     spawnObjs("deployment", name, callback)
 end
 
-function removeDeploymentOverlay()
-    Global.call("setPoiPlacementAids", {show = false})
-    deploymentMenu()
+-- The overlays of the mission set up last (nil before one is): which card,
+-- scenario and side, and whether its zones and POI guide are shown. Hiding
+-- both brings the Objective button back, to set up another mission.
+overlay = nil
+local OVERLAY_SHOWN, OVERLAY_HIDDEN = {0, 0.913, 1}, {0.25, 0.25, 0.25}
+
+-- Draws the mission's deployment zones, or only clears them when hidden.
+function showDeploymentZones()
+    clearDeploymentBoundary()
+    if overlay.deploy then
+      local zone = Deck:getDeploymentBoundary(overlay.name, overlay.scenario)
+      if zone and #zone > 0 then
+        spawnDeploymentBoundary(zone, overlay.mirror)
+      end
+    end
 end
 
-function deactivateDeploymentMenu()
+-- Only the mission's POI spots are shown.
+function showPoiOverlay(show)
+    Global.call("setPoiPlacementAids", {
+      show     = show,
+      isRecon  = overlay.isRecon,
+      cardName = overlay.name,
+    })
+end
+
+function overlayMenu()
+    if not overlay.deploy and not overlay.poi then
+      return deploymentMenu()
+    end
     clearButton("deployment")
-    createOptionButton("deployment", "removeDeploymentOverlay", "Remove Overlay", "Remove Deployment Overlay", {0.7,0,0})
+    createOptionButton("deployment", "toggleDeploymentOverlay", "Deployment Overlay",
+      overlay.deploy and "Hide the deployment zones" or "Show the deployment zones",
+      overlay.deploy and OVERLAY_SHOWN or OVERLAY_HIDDEN)
+    clearButton("poi")
+    createOptionButton("poi", "togglePoiOverlay", "POI Overlay",
+      overlay.poi and "Hide the POI spots" or "Show the POI spots",
+      overlay.poi and OVERLAY_SHOWN or OVERLAY_HIDDEN)
+end
+
+function toggleDeploymentOverlay()
+    overlay.deploy = not overlay.deploy
+    showDeploymentZones()
+    overlayMenu()
+end
+
+function togglePoiOverlay()
+    overlay.poi = not overlay.poi
+    showPoiOverlay(overlay.poi)
+    overlayMenu()
 end
 
 function activateconditions(name)

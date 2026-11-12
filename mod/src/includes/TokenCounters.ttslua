@@ -209,11 +209,12 @@ function counterTokensOnObject(obj)
   end
 end
 
--- A long press takes one off a token: held still for a moment, what is left
--- appears where the token stood and the token in hand turns into a token worth
--- one, still held (measured: setState keeps the hold). A normal drag moves the
--- whole token.
-local LONG_PRESS_TIME, LONG_PRESS_STEP, LONG_PRESS_REACH = 0.6, 0.1, 0.5
+-- A drag takes one off a token: what is left appears where the token stood
+-- and the token in hand turns into a token worth one, still held (measured:
+-- setState keeps the hold). A long press, held still for a moment before
+-- dragging, moves the whole token, and so does a drag of several objects (a
+-- unit moved with its tokens).
+local LONG_PRESS_TIME, WATCH_STEP, DRAG_REACH = 0.6, 0.1, 0.5
 
 local function takeOneFromToken(o, start)
   local bag = bagFor(o.getName())
@@ -243,15 +244,14 @@ function counterTokensOnPickUp(color, o)
   local elapsed = 0
   local function watch()
     if o == nil or o.isDestroyed() or o.held_by_color ~= color then return end
-    if distXZ(o.getPosition(), start) > LONG_PRESS_REACH then return end
-    elapsed = elapsed + LONG_PRESS_STEP
-    if elapsed >= LONG_PRESS_TIME then
-      takeOneFromToken(o, start)
-    else
-      Wait.time(watch, LONG_PRESS_STEP)
+    if distXZ(o.getPosition(), start) > DRAG_REACH then
+      if #Player[color].getHoldingObjects() == 1 then takeOneFromToken(o, start) end
+      return
     end
+    elapsed = elapsed + WATCH_STEP
+    if elapsed < LONG_PRESS_TIME then Wait.time(watch, WATCH_STEP) end
   end
-  Wait.time(watch, LONG_PRESS_STEP)
+  Wait.time(watch, WATCH_STEP)
 end
 
 -- The "Deliver Suppression / Wound to Cursor" hotkeys: +1 on the hovered or
