@@ -3,17 +3,17 @@
     "GUID": "1e6398",
     "Name": "Custom_Assetbundle",
     "Transform": {
-      "posX": 54.1305428,
+      "posX": 54.19,
       "posY": 1.16725886,
-      "posZ": 14.5424576,
-      "rotX": -0.00211055973,
-      "rotY": 270.004272,
-      "rotZ": 0.00512472028,
+      "posZ": 17.51,
+      "rotX": 0,
+      "rotY": 270,
+      "rotZ": 0,
       "scaleX": 0.22,
       "scaleY": 0.250000417,
       "scaleZ": 0.22
     },
-    "Nickname": "Setup Deployment Button",
+    "Nickname": "Setup POI Overlay Button",
     "Description": "",
     "GMNotes": "",
     "ColorDiffuse": {

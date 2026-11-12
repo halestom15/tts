@@ -2295,7 +2295,9 @@ local function placeOnMount(mount, kind, name)
   local pos = mount.getPosition()
   local card = Deck:spawnBattleCard(Deck.BATTLE_KINDS[kind].key, name, missionScenario)
   card.setScale({0.83, 1, 0.83})
-  card.setRotation(mount.getRotation())
+  -- The mounts lie turned a quarter so their frame stands upright, as the cards do.
+  local rot = mount.getRotation()
+  card.setRotation({rot.x, rot.y + 90, rot.z})
   card.setPosition({pos.x, pos.y + 0.23, pos.z})
   return card
 end
