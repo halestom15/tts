@@ -529,6 +529,21 @@ function spawnMapFromCartridge(selectedCartridge, onDone)
     local generation = mapDeployGeneration
     local total = #selectedCartridge.getObjects()
     local i = 0
+    -- Where the map file puts each piece, by GUID, read from the cartridge only
+    -- if a piece turns up without its position script (a notecard cannot carry
+    -- one): one getData() per map at most, and usually none.
+    local saved
+    local function savedTransform(guid)
+      if saved == nil then
+        saved = {}
+        pcall(function()
+          for _, piece in ipairs(selectedCartridge.getData().ContainedObjects or {}) do
+            if piece.GUID and piece.Transform then saved[piece.GUID] = piece.Transform end
+          end
+        end)
+      end
+      return saved[guid]
+    end
     -- onDone always runs, even when the pump gives up: it is what disposes of
     -- the cartridge. Left undone, an abandoned featured-map cartridge stays
     -- parked in the mount zone still holding half a map, and loadMap() picks
@@ -555,7 +570,7 @@ function spawnMapFromCartridge(selectedCartridge, onDone)
               if generation ~= mapDeployGeneration then
                 return destroyIfAlive(spawnedObject)
               end
-              placeTerrain(spawnedObject)
+              placeTerrain(spawnedObject, savedTransform)
             end)
           end,
         })
@@ -689,13 +704,25 @@ function loadMap()
     end
 end
 
-function placeTerrain(paObj)
+function placeTerrain(paObj, savedTransform)
     local spawnPos = paObj.getTable("position")
     local spawnRot = paObj.getTable("rotation")
     -- A cartridge holds where each piece goes in the piece's own script. A
-    -- piece saved without one, or whose asset failed to build, has neither -
-    -- and setPosition(nil) raises, which used to kill the rest of the map.
-    -- Leave it where it landed and name it instead.
+    -- piece that cannot carry a script - Scarif Landing's notecard - goes where
+    -- the map file put it; left where it landed, it hung in the air above the
+    -- table and, outside the battlefield zone, outlived clearMap.
+    if (spawnPos == nil or spawnRot == nil) and savedTransform ~= nil then
+      local t = savedTransform(paObj.guid)
+      if t and t.posX then
+        -- No script to clear on such a piece: place it and stop there.
+        paObj.setPosition({t.posX, t.posY, t.posZ})
+        paObj.setRotation({t.rotX or 0, t.rotY or 0, t.rotZ or 0})
+        return
+      end
+    end
+    -- A piece saved without a position, or whose asset failed to build, has
+    -- neither - and setPosition(nil) raises, which used to kill the rest of the
+    -- map. Leave it where it landed and name it instead.
     if spawnPos == nil or spawnRot == nil then
       printToAll("Map piece has no saved position: " .. tostring(paObj.getName()))
       return
