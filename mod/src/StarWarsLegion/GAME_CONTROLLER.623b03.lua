@@ -324,54 +324,53 @@ function safeJsonDecode(text)
   return nil
 end
 
-function featuredCompetitiveMenu()
-  ga_view("game_controller/featured_maps/competitive")
-  printToScreen("FEATURED MAPS\n\nThese are maps featured by the community.\n\nSee https://go.swlegion.dev/maps for details.", 80, 3)
-  changeBackButton("featuredMapsMenu", "Go back to featured maps")
-  local url = "https://raw.githubusercontent.com/swlegion/tts/master/contrib/maps/competitive.json"
+-- Our own copies of the featured map lists. The upstream ones were emptied
+-- in May 2026 and that went live on 8 November, taking the maps away.
+FEATURED_MAPS_LISTS = {
+  competitive = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/featured_maps_competitive_v1.json",
+  recon = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/featured_maps_recon_v1.json",
+}
+
+-- One button per map that has a name and an address. An entry missing either
+-- stopped the menu half-built and left the computer with no menus at all.
+function featuredMapsMenuFrom(url)
   WebRequest.get(url, function(data)
     local items = safeJsonDecode(data.text)
-    if items == nil then
+    local menu = {}
+    if type(items) == "table" then
+      for _, entry in pairs(items) do
+        if type(entry) == "table" and type(entry.name) == "string" and entry.name ~= ""
+            and type(entry.url) == "string" and entry.url ~= "" then
+          table.insert(menu, {
+            label = entry.name,
+            tooltip = 'Download map',
+            url = entry.url,
+            buttonTint = {0,0.913,1}
+          })
+        end
+      end
+    end
+    if #menu == 0 then
       printToAll("Could not load the featured maps list. Check your connection, or try again later.", {1, 0.5, 0.5})
       featuredMapsMenu()
       return
     end
-    local menu = {}
-    for _, entry in pairs(items) do
-      table.insert(menu, {
-        label = entry['name'],
-        tooltip = 'Download map',
-        url = entry['url'],
-        buttonTint = {0,0.913,1}
-      })
-    end
     createMenu(menu, 1)
   end)
+end
+
+function featuredCompetitiveMenu()
+  ga_view("game_controller/featured_maps/competitive")
+  printToScreen("FEATURED MAPS\n\nThese are maps featured by the community.\n\nSee https://go.swlegion.dev/maps for details.", 80, 3)
+  changeBackButton("featuredMapsMenu", "Go back to featured maps")
+  featuredMapsMenuFrom(FEATURED_MAPS_LISTS.competitive)
 end
 
 function featuredSkirmisMenu()
   ga_view("game_controller/featured_maps/skirmish")
   printToScreen("FEATURED MAPS\n\nThese are maps featured by the community.\n\nSee https://go.swlegion.dev/maps for details.\n\nFull support for Recon is currently limited:\nhttps://go.swlegion.dev/skirmish.", 80, 3)
   changeBackButton("featuredMapsMenu", "Go back to featured maps")
-  local url = "https://raw.githubusercontent.com/swlegion/tts/master/contrib/maps/skirmish.json"
-  WebRequest.get(url, function(data)
-    local items = safeJsonDecode(data.text)
-    if items == nil then
-      printToAll("Could not load the featured maps list. Check your connection, or try again later.", {1, 0.5, 0.5})
-      featuredMapsMenu()
-      return
-    end
-    local menu = {}
-    for _, entry in pairs(items) do
-      table.insert(menu, {
-        label = entry['name'],
-        tooltip = 'Download map',
-        url = entry['url'],
-        buttonTint = {0,0.913,1}
-      })
-    end
-    createMenu(menu, 1)
-  end)
+  featuredMapsMenuFrom(FEATURED_MAPS_LISTS.recon)
 end
 
 function createMapMenu(selectedCartridge, mapMenuCallback)
