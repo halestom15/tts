@@ -254,6 +254,10 @@ function Shelf:_spawnComplimentaryObject(name, container, scripts)
   if spawn.token then
     object = self:_spawnModel(nil, spawn.token, { type = 5 })
     object.setName(spawn.token.name or name)
+    -- Same size as the token in the table's bag, when that one is not 1.
+    if spawn.token.scale then
+      object.setScale({spawn.token.scale, spawn.token.scale, spawn.token.scale})
+    end
   elseif spawn.model then
     object = self:_spawnModel(nil, spawn.model)
     object.setName(name)

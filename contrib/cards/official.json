@@ -6071,10 +6071,10 @@
           "image": "https://steamusercontent-a.akamaihd.net/ugc/16343945853969639984/24ABD9DF34B74E343BD4F79D9461385D76C0CD88/",
           "type": "vertical",
           "additionalObjects": [
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         },
         {
@@ -6082,8 +6082,8 @@
           "image": "https://steamusercontent-a.akamaihd.net/ugc/15702722297992072119/D6071563AAC98F86DDD790E6DE034350EEF17F5F/",
           "type": "vertical",
           "additionalObjects": [
-            "Objective Token",
-            "Objective Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
             "POI Token",
             "POI Token"
           ]
@@ -6092,17 +6092,20 @@
           "name": "Recon Mission",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/18385343105541227063/7F990BB73C8675734EB02873157F392EA265DC20/",
           "type": "vertical",
-          "additionalObjects": ["Objective Token", "Objective Token"]
+          "additionalObjects": [
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
+          ]
         },
         {
           "name": "Supply Run",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/9519163714205143198/44DD261B633320C5FE3A406F76B56FD73EDC2E76/",
           "type": "vertical",
           "additionalObjects": [
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         },
         {
@@ -6110,29 +6113,32 @@
           "image": "https://steamusercontent-a.akamaihd.net/ugc/11438028241391995288/7360C9E6D366EBD0FFB76C95355BA596242CE3C4/",
           "type": "vertical",
           "additionalObjects": [
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         },
         {
           "name": "Failed Negotiations",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/14397967932869568037/48E4CD3D0D89AD9562F68BE5244104719D16FEE3/",
           "type": "vertical",
-          "additionalObjects": ["Objective Token", "Objective Token"]
+          "additionalObjects": [
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
+          ]
         },
         {
           "name": "Retrieve the Data",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/14161890504865635873/3D40D9AA8622DE6EEBAC0871C2F53AA2D8DCCA3E/",
           "type": "vertical",
           "additionalObjects": [
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         }
       ],
@@ -6555,7 +6561,7 @@
           "name": "Advanced Intel",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/13272907091260444770/243391B61F192F53AA7CF0360D3F846C7A7A0A97/",
           "type": "vertical",
-          "additionalObjects": ["Condition Token"]
+          "additionalObjects": ["Advantage / Asset Token"]
         },
         {
           "name": "Fortified Position",
@@ -6573,19 +6579,19 @@
           "name": "Garrison",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/11060842461995269445/3EC4678860C9AD82F7912D3FC3A56A519BCA3CEE/",
           "type": "vertical",
-          "additionalObjects": ["Condition Token"]
+          "additionalObjects": ["Advantage / Asset Token"]
         },
         {
           "name": "Ordnance",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/12637307440348267234/446B8F97B7C1EF2452E5B4DD6AF36FC1BAAD7FA2/",
           "type": "vertical",
-          "additionalObjects": ["Objective Token"]
+          "additionalObjects": ["Advantage / Asset Token"]
         },
         {
           "name": "Strafing Run",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/16276132125547808705/8A61415CDD0F2E20417F6D8371858B206FA0A775/",
           "type": "vertical",
-          "additionalObjects": ["Objective Token"]
+          "additionalObjects": ["Advantage / Asset Token"]
         },
         {
           "name": "Black Ops",
@@ -6636,12 +6642,12 @@
           "image": "https://steamusercontent-a.akamaihd.net/ugc/1680393865566152284/34FB45C5D924F9975C35E307B36C42AD2F8153DB/",
           "type": "horizontal",
           "additionalObjects": [
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         },
         {
@@ -6655,8 +6661,8 @@
           "type": "horizontal",
           "additionalObjects": [
             "Hostage Deck",
-            "Objective Token",
-            "Objective Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         },
         {
@@ -6664,9 +6670,9 @@
           "image": "https://steamusercontent-a.akamaihd.net/ugc/2094796397712554781/B6AD631AEEC48E4473426C34888E1A1B79A011C6/",
           "type": "horizontal",
           "additionalObjects": [
-            "Objective Token",
-            "Objective Token",
-            "Objective Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         },
         {
@@ -6674,9 +6680,9 @@
           "image": "https://steamusercontent-a.akamaihd.net/ugc/1680393865566152103/6BF1CD3BC8EA028CA31C3EE21FA87E28AC992873/",
           "type": "horizontal",
           "additionalObjects": [
-            "Objective Token",
-            "Objective Token",
-            "Objective Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         },
         {
@@ -6690,11 +6696,11 @@
           "image": "https://steamusercontent-a.akamaihd.net/ugc/1680393865566152002/C2C470607C4006FD51F83854CEA2093BA206222D/",
           "type": "horizontal",
           "additionalObjects": [
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         },
         {
@@ -6702,10 +6708,10 @@
           "image": "https://steamusercontent-a.akamaihd.net/ugc/1680393865566151946/368BA0B7F0BBD659B37D6BE6781E01FECCDCB5E6/",
           "type": "horizontal",
           "additionalObjects": [
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         }
       ],
@@ -6851,10 +6857,10 @@
           "image": "https://steamusercontent-a.akamaihd.net/ugc/1680393865566151174/7BF21B789BA2A715EE474286DBB98A30D7FED51A/",
           "type": "horizontal",
           "additionalObjects": [
-            "Condition Token",
-            "Condition Token",
-            "Condition Token",
-            "Condition Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         },
         {
@@ -6862,10 +6868,10 @@
           "image": "https://steamusercontent-a.akamaihd.net/ugc/1680393865566151116/18451A85E7201070C4E0D96F72FD5D8BE4377B80/",
           "type": "horizontal",
           "additionalObjects": [
-            "Condition Token",
-            "Condition Token",
-            "Condition Token",
-            "Condition Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         },
         {
@@ -6874,12 +6880,12 @@
           "type": "horizontal",
           "additionalObjects": [
             "Supply Deck",
-            "Condition Token",
-            "Condition Token",
-            "Condition Token",
-            "Condition Token",
-            "Condition Token",
-            "Condition Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         },
         {
@@ -6896,17 +6902,20 @@
           "image": "https://steamusercontent-a.akamaihd.net/ugc/16343945853969639984/24ABD9DF34B74E343BD4F79D9461385D76C0CD88/",
           "type": "vertical",
           "additionalObjects": [
-            "Objective Token",
-            "Objective Token",
-            "Objective Token",
-            "Objective Token"
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
           ]
         },
         {
           "name": "Recon Mission",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/18385343105541227063/7F990BB73C8675734EB02873157F392EA265DC20/",
           "type": "vertical",
-          "additionalObjects": ["Objective Token", "Objective Token"]
+          "additionalObjects": [
+            "Advantage / Asset Token",
+            "Advantage / Asset Token"
+          ]
         },
         {
           "name": "Bring Them to Heel",
@@ -6980,7 +6989,7 @@
           "name": "Advanced Intel",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/13272907091260444770/243391B61F192F53AA7CF0360D3F846C7A7A0A97/",
           "type": "vertical",
-          "additionalObjects": ["Condition Token"]
+          "additionalObjects": ["Advantage / Asset Token"]
         },
         {
           "name": "Fortified Position",
@@ -7001,6 +7010,15 @@
   },
 
   "objects": {
+    "Advantage / Asset Token": {
+      "token": {
+        "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
+        "diffuse": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/advantage_asset_v2.jpg"
+      },
+      "target": "table",
+      "stacks": false,
+      "scripted": "toggle-range-1"
+    },
     "Aim Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442508/5CF014A3E962C6116B3B910C8BE44FE1C8FCA1D2/",
@@ -7097,7 +7115,8 @@
     "Dodge Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442740/91C08C293B53CCF3D104B0472B60ECF7BF4B613E/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442875/553BAF41BE032BCE7282C4DECB180B5410AC7226/"
+        "diffuse": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/dodge_v2.jpg",
+        "scale": 0.65
       },
       "target": "unit"
     },
