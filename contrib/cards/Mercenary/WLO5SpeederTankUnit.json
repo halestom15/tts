@@ -3,6 +3,7 @@
   "image": "https://steamusercontent-a.akamaihd.net/ugc/12892745162360850606/8F7C7F70F1604DCA9BB39BE0F0EE859149D3A3F8/",
   "size": "snail",
   "type": "Repulsor Vehicle",
+  "hover": "ground",
   "points": 100,
   "speed": 1,
   "upgrades": {

@@ -1089,6 +1089,7 @@
       "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384863579/ABC4E8CCA9A2C837A86FF23215B5AE4885E2A9DF/",
       "size": "epic",
       "type": "Repulsor Vehicle",
+      "hover": "ground",
       "points": 155,
       "speed": 2,
       "upgrades": {
@@ -1136,6 +1137,7 @@
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135344629/540E23C816C00B4B7E086B626329F13633403C9E/",
       "size": "laat",
       "type": "Repulsor Vehicle",
+      "hover": "ground",
       "points": 65,
       "speed": 3,
       "upgrades": {

@@ -564,6 +564,7 @@
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139723206/223C60DDB2052576AE1CF777BE23675AA0FF8F2E/",
       "size": "long",
       "type": "Repulsor Vehicle",
+      "hover": "ground",
       "points": 65,
       "speed": 1,
       "upgrades": {

@@ -1410,6 +1410,7 @@
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133195560/90F1524F640B97B178EE17A8D5C3D73EDA51E80F/",
       "size": "long",
       "type": "Repulsor Vehicle",
+      "hover": "ground",
       "points": 65,
       "speed": 1,
       "height": 4,

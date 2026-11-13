@@ -363,6 +363,25 @@ function resetButtons()
             font_color = {0.4709, 0.9759, 0.9162, 1},
             tooltip = "Spawn Range Rulers"
         })
+
+        self.createButton({
+            click_function = "toggleHeightGuide",
+            function_owner = self,
+            label = "HEIGHT",
+            position = {1.6, 0.2, -2.0},
+            height = 350,
+            width = 750,
+            font_size = 150,
+            font_color = {0.4709, 0.9759, 0.9162, 1},
+            color = {0, 0, 0, 1},
+            tooltip = "Height guide in front of the unit leader. Click again after a move to set it again, or without moving to remove it"
+        })
+    end
+end
+
+function toggleHeightGuide()
+    if selectedUnitObj then
+        selectedUnitObj.call("toggleHeightGuide")
     end
 end
 
@@ -963,11 +982,20 @@ function clearCohesionRulers()
 end
 
 function clearAttackLine()
-    if attackLine then
-        for k, attackLineObj in pairs(attackLine) do
-            destroyObject(attackLine[k])
+    -- Any verdict still computing is now stale: the coroutine checks the
+    -- generation at every resume point and bows out.
+    losGeneration = (losGeneration or 0) + 1
+    Global.call("losCancel", {tokenGuid = self.getGUID()})
+    if losSilhouetteGUIDs then
+        for _, guid in pairs(losSilhouetteGUIDs) do
+            local leader = getObjectFromGUID(guid)
+            -- Only lower a silhouette that is still up: the player may have
+            -- toggled it off themselves mid-attack.
+            if leader ~= nil and leader.getVar("silhouetteState") then
+                leader.call("clearSilhouette")
+            end
         end
-        attackLine = nil
+        losSilhouetteGUIDs = nil
     end
 end
 
@@ -1183,6 +1211,9 @@ function attackMenu(attackTargetObj)
     unhighlightEnemies()
     highlightEnemy(attackTargetObj)
     clearRangeRulers()
+    -- Switching targets goes through here again: drop the previous target's
+    -- beams and silhouettes before drawing the new ones.
+    clearAttackLine()
 
     -- this used to be configurable per unit type, which meant that we made the
     -- ion/wound/suppression buttons vertically higher to make up for variable
@@ -1207,23 +1238,10 @@ function attackMenu(attackTargetObj)
         click_function = "addSuppression"..self.getGUID(), function_owner = self, label = "S", position = {0, buttonHeight, 0}, rotation = {0, 180, 0}, scale = {0.5, 0.5, 0.5}, width = 700, height = 700, font_size = 500, color = {1, 0.8723, 0, 1}, tooltip = "S"
     })
 
-    -- create attack lines
-    local enemyMinis = attackTargetObj.getTable("miniGUIDs")
-
-    attackLine = {}
-    n = 1
-
-    for k, guidEntry in pairs(enemyMinis) do
-        local obj = getObjectFromGUID(guidEntry)
-
-        if obj then
-            if obj.getPosition().z <18.1 and obj.getPosition().z > -18.1 and obj.getPosition().x < 44.1 and obj.getPosition().x > -28.1 then
-                attackLine[n] = spawnAttackLine(selectedUnitObj, obj)
-                n = n + 1
-            end
-        end
-    end
-
+    -- For every defending mini, draw the two witness lines (one clear of
+    -- terrain, one crossing it) in the background; the players judge line of
+    -- sight and cover themselves. Silhouettes rise when the rays are done.
+    computeLosVerdicts(attackTargetObj)
 end
 
 -- Suppression and wound are counters (see !/TokenCounters in the Global):
@@ -1264,60 +1282,110 @@ function addIon(selectedIonObj)
     })
 end
 
-function spawnAttackLine(aOriginObj,aTargetObj)
+-- The silhouette a mini is judged by: a cylinder standing on its base, as wide
+-- as the base and as tall as its unit's silhouette. Base size and custom
+-- silhouettes live on the unit leader, not on each mini, so that is who gets
+-- asked. Same rules Unit_Leader uses to spawn the visible ones, so the beams
+-- line up with what SIL draws.
+function silhouetteOf(leaderObj)
+    local leaderData = leaderObj.getTable("unitData")
+    local baseSize = (leaderData and leaderData.baseSize) or "small"
+    local radius = (templateInfo.baseRadius[baseSize] or templateInfo.baseRadius.small) / 2
+    local height = templateInfo.silhouetteHeight.small
+    local offset = 0
 
-        distance = getDistance(aOriginObj,aTargetObj)
+    if leaderObj.getVar("silhType") == "custom" then
+        height = leaderObj.getVar("silhHeight") or templateInfo.silhouetteHeight.custom
+        offset = leaderObj.getVar("silhOffset") or 0
+    elseif baseSize ~= "small" then
+        height = templateInfo.silhouetteHeight.notched
+    end
 
-        local spawnPos = aOriginObj.getPosition()
-        spawnPos.y = spawnPos.y+0.22
-        local spawnRot = getAngle(aOriginObj,aTargetObj)
-        spawnRot.y = spawnRot.y +180
-        spawnRot.x = spawnRot.x
-        spawnRot.z = spawnRot.z
-
-        attackLineObj = spawnObject({
-            type = "Custom_Model",
-            position = spawnPos,
-            rotation = spawnRot,
-            scale = {1,1,distance}
-        })
-        attackLineObj.setCustomObject({
-            type = 0,
-            mesh = templateInfo.attackLineMesh,
-            collider = "https://steamusercontent-a.akamaihd.net/ugc/785234780862865411/C2B5E8CA63651BE485909340212736C0A68C2754/",
-            material = 1,
-        })
-        attackLineObj.setLock(true)
-        attackLineObj.setColorTint({1,0,0})
-        attackLineObj.setName("Range Ruler")
-
-        attackLineObj.setRotation(spawnRot)
-        attackLineObj.setPosition(spawnPos)
-
-        Wait.frames(function() attackLineObj.setRotation(spawnRot) attackLineObj.setPosition(spawnPos) end, 10)
-
-        return attackLineObj
+    return radius, height, offset
 end
 
-function getAngle(originObj, angleTargetObj)
-    --local localVector = originObj.positionToLocal(angleTargetObj.getPosition())
-    local aTargetPos = angleTargetObj.getPosition()
-    local originPos = originObj.getPosition()
+------------------------------------------------- LINE OF SIGHT ----------------------------------------------------------
+-- The tool shows evidence, the players make the ruling. For each defending
+-- mini it draws up to two lines from the attacking leader's silhouette to
+-- that mini's silhouette: a green one that crosses no terrain, and a red one
+-- that does. Line of sight and cover are then judged by eye, at the table,
+-- exactly like the rule intends -- nothing is decided by the mod.
 
-    local localVector = {
-          x = aTargetPos.x - originPos.x,
-          y = aTargetPos.y - originPos.y,
-          z = aTargetPos.z - originPos.z}
+-- The search itself runs in Global (includes/LineOfSight.ttslua), which keeps
+-- one mesh cache for every unit. This script builds the request: its unit's
+-- and the defenders' sample points, and the vehicles that block.
 
+losGeneration = 0
 
-    local q = math.deg(math.atan2(localVector.x, localVector.z))
+-- A snapshot of the table for one verdict, handed to Global: each unit's
+-- silhouette and the position of every mini in the attack, every mini to
+-- ignore in the rays, and the silhouette cylinders of third-party ground
+-- vehicles (the only minis that block sight).
+function buildLosRequest(attackTargetObj)
+    local zoneObjects = battlefieldZone.getObjects()
+    local function silhouette(leaderObj)
+        local radius, height, offset = silhouetteOf(leaderObj)
+        return {r = radius, h = height, o = offset}
+    end
+    local function minisOnTable(leaderObj)
+        local result = {}
+        for _, guid in pairs(leaderObj.getTable("miniGUIDs") or {}) do
+            local m = getObjectFromGUID(guid)
+            if m ~= nil and isMiniOnTable(m, zoneObjects) then
+                local p = m.getPosition()
+                table.insert(result, {guid = guid, name = m.getName(), pos = {x = p.x, y = p.y, z = p.z}})
+            end
+        end
+        return result
+    end
+    local request = {
+        gen = losGeneration,
+        tokenGuid = self.getGUID(),
+        leaderGuid = selectedUnitObj.getGUID(),
+        attackerSil = silhouette(selectedUnitObj),
+        defenderSil = silhouette(attackTargetObj),
+        attackers = minisOnTable(selectedUnitObj),
+        defenders = minisOnTable(attackTargetObj),
+        miniGuids = {},
+    }
+    -- The leader is always an attacker, even if its unit's list misses it.
+    local hasLeader = false
+    for _, a in ipairs(request.attackers) do
+        if a.guid == request.leaderGuid then hasLeader = true end
+    end
+    if not hasLeader then
+        local p = selectedUnitObj.getPosition()
+        table.insert(request.attackers, {guid = request.leaderGuid, name = selectedUnitObj.getName(), pos = {x = p.x, y = p.y, z = p.z}})
+    end
+    for _, obj in pairs(zoneObjects) do
+        if obj.getVar("isAMini") == true then
+            table.insert(request.miniGuids, obj.getGUID())
+            for _, guid in pairs(obj.getTable("miniGUIDs") or {}) do
+                table.insert(request.miniGuids, guid)
+            end
+        end
+    end
+    return request
+end
 
-    local c = math.sqrt((localVector.x * localVector.x) + (localVector.z * localVector.z))
+function computeLosVerdicts(attackTargetObj)
+    losGeneration = losGeneration + 1
+    losTargetObj = attackTargetObj
+    Global.call("losStartVerdict", buildLosRequest(attackTargetObj))
+end
 
-    local q2 = math.deg(math.atan2(localVector.y, c))
-
-    -- set rotation and rotation
-    return {x=q2,y=q,z=0}
+-- Called by Global once the witness lines are drawn. Silhouettes only rise
+-- HERE, and only on units that did not have them up already -- those belong
+-- to the player.
+function losVerdictDone(params)
+    if params == nil or params.gen ~= losGeneration then return end
+    losSilhouetteGUIDs = {}
+    for _, leader in ipairs({selectedUnitObj, losTargetObj}) do
+        if leader ~= nil and not leader.getVar("silhouetteState") then
+            leader.call("showSilhouette")
+            table.insert(losSilhouetteGUIDs, leader.getGUID())
+        end
+    end
 end
 
 function createAttackButton(leaderObj)
