@@ -11,5 +11,5 @@ end
 
 function buttonPress(_, color)
   self.AssetBundle.playTriggerEffect(0) --triggers animation/sound
-  dieRoller.call("rollDie", {color})
+  dieRoller.call("rollDie", {color, Global.call("rollSelectionDice", color)})
 end

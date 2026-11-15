@@ -1,0 +1,70 @@
+-- ROLL rerolls the dice the player has selected, or all of them when none
+-- are. The hand zones stand 4 units high at the table's edge, between the
+-- camera and the dice trays: when ROLL sits low on the screen the pointer goes
+-- through a hand zone, and pressing there clears the selection before the
+-- button gets the click, so every die was rerolled (measured 15/11/2026: no
+-- object selected at the click; a bug as old as the mod).
+-- TTS reports selecting (Select for a box, PickUp for a click) but never
+-- deselecting, so while a player has dice selected the global script reads the
+-- selection every tenth of a second, and only then. A click on ROLL with
+-- nothing selected rerolls the dice that were selected a moment before: a
+-- deliberate deselect cannot be followed by a click on ROLL that fast.
+local SELECTION_GRACE = 0.4 -- seconds
+-- color -> {dice = last dice selected, clearedAt = os.clock() when the
+-- selection emptied, nil while it is being read}
+local lastDice = {}
+
+local function readSelection(color)
+  if lastDice[color] == nil then
+    return -- ROLL used it up meanwhile
+  end
+  local dice = {}
+  for _, o in ipairs(Player[color].getSelectedObjects() or {}) do
+    if o.type == "Dice" then table.insert(dice, o) end
+  end
+  local last = lastDice[color]
+  if #dice > 0 then
+    last.dice = dice
+    Wait.time(function() readSelection(color) end, 0.1)
+  else
+    last.clearedAt = os.clock()
+  end
+end
+
+function onPlayerAction(player, action, targets)
+  if action == Player.Action.Select or action == Player.Action.PickUp then
+    local last = lastDice[player.color]
+    local reading = last ~= nil and last.clearedAt == nil
+    for _, o in ipairs(targets or {}) do
+      if o.type == "Dice" and not reading then
+        lastDice[player.color] = {}
+        -- The selection is complete the frame after the action.
+        Wait.frames(function() readSelection(player.color) end, 1)
+        break
+      end
+    end
+  end
+  return true
+end
+
+-- Called by the ROLL buttons: the dice to reroll when the click arrived with
+-- nothing selected, or nil (rollDie then reads the selection, or rolls all).
+-- Given as their GUIDs in one string: a table made here cannot travel on
+-- through the ROLL button to the die roller ("resources owned by different
+-- scripts", measured 15/11/2026).
+function rollSelectionDice(color)
+  if #(Player[color].getSelectedObjects() or {}) > 0 then
+    return nil
+  end
+  local last = lastDice[color]
+  lastDice[color] = nil
+  if last == nil or last.dice == nil
+      or (last.clearedAt and os.clock() - last.clearedAt > SELECTION_GRACE) then
+    return nil
+  end
+  local guids = {}
+  for _, d in ipairs(last.dice) do
+    if not d.isDestroyed() then table.insert(guids, d.getGUID()) end
+  end
+  return #guids > 0 and table.concat(guids, ",") or nil
+end
