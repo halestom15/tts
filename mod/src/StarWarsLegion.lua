@@ -48,6 +48,10 @@ function onObjectPickUp(color, obj)
   counterTokensOnPickUp(color, obj)
 end
 
+function onObjectNumberTyped(obj)
+  return counterTokensOnNumberTyped(obj)
+end
+
 function onload(saveData)
     -- First, before anything that can throw: the veil is up from the XML,
     -- and this is what guarantees it comes back down.
