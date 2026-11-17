@@ -669,9 +669,16 @@ function listImportFieldChanged(_, text, id)
   __listImportText = text
   _refreshListImportButton()
   if text ~= previous .. '\n' then return end
-  if not _isWholeJsonObject(previous) then return end
+  -- A pasted list arrives line by line and opens with '{', so a newline after
+  -- an unfinished list is the paste going on. Text that does not open with
+  -- '{' (a sentence typed into the field) can never become a list: Enter
+  -- there used to add a line and say nothing, so it is imported, and refused
+  -- with a message, instead.
+  if not _isWholeJsonObject(previous) and not previous:match('^%s*[^%s{]') then
+    return
+  end
 
-  -- Enter: take the newline back out of the field, then load.
+  -- Enter: take the newline back out of the field, then load (or explain).
   __listImportText = previous
   __listImportSuppress = true
   self.UI.setAttribute(id or 'listToImport', 'text', previous)
