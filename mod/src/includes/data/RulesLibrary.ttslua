@@ -74,3 +74,39 @@ for _, doc in ipairs(RULES_LIBRARY) do
     end
   end
 end
+
+-- Tabletop Simulator caches a PDF under its url and never downloads it again,
+-- so a new edition uploaded over the same Drive file would stay invisible.
+-- A lectern therefore loads the url with the file's modification date added
+-- (&v=...): a new upload makes a new url, an unchanged file keeps the cached
+-- copy. The date comes from a HEAD request, which downloads nothing (measured
+-- in game: Drive answers HEAD and getResponseHeader reads Last-Modified).
+
+-- The library entry a lectern url stands for, whether it carries a date or not.
+function rulesChoiceForUrl(url)
+  return RULES_LIBRARY_BY_URL[(string.gsub(url or '', '&v=[^&]*', ''))]
+end
+
+-- Calls back once with the dated url, or with the bare one if Drive fails or
+-- does not answer in time: a document always loads, at worst from the cache.
+local DATE_TIMEOUT = 8
+
+function rulesDatedUrl(url, callback)
+  local timer
+  local function finish(result)
+    if not timer then return end
+    Wait.stop(timer)
+    timer = nil
+    callback(result)
+  end
+  timer = Wait.time(function() finish(url) end, DATE_TIMEOUT)
+  local sent = pcall(WebRequest.custom, url, 'HEAD', true, nil, {}, function(req)
+    local stamp = ''
+    if not req.is_error and req.response_code == 200 then
+      local ok, modified = pcall(req.getResponseHeader, 'Last-Modified')
+      if ok and modified then stamp = string.gsub(modified, '[^%w]', '') end
+    end
+    finish(stamp ~= '' and (url .. '&v=' .. stamp) or url)
+  end)
+  if not sent then finish(url) end
+end
