@@ -42,17 +42,19 @@ RULES_LIBRARY = {
     fr    = drive('1gDYQ2vs7ZKthhkFb9EPpsMmckuJ0Jm_O'),
   },
   {
-    -- English only; the lectern hides its language button on this one.
+    -- No official French edition yet: fr is the Iron Squadron translation,
+    -- to be replaced in place on Drive once Asmodee publishes theirs.
     key   = 'toursofduty',
     title = 'Tours of Duty',
     en    = drive('1PO8Nxlr5k6lIrA-MdG5pytKiNuj3quU6'),
+    fr    = drive('15hXgMnnJ6kqzWWyDzlwidkZuJgmlWU-5'),
   },
 }
 
 -- One flat list of every document in every language it exists in. This is what
 -- a lectern offers when you click it: language is not a separate control, it is
 -- part of the choice, so picking what to read is a single decision and every
--- lectern can show any of the nine.
+-- lectern can show any of the ten.
 RULES_LIBRARY_CHOICES = {}
 
 -- Looking a choice up by url is what lets a lectern work out its own state
@@ -73,4 +75,40 @@ for _, doc in ipairs(RULES_LIBRARY) do
       RULES_LIBRARY_BY_URL[choice.url] = choice
     end
   end
+end
+
+-- Tabletop Simulator caches a PDF under its url and never downloads it again,
+-- so a new edition uploaded over the same Drive file would stay invisible.
+-- A lectern therefore loads the url with the file's modification date added
+-- (&v=...): a new upload makes a new url, an unchanged file keeps the cached
+-- copy. The date comes from a HEAD request, which downloads nothing (measured
+-- in game: Drive answers HEAD and getResponseHeader reads Last-Modified).
+
+-- The library entry a lectern url stands for, whether it carries a date or not.
+function rulesChoiceForUrl(url)
+  return RULES_LIBRARY_BY_URL[(string.gsub(url or '', '&v=[^&]*', ''))]
+end
+
+-- Calls back once with the dated url, or with the bare one if Drive fails or
+-- does not answer in time: a document always loads, at worst from the cache.
+local DATE_TIMEOUT = 8
+
+function rulesDatedUrl(url, callback)
+  local timer
+  local function finish(result)
+    if not timer then return end
+    Wait.stop(timer)
+    timer = nil
+    callback(result)
+  end
+  timer = Wait.time(function() finish(url) end, DATE_TIMEOUT)
+  local sent = pcall(WebRequest.custom, url, 'HEAD', true, nil, {}, function(req)
+    local stamp = ''
+    if not req.is_error and req.response_code == 200 then
+      local ok, modified = pcall(req.getResponseHeader, 'Last-Modified')
+      if ok and modified then stamp = string.gsub(modified, '[^%w]', '') end
+    end
+    finish(stamp ~= '' and (url .. '&v=' .. stamp) or url)
+  end)
+  if not sent then finish(url) end
 end
