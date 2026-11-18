@@ -42,17 +42,19 @@ RULES_LIBRARY = {
     fr    = drive('1gDYQ2vs7ZKthhkFb9EPpsMmckuJ0Jm_O'),
   },
   {
-    -- English only; the lectern hides its language button on this one.
+    -- No official French edition yet: fr is the Iron Squadron translation,
+    -- to be replaced in place on Drive once Asmodee publishes theirs.
     key   = 'toursofduty',
     title = 'Tours of Duty',
     en    = drive('1PO8Nxlr5k6lIrA-MdG5pytKiNuj3quU6'),
+    fr    = drive('15hXgMnnJ6kqzWWyDzlwidkZuJgmlWU-5'),
   },
 }
 
 -- One flat list of every document in every language it exists in. This is what
 -- a lectern offers when you click it: language is not a separate control, it is
 -- part of the choice, so picking what to read is a single decision and every
--- lectern can show any of the nine.
+-- lectern can show any of the ten.
 RULES_LIBRARY_CHOICES = {}
 
 -- Looking a choice up by url is what lets a lectern work out its own state
