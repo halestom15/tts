@@ -251,7 +251,7 @@ end
 -- setState keeps the hold). A long press, held still for a moment before
 -- dragging, moves the whole token, and so does a drag of several objects (a
 -- unit moved with its tokens).
-local LONG_PRESS_TIME, WATCH_STEP, DRAG_REACH = 0.6, 0.1, 0.5
+local LONG_PRESS_TIME, WATCH_STEP, DRAG_REACH = 0.3, 0.1, 0.5
 
 local function takeOneFromToken(o, start)
   local bag = bagFor(o.getName())
