@@ -258,7 +258,7 @@ function onload(saveData)
       small = 1.65,
       notched = 2.707,
       custom = 1.0,
-      poi = 3.0
+      poi = 1.0
     }
 
     templateInfo.cohesionRadius = {
