@@ -10,21 +10,35 @@ function onLoadShared(_colorSide)
   createEmptyDieValues()
 end
 
+-- The result counters, in button order (buttons 0-4).
+DIE_RESULTS = {
+  {key = "crit",   tooltip = "Crits"},
+  {key = "hit",    tooltip = "Hits"},
+  {key = "oSurge", tooltip = "Surges (Attack)"},
+  {key = "block",  tooltip = "Blocks"},
+  {key = "dSurge", tooltip = "Surges (Defense)"},
+}
+DIE_RESULTS_Z = 1.62
+DIE_RESULTS_STEP = 0.88
+
+-- Small buttons by the surge counters that turn surge dice to another face.
+-- Left-click converts one die (a surge token, Critical X), right-click
+-- converts them all (a unit's surge conversion).
+SURGE_CONVERSIONS = {
+  {click = "convertSurgeToHit",   label = "HIT",   surge = "oSurge", to = "hit",   counter = 3, offset = 0.2},
+  {click = "convertSurgeToCrit",  label = "CRIT",  surge = "oSurge", to = "crit",  counter = 3, offset = -0.2},
+  {click = "convertSurgeToBlock", label = "BLOCK", surge = "dSurge", to = "block", counter = 5, offset = 0},
+}
+SURGE_BUTTON_X = -2.55
+CONVERTED_DIE_HIGHLIGHT = {1, 0.8, 0.2}
+
 function createEmptyDieValues()
-  local tooltips = {
-    "Crits",
-    "Hits",
-    "Surges (Attack)",
-    "Blocks",
-    "Surges (Defense)",
-  }
-  local zStart = 1.62
-  for i, tooltip in pairs(tooltips) do
+  for i, result in ipairs(DIE_RESULTS) do
     self.createButton({
       click_function = "dud",
       function_owner = self,
       label = "",
-      position = {-3.12, 0.52, zStart - ((i - 1) * 0.88)},
+      position = {-3.12, 0.52, DIE_RESULTS_Z - ((i - 1) * DIE_RESULTS_STEP)},
       rotation = {0, -90, 0},
       scale = {0.5, 0.5, 0.5},
       width = 400,
@@ -32,10 +46,78 @@ function createEmptyDieValues()
       font_size = 450,
       color = {1, 1, 1, 0.01},
       font_color = {1, 0, 0, 100},
-      tooltip = tooltip,
+      tooltip = result.tooltip,
       alignment = 3
     })
   end
+  for _, conversion in ipairs(SURGE_CONVERSIONS) do
+    self.createButton({
+      click_function = conversion.click,
+      function_owner = self,
+      label = conversion.label,
+      position = {SURGE_BUTTON_X, 0.52, DIE_RESULTS_Z - ((conversion.counter - 1) * DIE_RESULTS_STEP) + conversion.offset},
+      rotation = {0, -90, 0},
+      scale = {0.5, 0.5, 0.5},
+      width = 330,
+      height = 150,
+      font_size = 100,
+      color = {0.15, 0.15, 0.15, 0.9},
+      font_color = {1, 1, 1, 1},
+      tooltip = "Turn a surge into a " .. conversion.to .. "\nRight-click: turn every surge",
+    })
+  end
+end
+
+function convertSurgeToHit(_, _, all)
+  convertSurges(SURGE_CONVERSIONS[1], all)
+end
+
+function convertSurgeToCrit(_, _, all)
+  convertSurges(SURGE_CONVERSIONS[2], all)
+end
+
+function convertSurgeToBlock(_, _, all)
+  convertSurges(SURGE_CONVERSIONS[3], all)
+end
+
+-- The result a die shows now ("crit", "oSurge", ...).
+local function dieResult(die)
+  return dieRollerInfo.dieValues[die.getVar("dieType")][die.getVar("dieColor")][die.getValue()]
+end
+
+-- Turns one surge die (or all of them) to the conversion's face, highlights
+-- it, and reports the new totals.
+function convertSurges(conversion, all)
+  if isRolling or dieObjs == nil then
+    return
+  end
+  local converted = 0
+  for _, die in ipairs(dieObjs) do
+    if die and dieResult(die) == conversion.surge then
+      local faces = dieRollerInfo.dieValues[die.getVar("dieType")][die.getVar("dieColor")]
+      for value, result in ipairs(faces) do
+        if result == conversion.to then
+          die.setRotation(die.getRotationValues()[value].rotation)
+          die.highlightOn(CONVERTED_DIE_HIGHLIGHT)
+          converted = converted + 1
+          break
+        end
+      end
+      if not all then
+        break
+      end
+    end
+  end
+  if converted == 0 then
+    return
+  end
+  local plural = converted == 1 and "" or "s"
+  local message = string.upper(colorSide) .. " converted " .. converted .. " surge" .. plural
+    .. " to " .. conversion.to .. plural .. ".\n"
+  Wait.frames(function()
+    local dieRecord = tallyDieValues()
+    broadcastToAll(message .. resultsText(dieRecord))
+  end, 1)
 end
 
 function dud() end
@@ -73,6 +155,7 @@ function rollDie(callbackParams)
     local rolled = 0
     for _, obj in pairs(toRoll) do
       if obj then
+        obj.highlightOff()
         simulatedRoll(obj)
         rolled = rolled + 1
       end
@@ -107,10 +190,9 @@ function simulatedRoll(dice)
   end, 0.10, count)
 end
 
-function printDieValues()
-  if dieObjs == nil then
-    return
-  end
+-- Counts the dice's results and shows them on the counters. Returns the
+-- counts by result, the counts by die color, and the number of dice.
+function tallyDieValues()
   local totalCount = 0
   local dieRecord = {
     crit   = 0,
@@ -137,18 +219,21 @@ function printDieValues()
       end
     end
   end
-  local index = 0
-  for _, d in pairs(dieRecord) do
-    local label = tostring(d)
-    if d == 0 then
-      label = ""
-    end
+  for i, result in ipairs(DIE_RESULTS) do
+    local count = dieRecord[result.key]
     self.editButton({
-      index          = index,
-      label          = label,
+      index = i - 1,
+      label = count == 0 and "" or tostring(count),
     })
-    index = index + 1
   end
+  return dieRecord, dieColors, totalCount
+end
+
+function printDieValues()
+  if dieObjs == nil then
+    return
+  end
+  local dieRecord, dieColors, totalCount = tallyDieValues()
   if totalCount == 0 then
     broadcastToAll(string.upper(colorSide) .. " deleted their dice mid-roll.")
   else
@@ -190,12 +275,17 @@ function printDieValuesToScreen(dieRecord, dieColors)
   end
   if mode == "defend" then
     message = message .. " defense dice " .."( pool: " .. colors .. ")\n"
-    message = message .. tostring(dieRecord.block) .. " BLOCKS, " .. tostring(dieRecord.dSurge) .. " SURGES."
   else
     message = message .. " attack dice " .. "( pool: " .. colors .. ")\n"
-    message = message .. tostring(dieRecord.crit) .. " CRITS, " .. tostring(dieRecord.hit) .. " HITS, " .. tostring(dieRecord.oSurge) .. " SURGES."
   end
-  broadcastToAll(message)
+  broadcastToAll(message .. resultsText(dieRecord))
+end
+
+function resultsText(dieRecord)
+  if mode == "defend" then
+    return tostring(dieRecord.block) .. " BLOCKS, " .. tostring(dieRecord.dSurge) .. " SURGES."
+  end
+  return tostring(dieRecord.crit) .. " CRITS, " .. tostring(dieRecord.hit) .. " HITS, " .. tostring(dieRecord.oSurge) .. " SURGES."
 end
 
 function spawnWhiteAttackDice()
