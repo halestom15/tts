@@ -9,7 +9,8 @@ function onload(save_state)
     math.randomseed(os.time())
     Wait.time(clearMissionCards, 1)
     _G.Deck = Deck:create()
-    Scoreboard.applySnapPoints()
+    -- Buttons aren't saved: the scoreboard's tokens get theirs back.
+    Wait.time(Scoreboard.restore, 1)
 
     -- init values
     gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
@@ -2353,6 +2354,7 @@ function setUpMission(flipBattlefield)
     secondary = result.secondary,
     advantage = result.advantage,
     scenario  = missionScenario,
+    blueSeat  = result.blueSeat,
   })
 
   local summary = missionSummary():gsub("\n", ". ")
