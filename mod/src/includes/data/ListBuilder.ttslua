@@ -1,3 +1,5 @@
+require('!/data/MiniShared')
+
 function buildListBuilder()
     local listBuilder = {}
     listBuilder.modelTemplateGUID = "ba9920"
@@ -109,5 +111,6 @@ function buildListBuilder()
     listBuilder.modelMiniGUID = "99f1c8"
     modelMini = getObjectFromGUID(listBuilder.modelMiniGUID)
     listBuilder.modelMiniScript = modelMini.getLuaScript()
+    listBuilder.miniSharedScript = getMiniSharedScript()
     return listBuilder
 end
