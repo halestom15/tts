@@ -37,18 +37,12 @@
       <VerticalLayout padding="5">
         <Text alignment="UpperLeft" color="#ffffff" fontSize="12">
           <!--Welcome to Star Wars: Legion for TTS, <b>v8.0.0</b>.-->
-          Welcome to Star Wars: Legion for TTS, <b>v8.0.21-beta</b>.
-
-          This is a <b>beta release</b> <textcolor color="#f03333"><b></b></textcolor>.
-
-          To access the stable version of the mod visit <i>https://go.swlegion.dev/mod</i>.
+          Welcome to Star Wars: Legion for TTS, <b>v9.0.1</b>.
 
           <b>CHANGELOG</b>
-          (Since last <i>Beta</i>)
-          <!--(Since last <i>Stable</i>)-->
-          - Add: Guerilla Troopers
-          - Add: Wet-Weather Gear Stormtroopers
-          - Add: Imperial Mudtroopers
+          <!--(Since last <i>Beta</i>)-->
+          (Since last <i>Stable</i>)
+          - Add: November Update
         </Text>
       </VerticalLayout>
     </VerticalScrollView>
