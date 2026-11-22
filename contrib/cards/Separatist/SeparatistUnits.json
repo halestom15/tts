@@ -88,21 +88,6 @@
       ],
       "commands": [
         {
-          "name": "Trained In Your Jedi Arts",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131526384/C4406A3487D2E58D1AF4962B9A306EC5882596CC/",
-          "pip": 1
-        },
-        {
-          "name": "Supreme Commander",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131525863/124C8C8CAA960D6680FD429BD85DA760AFD9040A/",
-          "pip": 2
-        },
-        {
-          "name": "Crush Them!",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131524786/7D9A98904E7D5F80F9590AAA5EDF107F2B95623A/",
-          "pip": 3
-        },
-        {
           "name": "I'll Do it Myself!",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/15891905199014084776/E70951C31E286BCF03E7D6BB08ED6DA6C96D9701/",
           "pip": 1
@@ -141,7 +126,7 @@
       "commands": [
         {
           "name": "Trained In Your Jedi Arts",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131526384/C4406A3487D2E58D1AF4962B9A306EC5882596CC/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/11841679467163445808/24C6A8AB0E5E086AA9ADF40E91E3E737B4A809C6/",
           "pip": 1
         },
         {
