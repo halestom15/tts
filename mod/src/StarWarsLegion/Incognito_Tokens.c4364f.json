@@ -3,15 +3,15 @@
     "GUID": "c4364f",
     "Name": "Custom_Model_Infinite_Bag",
     "Transform": {
-      "posX": -44.0724678,
+      "posX": -46.1,
       "posY": 0.9471459,
-      "posZ": -3.00188041,
-      "rotX": 0.0000109490848,
+      "posZ": -1.8091,
+      "rotX": 1.09490848e-05,
       "rotY": 180,
-      "rotZ": -0.0000132978457,
-      "scaleX": 1.59999955,
-      "scaleY": 1.59999955,
-      "scaleZ": 1.59999955
+      "rotZ": -1.32978457e-05,
+      "scaleX": 0.807591,
+      "scaleY": 1.6,
+      "scaleZ": 0.807591
     },
     "Nickname": "Incognito Tokens",
     "Description": "",
@@ -37,8 +37,8 @@
     "MaterialIndex": -1,
     "MeshIndex": -1,
     "CustomMesh": {
-      "MeshURL": "http://cloud-3.steamusercontent.com/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-      "DiffuseURL": "http://cloud-3.steamusercontent.com/ugc/1777200555359102353/86DFA2C0B4428415B5765DE845A19BC78EC70050/",
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/incognito_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/incognito_v2.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,

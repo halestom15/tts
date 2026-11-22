@@ -303,20 +303,66 @@
     "XmlUI": "#include ./StarWarsLegion.xml",
     "CustomUIAssets": [
       {
+        "Name": "progressPill",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/import-toast-pill.png"
+      },
+      {
+        "Name": "progressTrack",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/import-toast-track.png"
+      },
+      {
+        "Name": "progressFill",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/import-toast-fill.png"
+      },
+      {
+        "Name": "swlLogo",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/swl-logo-v1.png",
+        "Type": 0
+      },
+      {
+        "Name": "swlVeilBackdrop",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/veil-backdrops/swl-backdrop-1.jpg",
+        "Type": 0
+      },
+      {
         "Name": "PalpatinePoster",
-        "URL": "http://cloud-3.steamusercontent.com/ugc/966480765117276391/DDA8500A1694EF1EAA32998DCAB2D53098FBE040/"
+        "URL": "https://steamusercontent-a.akamaihd.net/ugc/966480765117276391/DDA8500A1694EF1EAA32998DCAB2D53098FBE040/"
       },
       {
         "Name": "navyPoster",
-        "URL": "http://cloud-3.steamusercontent.com/ugc/966480765117276646/EAB073D513A94F6947D9004F4FB98D7D9B22E416/"
+        "URL": "https://steamusercontent-a.akamaihd.net/ugc/966480765117276646/EAB073D513A94F6947D9004F4FB98D7D9B22E416/"
       },
       {
         "Name": "ObiWanPoster",
-        "URL": "http://cloud-3.steamusercontent.com/ugc/966480765118137024/1AB7F81D20820D74D9B1BFE48F5865D152956296/"
+        "URL": "https://steamusercontent-a.akamaihd.net/ugc/966480765118137024/1AB7F81D20820D74D9B1BFE48F5865D152956296/"
       },
       {
         "Name": "rangeRuler",
-        "URL": "http://cloud-3.steamusercontent.com/ugc/966480765118137238/1157F7217EB80F31A92427567B377F857576DAE9/"
+        "URL": "https://steamusercontent-a.akamaihd.net/ugc/966480765118137238/1157F7217EB80F31A92427567B377F857576DAE9/"
+      },
+      {
+        "Name": "overlayToggleIcon",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/iron_squadron_logo_v2.png"
+      },
+      {
+        "Name": "uiWelcomePanel",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ui_welcome_panel_v2.png"
+      },
+      {
+        "Name": "uiButton",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ui_button_v2.png"
+      },
+      {
+        "Name": "uiButtonActive",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ui_button_active_v2.png"
+      },
+      {
+        "Name": "uiTab",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ui_tab_v2.png"
+      },
+      {
+        "Name": "uiTabActive",
+        "URL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ui_tab_active_v2.png"
       }
     ],
     "ObjectStates": []
@@ -386,12 +432,15 @@
     "DATA_DISK_MOUNT.a44dcb.json",
     "GAME_CONTROLLER.623b03.json",
     "Setup_Conditions_Button.337dc3.json",
-    "Setup_Deployment_Button.1e6398.json",
+    "Setup_Conditions_Button.5007f8.json",
+    "Setup_POI_Overlay_Button.1e6398.json",
+    "Setup_Deployment_Overlay_Button.5ee1a2.json",
     "Setup_Objective_Button.10483c.json",
     "Custom_Model.80cdc7.json",
     "ScriptingTrigger.d0ca46.json",
     "ScriptingTrigger.b74727.json",
     "ScriptingTrigger.ec8c41.json",
+    "ScriptingTrigger.00f1b3.json",
     "ScriptingTrigger.c49089.json",
     "Bomb_Cart_Script.b497e1.json",
     "Screen.33d1ed.json",
@@ -421,9 +470,9 @@
     "RETURN_TOKENS.3a5f7f.json",
     "REMOVE_SUPPRESSION.670dbe.json",
     "Custom_Model.c6b3a9.json",
+    "Custom_Model.07a89d.json",
     "SETUP_CONTROLLER.1cb552.json",
     "Victory_Tokens.8a2a49.json",
-    "Objective_Tokens.094239.json",
     "Custom_Model.294fce.json",
     "Condition_Tokens.4d25eb.json",
     "Standby_Tokens.f103c2.json",
@@ -455,6 +504,7 @@
     "Proton_Charge_Tokens.603bb2.json",
     "Blue_Die_Roller.1daecb.json",
     "Custom_Model.538f4d.json",
+    "Custom_Model.5ee1a1.json",
     "Custom_Model.d2c857.json",
     "Custom_Model.6d221d.json",
     "Custom_Model.e5e8df.json",
@@ -485,17 +535,29 @@
     "Shield_Tokens.30979f.json",
     "Poison_Tokens.07d3a7.json",
     "Wheel_Mode_Tokens.507367.json",
-    "Skirmish_Card_Decks.168d90.json",
     "Silhouette_Markers.3cb9ab.json",
     "Custom_PDF.068976.json",
     "Blank_Order_Tokens.c5f484.json",
     "Operative_Marker_Tokens.125746.json",
-    "Cad_Bane_Tokens.e4bee8.json",
     "Observation_Tokens.aac68d.json",
     "Incognito_Tokens.c4364f.json",
     "TABLE.3a3ed9.json",
     "Saved_Map.38fcd0.json",
-    "Blitz_Deck_Bag.169190.json",
-    "POI_Tokens.094230.json"
+    "POI_Tokens.094230.json",
+    "RULES_PANEL.e0d001.json",
+    "Rules_Panel_Option_1.e0d002.json",
+    "Rules_Panel_Option_2.e0d003.json",
+    "Rules_Panel_Option_3.e0d004.json",
+    "Rules_Panel_Option_4.e0d005.json",
+    "Rules_Panel_Option_5.e0d006.json",
+    "Rules_Panel_Option_1_Button.e0d007.json",
+    "Rules_Panel_Option_2_Button.e0d008.json",
+    "Rules_Panel_Option_3_Button.e0d009.json",
+    "Rules_Panel_Option_4_Button.e0d00a.json",
+    "Rules_Panel_Option_5_Button.e0d00b.json",
+    "Rules_Panel_Back_Button.e0d00c.json",
+    "Rules_Page_Box_1.e0d00d.json",
+    "Rules_Page_Box_2.e0d00e.json",
+    "Rules_Page_Box_3.e0d00f.json"
   ]
 }

@@ -9,6 +9,12 @@ function onload(save_state)
         -- DEFAULT VALUES
         pickedUp = false
         templatePos = self.getPosition()
+
+        -- Same zombie guard as Model Template A, for the templateA wiring
+        -- this half receives -- the full story lives there.
+        Wait.time(function()
+            if templateA == nil then self.destruct() end
+        end, 1)
     end
 
     self.use_gravity = false
@@ -79,14 +85,14 @@ function positionTemplate()
             self.setRotation({0,lastY,0})
         end
 
-    elseif baseRot2 > 90 then
+    elseif baseRot2 >= 90 then
         if q > baseRot2 - 90 or q < baseRot2 - 270 then
             templateRot.y = q
             self.setRotation({0,templateRot.y,0})
         else
             self.setRotation({0,lastY,0})
         end
-    elseif baseRot2 < -90 then
+    elseif baseRot2 <= -90 then
         if q < baseRot2 + 90 or q > baseRot2 + 270 then
             templateRot.y = q
             self.setRotation({0,templateRot.y,0})

@@ -5,6 +5,7 @@ import { ObjectState } from '@matanlurey/tts-save-files';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+import { deferSetup } from './lib/defer-setup';
 import buildDeckSchemaLua from './lib/generate-deck-schema';
 
 /**
@@ -70,8 +71,8 @@ export async function compileSaveFile(
     await fs.mkdirp(outputDir);
   } else {
     console.info(`Clearing output directory "${outputDir}"`);
-    await fs.remove(outputDir);
-    await fs.mkdirp(outputDir);
+    // Empty rather than remove, so a symlinked output directory is preserved.
+    await fs.emptyDir(outputDir);
   }
   await generateFiles();
   await buildDeckSchemaLua(
@@ -81,6 +82,7 @@ export async function compileSaveFile(
   console.info(`Reading "${source}"...`);
   const splitter = new expander.SplitIO();
   const saveFile = await splitter.readAndCollapse(source);
+  deferSetup(saveFile);
   console.info(`Writing "${output}"...`);
   await fs.writeJson(output, saveFile);
   console.info(`Wrote "${output}"...`);
@@ -103,28 +105,48 @@ export async function compileSaveFile(
   }
 }
 
+function defaultTTSHomeDir(): string {
+  const platform = os.platform();
+  if (platform === 'win32') {
+    return steam.homeDir.win32(process.env);
+  }
+  if (platform === 'darwin') {
+    return path.join(os.homedir(), 'Library', 'Tabletop Simulator');
+  }
+  if (platform === 'linux') {
+    return path.join(os.homedir(), '.local', 'share', 'Tabletop Simulator');
+  }
+  throw new Error(`Unsupported platform: ${platform}`);
+}
+
 export async function destroySymlink(homeDir?: string): Promise<void> {
-  // TODO: Add non-win32 support.
   if (!homeDir) {
-    if (os.platform() !== 'win32') {
-      throw new Error(`Unsupported platform: ${os.platform()}`);
-    }
-    homeDir = steam.homeDir.win32(process.env);
+    homeDir = defaultTTSHomeDir();
   }
   const from = path.join(homeDir, 'Saves', 'TTSDevLink');
   return fs.remove(from);
 }
 
 export async function createSymlink(homeDir?: string): Promise<string> {
-  // TODO: Add non-win32 support.
   if (!homeDir) {
-    if (os.platform() !== 'win32') {
-      throw new Error(`Unsupported platform: ${os.platform()}`);
+    homeDir = defaultTTSHomeDir();
+  }
+  const from = path.join(homeDir, 'Saves', 'TTSDevLink');
+  if (os.platform() === 'darwin') {
+    // macOS blocks TTS from following links into protected folders (such as
+    // ~/Documents), so keep the real files in the save folder and link "dist"
+    // to them instead.
+    const dist = path.resolve('dist');
+    if ((await fs.lstat(dist)).isSymbolicLink()) {
+      return from;
     }
-    homeDir = steam.homeDir.win32(process.env);
+    await fs.remove(from);
+    await fs.copy(dist, from);
+    await fs.remove(dist);
+    await fs.symlink(from, dist, 'dir');
+    return from;
   }
   await destroySymlink(homeDir);
-  const from = path.join(homeDir, 'Saves', 'TTSDevLink');
   await fs.symlink(
     path.resolve('dist'),
     from,

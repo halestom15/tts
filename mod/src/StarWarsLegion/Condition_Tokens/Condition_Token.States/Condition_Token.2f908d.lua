@@ -1,3 +1,0 @@
-rangeKey = "token"
-
-require('!/TokenWithRangeRuler')

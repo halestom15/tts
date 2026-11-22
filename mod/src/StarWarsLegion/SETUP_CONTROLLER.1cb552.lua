@@ -22,24 +22,42 @@ function onload(save_state)
     -- buttonObjs
     optionObjs = {}
     optionObjs.objective = getObjectFromGUID("9480a7")
-    optionObjs.deployment = getObjectFromGUID("538f4d")
+    -- The Objective's mount has two columns: the outer one sets the mission
+    -- up, then shows or hides the deployment zones; the one beside the card
+    -- shows or hides the POI guide.
+    optionObjs.deployment = getObjectFromGUID("5ee1a1")
+    optionObjs.poi = getObjectFromGUID("538f4d")
     optionObjs.conditions = getObjectFromGUID("c6b3a9")
+    -- 2024 missions have two Advantages, one per player. Each player's goes
+    -- on the mount nearer their seat: "conditions" is nearer the red seat,
+    -- "advantageBlueSeat" nearer the blue seat.
+    optionObjs.advantageBlueSeat = getObjectFromGUID("07a89d")
 
     optionButtons = {}
     optionButtons.objective = getObjectFromGUID("10483c")
-    optionButtons.deployment = getObjectFromGUID("1e6398")
+    optionButtons.deployment = getObjectFromGUID("5ee1a2")
+    optionButtons.poi = getObjectFromGUID("1e6398")
     optionButtons.conditions = getObjectFromGUID("337dc3")
+    optionButtons.advantageBlueSeat = getObjectFromGUID("5007f8")
+
+    -- The mounts and buttons, which a zone also holds: never taken for a card.
+    panelParts = {}
+    for _, o in pairs(optionObjs) do panelParts[o] = true end
+    for _, o in pairs(optionButtons) do panelParts[o] = true end
 
     optionZones = {}
     optionZones.objective = getObjectFromGUID("d0ca46")
     optionZones.deployment = getObjectFromGUID("b74727")
     optionZones.conditions = getObjectFromGUID("ec8c41")
+    optionZones.advantageBlueSeat = getObjectFromGUID("00f1b3")
 
     objectiveMenu()
     deploymentMenu()
     conditionsMenu()
+    advantageBlueSeatMenu()
 
     _G.selectedScenario = "standard"
+    _G.mirrorDeployment = false
     drawInput()
 end
 
@@ -56,7 +74,7 @@ function drawInput()
     height         = 350,
     font_size      = 323,
     validation     = 4,
-    value          = _G.selectedScenario,
+    value          = scenarioLabel(_G.selectedScenario),
     tooltip        = "Battlefield Deck Type",
   })
 end
@@ -90,22 +108,51 @@ end
 
 function objectiveMenu()
     clearButton("objective")
-    createOptionButton("objective", "checkObjective", "Objective", "Spawn Relevant Objective Tokens", {0,0.913,1})
+    createOptionButton("objective", "checkObjective", "Secondary", "Spawn Relevant Secondary Objective Tokens", {0,0.913,1})
 end
 
 function deploymentMenu()
     clearDeploymentBoundary()
+    overlay = nil
     clearButton("deployment")
-    createOptionButton("deployment", "checkDeployment", "Deployment", "Create Deployment overlay", {0,0.913,1})
+    clearButton("poi")
+    createOptionButton("deployment", "checkDeployment", "Objective", "Create Deployment overlay and spawn Objective map and tokens", {0,0.913,1})
 end
 
 
 function conditionsMenu()
     clearButton("conditions")
-    createOptionButton("conditions", "checkConditions", "Conditions", "Spawn Relevant Conditions Tokens", {0,0.913,1})
+    createOptionButton("conditions", "checkConditions", "Red Seat Advantage", "Spawn Relevant Advantage Tokens for the player at the red seat", {0,0.913,1})
+end
+
+function advantageBlueSeatMenu()
+    clearButton("advantageBlueSeat")
+    createOptionButton("advantageBlueSeat", "checkAdvantageBlueSeat", "Blue Seat Advantage", "Spawn Relevant Advantage Tokens for the player at the blue seat", {0,0.913,1})
+end
+
+function checkAdvantageBlueSeat()
+  local card = getObjectFromZone("advantageBlueSeat")
+  if not card then
+    clearButton("advantageBlueSeat")
+    createOptionButton("advantageBlueSeat", "checkAdvantageBlueSeat", "Mount Advantage", "No Advantage selected, mount the blue seat's advantage card below", {0.7,0,0})
+    resetTimer("advantageBlueSeat")
+    return
+  end
+  local name = card.getName()
+  if Deck:getBattleCardType(name, _G.selectedScenario) ~= "condition" then
+    clearButton("advantageBlueSeat")
+    createOptionButton("advantageBlueSeat", "checkAdvantageBlueSeat", "Wrong Card", "Wrong Card mounted, mount the blue seat's advantage card below", {0.7,0,0})
+    resetTimer("advantageBlueSeat")
+    return
+  end
+  spawnObjs("advantageBlueSeat", name)
+  advantageBlueSeatMenu()
 end
 
 function checkCardCall(cardTable)
+  if cardTable[1] == "advantageBlueSeat" then
+    return checkAdvantageBlueSeat()
+  end
   return checkCard(cardTable[1])
 end
 
@@ -137,41 +184,221 @@ function checkCard(cardType)
 end
 
 function getObjectFromZone(selectedZone)
-    local zoneObjs = nil
-    local selectedObj =  nil
-    local zoneObjs = optionZones[selectedZone].getObjects()
-    for i, obj in pairs(zoneObjs) do
-        if obj ~= optionObjs[selectedZone] then
-            selectedObj = obj
-            break
+    for _, obj in pairs(optionZones[selectedZone].getObjects()) do
+        if not panelParts[obj] then
+            return obj
         end
     end
-    if selectedObj ~= nil then
-        return selectedObj
-    else
-        return nil
-    end
+    return nil
 end
 
 
-function spawnObjs(cardType, selectedBattleCardName)
+-- Called by the game controller before setting up a mission: when the red
+-- seat is the blue player, the deployment zones are mirrored so each
+-- player's zone is on their own side of the table.
+function setMirrorDeployment(params)
+  _G.mirrorDeployment = params.mirror == true
+end
+
+-- Called by the game controller before setting up a mission: the Objective's
+-- POIs then go on the battlefield instead of staying in its bag.
+function setPlaceMissionPois(params)
+  _G.missionPoisOnMap = params.place == true
+end
+
+-- A POI is put exactly on its spot, flat, and locked at once: letting it fall
+-- could clip an arch beside it and knock it away. It goes on the ground when
+-- nothing stands there, even under an arch, and on top of a hill or a building
+-- when one does. Players can unlock one with the usual L key to adjust it.
+local POI_ORIGIN_HEIGHT = 0.08 -- the token's origin is on its top face
+-- Terrain with more than this gap under it, at the spot, is an arch.
+local POI_ARCH_GAP = 1.05
+local POI_CAST_HEIGHT = 30
+local MISSION_POI_TAG = "MissionPOI"
+-- A mound's collider can sit well below what is drawn, which would sink the
+-- POI into it, so low terrain counts by its visible top. Not taller terrain:
+-- the visible top of a wood is its treetops, its collider the ground to stand on.
+local POI_LOW_TERRAIN = 1
+
+function isReconSelected()
+  return Deck:_scenarioKey(_G.selectedScenario) == "skirmish"
+end
+
+-- Which objects a POI may rest on: terrain only, not what the mod itself puts
+-- on the table.
+local NOT_TERRAIN = {
+  ["POI Token"] = true, BATTLEFIELD = true, TABLE = true,
+  ["Poi Guide"] = true, ["Deployment Boundary"] = true,
+}
+
+-- False when the object only passes over the point with a gap of more than
+-- POI_ARCH_GAP under it (an arch, a wing high above). Rays, not a box: a box
+-- cast misses mesh colliders it sits inside (measured 12 Nov 2026: Forward
+-- Command Center, Destroyed LAAT), and a ray from inside a solid finds no
+-- underside, which counts as standing on the spot.
+local function standsOnSpot(obj, x, z, base)
+  local underside = nil
+  for _, hit in ipairs(Physics.cast({
+    origin       = {x, base + 0.15, z},
+    direction    = {0, 1, 0},
+    type         = 1,
+    max_distance = POI_CAST_HEIGHT,
+  }) or {}) do
+    if hit.hit_object == obj then
+      underside = math.min(underside or hit.point.y, hit.point.y)
+    end
+  end
+  return underside == nil or underside <= base + POI_ARCH_GAP
+end
+
+-- A POI only rests on terrain that carries most of it, as a real token
+-- would: the height is read under 5 points (its centre and 4 towards its
+-- edges), and the terrain counts only when it is under at least 3 of them. A
+-- thin tree trunk beside the spot, under one point or none, leaves the POI on
+-- the ground; a cliff or a roof under it holds it.
+local POI_SAMPLE_OFFSET = 0.6
+local POI_SAMPLES = {{0, 0}, {POI_SAMPLE_OFFSET, 0}, {-POI_SAMPLE_OFFSET, 0}, {0, POI_SAMPLE_OFFSET}, {0, -POI_SAMPLE_OFFSET}}
+local POI_SAMPLES_NEEDED = 3
+
+-- The top of what stands on the spot, from a surface at height `base`.
+local function topOfTerrain(p, base)
+  local height, carried = base, 0
+  for _, offset in ipairs(POI_SAMPLES) do
+    local top = nil
+    local x, z = p.x + offset[1], p.z + offset[2]
+    local hits = Physics.cast({
+      origin       = {x, base + POI_CAST_HEIGHT, z},
+      direction    = {0, -1, 0},
+      type         = 1,
+      max_distance = POI_CAST_HEIGHT + 1,
+    })
+    for _, hit in ipairs(hits or {}) do
+      local obj = hit.hit_object
+      if obj ~= nil and not NOT_TERRAIN[obj.getName()] and hit.point.y > base + 0.01
+          and standsOnSpot(obj, x, z, base) then
+        local surface = hit.point.y
+        local visual = obj.getVisualBoundsNormalized()
+        local visualTop = visual.center.y + visual.size.y / 2
+        if visualTop - base <= POI_LOW_TERRAIN then
+          surface = math.max(surface, visualTop)
+        end
+        top = math.max(top or surface, surface)
+      end
+    end
+    if top then
+      carried = carried + 1
+      height = math.max(height, top)
+    end
+  end
+  if carried < POI_SAMPLES_NEEDED then
+    return base
+  end
+  return height
+end
+
+-- The height of the surface a POI rests on. Terrain can be stacked (a crate
+-- on a platform): once on top of one piece, look again from there, until
+-- nothing stands on the spot any more. An arch high above stays ignored, as
+-- on the ground.
+local POI_MAX_LEVELS = 5
+local function poiRestHeight(p)
+  local height = p.y
+  for _ = 1, POI_MAX_LEVELS do
+    local top = topOfTerrain(p, height)
+    if top <= height + 0.01 then
+      break
+    end
+    height = top
+  end
+  return height
+end
+
+local function poisInBag(bag)
+  local pois = {}
+  for _, entry in ipairs(bag.getObjects()) do
+    if entry.name == "POI Token" then
+      table.insert(pois, entry)
+    end
+  end
+  return pois
+end
+
+local function placeMissionPois(bag, cardName)
+  local positions = Global.call("getMissionPoiPositions", {
+    cardName = cardName,
+    isRecon  = isReconSelected(),
+  })
+  if positions == nil then
+    broadcastToAll("The map doesn't match this mission: the POIs stay in the Objective's bag.", {1, 0.8, 0.4})
+    return
+  end
+  -- A mission built again must not leave the last one's POIs on the map.
+  for _, poi in ipairs(getObjectsWithTag(MISSION_POI_TAG)) do
+    destroyObject(poi)
+  end
+  Wait.condition(function()
+    for i, entry in ipairs(poisInBag(bag)) do
+      local p = positions[i]
+      if p ~= nil then
+        local target = {p.x, poiRestHeight(p) + POI_ORIGIN_HEIGHT, p.z}
+        bag.takeObject({
+          guid              = entry.guid,
+          position          = target,
+          rotation          = {0, 0, 0},
+          smooth            = false,
+          callback_function = function(poi)
+            poi.addTag(MISSION_POI_TAG)
+            poi.setLock(true)
+            poi.setPosition(target)
+            poi.setRotation({0, 0, 0})
+          end,
+        })
+      end
+    end
+  end, function()
+    return #poisInBag(bag) >= #positions
+  end, 10, function()
+    broadcastToAll("The POIs took too long to load: they stay in the Objective's bag.", {1, 0.8, 0.4})
+  end)
+end
+
+-- Removes battle cards from the setup mounts (before the game controller
+-- places a new mission).
+function clearMountedCards()
+  for _, zone in pairs(optionZones) do
+    for _, obj in ipairs(zone.getObjects()) do
+      local type = obj.type or obj.tag
+      if type == "Card" or type == "Deck" then
+        destroyObject(obj)
+      end
+    end
+  end
+end
+
+-- cardType is a card data key, or "advantageBlueSeat" for the Advantage on
+-- the mount nearer the blue seat (a "condition" card beside its own mount).
+function spawnObjs(cardType, selectedBattleCardName, callback)
+  local dataType = cardType == "advantageBlueSeat" and "condition" or cardType
   local objects = Deck:getBattleCardObjects(
     selectedBattleCardName,
-    cardType,
+    dataType,
     _G.selectedScenario
   )
   if #objects == 0 then
     return
   end
+  -- Beside each card's mount.
   local position = ({
-    objective  = {49, 1, 16},
-    deployment = {49, 1, 12},
-    condition  = {49, 1, 08}, 
+    advantageblueseat = {49, 1, 20.5},
+    deployment   = {49, 1, 15.5},
+    objective    = {49, 1, 11.5},
+    condition    = {49, 1, 07.5},
   })[cardType:lower()]
   Shelf:spawnAdditionalObjects({
     name     = selectedBattleCardName .. "'s Objects",
     position = position,
     objects  = objects,
+    callback = callback,
     -- TODO: Make this global somehow instead.
     scripts  = {
       ["toggle-range-1"] = _G.scriptRange1Token,
@@ -186,20 +413,20 @@ local zStart = 15
 local yValue = 20
 
 local deployLinks = {}
-  deployLinks.r = "http://cloud-3.steamusercontent.com/ugc/1738944060882006204/75F636F4133C5F85682ECDEBBECB9F6CD821315F/"
-  deployLinks.rh = "https://steamusercontent-a.akamaihd.net/ugc/2491139050708249497/CC08277B7D876CF1FFCEDD3FC499AC38034B36D8/"
-  deployLinks.rs = "https://steamusercontent-a.akamaihd.net/ugc/2491139050708249497/CC08277B7D876CF1FFCEDD3FC499AC38034B36D8/"
-  deployLinks.rss = "https://steamusercontent-a.akamaihd.net/ugc/2491139050708249497/CC08277B7D876CF1FFCEDD3FC499AC38034B36D8/"
-  deployLinks.rl = "https://steamusercontent-a.akamaihd.net/ugc/2491139050708336160/21601D81F35521B72E015AA6316913521943E73F/"
-  deployLinks.rc = "https://steamusercontent-a.akamaihd.net/ugc/2491139050708336119/D74B484417970BC524ED4624932102C6BF956E91/"
-  deployLinks.rcc = "https://steamusercontent-a.akamaihd.net/ugc/2491139050708336119/D74B484417970BC524ED4624932102C6BF956E91/"
-  deployLinks.b = "http://cloud-3.steamusercontent.com/ugc/1738944060882006162/077B3B0AE278E39363F5BD3AE070B5AE36F025FA/"
-  deployLinks.bh = "https://steamusercontent-a.akamaihd.net/ugc/2491139050708249441/767C99D0983A24618F97511192498FBEED1557F2/"
-  deployLinks.bs = "https://steamusercontent-a.akamaihd.net/ugc/2491139050708249441/767C99D0983A24618F97511192498FBEED1557F2/"
-  deployLinks.bss = "https://steamusercontent-a.akamaihd.net/ugc/2491139050708249441/767C99D0983A24618F97511192498FBEED1557F2/"
-  deployLinks.bl = "https://steamusercontent-a.akamaihd.net/ugc/2491139050708335699/9EF627695432090869A748114A0ED41B262FAE46/"
-  deployLinks.bc = "https://steamusercontent-a.akamaihd.net/ugc/2491139050708335638/DB6B86B4DA42884BDF3D899DD66AF5DBD94263B8/"
-  deployLinks.bcc = "https://steamusercontent-a.akamaihd.net/ugc/2491139050708335638/DB6B86B4DA42884BDF3D899DD66AF5DBD94263B8/"
+  deployLinks.r = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_red_spawn_metal_v2.unity3d"
+  deployLinks.rh = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_red_spawn_half_metal_v2.unity3d"
+  deployLinks.rs = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_red_spawn_half_metal_v2.unity3d"
+  deployLinks.rss = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_red_spawn_half_metal_v2.unity3d"
+  deployLinks.rl = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_red_spawn_l_metal_v2.unity3d"
+  deployLinks.rc = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_red_spawn_corner_metal_v2.unity3d"
+  deployLinks.rcc = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_red_spawn_corner_metal_v2.unity3d"
+  deployLinks.b = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_blue_spawn_metal_v2.unity3d"
+  deployLinks.bh = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_blue_spawn_half_metal_v2.unity3d"
+  deployLinks.bs = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_blue_spawn_half_metal_v2.unity3d"
+  deployLinks.bss = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_blue_spawn_half_metal_v2.unity3d"
+  deployLinks.bl = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_blue_spawn_l_metal_v2.unity3d"
+  deployLinks.bc = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_blue_spawn_corner_metal_v2.unity3d"
+  deployLinks.bcc = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/projector_blue_spawn_corner_metal_v2.unity3d"
 
 local deployRotations = {}
   deployRotations.r = 0 
@@ -264,7 +491,7 @@ function spawnBoundaryCell(cell, x, z)
   })
 end
 
-function spawnDeploymentBoundary(matrix)
+function spawnDeploymentBoundary(matrix, mirror)
     local function invertMatrix(input)
       -- See https://github.com/swlegion/tts/issues/275.
       local output = {}
@@ -284,7 +511,31 @@ function spawnDeploymentBoundary(matrix)
       return output
     end
     
-    matrix = invertMatrix(matrix)
+    -- Swaps red and blue cells ("rh" <-> "bh"). Each red cell's art and offset
+    -- is its blue counterpart turned 180 degrees, so skipping invertMatrix and
+    -- swapping colors draws each player's zone on the opposite edge.
+    local function swapColors(input)
+      local output = {}
+      for y, row in ipairs(input) do
+        output[y] = {}
+        for x, cell in ipairs(row) do
+          local first = cell:sub(1, 1)
+          if first == "r" then
+            cell = "b" .. cell:sub(2)
+          elseif first == "b" then
+            cell = "r" .. cell:sub(2)
+          end
+          output[y][x] = cell
+        end
+      end
+      return output
+    end
+
+    if mirror then
+      matrix = swapColors(matrix)
+    else
+      matrix = invertMatrix(matrix)
+    end
     -- matrix is in the format of
     -- { x, x, x, x, x, x, x, x, x, x, x, x }
     -- { x, x, x, x, x, x, x, x, x, x, x, x }
@@ -293,8 +544,8 @@ function spawnDeploymentBoundary(matrix)
     -- { x, x, x, x, x, x, x, x, x, x, x, x }
     -- { x, x, x, x, x, x, x, x, x, x, x, x }
     -- ... where "x" can either be:
-    -- "r" :  red deployment zone
-    -- "b" :  blue deployment zone
+    -- "r*" :  red deployment zone (the suffix picks the edge piece)
+    -- "b*" :  blue deployment zone
     -- ""  :  ignore
     for z, row in pairs(matrix) do
       for x, cell in pairs(row) do
@@ -340,19 +591,19 @@ end
 
 function noObjectiveTokensMenu()
     clearButton("objective")
-    createOptionButton("objective", "checkObjective", "No Tokens", "No relevant Objective tokens needed", {0.7,0,0})
+    createOptionButton("objective", "checkObjective", "No Tokens", "No relevant Secondary Objective tokens needed", {0.7,0,0})
     resetTimer("objective")
 end
 
 function noConditionsTokensMenu()
     clearButton("conditions")
-    createOptionButton("conditions", "checkConditions", "No Tokens", "No relevant Conditions tokens needed", {0.7,0,0})
+    createOptionButton("conditions", "checkConditions", "No Tokens", "No relevant Advantage tokens needed", {0.7,0,0})
     resetTimer("conditions")
 end
 
 function noDeploymentTokensMenu()
     clearButton("deployment")
-    createOptionButton("deployment", "checkdDeployment", "No Tokens", "No relevant Objective tokens needed", {0.7,0,0})
+    createOptionButton("deployment", "checkDeployment", "No Tokens", "No relevant Objective tokens needed", {0.7,0,0})
     resetTimer("objective")
 end
 
@@ -363,18 +614,76 @@ function noDeploymentMenu()
 end
 
 function activatedeployment(name)
-    clearDeploymentBoundary()
-    local zone = Deck:getDeploymentBoundary(name, _G.selectedScenario)
-    if zone and #zone > 0 then
-      spawnDeploymentBoundary(zone)
+    local placePois = _G.missionPoisOnMap
+    _G.missionPoisOnMap = false
+    overlay = {
+      name     = name,
+      scenario = _G.selectedScenario,
+      mirror   = _G.mirrorDeployment,
+      isRecon  = isReconSelected(),
+      deploy   = true,
+      poi      = true,
+    }
+    showDeploymentZones()
+    showPoiOverlay(true)
+    overlayMenu()
+    local callback = nil
+    if placePois then
+      callback = function(bag) placeMissionPois(bag, name) end
     end
-    deactivateDeploymentMenu()
-    spawnObjs("deployment", name)
+    spawnObjs("deployment", name, callback)
 end
 
-function deactivateDeploymentMenu()
+-- The overlays of the mission set up last (nil before one is): which card,
+-- scenario and side, and whether its zones and POI guide are shown. Hiding
+-- both brings the Objective button back, to set up another mission.
+overlay = nil
+local OVERLAY_SHOWN, OVERLAY_HIDDEN = {0, 0.913, 1}, {0.25, 0.25, 0.25}
+
+-- Draws the mission's deployment zones, or only clears them when hidden.
+function showDeploymentZones()
+    clearDeploymentBoundary()
+    if overlay.deploy then
+      local zone = Deck:getDeploymentBoundary(overlay.name, overlay.scenario)
+      if zone and #zone > 0 then
+        spawnDeploymentBoundary(zone, overlay.mirror)
+      end
+    end
+end
+
+-- Only the mission's POI spots are shown.
+function showPoiOverlay(show)
+    Global.call("setPoiPlacementAids", {
+      show     = show,
+      isRecon  = overlay.isRecon,
+      cardName = overlay.name,
+    })
+end
+
+function overlayMenu()
+    if not overlay.deploy and not overlay.poi then
+      return deploymentMenu()
+    end
     clearButton("deployment")
-    createOptionButton("deployment", "deploymentMenu", "Remove Overlay", "Remove Deployment Overlay", {0.7,0,0})
+    createOptionButton("deployment", "toggleDeploymentOverlay", "Deployment Overlay",
+      overlay.deploy and "Hide the deployment zones" or "Show the deployment zones",
+      overlay.deploy and OVERLAY_SHOWN or OVERLAY_HIDDEN)
+    clearButton("poi")
+    createOptionButton("poi", "togglePoiOverlay", "POI Overlay",
+      overlay.poi and "Hide the POI spots" or "Show the POI spots",
+      overlay.poi and OVERLAY_SHOWN or OVERLAY_HIDDEN)
+end
+
+function toggleDeploymentOverlay()
+    overlay.deploy = not overlay.deploy
+    showDeploymentZones()
+    overlayMenu()
+end
+
+function togglePoiOverlay()
+    overlay.poi = not overlay.poi
+    showPoiOverlay(overlay.poi)
+    overlayMenu()
 end
 
 function activateconditions(name)
@@ -394,37 +703,37 @@ end
 
 function noobjective()
     clearButton("objective")
-    createOptionButton("objective", "checkObjective", "Mount Objective", "No Objective selected, mount objective card below", {0.7,0,0})
+    createOptionButton("objective", "checkObjective", "Mount Secondary", "No Secondary Objective selected, mount secondary objective card below", {0.7,0,0})
     resetTimer("objective")
 end
 
 function wrongobjective()
     clearButton("objective")
-    createOptionButton("objective", "checkObjective", "Wrong Card", "Wrong Card mounted, mount objective card below", {0.7,0,0})
+    createOptionButton("objective", "checkObjective", "Wrong Card", "Wrong Card mounted, mount secondary objective card below", {0.7,0,0})
     resetTimer("objective")
 end
 
 function nodeployment()
     clearButton("deployment")
-    createOptionButton("deployment", "checkDeployment", "Mount Deployment", "No Deployment selected, mount deployment card below", {0.7,0,0})
+    createOptionButton("deployment", "checkDeployment", "Mount Objective", "No Objective selected, mount objective card below", {0.7,0,0})
     resetTimer("deployment")
 end
 
 function wrongdeployment()
     clearButton("deployment")
-    createOptionButton("deployment", "checkDeployment", "Wrong Card", "Wrong Card mounted, mount deployment card below", {0.7,0,0})
+    createOptionButton("deployment", "checkDeployment", "Wrong Card", "Wrong Card mounted, mount objective card below", {0.7,0,0})
     resetTimer("deployment")
 end
 
 function noconditions()
     clearButton("conditions")
-    createOptionButton("conditions", "checkConditions", "Mount Conditions", "No Conditions selected, mount conditions card below", {0.7,0,0})
+    createOptionButton("conditions", "checkConditions", "Mount Advantage", "No Advantage selected, mount advantage card below", {0.7,0,0})
     resetTimer("conditions")
 end
 
 function wrongconditions()
     clearButton("conditions")
-    createOptionButton("conditions", "checkConditions", "Wrong Card", "Wrong Card mounted, mount conditions card below", {0.7,0,0})
+    createOptionButton("conditions", "checkConditions", "Wrong Card", "Wrong Card mounted, mount advantage card below", {0.7,0,0})
     resetTimer("conditions")
 end
 
@@ -446,7 +755,7 @@ function createOptionButton(optionType, optionClickFunction, optionLabel, option
         _G[optionClickFunction]()
     end
     optionObj.createButton({
-        click_function = "setupControllerOptionFunction"..optionType, function_owner = self, label = optionLabel, position = {-0.5, 0.3, -1.95}, scale = {0.5, 0.5, 0.5}, width = 2500, height = 600, font_size = 300, color = {0.7573, 0.7573, 0.7573, 0.01}, font_color = {0, 0, 0, 100},tooltip = optionToolTip
+        click_function = "setupControllerOptionFunction"..optionType, function_owner = self, label = optionLabel, position = {-0.5, 0.3, -1.95}, scale = {0.5, 0.5, 0.5}, width = 2500, height = 600, font_size = #optionLabel > 16 and 240 or 300, color = {0.7573, 0.7573, 0.7573, 0.01}, font_color = {0, 0, 0, 100},tooltip = optionToolTip
     })
 
     optionButton.createButton({

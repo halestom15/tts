@@ -1,0 +1,3 @@
+rangeKey = "smokeToken"
+
+require('!/TokenWithRangeRuler')

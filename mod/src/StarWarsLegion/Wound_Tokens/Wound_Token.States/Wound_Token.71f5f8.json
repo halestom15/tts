@@ -1,0 +1,52 @@
+{
+  "Object": {
+    "GUID": "71f5f8",
+    "Name": "Custom_Model",
+    "Transform": {
+      "posX": -44.5349426,
+      "posY": 1.15873361,
+      "posZ": 5.940003,
+      "rotX": 2.347223e-06,
+      "rotY": 89.97681,
+      "rotZ": 8.97575831e-07,
+      "scaleX": 0.9249999,
+      "scaleY": 0.9249999,
+      "scaleZ": 0.9249999
+    },
+    "Nickname": "Wound Token",
+    "Description": "",
+    "GMNotes": "",
+    "ColorDiffuse": {
+      "r": 0.7531577,
+      "g": 0.7531577,
+      "b": 0.7531577
+    },
+    "LayoutGroupSortIndex": 0,
+    "Locked": false,
+    "Grid": true,
+    "Snap": true,
+    "IgnoreFoW": false,
+    "MeasureMovement": false,
+    "DragSelectable": true,
+    "Autoraise": true,
+    "Sticky": true,
+    "Tooltip": true,
+    "GridProjection": false,
+    "HideWhenFaceDown": false,
+    "Hands": false,
+    "CustomMesh": {
+      "MeshURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wound_v2.obj",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wound_v2_s8.jpg",
+      "NormalURL": "",
+      "ColliderURL": "",
+      "Convex": true,
+      "MaterialIndex": 3,
+      "TypeIndex": 5,
+      "CastShadows": true
+    },
+    "LuaScript": "",
+    "LuaScriptState": "",
+    "XmlUI": ""
+  },
+  "StatesPaths": {}
+}

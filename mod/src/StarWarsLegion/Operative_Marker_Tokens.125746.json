@@ -3,9 +3,9 @@
     "GUID": "125746",
     "Name": "Custom_Model_Infinite_Bag",
     "Transform": {
-      "posX": -45.2621,
+      "posX": -46.1,
       "posY": 0.9472634,
-      "posZ": -20.195549,
+      "posZ": -19.9,
       "rotX": -0.0000110126575,
       "rotY": 89.99998,
       "rotZ": -0.00000113686076,
@@ -37,8 +37,8 @@
     "MaterialIndex": -1,
     "MeshIndex": -1,
     "CustomMesh": {
-        "MeshURL": "http://cloud-3.steamusercontent.com/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "DiffuseURL": "http://cloud-3.steamusercontent.com/ugc/2425823802350268462/8309FBD193E09BFF8FE6F51A531DC5ECD0836F09/",
+        "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
+        "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/operative_token_diffuse.png",
         "NormalURL": "",
         "ColliderURL": "",
         "Convex": true,

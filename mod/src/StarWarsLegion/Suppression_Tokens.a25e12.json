@@ -3,12 +3,12 @@
     "GUID": "a25e12",
     "Name": "Custom_Model_Infinite_Bag",
     "Transform": {
-      "posX": -43.72345,
+      "posX": -43.0,
       "posY": 0.9490384,
-      "posZ": 5.716228,
-      "rotX": -5.63786159e-7,
+      "posZ": 3.6182,
+      "rotX": -5.63786159e-07,
       "rotY": 330.015717,
-      "rotZ": 3.56005847e-9,
+      "rotZ": 3.56005847e-09,
       "scaleX": 1.94999933,
       "scaleY": 1.94999933,
       "scaleZ": 1.94999933
@@ -37,8 +37,8 @@
     "MaterialIndex": -1,
     "MeshIndex": -1,
     "CustomMesh": {
-      "MeshURL": "http://cloud-3.steamusercontent.com/ugc/786359883314443213/E353EC3098CC94615DE0BA5CEF4CE8B298CF7777/",
-      "DiffuseURL": "http://cloud-3.steamusercontent.com/ugc/786359883314443321/002CBBCACEB0F7497BEA744B8D7B17736A5FF65E/",
+      "MeshURL": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443213/E353EC3098CC94615DE0BA5CEF4CE8B298CF7777/",
+      "DiffuseURL": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/suppression_v2_s1.jpg",
       "NormalURL": "",
       "ColliderURL": "",
       "Convex": true,
