@@ -7210,7 +7210,8 @@
     "Advantage / Asset Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/advantage_asset_v2.jpg"
+        "diffuse": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/advantage_asset_v2.jpg",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "table",
       "stacks": false,
@@ -7219,7 +7220,8 @@
     "Aim Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442508/5CF014A3E962C6116B3B910C8BE44FE1C8FCA1D2/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442626/A2574B5726D1DE612FF4F2464A2315C7C85759D1/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442626/A2574B5726D1DE612FF4F2464A2315C7C85759D1/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442508/5CF014A3E962C6116B3B910C8BE44FE1C8FCA1D2/"
       },
       "target": "unit"
     },
@@ -7227,7 +7229,8 @@
       "token": {
         "name": "Bane Token",
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/1055478574362401130/E1FA2715959E37138C25B4B36FB963149643DAA6/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/1055478574362401130/E1FA2715959E37138C25B4B36FB963149643DAA6/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "table",
       "scripted": "toggle-range-1"
@@ -7236,7 +7239,8 @@
       "token": {
         "name": "Bane Token",
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/1055478574362399079/B91760D0E7895797EBF0320BFC752F5DC04A5962/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/1055478574362399079/B91760D0E7895797EBF0320BFC752F5DC04A5962/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "table",
       "scripted": "toggle-range-1"
@@ -7245,7 +7249,8 @@
       "token": {
         "name": "Bane Token",
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/1055478574362319474/84ACA1633B9C944D709B8770A251A629FF05ACBA/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/1055478574362319474/84ACA1633B9C944D709B8770A251A629FF05ACBA/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "table",
       "scripted": "toggle-range-1"
@@ -7270,7 +7275,8 @@
     "Commander Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443431/097A439FFEDF419BAA723FB00918F6A8188D390D/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443535/51A0B4A9A3A230825DFAB81B6AA97ED36C85E420/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443535/51A0B4A9A3A230825DFAB81B6AA97ED36C85E420/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443431/097A439FFEDF419BAA723FB00918F6A8188D390D/"
       },
       "target": "unit",
       "stacks": false
@@ -7278,7 +7284,8 @@
     "Complete the Mission Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/59217531460146495/B6325E11EB42C5840441BFE640F913BD3C57A832/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/59217531460146495/B6325E11EB42C5840441BFE640F913BD3C57A832/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "table",
       "stacks": false,
@@ -7287,7 +7294,8 @@
     "Condition Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786360308354563594/D7CA9A23D1F8610544A092594F1CFF19C8C0A578/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786360308354563594/D7CA9A23D1F8610544A092594F1CFF19C8C0A578/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "table",
       "stacks": false,
@@ -7296,7 +7304,8 @@
     "Damaged Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442142/E2BBDA84DFF104080284F15909B71C8F125DA50F/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442381/27F7A3A2E3687E52F3576BF9A1E1A12CFD0267FD/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442381/27F7A3A2E3687E52F3576BF9A1E1A12CFD0267FD/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442142/E2BBDA84DFF104080284F15909B71C8F125DA50F/"
       },
       "target": "unit",
       "stacks": false
@@ -7304,7 +7313,8 @@
     "Disabled Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442142/E2BBDA84DFF104080284F15909B71C8F125DA50F/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442275/B66CD8AB21D41AAE360DCF69A8F58E418CE0FBF3/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442275/B66CD8AB21D41AAE360DCF69A8F58E418CE0FBF3/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442142/E2BBDA84DFF104080284F15909B71C8F125DA50F/"
       },
       "target": "unit",
       "stacks": false
@@ -7313,14 +7323,16 @@
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442740/91C08C293B53CCF3D104B0472B60ECF7BF4B613E/",
         "diffuse": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/dodge_v2.jpg",
-        "scale": 0.65
+        "scale": 0.65,
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442740/91C08C293B53CCF3D104B0472B60ECF7BF4B613E/"
       },
       "target": "unit"
     },
     "Graffiti Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785236717874061240/B449ED876CF0B2455BBCEE1E22CDEFFC12EDCBF8/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785236717874061240/B449ED876CF0B2455BBCEE1E22CDEFFC12EDCBF8/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "terrain",
       "stacks": false
@@ -7340,14 +7352,16 @@
     "Immobilize Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442992/DD893F407D50F2D029305A2F181989F90E3FA46A/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314446126/CCD2483A716B81931D26829BF205D6C0CB0196CD/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314446126/CCD2483A716B81931D26829BF205D6C0CB0196CD/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442992/DD893F407D50F2D029305A2F181989F90E3FA46A/"
       },
       "target": "unit"
     },
     "Incognito Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/1777200555359102353/86DFA2C0B4428415B5765DE845A19BC78EC70050/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/1777200555359102353/86DFA2C0B4428415B5765DE845A19BC78EC70050/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "unit",
       "stacks": false
@@ -7355,21 +7369,24 @@
     "Ion Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442992/DD893F407D50F2D029305A2F181989F90E3FA46A/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443114/1C858EEC4B7A2247AA506EC699FF65D7C72E5484/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443114/1C858EEC4B7A2247AA506EC699FF65D7C72E5484/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442992/DD893F407D50F2D029305A2F181989F90E3FA46A/"
       },
       "target": "unit"
     },
     "Observation Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442992/DD893F407D50F2D029305A2F181989F90E3FA46A/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/1777200555359034130/1D014D75BCE30D49638FC9C0CA5E1BDC9B4DFAE0/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/1777200555359034130/1D014D75BCE30D49638FC9C0CA5E1BDC9B4DFAE0/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442992/DD893F407D50F2D029305A2F181989F90E3FA46A/"
       },
       "target": "unit"
     },
     "Objective Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441567/9502856DC8B0CEDD3D8316346FAD22C7BB8ADBF7/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441567/9502856DC8B0CEDD3D8316346FAD22C7BB8ADBF7/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "table",
       "stacks": false,
@@ -7378,7 +7395,8 @@
     "Operative Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/1019446639705431555/05F948CC883AFC3BDBDA8F8485957731EE29AF03/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/1019446639705431555/05F948CC883AFC3BDBDA8F8485957731EE29AF03/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "unit",
       "stacks": false
@@ -7386,7 +7404,8 @@
     "Panic Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442142/E2BBDA84DFF104080284F15909B71C8F125DA50F/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314444049/7A5C1C3F824FDE5C14596782B4DCC628F9846334/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314444049/7A5C1C3F824FDE5C14596782B4DCC628F9846334/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442142/E2BBDA84DFF104080284F15909B71C8F125DA50F/"
       },
       "target": "unit",
       "stacks": false
@@ -7394,14 +7413,16 @@
     "Poison Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442992/DD893F407D50F2D029305A2F181989F90E3FA46A/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785236717874061462/2C7252E4C3030E3640741560C7C24E55950EF332/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785236717874061462/2C7252E4C3030E3640741560C7C24E55950EF332/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442992/DD893F407D50F2D029305A2F181989F90E3FA46A/"
       },
       "target": "unit"
     },
     "Proton Charge Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314446398/425766A72D25CEB4F0E9C8BED9FCFDD68109D4B7/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314446398/425766A72D25CEB4F0E9C8BED9FCFDD68109D4B7/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "table",
       "stacks": false,
@@ -7410,14 +7431,16 @@
     "Shield Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785236717874061363/FC8A9E131548DC42D21D9748015A67D8235BDA93/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785236717874061363/FC8A9E131548DC42D21D9748015A67D8235BDA93/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "unit"
     },
     "Smoke Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785236717874061016/BB4832A82AEEA19EE9B1E9498380E7D3850DB0B6/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785236717874061016/BB4832A82AEEA19EE9B1E9498380E7D3850DB0B6/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "table",
       "stacks": false,
@@ -7426,7 +7449,8 @@
     "Standby Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441910/ED14AA37D66E5E75EA5D6790A50546B1FC105DAC/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442019/EF36C682BC69BB9239DC15B0C52EE6FFACEE19C0/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442019/EF36C682BC69BB9239DC15B0C52EE6FFACEE19C0/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441910/ED14AA37D66E5E75EA5D6790A50546B1FC105DAC/"
       },
       "target": "unit"
     },
@@ -7471,28 +7495,32 @@
     "Suppression Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443213/E353EC3098CC94615DE0BA5CEF4CE8B298CF7777/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443321/002CBBCACEB0F7497BEA744B8D7B17736A5FF65E/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443321/002CBBCACEB0F7497BEA744B8D7B17736A5FF65E/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443213/E353EC3098CC94615DE0BA5CEF4CE8B298CF7777/"
       },
       "target": "unit"
     },
     "Surge Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/785236717874060749/314173062C289E83F826F78FC7FD0FF0D2E6E418/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785236717874060915/75B609A561604CAF66D7BD2868211D40F18B74E3/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785236717874060915/75B609A561604CAF66D7BD2868211D40F18B74E3/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/785236717874060749/314173062C289E83F826F78FC7FD0FF0D2E6E418/"
       },
       "target": "unit"
     },
     "Victory Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786360308354563474/D727C55A73EC48FBF56D78D188A731FEDDC2635B/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786360308354563474/D727C55A73EC48FBF56D78D188A731FEDDC2635B/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "unit"
     },
     "Weapon Disrupted Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442142/E2BBDA84DFF104080284F15909B71C8F125DA50F/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443730/B474A9A42C93151761AFE01AB45DBE5CABA1F451/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443730/B474A9A42C93151761AFE01AB45DBE5CABA1F451/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314442142/E2BBDA84DFF104080284F15909B71C8F125DA50F/"
       },
       "target": "unit",
       "stacks": false
@@ -7500,7 +7528,8 @@
     "Wheel Mode Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/780734328492115080/57765C267CCBA4F177CF4C7FBED9B6BA242FB49B/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/780734328492115080/57765C267CCBA4F177CF4C7FBED9B6BA242FB49B/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314441337/A0DD41660FEC7E450F2EDF38191AF3C26E826C49/"
       },
       "target": "unit",
       "stacks": false
@@ -7508,7 +7537,8 @@
     "Wound Token": {
       "token": {
         "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443832/CC490842F0159459C8D5C252BE7225E9D2581951/",
-        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443935/0F8A37E8CD128D5644B391E4EFEC50656D558FF7/"
+        "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443935/0F8A37E8CD128D5644B391E4EFEC50656D558FF7/",
+        "collider": "https://steamusercontent-a.akamaihd.net/ugc/786359883314443832/CC490842F0159459C8D5C252BE7225E9D2581951/"
       },
       "target": "mini"
     },
