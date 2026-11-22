@@ -1353,6 +1353,26 @@
         "points": 3,
         "restrictions": {
           "include": {
+            "alignment": ["Dark"]
+          }
+        }
+      },
+      {
+        "name": "Helping Hand",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10796382668911716728/3FECEAC8990685BBD6355419F7263BF2803D6A0D/",
+        "points": 5,
+        "restrictions": {
+          "include": {
+            "alignment": ["Light"]
+          }
+        }
+      },
+      {
+        "name": "Hope",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10760287538524062730/28C02EF23C693E082481D9AC02407542CDD79CC6/",
+        "points": 3,
+        "restrictions": {
+          "include": {
             "alignment": ["Light"]
           }
         }
@@ -2145,7 +2165,7 @@
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14198368847980106687/9C1F89910D899A8DBD08368E2F1B4FF06AFB4081/",
           "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/17201161655117853432/6E226B22540661AFA02A5D280DFCAFB27B8697A4/"
         },
-        "points": 24,
+        "points": 30,
         "restrictions": {
           "include": {
             "unit": ["B2 Super Rocket Battle Droids"]
@@ -2514,10 +2534,10 @@
         "mini": {
           "bundle": "http://cloud-3.steamusercontent.com/ugc/1621849308236386933/DCD62751F06157E85CE575C8BB1CCF86379BB7DE/"
         },
-        "points": 26,
+        "points": 20,
         "restrictions": {
           "include": {
-            "unit": ["Wookiee Warriors"]
+            "unit": ["BX-Series Droid Commandos"]
           }
         }
       },
@@ -2698,7 +2718,7 @@
         "points": 20,
         "restrictions": {
           "include": {
-            "unit": ["Stormtroopers", "Stormtroopers Heavy Response Unit"]
+            "unit": ["Scout Troopers"]
           }
         }
       },
@@ -2850,7 +2870,7 @@
           "bundle": "http://cloud-3.steamusercontent.com/ugc/1621849308236386662/7ABB72B5A8A301611033E4A424FD61271024FB4C/",
           "secondary": "http://cloud-3.steamusercontent.com/ugc/1621849538641208262/A0E48F7D9C94617C81BAD4D649717BAC7A8B9B64/"
         },
-        "points": 28,
+        "points": 21,
         "restrictions": {
           "include": {
             "unit": ["IG-100 MagnaGuard"]
@@ -3080,6 +3100,13 @@
             "unit": ["Rebel Troopers"]
           }
         }
+      }
+    ],
+    "Ordnance": [
+      {
+        "name": "\"Bunker Buster\" Shells",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9396219603588818774/E619EEF276816268108D1338C25AD01D6B6B7D5D/",
+        "points": 12
       },
       {
         "name": "Scatter Gun Trooper",
@@ -3136,7 +3163,8 @@
           "include": {
             "unit": ["Imperial Special Forces"]
           }
-        }
+        },
+        "leader": true
       },
       {
         "name": "T-21B Shoretrooper",
@@ -3190,9 +3218,10 @@
         "points": 22,
         "restrictions": {
           "include": {
-            "unit": ["Clone Trooper Infantry"]
+            "faction": ["Republic"]
           }
-        }
+        },
+        "leader": true
       },
       {
         "name": "Rook Kast",
@@ -6100,6 +6129,11 @@
         "pip": 2
       },
       {
+        "name": "Recon Division",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/17814277548406010305/67FBF2832F88C0A2B3923023FA53418900EC7C92/",
+        "pip": 2
+      },
+      {
         "name": "Attack Of the Clones",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134033797/3AA33B36A7B9EAAC8444A6CAC176F2130EE30E6C/",
         "pip": 3
@@ -6112,6 +6146,11 @@
       {
         "name": "Relentless Resistance",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16563995825819548737/E48F8C53587F36E1937F71186A8B71A39B6A75D7/",
+        "pip": 3
+      },
+      {
+        "name": "Flexible Strategy",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15462092410085872515/FF4DD4B2D64809CF0A86A3288A8D500DD7E30240/",
         "pip": 3
       },
       {
