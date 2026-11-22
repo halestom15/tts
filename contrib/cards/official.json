@@ -2030,6 +2030,430 @@
     ],
     "Heavy Weapon": [
       {
+        "name": "Scatter Gun Trooper",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140089843/7386BFA25F833C0D475BDF1DC2C4089A9E533457/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/785234540540671094/4A4BCE6286ACB413B661F827BB00B920617F3E91/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785234540540670760/47DF3E87B3F71E8EA42A89ECFE96E4FB3990D7ED/"
+        },
+        "points": 22,
+        "restrictions": {
+          "include": {
+            "unit": ["Fleet Troopers"]
+          }
+        }
+      },
+
+      {
+        "name": "Sonic Charge Saboteur",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15530089580724049994/20B4C2D6907EBDEC74CEF88C5B10B71ED016F94B/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/950714557093539716/6A0D63306F505A074395AFA61EB990280DB8995D/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/950714557093539899/FF7A535E91BF79D4C3E0D55E874C1ACEB6FBF434/"
+        },
+        "points": 17,
+        "restrictions": {
+          "include": {
+            "unit": ["Scout Troopers"]
+          }
+        }
+      },
+      {
+        "name": "T-21 Stormtrooper",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140098050/4A82E8EF8A7B04EFF91757E70C88282919912093/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2017090166650141339/1EB723D5FCF6655CFFF7EF700EE7108274E1A6C7/",
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/stormtrooper_mat_metal_v2.unity3d"
+        },
+        "points": 22,
+        "restrictions": {
+          "include": {
+            "unit": ["Stormtroopers", "Stormtroopers Heavy Response Unit"]
+          }
+        }
+      },
+      {
+        "name": "T-21 Special Forces Trooper",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140103559/F3FC1C02320B5F60D4A041140E0637BD0C0EE86A/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1618438238123000906/C64EAD02CA22F8BFB59320925DAD7D89BA1E7AD6/",
+          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/1618438238123043414/B7E9660E470DC070545782406C29F1E1356A5685/"
+        },
+        "points": 27,
+        "restrictions": {
+          "include": {
+            "unit": ["Imperial Special Forces"]
+          }
+        },
+        "leader": true
+      },
+      {
+        "name": "T-21B Shoretrooper",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15356402076507157215/7BFF6CA98FAB03189CEA985CA8A892BDF7207BEC/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359682702687816/8C17AF1D2344B7E8B1C8D34A0F2228E9ADC2FFAA/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359682702687407/D5B685EA41E9C664F2D16381474B5F08DF9CFAE5/"
+        },
+        "points": 32,
+        "restrictions": {
+          "include": {
+            "unit": ["Shoretroopers"]
+          }
+        }
+      },
+      {
+        "name": "T-7 Ion Snowtrooper",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140097979/9F3CCF24FCF1D8F02F5B9CEEF9B8B4B157295F2F/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/785234540541802160/69A03779E6B67F6F547C2FBD70ACDFC39281387D/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785234540541802252/037749C730FACCA3361B041BCB3C68E7E19DCDF8/"
+        },
+        "points": 24,
+        "restrictions": {
+          "include": {
+            "unit": ["Snowtroopers"]
+          }
+        }
+      },
+      {
+        "name": "Z-6 Trooper",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140091094/420B06E5C9EB605F3CF37DB609BE1961F8861B66/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/785234780862734756/1F48FA301357905B28DA35A03658DFA39154DBFE/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785234780862736228/22D1A1ACC79493FE82165CC95A5E23170A4FBC5B/"
+        },
+        "points": 20,
+        "restrictions": {
+          "include": {
+            "unit": ["Rebel Troopers"]
+          }
+        }
+      },
+      {
+        "name": "Z-6 Clone Trooper",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384858721/8DC71D0C54F4EC65A776B9E62F2F1E7263CA8724/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/785236717873393876/DEDAF52B0D07E0F2A2BCB54DE9A56E4FA437A3E4/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785236717873393180/6359B491483DCD9B2641BA134DC4B92DE10E9D92/"
+        },
+        "points": 22,
+        "restrictions": {
+          "include": {
+            "faction": ["Republic"]
+          }
+        },
+        "leader": true
+      },
+      {
+        "name": "Rook Kast",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638438/ECEE74FD265762CEC44438C9D0C5FF263009C3F2/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13848794345403659945/9F0AD66E2AB853B5213872009E110C35DB4F9868/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15746539274694009740/5C0B35ECEE15D442CAD165309ED314DD78EF599A/"
+        },
+        "leader": true,
+        "points": 35,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Super Commandos"]
+          }
+        }
+      },
+      {
+        "name": "Mandalorian Super Commando",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638743/16D7B984EB6DA1BE6AF202D902459EE20DD03050/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16794366385632235430/E0D50D5D2D5156D81FCB453FBDE691CFF2BABA21/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9449469097394226467/531F077189A60B529985DEFFD6A82DD12CA2A76E/"
+        },
+        "points": 24,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Super Commandos"]
+          }
+        }
+      },
+      {
+        "name": "Super Commando Gunslinger",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638185/062D34CA1E85F91921AE17FA20FADC622E3F1591/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13932107938978692205/7FA9187B12AA2E29A4A62B2E89D5678D6C86C428/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/18291930967378700481/22AFE30CCA03ACC28CC24BB8A59AA8CCEE32BA4A/"
+        },
+        "points": 38,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Super Commandos"]
+          }
+        }
+      },
+      {
+        "name": "Super Commando Marksman",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/15709592670795104171/ACE59DD60752ACF052681409AEBE159D7C400AFE/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/15482397845425325945/1F7FC37427E240C6969B02DA44D9095E16EE045A/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14812121724387025260/81352CE6FB94DEBDBE4F01CA97BEB2337BCCDCAE/"
+        },
+        "points": 28,
+        "restrictions": {
+          "include": {
+            "unit": ["Mandalorian Super Commandos"]
+          }
+        }
+      },
+      {
+        "name": "Electro-Whip Soldier",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639043/A6DFE4AD6FFFB452A302B6731A9F7667F7A0667E/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/14988808500715615791/D457926009A20B2C952DAB59EE0D8B32132EA624/"
+        },
+        "points": 10,
+        "restrictions": {
+          "include": {
+            "unit": ["Pyke Syndicate Foot Soldiers"]
+          }
+        }
+      },
+      {
+        "name": "P13-M Disruptor Soldier",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638629/3C20733912FB63D65394756509211C5CF6C39CDA/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/13412746626183515555/1F27EF666B4666F36FDB15F68179EA4EF16C1E5C/"
+        },
+        "points": 24,
+        "restrictions": {
+          "include": {
+            "unit": ["Pyke Syndicate Foot Soldiers"]
+          }
+        }
+      },
+      {
+        "name": "Mag-Det Enforcer",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/16992261856945812032/1A02BED2D0D386E4945E7560054A58F7F8E4B4B6/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12110813277322191269/AD4182EA4619D0E4B9DA7F6F12F70BEAFD8D6D02/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11212068194581458113/33DF944B89A6B7DBC0DE2141A800CCF5950553E6/"
+        },
+        "points": 16,
+        "restrictions": {
+          "include": {
+            "unit": ["Black Sun Enforcers"]
+          }
+        }
+      },
+      {
+        "name": "Scatter Gun Enforcer",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638229/542B7031B727D74585CE7FA38EEA086252152001/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13391993677710573883/836E63E52F681D338B1DBCF19D7EB431E0491BCD/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15016334003745601497/65BF4564688C26E8ECC5EE615C195320B0BFA978/"
+        },
+        "points": 28,
+        "restrictions": {
+          "include": {
+            "unit": ["Black Sun Enforcers"]
+          }
+        }
+      },
+      {
+        "name": "XS-IV Assault Cannon",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148692176/FE7C110B78061106AA1471FE6B6EE3BD5F645AE2/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2004698291313160948/23CA698C8F2AF1C08D2DED3564B138E72E2ABCBF/",
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/darktrooper_mat_metal_v2.unity3d"
+        },
+        "points": 45,
+        "restrictions": {
+          "include": {
+            "unit": ["Imperial Dark Troopers"]
+          }
+        }
+      },
+      {
+        "name": "SM-9 Frag Launcher",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148692274/A56AA57889F61A9BDE9C1C7338B023C30BF7108B/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2004698291313161010/1873BCD554A553BC2FF25A2BE16116EDEBFDCEF4/",
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/darktrooper_mat_metal_v2.unity3d"
+        },
+        "points": 45,
+        "restrictions": {
+          "include": {
+            "unit": ["Imperial Dark Troopers"]
+          }
+        }
+      },
+      {
+        "name": "Mertalizer",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148691701/24C8FA07250A2FF8E6E94EC79E6B3F87145E7D5A/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2004698291313161066/7BD340C7AAB594CDA1644D900F606FEC8A0165A1/",
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/darktrooper_mat_metal_v2.unity3d"
+        },
+        "points": 36,
+        "restrictions": {
+          "include": {
+            "unit": ["Imperial Dark Troopers"]
+          }
+        }
+      },
+      {
+        "name": "Axe Ewok",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/9885217524913261667/1618CC576AAF98E0DA209802203DD03717CED738/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128895/152E8A0BE0A0FB98FAD48338552C6282DD8954B7/",
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
+        },
+        "points": 15,
+        "restrictions": {
+          "include": {
+            "unit": ["Ewok Skirmishers", "Ewok Slingers"]
+          }
+        }
+      },
+      {
+        "name": "Force Pike Warrior",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139984742/4CBAEA0926D770481377C8C3556D0F4F55D403F4/",
+        "flip": {
+          "name": "Force Pike Warrior",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139931290/4D91F65FD4C56E472083227DF40A98D978735E4B/"
+        },
+        "mini": {
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugpike_metal_v2.unity3d"
+        },
+        "points": 15,
+        "restrictions": {
+          "include": {
+            "unit": ["Geonosian Warriors"]
+          }
+        }
+      },
+      {
+        "name": "Sonic Cannon Warrior",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139933665/6D7AF85CB42A453D1AAD2B1B4DD03F00BD9C66CF/",
+        "mini": {
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugsonic_metal_v2.unity3d"
+        },
+        "points": 25,
+        "restrictions": {
+          "include": {
+            "unit": ["Geonosian Warriors"]
+          }
+        }
+      },
+      {
+        "name": "Hunter",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134145162/59CF94272440AA250AFA7883ADC169BA9F1EDBEF/",
+        "leader": true,
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "unit": ["The Bad Batch"]
+          }
+        }
+      },
+      {
+        "name": "Echo, Clone Force 99",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139963062/CC0A09363EDC2A36A670D71ABCFA34048B44B32F/",
+        "mini": {
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/echo_model_metal_v2.unity3d"
+        },
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "unit": ["The Bad Batch"]
+          }
+        }
+      },
+      {
+        "name": "Tech",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134145194/EA026AF5A84A9F1E34CCC601A39DF61B36D664CA/",
+        "mini": {
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/tech_model_metal_v2.unity3d"
+        },
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "unit": ["The Bad Batch"]
+          }
+        }
+      },
+      {
+        "name": "Wrecker",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134145231/9FC3E238C50C89E5B4036AC1275370BAEF3B3944/",
+        "mini": {
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wrecker_model_metal_v2.unity3d"
+        },
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "unit": ["The Bad Batch"]
+          }
+        }
+      },
+      {
+        "name": "Crosshair",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134145124/0F6E5EBD2C22692BF7E757F46293934D4552CA6A/",
+        "mini": {
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/crosshair_model_metal_v2.unity3d"
+        },
+        "points": 0,
+        "restrictions": {
+          "include": {
+            "faction": ["Republic"],
+            "unit": ["The Bad Batch"]
+          }
+        }
+      },
+      {
+        "name": "Stormtrooper Marksman",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140177027/4884AC61C97A4ACD22A03F85D95CA468DE75886E/",
+        "mini": {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649838294/7197479F9D7ADF9DB1287E740A469A0E5C28F2ED/",
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/riot_stormtrooper_mat_metal_v2.unity3d"
+        },
+        "points": 30,
+        "restrictions": {
+          "include": {
+            "unit": ["Stormtrooper Riot Squad"]
+          }
+        }
+      },
+      {
+        "name": "KX-Series Security Droids",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140176950/CCE38141C12BFD65899FE18BF929C8BF0E2E1C57/",
+        "minis": [
+          {
+            "mesh": "https://steamusercontent-a.akamaihd.net/ugc/773996263557000439/C9EA2A27264C73E42C016FE26E665CBB75F8E7DE/",
+            "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/770611701143471855/26BE70BB475D8B61122C8954CCA2EC79C1ED4C25/"
+          },
+          {
+            "mesh": "https://steamusercontent-a.akamaihd.net/ugc/773996263557000439/C9EA2A27264C73E42C016FE26E665CBB75F8E7DE/",
+            "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/770611701143471855/26BE70BB475D8B61122C8954CCA2EC79C1ED4C25/"
+          }
+        ],
+        "points": 30,
+        "restrictions": {
+          "include": {
+            "unit": ["Stormtrooper Riot Squad"]
+          }
+        }
+      },
+      {
+        "name": "Rebel Marksman",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/14163318404251265635/4EE5AC6CC0A83252CDA3F0D9566A6EF5ABCDFC6F/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14917315826433699939/D2E4947C6515F43CE0A46297F5BEDE9E79BE1580/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/12051855690087531381/898E4ACA597BDB2F53DFD6DB96937EDB87E983F3/"
+        },
+        "points": 28,
+        "restrictions": {
+          "include": {
+            "unit": ["Rebel Sleeper Cell"]
+          }
+        }
+      },
+      {
         "name": "Yoda",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15958305278999607730/04C16D674E2F94A0C15A8F1CE3E77792EAF601DC/",
         "mini": {
@@ -3098,437 +3522,6 @@
         "restrictions": {
           "include": {
             "unit": ["Rebel Troopers"]
-          }
-        }
-      }
-    ],
-    "Ordnance": [
-      {
-        "name": "\"Bunker Buster\" Shells",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/9396219603588818774/E619EEF276816268108D1338C25AD01D6B6B7D5D/",
-        "points": 12
-      },
-      {
-        "name": "Scatter Gun Trooper",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140089843/7386BFA25F833C0D475BDF1DC2C4089A9E533457/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/785234540540671094/4A4BCE6286ACB413B661F827BB00B920617F3E91/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785234540540670760/47DF3E87B3F71E8EA42A89ECFE96E4FB3990D7ED/"
-        },
-        "points": 22,
-        "restrictions": {
-          "include": {
-            "unit": ["Fleet Troopers"]
-          }
-        }
-      },
-
-      {
-        "name": "Sonic Charge Saboteur",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/15530089580724049994/20B4C2D6907EBDEC74CEF88C5B10B71ED016F94B/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/950714557093539716/6A0D63306F505A074395AFA61EB990280DB8995D/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/950714557093539899/FF7A535E91BF79D4C3E0D55E874C1ACEB6FBF434/"
-        },
-        "points": 17,
-        "restrictions": {
-          "include": {
-            "unit": ["Scout Troopers"]
-          }
-        }
-      },
-      {
-        "name": "T-21 Stormtrooper",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140098050/4A82E8EF8A7B04EFF91757E70C88282919912093/",
-        "mini": {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2017090166650141339/1EB723D5FCF6655CFFF7EF700EE7108274E1A6C7/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/stormtrooper_mat_metal_v2.unity3d"
-        },
-        "points": 22,
-        "restrictions": {
-          "include": {
-            "unit": ["Stormtroopers", "Stormtroopers Heavy Response Unit"]
-          }
-        }
-      },
-      {
-        "name": "T-21 Special Forces Trooper",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140103559/F3FC1C02320B5F60D4A041140E0637BD0C0EE86A/",
-        "mini": {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1618438238123000906/C64EAD02CA22F8BFB59320925DAD7D89BA1E7AD6/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/1618438238123043414/B7E9660E470DC070545782406C29F1E1356A5685/"
-        },
-        "points": 27,
-        "restrictions": {
-          "include": {
-            "unit": ["Imperial Special Forces"]
-          }
-        },
-        "leader": true
-      },
-      {
-        "name": "T-21B Shoretrooper",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/15356402076507157215/7BFF6CA98FAB03189CEA985CA8A892BDF7207BEC/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/786359682702687816/8C17AF1D2344B7E8B1C8D34A0F2228E9ADC2FFAA/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/786359682702687407/D5B685EA41E9C664F2D16381474B5F08DF9CFAE5/"
-        },
-        "points": 32,
-        "restrictions": {
-          "include": {
-            "unit": ["Shoretroopers"]
-          }
-        }
-      },
-      {
-        "name": "T-7 Ion Snowtrooper",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140097979/9F3CCF24FCF1D8F02F5B9CEEF9B8B4B157295F2F/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/785234540541802160/69A03779E6B67F6F547C2FBD70ACDFC39281387D/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785234540541802252/037749C730FACCA3361B041BCB3C68E7E19DCDF8/"
-        },
-        "points": 24,
-        "restrictions": {
-          "include": {
-            "unit": ["Snowtroopers"]
-          }
-        }
-      },
-      {
-        "name": "Z-6 Trooper",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140091094/420B06E5C9EB605F3CF37DB609BE1961F8861B66/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/785234780862734756/1F48FA301357905B28DA35A03658DFA39154DBFE/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785234780862736228/22D1A1ACC79493FE82165CC95A5E23170A4FBC5B/"
-        },
-        "points": 20,
-        "restrictions": {
-          "include": {
-            "unit": ["Rebel Troopers"]
-          }
-        }
-      },
-      {
-        "name": "Z-6 Clone Trooper",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384858721/8DC71D0C54F4EC65A776B9E62F2F1E7263CA8724/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/785236717873393876/DEDAF52B0D07E0F2A2BCB54DE9A56E4FA437A3E4/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/785236717873393180/6359B491483DCD9B2641BA134DC4B92DE10E9D92/"
-        },
-        "points": 22,
-        "restrictions": {
-          "include": {
-            "faction": ["Republic"]
-          }
-        },
-        "leader": true
-      },
-      {
-        "name": "Rook Kast",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638438/ECEE74FD265762CEC44438C9D0C5FF263009C3F2/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13848794345403659945/9F0AD66E2AB853B5213872009E110C35DB4F9868/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15746539274694009740/5C0B35ECEE15D442CAD165309ED314DD78EF599A/"
-        },
-        "leader": true,
-        "points": 35,
-        "restrictions": {
-          "include": {
-            "unit": ["Mandalorian Super Commandos"]
-          }
-        }
-      },
-      {
-        "name": "Mandalorian Super Commando",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638743/16D7B984EB6DA1BE6AF202D902459EE20DD03050/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16794366385632235430/E0D50D5D2D5156D81FCB453FBDE691CFF2BABA21/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9449469097394226467/531F077189A60B529985DEFFD6A82DD12CA2A76E/"
-        },
-        "points": 24,
-        "restrictions": {
-          "include": {
-            "unit": ["Mandalorian Super Commandos"]
-          }
-        }
-      },
-      {
-        "name": "Super Commando Gunslinger",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638185/062D34CA1E85F91921AE17FA20FADC622E3F1591/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13932107938978692205/7FA9187B12AA2E29A4A62B2E89D5678D6C86C428/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/18291930967378700481/22AFE30CCA03ACC28CC24BB8A59AA8CCEE32BA4A/"
-        },
-        "points": 38,
-        "restrictions": {
-          "include": {
-            "unit": ["Mandalorian Super Commandos"]
-          }
-        }
-      },
-      {
-        "name": "Super Commando Marksman",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/15709592670795104171/ACE59DD60752ACF052681409AEBE159D7C400AFE/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/15482397845425325945/1F7FC37427E240C6969B02DA44D9095E16EE045A/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14812121724387025260/81352CE6FB94DEBDBE4F01CA97BEB2337BCCDCAE/"
-        },
-        "points": 28,
-        "restrictions": {
-          "include": {
-            "unit": ["Mandalorian Super Commandos"]
-          }
-        }
-      },
-      {
-        "name": "Electro-Whip Soldier",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639043/A6DFE4AD6FFFB452A302B6731A9F7667F7A0667E/",
-        "mini": {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/14988808500715615791/D457926009A20B2C952DAB59EE0D8B32132EA624/"
-        },
-        "points": 10,
-        "restrictions": {
-          "include": {
-            "unit": ["Pyke Syndicate Foot Soldiers"]
-          }
-        }
-      },
-      {
-        "name": "P13-M Disruptor Soldier",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638629/3C20733912FB63D65394756509211C5CF6C39CDA/",
-        "mini": {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/13412746626183515555/1F27EF666B4666F36FDB15F68179EA4EF16C1E5C/"
-        },
-        "points": 24,
-        "restrictions": {
-          "include": {
-            "unit": ["Pyke Syndicate Foot Soldiers"]
-          }
-        }
-      },
-      {
-        "name": "Mag-Det Enforcer",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/16992261856945812032/1A02BED2D0D386E4945E7560054A58F7F8E4B4B6/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12110813277322191269/AD4182EA4619D0E4B9DA7F6F12F70BEAFD8D6D02/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11212068194581458113/33DF944B89A6B7DBC0DE2141A800CCF5950553E6/"
-        },
-        "points": 16,
-        "restrictions": {
-          "include": {
-            "unit": ["Black Sun Enforcers"]
-          }
-        }
-      },
-      {
-        "name": "Scatter Gun Enforcer",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638229/542B7031B727D74585CE7FA38EEA086252152001/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13391993677710573883/836E63E52F681D338B1DBCF19D7EB431E0491BCD/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15016334003745601497/65BF4564688C26E8ECC5EE615C195320B0BFA978/"
-        },
-        "points": 28,
-        "restrictions": {
-          "include": {
-            "unit": ["Black Sun Enforcers"]
-          }
-        }
-      },
-      {
-        "name": "XS-IV Assault Cannon",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148692176/FE7C110B78061106AA1471FE6B6EE3BD5F645AE2/",
-        "mini": {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2004698291313160948/23CA698C8F2AF1C08D2DED3564B138E72E2ABCBF/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/darktrooper_mat_metal_v2.unity3d"
-        },
-        "points": 45,
-        "restrictions": {
-          "include": {
-            "unit": ["Imperial Dark Troopers"]
-          }
-        }
-      },
-      {
-        "name": "SM-9 Frag Launcher",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148692274/A56AA57889F61A9BDE9C1C7338B023C30BF7108B/",
-        "mini": {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2004698291313161010/1873BCD554A553BC2FF25A2BE16116EDEBFDCEF4/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/darktrooper_mat_metal_v2.unity3d"
-        },
-        "points": 45,
-        "restrictions": {
-          "include": {
-            "unit": ["Imperial Dark Troopers"]
-          }
-        }
-      },
-      {
-        "name": "Mertalizer",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148691701/24C8FA07250A2FF8E6E94EC79E6B3F87145E7D5A/",
-        "mini": {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2004698291313161066/7BD340C7AAB594CDA1644D900F606FEC8A0165A1/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/darktrooper_mat_metal_v2.unity3d"
-        },
-        "points": 36,
-        "restrictions": {
-          "include": {
-            "unit": ["Imperial Dark Troopers"]
-          }
-        }
-      },
-      {
-        "name": "Axe Ewok",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/9885217524913261667/1618CC576AAF98E0DA209802203DD03717CED738/",
-        "mini": {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2008089545867128895/152E8A0BE0A0FB98FAD48338552C6282DD8954B7/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ewok_sharedmat_metal_v2.unity3d"
-        },
-        "points": 15,
-        "restrictions": {
-          "include": {
-            "unit": ["Ewok Skirmishers", "Ewok Slingers"]
-          }
-        }
-      },
-      {
-        "name": "Force Pike Warrior",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139984742/4CBAEA0926D770481377C8C3556D0F4F55D403F4/",
-        "flip": {
-          "name": "Force Pike Warrior",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139931290/4D91F65FD4C56E472083227DF40A98D978735E4B/"
-        },
-        "mini": {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugpike_metal_v2.unity3d"
-        },
-        "points": 15,
-        "restrictions": {
-          "include": {
-            "unit": ["Geonosian Warriors"]
-          }
-        }
-      },
-      {
-        "name": "Sonic Cannon Warrior",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139933665/6D7AF85CB42A453D1AAD2B1B4DD03F00BD9C66CF/",
-        "mini": {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/bugsonic_metal_v2.unity3d"
-        },
-        "points": 25,
-        "restrictions": {
-          "include": {
-            "unit": ["Geonosian Warriors"]
-          }
-        }
-      },
-      {
-        "name": "Hunter",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134145162/59CF94272440AA250AFA7883ADC169BA9F1EDBEF/",
-        "leader": true,
-        "points": 0,
-        "restrictions": {
-          "include": {
-            "unit": ["The Bad Batch"]
-          }
-        }
-      },
-      {
-        "name": "Echo, Clone Force 99",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139963062/CC0A09363EDC2A36A670D71ABCFA34048B44B32F/",
-        "mini": {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/echo_model_metal_v2.unity3d"
-        },
-        "points": 0,
-        "restrictions": {
-          "include": {
-            "unit": ["The Bad Batch"]
-          }
-        }
-      },
-      {
-        "name": "Tech",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134145194/EA026AF5A84A9F1E34CCC601A39DF61B36D664CA/",
-        "mini": {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/tech_model_metal_v2.unity3d"
-        },
-        "points": 0,
-        "restrictions": {
-          "include": {
-            "unit": ["The Bad Batch"]
-          }
-        }
-      },
-      {
-        "name": "Wrecker",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134145231/9FC3E238C50C89E5B4036AC1275370BAEF3B3944/",
-        "mini": {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wrecker_model_metal_v2.unity3d"
-        },
-        "points": 0,
-        "restrictions": {
-          "include": {
-            "unit": ["The Bad Batch"]
-          }
-        }
-      },
-      {
-        "name": "Crosshair",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134145124/0F6E5EBD2C22692BF7E757F46293934D4552CA6A/",
-        "mini": {
-          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/crosshair_model_metal_v2.unity3d"
-        },
-        "points": 0,
-        "restrictions": {
-          "include": {
-            "faction": ["Republic"],
-            "unit": ["The Bad Batch"]
-          }
-        }
-      },
-      {
-        "name": "Stormtrooper Marksman",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140177027/4884AC61C97A4ACD22A03F85D95CA468DE75886E/",
-        "mini": {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649838294/7197479F9D7ADF9DB1287E740A469A0E5C28F2ED/",
-          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/riot_stormtrooper_mat_metal_v2.unity3d"
-        },
-        "points": 30,
-        "restrictions": {
-          "include": {
-            "unit": ["Stormtrooper Riot Squad"]
-          }
-        }
-      },
-      {
-        "name": "KX-Series Security Droids",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140176950/CCE38141C12BFD65899FE18BF929C8BF0E2E1C57/",
-        "minis": [
-          {
-            "mesh": "https://steamusercontent-a.akamaihd.net/ugc/773996263557000439/C9EA2A27264C73E42C016FE26E665CBB75F8E7DE/",
-            "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/770611701143471855/26BE70BB475D8B61122C8954CCA2EC79C1ED4C25/"
-          },
-          {
-            "mesh": "https://steamusercontent-a.akamaihd.net/ugc/773996263557000439/C9EA2A27264C73E42C016FE26E665CBB75F8E7DE/",
-            "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/770611701143471855/26BE70BB475D8B61122C8954CCA2EC79C1ED4C25/"
-          }
-        ],
-        "points": 30,
-        "restrictions": {
-          "include": {
-            "unit": ["Stormtrooper Riot Squad"]
-          }
-        }
-      },
-      {
-        "name": "Rebel Marksman",
-        "image": "https://steamusercontent-a.akamaihd.net/ugc/14163318404251265635/4EE5AC6CC0A83252CDA3F0D9566A6EF5ABCDFC6F/",
-        "mini": {
-          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/14917315826433699939/D2E4947C6515F43CE0A46297F5BEDE9E79BE1580/",
-          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/12051855690087531381/898E4ACA597BDB2F53DFD6DB96937EDB87E983F3/"
-        },
-        "points": 28,
-        "restrictions": {
-          "include": {
-            "unit": ["Rebel Sleeper Cell"]
           }
         }
       }
