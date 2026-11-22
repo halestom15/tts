@@ -1,0 +1,509 @@
+-- The scoreboard: a copy of AMG's printed mission board, standing like a
+-- lectern past the console end of the table, level with the setup mounts.
+--
+-- The board itself (5993b5) is always on the table, locked. When a mission is
+-- set up, the game controller calls Scoreboard.setUp: it lays copies of the
+-- mission's cards in the board's card slots and puts out the tokens (player
+-- badges, round marker, VP markers). The mounts keep their own cards; these
+-- are copies to read the mission from.
+--
+-- The tokens are locked (on a tilted board anything loose slides off), so
+-- they are moved by clicking, through an invisible button on each:
+--   * A VP marker in play: left-click scores a point, right-click takes one
+--     back. Past 12 it goes round the track once more from space 1 (13 to
+--     24), with a small "+12" just above it so the lap shows.
+--   * The round marker: the same, rounds 1 to 5.
+--   * The supply in the margin right of the track (the generic trackers and
+--     the faction discs): a seated player clicks one, and their VP marker
+--     becomes a copy of it, on the same score. The supply stays, so both
+--     players can pick the same one.
+-- Each token's state is in its GMNotes (JSON), and the mission's blue seat in
+-- the board's, so a saved game carries on where it was.
+--
+-- Everything is placed in the board's own coordinates, so moving, tilting or
+-- resizing the board in the save carries the layout with it. A spot is given
+-- as (u, v): fractions of the board's printed image, u from its left edge,
+-- v from its top edge. Left on the image is the blue seat's side (+z).
+--
+-- "Blue"/"Red" below is the player's role unless it says seat: the blue
+-- player may sit in the red seat.
+
+Scoreboard = {}
+
+SCOREBOARD_GUID = "5993b5"
+-- Everything the scoreboard puts out carries this tag, so the next mission
+-- clears it first.
+SCOREBOARD_TAG = "Scoreboard"
+
+-- The image is 3041 x 2364: in local units the board is 2 deep and
+-- 2 * 3041 / 2364 wide.
+local LOCAL_WIDTH = 2 * 3041 / 2364
+local LOCAL_DEPTH = 2
+-- The tile is 0.2 thick, so its collider's face is 0.1 above its centre, but
+-- it draws its face further out than that: anything closer than about 0.2
+-- flickers through the board (tokens) or disappears behind it (cards).
+local FACE = 0.1
+local CARD_LIFT = 0.2
+local TOKEN_LIFT = 0.25
+local BLOCK_LIFT = 0.32
+
+-- Card slots: {left u, right u, top v, bottom v} on the printed image, and
+-- which way a card longer than its slot hangs off the board: "up" past the
+-- top edge (its bottom edge inside the slot), "down" past the bottom edge (its
+-- top edge inside the slot), or nil to sit centred.
+local SLOTS = {
+  objective        = {0.005, 0.245, 0.000, 0.265, hang = "up"},
+  objectiveMap     = {0.320, 0.670, 0.000, 0.265, hang = "up"},
+  secondary        = {0.745, 0.995, 0.000, 0.265, hang = "up"},
+  advantageBlue    = {0.120, 0.370, 0.760, 1.000, hang = "down"},
+  advantageRed     = {0.630, 0.880, 0.760, 1.000, hang = "down"},
+}
+-- Every card's scale, per unit of the board's scale: chosen in game as 1.8672
+-- on a board of 6.869073.
+local CARD_SCALE_PER_BOARD = 1.8672 / 6.869073
+-- How far inside its slot a hanging card's edge stays, as a share of the
+-- board's height.
+local CARD_INSET = 0.01
+
+-- Token spaces, as {u, v}. The sockets are by seat: each player's badge goes
+-- in the socket on their seat's side.
+local SEAT_SOCKETS = {Blue = {0.210, 0.365}, Red = {0.783, 0.365}}
+local ROUND_U = {0.373, 0.434, 0.496, 0.556, 0.617}
+local ROUND_V = 0.373
+-- Victory points 1..12: cell centres across, one row per player inside a
+-- cell. Space 0 is in the white margin left of the track.
+local VP_FIRST_U, VP_STEP_U = 0.187, 0.0583
+local VP_ZERO_U = 0.075
+local VP_TRACK = 12
+local VP_MAX = 2 * VP_TRACK
+local VP_ROW_V = {Blue = 0.560, Red = 0.650}
+-- The supply of VP markers: a column in the margin right of the track.
+local SUPPLY_U = 0.935
+local SUPPLY_FIRST_V, SUPPLY_STEP_V = 0.32, 0.10
+
+-- A token to spawn: its object data, and `spin`, the degrees it is turned on
+-- the board (see Scoreboard.spunRotation).
+local function tokenData(name, image, scale, spin)
+  return {spin = spin or 0, data = {
+    Name = "Custom_Token",
+    Nickname = name,
+    Transform = {scaleX = scale, scaleY = 1, scaleZ = scale},
+    Locked = true,
+    Tags = {SCOREBOARD_TAG},
+    CustomImage = {
+      ImageURL = image,
+      ImageSecondaryURL = "",
+      ImageScalar = 1,
+      WidthScale = 0,
+      CustomToken = {Thickness = 0.1, MergeDistancePixels = 15, StandUp = false, Stackable = false},
+    },
+  }}
+end
+
+local UGC = "https://steamusercontent-a.akamaihd.net/ugc/"
+local SEAT_BADGES = {
+  Blue = tokenData("Blue Player", UGC .. "2508027193317001672/A91F89BC72D1E18EC489FA7DAFBC3ADBE7E5CFBF/", 0.376),
+  Red  = tokenData("Red Player",  UGC .. "2508027193316998787/209C3A2E628DB1E1B720566AFD33BE47B4BEDD32/", 0.401),
+}
+-- The VP marker supply, top to bottom: the generic trackers (turned upright
+-- to fit a cell; each player starts with theirs), then the faction discs.
+local SUPPLY = {
+  tokenData("Blue Score Tracker", UGC .. "19812219140023634/481F1239CDEB7558211648F46C22BE8BB78C6A01/", 0.19, 90),
+  tokenData("Red Score Tracker",  UGC .. "19812219140026630/AA446710C6026155C38E3DF378ABD18FB3C2DADA/", 0.19, 90),
+  tokenData("Empire VP Marker",     UGC .. "13722520229745788797/458E5DF1A85917AB06FACE813D503486B479AAD6/", 0.30),
+  tokenData("Rebel VP Marker",      UGC .. "15547398602665719849/5971481D4FE6831A45BC64046F530A522F5C6852/", 0.32),
+  tokenData("Republic VP Marker",   UGC .. "9263972179516887060/9D59AEBC2921DF97AB036EF11A9746CD7C3AF96B/", 0.30),
+  tokenData("Separatist VP Marker", UGC .. "15340126814545575556/987B2438088F8F16351BDEDCDC760F4D919781E8/", 0.28),
+  tokenData("Mercenary VP Marker",  UGC .. "14052757627272922479/479A7CCE71BDFF515BD7380C2F28C45386BAC7E2/", 0.30),
+}
+local GENERIC_TRACKER = {Blue = 1, Red = 2}
+-- The physical game's little orange square that slides along the round track.
+local ROUND_MARKER = {spin = 0, data = {
+  Name = "BlockSquare",
+  Nickname = "Round Marker",
+  Transform = {scaleX = 0.8, scaleY = 0.24, scaleZ = 0.8},
+  ColorDiffuse = {r = 0.957, g = 0.392, b = 0.114},
+  Locked = true,
+  Tags = {SCOREBOARD_TAG},
+}}
+
+-- Local position of image spot (u, v), `lift` above the board's face.
+function Scoreboard.localPoint(u, v, lift)
+  return {
+    x = (0.5 - u) * LOCAL_WIDTH,
+    y = FACE + (lift or 0),
+    z = (v - 0.5) * LOCAL_DEPTH,
+  }
+end
+
+-- Spot {u, v} of victory point `vp` on `role`'s row: past 12 the track
+-- starts again, 13 on space 1.
+function Scoreboard.vpSpot(role, vp)
+  local u = vp == 0 and VP_ZERO_U or VP_FIRST_U + (vp - 1) % VP_TRACK * VP_STEP_U
+  return {u, VP_ROW_V[role]}
+end
+
+-- Whether a marker on `vp` has gone round the track (13 and up).
+function Scoreboard.lapped(vp)
+  return vp > VP_TRACK
+end
+
+local function clamp(value, low, high)
+  return math.max(low, math.min(high, value))
+end
+
+-- What a click on a token does, with no TTS calls (so it can be tested):
+-- returns the token's new state, and the role whose VP marker must become a
+-- copy of this token (when a supply token is picked), or nil.
+--   state: {kind = "round", round = n}, {kind = "marker", role = r, vp = n,
+--          supply = i} (a VP marker in play, a copy of supply token i) or
+--          {kind = "supply", supply = i}
+--   clickerRole: the role of the seated player who clicked, or nil.
+function Scoreboard.clicked(state, altClick, clickerRole)
+  local step = altClick and -1 or 1
+  if state.kind == "round" then
+    return {kind = "round", round = clamp(state.round + step, 1, #ROUND_U)}
+  end
+  if state.kind == "marker" then
+    return {kind = "marker", role = state.role, supply = state.supply,
+            vp = clamp(state.vp + step, 0, VP_MAX)}
+  end
+  if state.kind == "supply" and clickerRole then
+    return state, clickerRole
+  end
+  return state
+end
+
+local function board()
+  return getObjectFromGUID(SCOREBOARD_GUID)
+end
+
+local function readState(obj)
+  local ok, state = pcall(JSON.decode, obj.getGMNotes())
+  if ok and type(state) == "table" then return state end
+  return nil
+end
+
+local function writeState(obj, state)
+  obj.setGMNotes(JSON.encode(state))
+end
+
+-- Which seat holds the blue player for the mission on the board.
+local function blueSeat()
+  local b = board()
+  local ok, state = pcall(JSON.decode, b and b.getGMNotes() or "")
+  return ok and type(state) == "table" and state.blueSeat or "Blue"
+end
+
+local function seatOf(role)
+  if role == "Blue" then return blueSeat() end
+  return blueSeat() == "Blue" and "Red" or "Blue"
+end
+
+local function roleOf(seat)
+  if seat ~= "Blue" and seat ~= "Red" then return nil end
+  return seat == blueSeat() and "Blue" or "Red"
+end
+
+-- The spot a token belongs on, and how far it stands off the board.
+local function spotOf(state)
+  if state.kind == "round" then
+    return {ROUND_U[state.round], ROUND_V}, BLOCK_LIFT
+  end
+  if state.kind == "marker" then
+    return Scoreboard.vpSpot(state.role, state.vp), TOKEN_LIFT
+  end
+  return {SUPPLY_U, SUPPLY_FIRST_V + (state.supply - 1) * SUPPLY_STEP_V}, TOKEN_LIFT
+end
+
+local function worldAt(spot, lift)
+  return board().positionToWorld(Scoreboard.localPoint(spot[1], spot[2], lift))
+end
+
+local function tooltipOf(obj, state)
+  if state.kind == "round" then
+    return "Round " .. state.round .. "\nLeft-click: next round\nRight-click: previous round"
+  end
+  if state.kind == "marker" then
+    return state.role .. " player's VP: " .. state.vp
+      .. "\nLeft-click: +1 VP\nRight-click: -1 VP"
+  end
+  return obj.getName() .. "\nClick to use it as your VP marker"
+end
+
+-- Button sizes are in "pixels" of the object's local space.
+local BUTTON_PX_PER_UNIT = 500
+
+-- The lap label's text height on the table, in world units.
+local LAP_TEXT = 0.3
+
+-- A small "+12" just below a VP marker that has gone round the track (below
+-- on the board, whichever way the token is turned): a button with no size,
+-- which shows only its label and can't be clicked.
+local function addLapLabel(obj, state, size, scale)
+  if not (state.kind == "marker" and Scoreboard.lapped(state.vp)) then return end
+  local spin = SUPPLY[state.supply].spin
+  local s, c = math.sin(math.rad(spin)), math.cos(math.rad(spin))
+  -- In the token's own unscaled space: its half sides, the text's height,
+  -- and the distance from its centre to the label's centre.
+  local hx, hz = size.x / scale.x / 2, size.z / scale.z / 2
+  local text = LAP_TEXT / scale.x
+  local d = math.abs(s) * hx + math.abs(c) * hz + text * 0.6
+  -- The board's "down" (+z) turned into the token's space. Button positions
+  -- are mirrored in x, hence +s rather than -s.
+  obj.createButton({
+    click_function = "scoreboardClick",
+    function_owner = self,
+    label          = "+" .. VP_TRACK,
+    position       = {d * s, 0.1, d * c},
+    rotation       = {0, -spin, 0},
+    width          = 0,
+    height         = 0,
+    font_size      = text * BUTTON_PX_PER_UNIT,
+    font_color     = {1, 1, 1, 1},
+  })
+end
+
+-- An invisible button over the whole token, which shows when hovered.
+local function addButton(obj, state)
+  obj.clearButtons()
+  -- getBoundsNormalized ignores rotation: x and z are the token's own sides.
+  local size = obj.getBoundsNormalized().size
+  local scale = obj.getScale()
+  -- Local top of the token: a block is a unit cube, a token 0.1 thick.
+  local top = state.kind == "round" and 0.55 or 0.1
+  obj.createButton({
+    click_function = "scoreboardClick",
+    function_owner = self,
+    position       = {0, top, 0},
+    width          = size.x / scale.x * BUTTON_PX_PER_UNIT,
+    height         = size.z / scale.z * BUTTON_PX_PER_UNIT,
+    color          = {1, 1, 1, 0},
+    hover_color    = {1, 1, 1, 0.25},
+    press_color    = {1, 1, 1, 0.45},
+    tooltip        = tooltipOf(obj, state),
+  })
+  addLapLabel(obj, state, size, scale)
+end
+
+local function moveToken(obj, state)
+  local spot, lift = spotOf(state)
+  obj.setPositionSmooth(worldAt(spot, lift), false, true)
+  writeState(obj, state)
+  addButton(obj, state)
+end
+
+-- The VP marker `role` is using, if any.
+local function activeMarker(role)
+  for _, obj in ipairs(getObjectsWithTag(SCOREBOARD_TAG)) do
+    local state = readState(obj)
+    if state and state.kind == "marker" and state.role == role then
+      return obj, state
+    end
+  end
+  return nil
+end
+
+local function spawnToken(token, spot, lift, state)
+  return spawnObjectData({
+    data     = token.data,
+    position = worldAt(spot, lift),
+    rotation = Scoreboard.spunRotation(board().getRotation(), token.spin),
+    callback_function = state and function(obj)
+      writeState(obj, state)
+      -- A custom token has no size until its image loads, and the button is
+      -- sized from it.
+      Wait.condition(function()
+        if not obj.isDestroyed() then addButton(obj, state) end
+      end, function()
+        return obj.isDestroyed() or obj.getBoundsNormalized().size.x > 0
+      end)
+    end,
+  })
+end
+
+-- Spawns `role`'s VP marker: a copy of supply token `supply`, on `vp`.
+local function spawnMarker(role, supply, vp)
+  local state = {kind = "marker", role = role, vp = vp, supply = supply}
+  local spot, lift = spotOf(state)
+  return spawnToken(SUPPLY[supply], spot, lift, state)
+end
+
+-- The click handler of every scoreboard token's button (the button's
+-- function_owner is the game controller, which includes this file).
+function scoreboardClick(obj, playerColor, altClick)
+  local state = readState(obj)
+  if state == nil or board() == nil then return end
+  local clickerRole = roleOf(playerColor)
+  if state.kind == "supply" and clickerRole == nil then
+    -- pcall: the colour may have no player behind it.
+    pcall(broadcastToColor, "Only a seated player can pick a VP marker.", playerColor, {1, 0.8, 0.4})
+    return
+  end
+  local new, picks = Scoreboard.clicked(state, altClick, clickerRole)
+  if picks then
+    local old, oldState = activeMarker(picks)
+    if oldState and oldState.supply == state.supply then return end
+    if old then destroyObject(old) end
+    spawnMarker(picks, state.supply, oldState and oldState.vp or 0)
+    printToAll("Scoreboard: the " .. picks .. " player now scores with the " .. obj.getName() .. ".", {0.8, 0.9, 1})
+    return
+  end
+  if new.kind == "round" and new.round == state.round
+      or new.kind == "marker" and new.vp == state.vp then
+    return
+  end
+  moveToken(obj, new)
+  if new.kind == "round" then
+    printToAll("Scoreboard: round " .. new.round .. ".", {1, 0.6, 0.2})
+  else
+    printToAll("Scoreboard: " .. new.role .. " player " .. new.vp .. " VP.", {0.8, 0.9, 1})
+  end
+end
+
+-- Puts the buttons back on the tokens of a loaded game (buttons aren't saved).
+function Scoreboard.restore()
+  for _, obj in ipairs(getObjectsWithTag(SCOREBOARD_TAG)) do
+    local state = readState(obj)
+    if state and state.kind then
+      addButton(obj, state)
+    end
+  end
+end
+
+-- Euler angles (TTS/Unity: R = Ry * Rx * Rz, in degrees) to a 3x3 matrix,
+-- and back.
+local function eulerToMatrix(e)
+  local x, y, z = math.rad(e.x), math.rad(e.y), math.rad(e.z)
+  local cx, sx, cy, sy, cz, sz = math.cos(x), math.sin(x), math.cos(y), math.sin(y), math.cos(z), math.sin(z)
+  return {
+    {cy * cz + sy * sx * sz, -cy * sz + sy * sx * cz, sy * cx},
+    {cx * sz,                cx * cz,                 -sx},
+    {-sy * cz + cy * sx * sz, sy * sz + cy * sx * cz, cy * cx},
+  }
+end
+
+-- TTS runs Lua 5.2 (MoonSharp), where math.atan takes one argument and the
+-- two-argument form is math.atan2; Lua 5.4 (the tests) has only math.atan.
+local atan2 = math.atan2 or math.atan
+
+local function matrixToEuler(m)
+  local sx = math.max(-1, math.min(1, -m[2][3]))
+  return {
+    x = math.deg(math.asin(sx)),
+    y = math.deg(atan2(m[1][3], m[3][3])),
+    z = math.deg(atan2(m[2][1], m[2][2])),
+  }
+end
+
+-- The board's rotation, then a turn of `spin` degrees about its own face
+-- normal (clockwise as seen from the front).
+function Scoreboard.spunRotation(boardRotation, spin)
+  local a = eulerToMatrix(boardRotation)
+  local b = eulerToMatrix({x = 0, y = spin, z = 0})
+  local m = {}
+  for i = 1, 3 do
+    m[i] = {}
+    for j = 1, 3 do
+      m[i][j] = a[i][1] * b[1][j] + a[i][2] * b[2][j] + a[i][3] * b[3][j]
+    end
+  end
+  return matrixToEuler(m)
+end
+
+-- A locked copy of a card in its slot. Every card gets the same scale, which
+-- makes each one taller than its slot: it hangs off the board's edge (see
+-- SLOTS), keeping its other edge inside the slot's colour. `sideways` turns a
+-- card a quarter, for the map card printed across a portrait card.
+local function placeCard(card, slotKey, sideways)
+  local slot = SLOTS[slotKey]
+  local b = board()
+  card.addTag(SCOREBOARD_TAG)
+  card.setLock(true)
+  card.setDescription("Scoreboard copy")
+  local rotation = Scoreboard.spunRotation(b.getRotation(), sideways and 90 or 0)
+  card.setRotation(rotation)
+  card.setPosition(b.positionToWorld(Scoreboard.localPoint(
+    (slot[1] + slot[2]) / 2, (slot[3] + slot[4]) / 2, CARD_LIFT)))
+  Wait.condition(function()
+    if card.isDestroyed() then return end
+    -- getBoundsNormalized ignores rotation: x is the card's width, z its
+    -- height, here per unit of scale.
+    local size = card.getBoundsNormalized().size
+    local unit = card.getScale().x
+    local width, height = size.x / unit, size.z / unit
+    local scale = b.getScale()
+    if width > 0 and height > 0 then
+      local s = CARD_SCALE_PER_BOARD * scale.x
+      card.setScale({s, 1, s})
+      -- The card's extent down the board, as a share of the board's height.
+      local span = (sideways and width or height) * s / (LOCAL_DEPTH * scale.z)
+      local v = (slot[3] + slot[4]) / 2
+      if slot.hang == "up" then
+        v = slot[4] - CARD_INSET - span / 2
+      elseif slot.hang == "down" then
+        v = slot[3] + CARD_INSET + span / 2
+      end
+      card.setPosition(b.positionToWorld(Scoreboard.localPoint(
+        (slot[1] + slot[2]) / 2, v, CARD_LIFT)))
+    end
+    card.setRotation(rotation)
+  end, function() return card.isDestroyed() or not card.spawning end)
+end
+
+-- The Objective's map card, from the objects the Objective sets out.
+local function mapCardFor(objectiveName, scenario)
+  local schema = Deck:_getSchema()
+  local cards = schema.battlefield[Deck:_scenarioKey(scenario)]
+  local details = cards and cards.deployment and cards.deployment[objectiveName:upper()]
+  for _, name in ipairs(details and details.additionalObjects or {}) do
+    local object = schema.objects[name]
+    if object and object.card then
+      local card = Deck:_spawnCard(object.card.image, object.card.back)
+      card.setName(name)
+      return card
+    end
+  end
+  return nil
+end
+
+-- Removes everything a previous mission put on the scoreboard.
+function Scoreboard.clear()
+  for _, obj in ipairs(getObjectsWithTag(SCOREBOARD_TAG)) do
+    destroyObject(obj)
+  end
+end
+
+-- params: objective, secondary (card names), advantage ({Blue =, Red =} by
+-- seat), scenario, blueSeat (the seat holding the blue player).
+function Scoreboard.setUp(params)
+  local b = board()
+  if b == nil then return end
+  Scoreboard.clear()
+  b.setGMNotes(JSON.encode({blueSeat = params.blueSeat or "Blue"}))
+  local function battleCard(kind, name, slotKey)
+    if name == nil then return end
+    placeCard(Deck:spawnBattleCard(Deck.BATTLE_KINDS[kind].key, name, params.scenario), slotKey)
+  end
+  battleCard("objective", params.objective, "objective")
+  battleCard("secondary", params.secondary, "secondary")
+  battleCard("advantage", params.advantage.Blue, "advantageBlue")
+  battleCard("advantage", params.advantage.Red, "advantageRed")
+  if params.objective then
+    local map = mapCardFor(params.objective, params.scenario)
+    if map then placeCard(map, "objectiveMap", true) end
+  end
+
+  -- Each player's badge on their seat's side; each starts on 0 VP with their
+  -- generic tracker.
+  for _, role in ipairs({"Blue", "Red"}) do
+    spawnToken(SEAT_BADGES[role], SEAT_SOCKETS[seatOf(role)], TOKEN_LIFT)
+    spawnMarker(role, GENERIC_TRACKER[role], 0)
+  end
+  local round = {kind = "round", round = 1}
+  spawnToken(ROUND_MARKER, spotOf(round), BLOCK_LIFT, round)
+  for i, token in ipairs(SUPPLY) do
+    local state = {kind = "supply", supply = i}
+    spawnToken(token, spotOf(state), TOKEN_LIFT, state)
+  end
+end

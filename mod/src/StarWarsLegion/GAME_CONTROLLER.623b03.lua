@@ -1,6 +1,7 @@
 require('!/Analytics')
 require('!/Deck')
 require('!/Mission')
+require('!/Scoreboard')
 require('!/common/Zonex')
 
 function onload(save_state)
@@ -8,6 +9,8 @@ function onload(save_state)
     math.randomseed(os.time())
     Wait.time(clearMissionCards, 1)
     _G.Deck = Deck:create()
+    -- Buttons aren't saved: the scoreboard's tokens get theirs back.
+    Wait.time(Scoreboard.restore, 1)
 
     -- init values
     gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
@@ -2344,6 +2347,15 @@ function setUpMission(flipBattlefield)
     setUpController.call("checkCardCall", {advantageMounts[result.blueSeat].check})
     setUpController.call("checkCardCall", {advantageMounts[red].check})
   end, 1)
+
+  -- Copies of the cards and a fresh set of tokens on the scoreboard.
+  Scoreboard.setUp({
+    objective = result.objective,
+    secondary = result.secondary,
+    advantage = result.advantage,
+    scenario  = missionScenario,
+    blueSeat  = result.blueSeat,
+  })
 
   local summary = missionSummary():gsub("\n", ". ")
   broadcastToAll("Mission set up. " .. summary, {0.8, 0.9, 1})
