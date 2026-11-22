@@ -3198,7 +3198,8 @@
         "name": "Rook Kast",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638438/ECEE74FD265762CEC44438C9D0C5FF263009C3F2/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1789640371719006177/3A456EB29012BFBE4322E020CBC08CF6F915BBF3/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13848794345403659945/9F0AD66E2AB853B5213872009E110C35DB4F9868/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15746539274694009740/5C0B35ECEE15D442CAD165309ED314DD78EF599A/"
         },
         "leader": true,
         "points": 35,
@@ -3212,8 +3213,10 @@
         "name": "Mandalorian Super Commando",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638743/16D7B984EB6DA1BE6AF202D902459EE20DD03050/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143500/4BDEA7F5B523FC06641B3D71D1E112DC14BD7F81/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/1789640371717200823/B886D3157AA2F2528F4E5F76F26DF44A41496615/"
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16794366385632235430/E0D50D5D2D5156D81FCB453FBDE691CFF2BABA21/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9449469097394226467/531F077189A60B529985DEFFD6A82DD12CA2A76E/"
+        }
         },
         "points": 24,
         "restrictions": {
@@ -3226,8 +3229,8 @@
         "name": "Super Commando Gunslinger",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638185/062D34CA1E85F91921AE17FA20FADC622E3F1591/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143366/41AB7DFFD2FCF20E2BCC3F899F728863C30F6343/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/1789640371717200823/B886D3157AA2F2528F4E5F76F26DF44A41496615/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13932107938978692205/7FA9187B12AA2E29A4A62B2E89D5678D6C86C428/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/18291930967378700481/22AFE30CCA03ACC28CC24BB8A59AA8CCEE32BA4A/"
         },
         "points": 38,
         "restrictions": {
@@ -3240,8 +3243,8 @@
         "name": "Super Commando Marksman",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15709592670795104171/ACE59DD60752ACF052681409AEBE159D7C400AFE/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143451/3DFD9C8BD5D504D3A2F7934678D1A0A7C2285863/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/1789640371717200769/60353F40BAE6D92D6F6ED24E2883EB9CC2EA74C4/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/15482397845425325945/1F7FC37427E240C6969B02DA44D9095E16EE045A/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14812121724387025260/81352CE6FB94DEBDBE4F01CA97BEB2337BCCDCAE/"
         },
         "points": 28,
         "restrictions": {
@@ -3254,8 +3257,7 @@
         "name": "Electro-Whip Soldier",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148639043/A6DFE4AD6FFFB452A302B6731A9F7667F7A0667E/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1745728387706845513/BB3CD9624D6F43250D0406D099819E497A1A70BE/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/1856061112420143543/CBAC94E0D1731CB8D1034D24F58987E854A8596A/"
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/14988808500715615791/D457926009A20B2C952DAB59EE0D8B32132EA624/"
         },
         "points": 10,
         "restrictions": {
@@ -3268,8 +3270,7 @@
         "name": "P13-M Disruptor Soldier",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638629/3C20733912FB63D65394756509211C5CF6C39CDA/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1745728387706845607/4B1530CF96F9DB8F172B02676F1D8B347CFD862A/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/1856061112420143543/CBAC94E0D1731CB8D1034D24F58987E854A8596A/"
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/13412746626183515555/1F27EF666B4666F36FDB15F68179EA4EF16C1E5C/"
         },
         "points": 24,
         "restrictions": {
@@ -4017,25 +4018,20 @@
         "name": "Pyke Syndicate Foot Soldier Squad",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14983704573819999353/9B2E64176C2D5134C74D77CBC58E19E05B68481C/",
         "minis": [
+    {
+      "bundle": "https://steamusercontent-a.akamaihd.net/ugc/11897088837367103902/FAFD8F72159C516D31CD712461F5EF642ACA0279/"
+    },
+    {
+      "bundle": "https://steamusercontent-a.akamaihd.net/ugc/12788007131481345661/4E64AA6C17C08AE02BCF887BAB90967E757DAE31/"
+    },
+    {
+      "bundle": "https://steamusercontent-a.akamaihd.net/ugc/13612011984236748502/4B85A9D3CCEBEA8DB1373449845AFC20AE32DE37/"
+    },
           {
-            "bundle": "http://cloud-3.steamusercontent.com/ugc/1745728387706845646/BE0DEED782F96BD44C389DEDEA41EBEA0C7A6D04/",
-            "secondary": "http://cloud-3.steamusercontent.com/ugc/1856061112420143543/CBAC94E0D1731CB8D1034D24F58987E854A8596A/"
+            "bundle": "https://steamusercontent-a.akamaihd.net/ugc/18307162050218843563/3C72A6FAF6C8B1E73904EF6C163B3A21D24D58A3/",
           },
           {
-            "bundle": "http://cloud-3.steamusercontent.com/ugc/1745728387706845697/15B6DCCA8D8D76E1CB78219C58790E40DDD7CE8A/",
-            "secondary": "http://cloud-3.steamusercontent.com/ugc/1856061112420143543/CBAC94E0D1731CB8D1034D24F58987E854A8596A/"
-          },
-          {
-            "bundle": "http://cloud-3.steamusercontent.com/ugc/1745728387706845389/0D7DFE0C5BF5CDD527A619B75A25A2177D417BD0/",
-            "secondary": "http://cloud-3.steamusercontent.com/ugc/1856061112420143543/CBAC94E0D1731CB8D1034D24F58987E854A8596A/"
-          },
-          {
-            "bundle": "http://cloud-3.steamusercontent.com/ugc/1745728387706845389/0D7DFE0C5BF5CDD527A619B75A25A2177D417BD0/",
-            "secondary": "http://cloud-3.steamusercontent.com/ugc/1856061112420143543/CBAC94E0D1731CB8D1034D24F58987E854A8596A/"
-          },
-          {
-            "bundle": "http://cloud-3.steamusercontent.com/ugc/1745728387706845389/0D7DFE0C5BF5CDD527A619B75A25A2177D417BD0/",
-            "secondary": "http://cloud-3.steamusercontent.com/ugc/1856061112420143543/CBAC94E0D1731CB8D1034D24F58987E854A8596A/"
+            "bundle": "https://steamusercontent-a.akamaihd.net/ugc/18307162050218843563/3C72A6FAF6C8B1E73904EF6C163B3A21D24D58A3/",
           }
         ],
         "points": 38,
@@ -4996,8 +4992,7 @@
         "name": "Pyke Syndicate Foot Soldier",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638523/E0BF45AC2918D78E53F39A4EB61372E0FBD24AF5/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1745728387706845389/0D7DFE0C5BF5CDD527A619B75A25A2177D417BD0/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/1856061112420143543/CBAC94E0D1731CB8D1034D24F58987E854A8596A/"
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/18307162050218843563/3C72A6FAF6C8B1E73904EF6C163B3A21D24D58A3/"
         },
         "points": 9,
         "restrictions": {
@@ -5010,7 +5005,7 @@
         "name": "Pyke Syndicate Capo",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638580/65166B7E91103AD7B1F26E197338FD01B98E7591/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420351237/706DEA645FEE2EC9787F05F4FF2926632E2C4894/"
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/14792262478903718569/AF33A1F43C8266F862E848026DBD4335C09BBE28/"
         },
         "leader": true,
         "points": 18,

@@ -133,7 +133,7 @@
       "commands": [
         {
           "name": "Both Hunter and Prey",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/16994067437948840339/36A3687ED811F315C2DE2533375462E8EBA6023F/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/16917518908276587003/2988F4A6821133B2BBAB207875861456BAC7E80F/",
           "pip": 2
         },
         {
@@ -280,7 +280,8 @@
       },
       "minis": [
         {
-          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2446089105227384838/344478827D84113860FE220E7EA922FEAEC9CBCA/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13848794345403659945/9F0AD66E2AB853B5213872009E110C35DB4F9868/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15746539274694009740/5C0B35ECEE15D442CAD165309ED314DD78EF599A/"
         }
       ],
       "commands": [
@@ -463,16 +464,16 @@
       },
       "minis": [
         {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143408/F4A88228E11334545EACA86B36E6B2008E76B0D3/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/1789640371717200769/60353F40BAE6D92D6F6ED24E2883EB9CC2EA74C4/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12486450550746077154/9DEFA5B9D320CF4580B09CB9E23EA0AB650A7881/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/17785341533537022640/58129AF41E3F045F215ECD8AE90F461F0E233F99/"
         },
         {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143500/4BDEA7F5B523FC06641B3D71D1E112DC14BD7F81/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/1789640371717200823/B886D3157AA2F2528F4E5F76F26DF44A41496615/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/13550347945679086628/6544E2EDF038F035B4123F51CB14ECB1FE9C85F1/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/10431971194673280570/774601FD402FD530EA5A90B6CC060631B932C9A9/"
         },
         {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1856061112420143285/F206D67AFF9379B68AD0795767DA378CE80D44AE/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/1789640371717200823/B886D3157AA2F2528F4E5F76F26DF44A41496615/"
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/9399608274814486456/84FCBAFBA65591EE567615C937708DDFE07CB745/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15465560935080965275/51B20DB87881109334B2B737C2439519B1D0C7E3/"
         }
       ]
     },
