@@ -3213,10 +3213,8 @@
         "name": "Mandalorian Super Commando",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148638743/16D7B984EB6DA1BE6AF202D902459EE20DD03050/",
         "mini": {
-        {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/16794366385632235430/E0D50D5D2D5156D81FCB453FBDE691CFF2BABA21/",
           "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/9449469097394226467/531F077189A60B529985DEFFD6A82DD12CA2A76E/"
-        }
         },
         "points": 24,
         "restrictions": {
@@ -4018,20 +4016,20 @@
         "name": "Pyke Syndicate Foot Soldier Squad",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14983704573819999353/9B2E64176C2D5134C74D77CBC58E19E05B68481C/",
         "minis": [
-    {
-      "bundle": "https://steamusercontent-a.akamaihd.net/ugc/11897088837367103902/FAFD8F72159C516D31CD712461F5EF642ACA0279/"
-    },
-    {
-      "bundle": "https://steamusercontent-a.akamaihd.net/ugc/12788007131481345661/4E64AA6C17C08AE02BCF887BAB90967E757DAE31/"
-    },
-    {
-      "bundle": "https://steamusercontent-a.akamaihd.net/ugc/13612011984236748502/4B85A9D3CCEBEA8DB1373449845AFC20AE32DE37/"
-    },
           {
-            "bundle": "https://steamusercontent-a.akamaihd.net/ugc/18307162050218843563/3C72A6FAF6C8B1E73904EF6C163B3A21D24D58A3/",
+            "bundle": "https://steamusercontent-a.akamaihd.net/ugc/11897088837367103902/FAFD8F72159C516D31CD712461F5EF642ACA0279/"
           },
           {
-            "bundle": "https://steamusercontent-a.akamaihd.net/ugc/18307162050218843563/3C72A6FAF6C8B1E73904EF6C163B3A21D24D58A3/",
+            "bundle": "https://steamusercontent-a.akamaihd.net/ugc/12788007131481345661/4E64AA6C17C08AE02BCF887BAB90967E757DAE31/"
+          },
+          {
+            "bundle": "https://steamusercontent-a.akamaihd.net/ugc/13612011984236748502/4B85A9D3CCEBEA8DB1373449845AFC20AE32DE37/"
+          },
+          {
+            "bundle": "https://steamusercontent-a.akamaihd.net/ugc/18307162050218843563/3C72A6FAF6C8B1E73904EF6C163B3A21D24D58A3/"
+          },
+          {
+            "bundle": "https://steamusercontent-a.akamaihd.net/ugc/18307162050218843563/3C72A6FAF6C8B1E73904EF6C163B3A21D24D58A3/"
           }
         ],
         "points": 38,
