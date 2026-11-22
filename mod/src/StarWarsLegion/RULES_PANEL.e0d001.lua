@@ -39,6 +39,10 @@ local plates, buttons, backButton, lecterns
 local pending = nil
 local language = 'en'
 
+-- The latest request per lectern: Drive answers out of order, and only the
+-- last thing asked of a lectern may land on it.
+local requests = {}
+
 local function documentTitle(key)
   for _, doc in ipairs(RULES_LIBRARY) do
     if doc.key == key then return doc.title end
@@ -66,7 +70,7 @@ end
 
 -- What a lectern is showing, named the way the document list names it.
 local function lecternHolds(index)
-  local choice = RULES_LIBRARY_BY_URL[lecternUrl(lecterns[index]) or '']
+  local choice = rulesChoiceForUrl(lecternUrl(lecterns[index]))
   return choice and choice.label or nil
 end
 
@@ -209,12 +213,12 @@ end
 -- spawn it again. The panel does it rather than the lectern, because
 -- destroyObject cancels the timers of the script that called it -- a lectern
 -- respawning itself would kill its own spawn before it ran.
-local function swap(lectern, choice)
+local function swap(lectern, url, label)
   local data = JSON.decode(lectern.getJSON())
   if not (data and data.CustomPDF) then return false end
-  if data.CustomPDF.PDFUrl == choice.url then return false end
-  data.CustomPDF.PDFUrl = choice.url
-  data.Nickname = choice.label
+  if data.CustomPDF.PDFUrl == url then return false end
+  data.CustomPDF.PDFUrl = url
+  data.Nickname = label
   local json = JSON.encode(data)
   destroyObject(lectern)
   -- A frame's grace so the old object is gone and its GUID is free again;
@@ -224,6 +228,27 @@ local function swap(lectern, choice)
     Wait.frames(findLecterns, 1)
   end, 1)
   return true
+end
+
+-- Loads a document on a lectern under its dated url (see RulesLibrary), so
+-- a new edition on Drive is downloaded rather than served from the cache.
+local function showOnLectern(index, choice, announce)
+  local ticket = (requests[index] or 0) + 1
+  requests[index] = ticket
+  rulesDatedUrl(choice.url, function(url)
+    if requests[index] ~= ticket then return end
+    findLecterns()
+    local lectern = lecterns[index]
+    if not lectern then return end
+    local swapped = swap(lectern, url, choice.label)
+    if not announce then return end
+    if swapped then
+      broadcastToAll(choice.label .. ' on lectern ' .. index, { 0.8, 0.9, 1 })
+    else
+      broadcastToAll('Lectern ' .. index .. ' already shows ' .. choice.label,
+        { 0.8, 0.8, 0.8 })
+    end
+  end)
 end
 
 function rulesPanelSend(index)
@@ -244,13 +269,17 @@ function rulesPanelSend(index)
   local choice = wanted or fallback
   if not choice then return end
 
-  if swap(lectern, choice) then
-    broadcastToAll(choice.label .. ' on lectern ' .. index, { 0.8, 0.9, 1 })
-  else
-    broadcastToAll('Lectern ' .. index .. ' already shows ' .. choice.label,
-      { 0.8, 0.8, 0.8 })
-  end
   rulesPanelDocuments()
+  showOnLectern(index, choice, true)
+end
+
+-- On opening, each lectern checks Drive for a newer edition of what it shows
+-- and swaps itself to it, silently. Nothing changes when the file has not.
+local function refreshLecterns()
+  for index = 1, LECTERN_ROWS do
+    local choice = rulesChoiceForUrl(lecternUrl(lecterns[index]))
+    if choice then showOnLectern(index, choice, false) end
+  end
 end
 
 local function indexTheCorner()
@@ -266,6 +295,7 @@ local function indexTheCorner()
   -- Imposed, never toggled: undoing reruns this handler with the state of the
   -- snapshot, so anything that flipped here would flip back on the next undo.
   rulesPanelDocuments()
+  refreshLecterns()
 end
 
 function onLoad()
