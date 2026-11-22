@@ -25,7 +25,7 @@
         },
         {
           "name": "Vader's Might",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135444550/33DB2D103378C35509E7FEE23A0ACD2BFEE8195E/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/17534807108254409127/5734E9860047D740A032D6437AC690506C5A1CC0/",
           "pip": 1
         },
         {
@@ -418,7 +418,7 @@
         },
         {
           "name": "Vader's Might",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135444550/33DB2D103378C35509E7FEE23A0ACD2BFEE8195E/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/17534807108254409127/5734E9860047D740A032D6437AC690506C5A1CC0/",
           "pip": 1
         },
         {
@@ -446,36 +446,19 @@
     {
       "name": "IG-88",
       "title": "Notorious Assassin Droid",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137009352/1C2EF08C41D85E6F3B214B380DA174D2AADE6BDB/",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/13020040551745303026/D17803C1092A9ACC9CBFA22F355FB7F37718FA85/",
       "size": "small",
       "type": "Droid Trooper",
-      "points": 110,
+      "points": 100,
       "speed": 2,
       "upgrades": {
-        "Training": 1,
+        "Training": 2,
         "Comms": 1,
         "Gear": 1
       },
       "minis": [
         {
           "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/ig_88_model_metal_v2.unity3d"
-        }
-      ],
-      "commands": [
-        {
-          "name": "Focused on the Kill",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137026321/D9785EEF3FE2835319A9F3A2FB632A6E68D34371/",
-          "pip": 1
-        },
-        {
-          "name": "A Machine Made For Killing",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137016998/E6071BE8EDF0A20E6032D047B35D5EF5FC8B7182/",
-          "pip": 2
-        },
-        {
-          "name": "Independent Programming",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137017800/F888E446D9C374E57E091347F651D30A7CEEC81F/",
-          "pip": 2
         }
       ],
       "additionalObjects": ["Victory Token"]
@@ -842,6 +825,38 @@
     }
   ],
   "Special Forces": [
+    {
+      "name": "Stormtrooper Riot Squad",
+      "title": "Trench Busters",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/17870567229828868478/FABB392AEC54DD298E8066975D3FCAF2499F0DAD/",
+      "size": "small",
+      "type": "Trooper",
+      "points": 50,
+      "speed": 2,
+      "upgrades": {
+        "Heavy Weapon": 2,
+        "Gear": 1,
+        "Training": 1
+      },
+      "minis": [
+        {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821645/5FF305DCBED87DDE0DC92AB430557E501D5CDFC2/",
+          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821736/A6557A52AB579A320023B7028C55A38815DC566E/"
+        },
+        {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821412/A274C8B3E646E0EBFB81D282570C5A1C6D263F2B/",
+          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821736/A6557A52AB579A320023B7028C55A38815DC566E/"
+        },
+        {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821497/585AF58548561265B23B01A56577DE0732464636/",
+          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821736/A6557A52AB579A320023B7028C55A38815DC566E/"
+        },
+        {
+          "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821557/0B4EFC2CDDBC7BB72768141562946583278CAAD6/",
+          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2491137781649821736/A6557A52AB579A320023B7028C55A38815DC566E/"
+        }
+      ]
+    },
     {
       "name": "Scout Troopers",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139667737/5A74C7A6641FF79D0BEA098600B7338595160681/",

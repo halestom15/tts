@@ -348,10 +348,10 @@
     {
       "name": "Wookiee Chieftain",
       "title": "Clan Leader",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134052113/10120AB84E10E0EBDFEF30603F2B1EE9FA8382A7/",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/16058528178003511980/9C9A70CEC3C1CFC3E6F3EA31E14A406AB96AAC9B/",
       "size": "small",
       "type": "Wookiee Trooper",
-      "points": 100,
+      "points": 85,
       "speed": 2,
       "upgrades": {
         "Command": 1,
@@ -442,6 +442,9 @@
     },
     {
       "content": "contrib/cards/Mercenary/MandalorianHunterUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/CadBaneUnit.json"
     },
     {
       "name": "Anakin Skywalker",
@@ -662,6 +665,35 @@
   ],
   "Corps": [
     {
+      "name": "Wookiee Warriors",
+      "title": "Treetop Defenders",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/10424854872603717590/E503F5DDB0F575E26A42882D3B987A748FAC7359/",
+      "size": "small",
+      "type": "Wookiee Trooper",
+      "points": 69,
+      "speed": 2,
+      "upgrades": {
+        "Heavy Weapon": 1,
+        "Training": 1,
+        "Gear": 1,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541173937/5179F4315AD6B0839454E1934E794A7F006C7813/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540541174467/18352D89A219B89F6C869D89B9EDE22822F7F950/"
+        },
+        {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541174158/677BF72C323CFF2314C174393AFA361C398C5519/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540541174034/90C4A124BB82CCE0B5E38E13860ED49BB9A4973B/"
+        },
+        {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541174304/9053CDD2798CEA905F8486498D0104B6ACA2F078/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540541174467/18352D89A219B89F6C869D89B9EDE22822F7F950/"
+        }
+      ]
+    },
+    {
       "name": "Clone Trooper Marksmen",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/14447938350418538967/D4358B28BAF031BE35A7E1F294C15D19DB302D17/",
       "size": "small",
@@ -734,6 +766,35 @@
     }
   ],
   "Special Forces": [
+    {
+      "name": "Wookiee Warriors",
+      "title": "Fearsome Guardians",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/10382568399793743084/50B4C721759488BC6FB5EA56F6E2B2D393CE4309/",
+      "size": "small",
+      "type": "Wookiee Trooper",
+      "points": 72,
+      "speed": 2,
+      "upgrades": {
+        "Heavy Weapon": 1,
+        "Training": 1,
+        "Gear": 1,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541173937/5179F4315AD6B0839454E1934E794A7F006C7813/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540541174467/18352D89A219B89F6C869D89B9EDE22822F7F950/"
+        },
+        {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541174158/677BF72C323CFF2314C174393AFA361C398C5519/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540541174034/90C4A124BB82CCE0B5E38E13860ED49BB9A4973B/"
+        },
+        {
+          "mesh": "http://cloud-3.steamusercontent.com/ugc/785234540541174304/9053CDD2798CEA905F8486498D0104B6ACA2F078/",
+          "diffuse": "http://cloud-3.steamusercontent.com/ugc/785234540541174467/18352D89A219B89F6C869D89B9EDE22822F7F950/"
+        }
+      ]
+    },
     {
       "name": "Arc Troopers",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384861176/4AB3CC68BD898A328A2FB935E6F120934123D54E/",
@@ -994,10 +1055,10 @@
       "name": "Raddaugh Gnasp Fluttercraft",
       "title": "Attack Craft",
       "displayName": "Attack Craft",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384863253/19EFFAD3DCCEF1FA1CCBE08AE62F90E4EF63F414/",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/10101958691828010126/7D3236E15AE77D980F0961A24FF16AF3C86FD505/",
       "size": "huge",
       "type": "Repulsor Vehicle",
-      "points": 57,
+      "points": 62,
       "speed": 2,
       "upgrades": {
         "Crew": 1,

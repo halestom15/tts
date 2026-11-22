@@ -153,7 +153,7 @@ function addSilhouetteButton()
   function spawnSilhouette(obj, pos, rot)
     local globals = Global.getTable("templateInfo")
     local scale = 2.0
-    local height = 3.0
+    local height = 1.0
     local offset = 0.0
     local silhouetteData = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/sihl_metal_v2.unity3d"
     if obj ~= nil then
