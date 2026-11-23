@@ -1,14 +1,13 @@
-
 {
   "name": "IG-11",
   "title": "Nurse and Protect",
-  "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137008859/81A3C1FCE76085D59EE6AC6B2D28D6114E0CFBA2/",
+  "image": "https://steamusercontent-a.akamaihd.net/ugc/10760356952464965190/5BC46C8434F5FCB52C268A307C25F792EF2ECD17/",
   "size": "small",
   "type": "Droid Trooper",
-  "points": 110,
+  "points": 93,
   "speed": 2,
   "upgrades": {
-    "Training": 1,
+    "Training": 2,
     "Comms": 1,
     "Gear": 1
   },
@@ -22,16 +21,6 @@
       "name": "Mechanical Carnage",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137016841/F2528C4F77766BC90F225B6BBB4D3A42BB0EB0C4/",
       "pip": 1
-    },
-    {
-      "name": "A Machine Made For Killing",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137016998/E6071BE8EDF0A20E6032D047B35D5EF5FC8B7182/",
-      "pip": 2
-    },
-    {
-      "name": "Anti-Capture Protocols",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137016902/C3B4710D3F5ACD27D67CB51B0C6B4E6B229B9BD9/",
-      "pip": 3
     }
   ],
   "additionalObjects": ["Victory Token"]

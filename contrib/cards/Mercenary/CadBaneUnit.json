@@ -1,39 +1,19 @@
 {
   "name": "Cad Bane",
   "title": "Needs No Introduction",
-  "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137007196/49655B5A32FFAB3CE31BFCCFEA9811CD4A51B748/",
+  "image": "https://steamusercontent-a.akamaihd.net/ugc/11375108169185765708/39773ADFF4047398688E5513E5C2CB86E3F37424/",
   "size": "small",
   "type": "Trooper",
   "points": 105,
   "speed": 2,
   "upgrades": {
-    "Training": 2,
-    "Comms": 1,
-    "Gear": 1,
-    "Armament": 1,
-    "Grenades": 1
+    "Training": 3,
+    "Gear": 1
   },
   "minis": [
     {
       "mesh": "http://cloud-3.steamusercontent.com/ugc/1003681674396400482/F8900CFC9EF2309C9F54AE33AE5444B2B09DB1CD/",
       "diffuse": "http://cloud-3.steamusercontent.com/ugc/1003681674396400696/907F4310FEA7A7CD89EE64A1AF3A8CC77897CCAC/"
-    }
-  ],
-  "commands": [
-    {
-      "name": "I'm Your Worst Nightmare",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137014543/33FE8591FAFD29F8BEAF13D64851772A7FD794FE/",
-      "pip": 1
-    },
-    {
-      "name": "I'm In Control",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137014579/D2FC7AF724D1C7527CCDDABF18517E9CB99DF061/",
-      "pip": 2
-    },
-    {
-      "name": "I Make The Rules Now",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137014560/4B6E8AF4CB10FFE7EC529D204390FC45291FC962/",
-      "pip": 3
     }
   ],
   "additionalObjects": [
