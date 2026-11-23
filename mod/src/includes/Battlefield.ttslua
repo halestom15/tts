@@ -172,11 +172,13 @@ end
 
 local POI_GUIDE_STANDARD = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_guide_isq_v3.unity3d"
 local POI_GUIDE_RECON = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_guide_recon_isq_v1.unity3d"
+-- One guide circle, projected at a single spot.
+local POI_GUIDE_SPOT = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/poi_spot_v1.unity3d"
 
-local function _showPoiGuide(asset)
+local function _showPoiGuide(asset, pos)
   local projector = spawnObject({
     type     = "Custom_AssetBundle",
-    position = {8, 30, 0},
+    position = pos or {8, 30, 0},
     scale    = {0, 0, 0},
   })
   projector.setName("Poi Guide")
@@ -201,15 +203,27 @@ function togglePoiGuideProjector()
   end
 end
 
--- The POI guide and snap points are there to set up the battlefield: they come
--- with the deployment zones and leave with them, so a POI moved during the game
--- does not jump back onto a guide circle.
--- params = {show = true/false, isRecon = true/false}
+-- The POI guide and snap points are there to set up the battlefield: the
+-- setup panel's POI Overlay button shows and hides them, so a POI moved during
+-- the game does not jump back onto a guide circle. With a mission (cardName
+-- given), only its spots are shown; the whole guide stays if the mission does
+-- not fit the map. The snap points stay on every spot.
+-- params = {show = true/false, isRecon = true/false, cardName = "..." or nil}
 function setPoiPlacementAids(params)
   _hidePoiGuide(_poiGuides())
   poiReconPlacement = params.show == true and params.isRecon == true
   if params.show then
-    _showPoiGuide(poiReconPlacement and POI_GUIDE_RECON or POI_GUIDE_STANDARD)
+    local spots = params.cardName and getMissionPoiPositions({
+      cardName = params.cardName,
+      isRecon  = poiReconPlacement,
+    })
+    if spots then
+      for _, p in ipairs(spots) do
+        _showPoiGuide(POI_GUIDE_SPOT, {p.x, 30, p.z})
+      end
+    else
+      _showPoiGuide(poiReconPlacement and POI_GUIDE_RECON or POI_GUIDE_STANDARD)
+    end
   end
   setPoiSnapPoints(params.show == true)
 end

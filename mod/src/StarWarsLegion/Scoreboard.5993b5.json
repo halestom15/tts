@@ -1,0 +1,60 @@
+{
+  "Object": {
+    "GUID": "5993b5",
+    "Name": "Custom_Tile",
+    "Transform": {
+      "posX": 69.20323,
+      "posY": 9.035124,
+      "posZ": 16.4465523,
+      "rotX": 49.33702,
+      "rotY": 270.00647,
+      "rotZ": 0.00000524102234,
+      "scaleX": 6.869073,
+      "scaleY": 1,
+      "scaleZ": 6.869073
+    },
+    "Nickname": "Scoreboard",
+    "Description": "Track victory points and rounds here. Copies of the mission cards are laid on it when a mission is set up.",
+    "GMNotes": "",
+    "AltLookAngle": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "ColorDiffuse": {
+      "r": 1,
+      "g": 1,
+      "b": 1
+    },
+    "LayoutGroupSortIndex": 0,
+    "Value": 0,
+    "Locked": true,
+    "Grid": false,
+    "Snap": true,
+    "IgnoreFoW": false,
+    "MeasureMovement": false,
+    "DragSelectable": true,
+    "Autoraise": true,
+    "Sticky": true,
+    "Tooltip": true,
+    "GridProjection": false,
+    "HideWhenFaceDown": false,
+    "Hands": false,
+    "CustomImage": {
+      "ImageURL": "https://steamusercontent-a.akamaihd.net/ugc/2508026280266238355/7D1765282171184B3F99220D58BC722519C3BF80/",
+      "ImageSecondaryURL": "",
+      "ImageScalar": 1,
+      "WidthScale": 0,
+      "CustomTile": {
+        "Type": 3,
+        "Thickness": 0.2,
+        "Stackable": false,
+        "Stretch": true
+      }
+    },
+    "LuaScript": "",
+    "LuaScriptState": "",
+    "XmlUI": ""
+  },
+  "StatesPaths": {}
+}

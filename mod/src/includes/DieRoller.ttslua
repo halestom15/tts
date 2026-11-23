@@ -51,6 +51,14 @@ function rollDie(callbackParams)
   local toRoll = dieObjs
   if player  then
     local selected = player.getSelectedObjects()
+    -- callbackParams[2]: the GUIDs of the dice the player had selected just
+    -- before the click cleared the selection (see !/RollSelection).
+    if callbackParams[2] then
+      selected = {}
+      for guid in callbackParams[2]:gmatch("[^,]+") do
+        table.insert(selected, getObjectFromGUID(guid))
+      end
+    end
     if selected and #selected > 0 then
       toRoll = {}
       for _, s in pairs(selected) do

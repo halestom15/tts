@@ -88,18 +88,18 @@
       ],
       "commands": [
         {
-          "name": "Trained In Your Jedi Arts",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131526384/C4406A3487D2E58D1AF4962B9A306EC5882596CC/",
+          "name": "I'll Do it Myself!",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/15891905199014084776/E70951C31E286BCF03E7D6BB08ED6DA6C96D9701/",
           "pip": 1
         },
         {
-          "name": "Supreme Commander",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131525863/124C8C8CAA960D6680FD429BD85DA760AFD9040A/",
+          "name": "Pincer Attack",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/13331811042949504722/5032E1A16107F4D2C8DA6FE2C3AA707D5EB55EDD/",
           "pip": 2
         },
         {
-          "name": "Crush Them!",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131524786/7D9A98904E7D5F80F9590AAA5EDF107F2B95623A/",
+          "name": "Full Throttle",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/17267278540148426820/E310561126BE74D0A9CB502C551C8DF2D76E7B1A/",
           "pip": 3
         },
         {
@@ -141,7 +141,7 @@
       "commands": [
         {
           "name": "Trained In Your Jedi Arts",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131526384/C4406A3487D2E58D1AF4962B9A306EC5882596CC/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/11841679467163445808/24C6A8AB0E5E086AA9ADF40E91E3E737B4A809C6/",
           "pip": 1
         },
         {
@@ -868,7 +868,7 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/16432158164944196/4594ADE002844CEEB6FB9A75E17AA802FCAE89FF/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/2491139050708070994/E763691AC8C24925DA2CA117DE90A54BAC836230/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/lm_432_crab_droid_mat_metal_v1.unity3d"
         }
       ]
     },

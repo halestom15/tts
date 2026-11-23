@@ -170,17 +170,17 @@
       "commands": [
         {
           "name": "Sorry About The Mess",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133713891/5010BC7FF52D6539147756EF04579FD860630D4E/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/16308736517290848799/A8ED064B88D1C70281984CD88B069A5AD95F4330/",
           "pip": 1
         },
         {
           "name": "Reckless Diversion",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133711955/8E5E53B03E9248B3BB6CCBC1942C831C02ACFF67/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/14459389638035340052/F24E341649BA81CEAE55865015C58B8B1A557640/",
           "pip": 2
         },
         {
           "name": "Change Of Plans",
-          "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133708965/8DA6716707434EDAF86655364C9557E3408B9B5E/",
+          "image": "https://steamusercontent-a.akamaihd.net/ugc/17707426851635788122/DBEE48D7645CE505C9CF0934C7553286844F66FD/",
           "pip": 3
         }
       ]
@@ -358,6 +358,9 @@
     },
     {
       "content": "contrib/cards/Mercenary/MandalorianHunterUnit.json"
+    },
+    {
+      "content": "contrib/cards/Mercenary/CadBaneUnit.json"
     },
     {
       "name": "Han Solo",
@@ -623,7 +626,7 @@
     {
       "name": "Han & Chewie",
       "title": "Notorious Scoundrels",
-      "image": "https://steamusercontent-a.akamaihd.net/ugc/13398538146401700693/CC763C753C0BE205C68D512A92B7A6AF759F8A16/",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/12466830294428687221/96AA0A15BC3F0F9F95BDBE3B0CA0778657C320C9/",
       "size": "small",
       "type": "Trooper",
       "points": 120,
@@ -1005,6 +1008,38 @@
     }
   ],
   "Special Forces": [
+    {
+      "name": "Guerilla Troopers",
+      "image": "https://steamusercontent-a.akamaihd.net/ugc/17374597901994958382/279A09E365E01AADB899CB75DF8A80DD9FACA092/",
+      "size": "small",
+      "type": "Trooper",
+      "points": 60,
+      "speed": 2,
+      "upgrades": {
+        "Heavy Weapon": 2,
+        "Training": 2,
+        "Gear": 1,
+        "Grenades": 1
+      },
+      "minis": [
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/15399080376312778234/013450DF8CF7794D360C726F4DE7E8614C955452/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/13826165337562494343/DBF27ED71FFE75570EA203996570D0C2B9F87538/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/15361880304673045650/08DB69556E76E162AF854E16AB8434CEABD6F433/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/16051529698936060236/829F627F78C6EB2AE74F03CA67F33D50EB569406/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/11397994655930619523/71112A6F65997624E48F0931778E19FA3A5C7534/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/11677688466728645315/8C907098A8426DBD46B2782FFF2E819A87681530/"
+        },
+        {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12373582410082808413/AD0040941980E867A116BB9879EF5541CAFE6FB7/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/15750861339138193213/6133FD453BFB92CEF8967920A656CB236AEA2FDA/"
+        }
+      ]
+    },
     {
       "name": "Rebel Commandos",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133198280/BA9DB93D2D168B835C95075E8B1C52C79E044286/",

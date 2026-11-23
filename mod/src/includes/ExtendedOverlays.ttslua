@@ -499,6 +499,20 @@ local function findXmlNodeById(tree, id)
     return nil, nil
 end
 
+-- getXmlTable hands back a text written over indented lines (the Welcome
+-- changelog) with its indentation, and setXmlTable indents it once more:
+-- the spaces double on every pass (22 -> 44 -> 88 ... measured 15/11/2026;
+-- 16 passes left a 17 MB UI). Trimming the line starts keeps it stable, and
+-- shrinks back a table that has already swollen.
+local function trimXmlTextIndent(nodes)
+    for _, node in ipairs(nodes) do
+        if type(node.value) == "string" then
+            node.value = node.value:gsub("\n[ \t]+", "\n")
+        end
+        if node.children then trimXmlTextIndent(node.children) end
+    end
+end
+
 -- UI: single overlay toggle button in the bottom-right
 -- legionFloatingMenu.
 function refreshOverlayToggleUI()
@@ -556,6 +570,7 @@ function refreshOverlayToggleUI()
             end
         end
     end
+    trimXmlTextIndent(tree)
     UI.setXmlTable(tree)
 end
 
