@@ -2083,8 +2083,7 @@
           "include": {
             "unit": ["Imperial Special Forces"]
           }
-        },
-        "leader": true
+        }
       },
       {
         "name": "T-21B Shoretrooper",
@@ -2140,8 +2139,7 @@
           "include": {
             "faction": ["Republic"]
           }
-        },
-        "leader": true
+        }
       },
       {
         "name": "Rook Kast",
