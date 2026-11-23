@@ -2481,6 +2481,20 @@
         }
       },
       {
+        "name": "RT-97c Stormtrooper (Wet)",
+        "image": "https://steamusercontent-a.akamaihd.net/ugc/13905886405880747515/67D3C20B969FC8A6DD86E9E7ED43014C423C16B2/",
+        "mini": {
+          "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12596488329106912847/08D9FE380FDF1889292B0E8A80440CDD9F8589F3/",
+          "diffuse": "https://steamusercontent-a.akamaihd.net/ugc/14046631607622245797/B266E1AC5DA3A3E0AA02CD34BE3CBC66F0789F54/"
+        },
+        "points": 20,
+        "restrictions": {
+          "include": {
+            "unit": ["Wet-Weather Gear Stormtroopers"]
+          }
+        }
+      },
+      {
         "name": "DLT-19 Stormtrooper (Wet)",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/18019665161272636380/D12820B4CAE2C091E0A0359F17E1DBF960FCFE80/",
         "mini": {
