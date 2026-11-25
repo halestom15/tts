@@ -112,6 +112,33 @@ test("card rotations under TTS's Lua 5.2 maths", function()
   assert(ok, err)
 end)
 
+local function close(actual, expected, label)
+  if math.abs(actual - expected) > 0.0001 then
+    error((label or "value") .. ": expected " .. expected .. ", got " .. actual, 2)
+  end
+end
+
+-- Every mission's map card in official.json falls into one of these two
+-- real pixel shapes: Cauldron (488x345, ratio 1.414) for the four
+-- wider-than-tall maps (confirmed live: no turn), and Bunker Assault
+-- (726x1039, ratio 0.699) for the other nine, including all three Recon
+-- maps (confirmed live: a clockwise quarter turn).
+test("map card: wider-than-tall image needs no turn", function()
+  local targetWidth = 2.4
+  local scale, spin = Scoreboard.mapCardFit(488, 345, targetWidth)
+  eq(spin, 0, "spin")
+  close(scale * 488, targetWidth, "width scales to fill the slot's reserved span")
+  close((scale * 345) / targetWidth, 345 / 488, "height keeps the image's own aspect ratio")
+end)
+
+test("map card: taller-than-wide image turns a clockwise quarter", function()
+  local targetWidth = 2.4
+  local scale, spin = Scoreboard.mapCardFit(726, 1039, targetWidth)
+  eq(spin, 90, "spin")
+  close(scale * 1039, targetWidth, "height scales to fill the slot's reserved span, once turned")
+  close((scale * 726) / targetWidth, 726 / 1039, "width keeps the image's own aspect ratio")
+end)
+
 if failures > 0 then
   print(failures .. " test(s) failed")
   os.exit(1)
