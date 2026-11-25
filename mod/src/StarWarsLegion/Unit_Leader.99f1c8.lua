@@ -18,6 +18,16 @@ function setUp()
     startPosition = nil
     startRotation = nil
 
+    -- A silhouette attached before a save comes back as a phantom: the
+    -- attachment is restored but the script state is not, so nothing knows
+    -- it is up. Purge them so the whole unit always starts clean.
+    pcall(function()
+      for _, guid in pairs(miniGUIDs or {}) do
+        local mini = getObjectFromGUID(guid)
+        if mini then removeAttachmentsNamed(mini, "Silhouette", true) end
+      end
+    end)
+
     lockBtnGreen = {0.2, 0.9, 0.05, 0.7}
     lockBtnRed = {0.9, 0.1, 0.05, 0.7}
 
@@ -81,9 +91,16 @@ function scheduleOblongButtonFix()
   end, 3)
 end
 
-function addSilhouetteButton()
+function battlefieldButtonTint()
   local gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
-  local btnTint = gameData.getTable("battlefieldTint")
+  return gameData ~= nil and gameData.getTable("battlefieldTint")
+      or {r = 0.3, g = 0.3, b = 0.3}
+end
+
+function addSilhouetteButton()
+  -- A missing game data object must not abort the button rebuild: a leader
+  -- left without buttons throws on every later recolor.
+  local btnTint = battlefieldButtonTint()
   local buttonOffset = calculateButtonZOffset(templateInfo.baseRadius[unitData.baseSize])
   btnData = {
     click_function = "toggleSilhouettes",
@@ -102,8 +119,8 @@ function addSilhouetteButton()
 end
 
 function addLockButton()
-    local gameData = getObjectFromGUID(Global.getVar("gameDataGUID"))
-    local btnTint = gameData.getTable("battlefieldTint")
+    -- Same guard as addSilhouetteButton: never abort the button rebuild.
+    local btnTint = battlefieldButtonTint()
     local templateInfo = Global.getTable("templateInfo")
     local buttonOffset = calculateButtonZOffset(templateInfo.baseRadius[unitData.baseSize])
     lockBtnData = {
@@ -123,6 +140,14 @@ function addLockButton()
 end
 
 function updateLockBtnColor()
+    -- editButton on an object with no buttons raises a bare object reference
+    -- error, and every unit move recolors every leader through the unlock
+    -- sweep: a leader whose buttons failed to build once would then throw at
+    -- every table event forever.
+    local buttons = self.getButtons()
+    if buttons == nil or #buttons == 0 then
+        return
+    end
     if isLocked() then
         self.editButton({
             index = 0,
@@ -209,26 +234,135 @@ function toggleSilhouettes()
   end
 end
 
--- Loops through all minis in the unit
--- Removes all attachments and destroys the first one
--- The silhouette should be the only attachment, so this should be safe to do
+-- Detaches every attachment from a mini and destroys those with the given
+-- name (and the unnamed ones too, if asked), putting the others back.
+function removeAttachmentsNamed(obj, name, includeUnnamed)
+  for _, attachment in ipairs(obj.removeAttachments()) do
+    if attachment ~= nil then
+      local attachmentName = attachment.getName()
+      if attachmentName == name or (includeUnnamed and attachmentName == "") then
+        attachment.destruct()
+      else
+        obj.addAttachment(attachment)
+      end
+    end
+  end
+end
+
+-- Loops through all minis in the unit and destroys every silhouette on it. A
+-- mini can carry more than one: one saved with the game comes back as a
+-- phantom attachment (the script state does not survive the save), and
+-- raising the silhouettes again stacks a second one on top. Destroying only
+-- the first left the other detached with no collider, falling through the
+-- world. Silhouettes from older saves carry no name, so unnamed attachments
+-- go too; anything else attached is put back.
 function clearSilhouette()
   for k, guid in pairs(miniGUIDs) do
     local obj = getObjectFromGUID(guid)
 
     -- Guard against players who delete their minis!
     if obj then
-      -- May be empty: silhouettes are attachments and never survive a save
-      -- (setUp resets silhouetteState accordingly), and a mid-session reload
-      -- or state drift can leave nothing attached with the state still true.
-      -- Destructing that nil crashed the script.
-      local silToDestroy = obj.removeAttachments()[1]
-      if silToDestroy then
-        silToDestroy.destruct()
-      end
+      -- May be empty: a mid-session reload or state drift can leave nothing
+      -- attached with the state still true.
+      removeAttachmentsNamed(obj, "Silhouette", true)
     end
   end
   silhouetteState = false
+end
+
+-- Removes a spawned aid's colliders once its bundle has loaded, then runs
+-- onReady. A dead handle can throw on any access, hence the shielded wait.
+function whenLoadedWithoutColliders(obj, onReady)
+  Wait.condition(function()
+    pcall(function()
+      for _, colliderName in ipairs({"MeshCollider", "BoxCollider"}) do
+        for _, collider in ipairs(obj.getComponentsInChildren(colliderName) or {}) do
+          collider.set("enabled", false)
+        end
+      end
+      if onReady then onReady() end
+    end)
+  end, function()
+    local ok, ready = pcall(function()
+      return obj.isDestroyed() or not obj.loading_custom
+    end)
+    return not ok or ready
+  end)
+end
+
+-- HEIGHT GUIDE ----------------------------------------------------------------
+-- One guide per unit, like cohesion: a grey pillar set down just in front of
+-- the unit leader, its foot level with the leader's base. It stays where it
+-- was set. Next to a piece of terrain it shows by eye what the unit can climb
+-- onto: a dark line at height 1 (6 inches), marked 1 below and 2 above.
+-- The button sets the guide again in front of a leader that has moved since,
+-- and takes it away from a leader that has not.
+
+local HEIGHT_GUIDE_NAME = "Height Guide"
+local HEIGHT_GUIDE_MESH = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/height_guide_v1.obj"
+local HEIGHT_GUIDE_TEXTURE = "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/height_guide_v1.png"
+
+function toggleHeightGuide()
+  if heightGuideGUID ~= nil and not leaderMovedSinceHeightGuide() then
+    clearHeightGuide()
+  else
+    showHeightGuide()
+  end
+end
+
+-- Where the leader stood when the guide was set, to tell whether it moved.
+function leaderMovedSinceHeightGuide()
+  if heightGuideFrom == nil then
+    return true
+  end
+  local pos, rotY = self.getPosition(), self.getRotation().y
+  local turn = math.abs(rotY - heightGuideFrom.rotY) % 360
+  return Vector.distance(pos, heightGuideFrom.pos) > 0.05
+    or math.min(turn, 360 - turn) > 1
+end
+
+function clearHeightGuide()
+  -- The handle can be dead: Global sweeps every "Height Guide" by name at load.
+  local pillar = heightGuideGUID and getObjectFromGUID(heightGuideGUID)
+  if pillar ~= nil then
+    pcall(function() pillar.destruct() end)
+  end
+  heightGuideGUID = nil
+  heightGuideFrom = nil
+end
+
+function showHeightGuide()
+  clearHeightGuide()
+  local globals = Global.getTable("templateInfo")
+  -- baseRadius holds the base's width in inches, despite its name
+  local width = globals.baseRadius[unitData.baseSize] or 1
+  -- The minis' models face their object's back: in front of the leader is
+  -- along -forward.
+  local facing = self.getTransformForward()
+  local forward = {x = -facing.x, z = -facing.z}
+  local pos = self.getPosition()
+  local bounds = self.getBounds()
+  local bottom = bounds.center.y - bounds.size.y / 2
+  local reach = width / 2 + 0.5
+  local pillar = spawnObject({
+    type = "Custom_Model",
+    position = {pos.x + forward.x * reach, bottom, pos.z + forward.z * reach},
+    rotation = {0, self.getRotation().y, 0},
+    scale = {1, 1, 1},
+  })
+  pillar.setCustomObject({
+    mesh = HEIGHT_GUIDE_MESH,
+    diffuse = HEIGHT_GUIDE_TEXTURE,
+    type = 0,
+    material = 3,
+  })
+  pillar.setName(HEIGHT_GUIDE_NAME)
+  pillar.setLock(true)
+  pillar.use_gravity = false
+  -- A guide must not push minis around.
+  whenLoadedWithoutColliders(pillar)
+  heightGuideGUID = pillar.getGUID()
+  heightGuideFrom = {pos = pos, rotY = self.getRotation().y}
 end
 
 -- Loops through all minis in the unit
@@ -290,9 +424,25 @@ function spawnSilhouette(obj, pos, rot)
       material = 3
   })
   silhouette.setColorTint({0.47,0.76,0.8,0.3})
-  if obj ~= nil then
-    obj.addAttachment(silhouette)
-  end
+  silhouette.setName("Silhouette")
+  -- A silhouette is a visual aid: it must not collide with minis, and it
+  -- must never block the line of sight rays. Colliders
+  -- only exist once the bundle has loaded, and a dead handle can throw on
+  -- any access, hence the shielded wait. Attaching also waits for the load:
+  -- attaching a still-loading custom object made the engine throw a bare
+  -- object reference error at the parent when the load completed. Locked in
+  -- the meantime, so the collider-less bundle cannot fall through the world.
+  silhouette.setLock(true)
+  silhouette.use_gravity = false
+  whenLoadedWithoutColliders(silhouette, function()
+    -- The player may have lowered the silhouettes while this one was
+    -- still loading: an orphan must die, not float unattached forever.
+    if not silhouetteState then
+      silhouette.destruct()
+    elseif obj ~= nil then
+      obj.addAttachment(silhouette)
+    end
+  end)
   return silhouette
 end
 
@@ -346,4 +496,3 @@ function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
 end
-
