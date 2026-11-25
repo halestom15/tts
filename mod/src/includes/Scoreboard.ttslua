@@ -411,44 +411,110 @@ function Scoreboard.spunRotation(boardRotation, spin)
   return matrixToEuler(m)
 end
 
--- A locked copy of a card in its slot. Every card gets the same scale, which
--- makes each one taller than its slot: it hangs off the board's edge (see
--- SLOTS), keeping its other edge inside the slot's colour. `sideways` turns a
--- card a quarter, for the map card printed across a portrait card.
-local function placeCard(card, slotKey, sideways)
-  local slot = SLOTS[slotKey]
+-- Reports a card's own (width, height), ignoring rotation: a custom card's
+-- mesh keeps reshaping to its own image for a moment after spawn, passing
+-- through intermediate widths that each hold steady for a few frames, so
+-- checking for a width that is merely nonzero (or stable for a couple of
+-- frames) can still catch it mid-reshape. A fixed settle delay first, then
+-- a width that holds for a full half-second, avoids that.
+local function sizeWhenReady(card, callback)
+  Wait.time(function()
+    local lastWidth, stableSince = nil, nil
+    Wait.condition(function()
+      if card.isDestroyed() then return end
+      local size = card.getBoundsNormalized().size
+      local unit = card.getScale().x
+      callback(size.x / unit, size.z / unit)
+    end, function()
+      if card.isDestroyed() then return true end
+      local width = card.getBoundsNormalized().size.x
+      if width <= 0 or width ~= lastWidth then
+        lastWidth, stableSince = width, Time.time
+        return false
+      end
+      return Time.time - stableSince > 0.5
+    end)
+  end, 1)
+end
+
+-- Tags, locks and labels a card copy, and sets it in the middle of its slot
+-- to start (placeCard/placeMapCard then move it once its size is known).
+local function readyCard(card, slot)
   local b = board()
   card.addTag(SCOREBOARD_TAG)
   card.setLock(true)
   card.setDescription("Scoreboard copy")
-  local rotation = Scoreboard.spunRotation(b.getRotation(), sideways and 90 or 0)
-  card.setRotation(rotation)
   card.setPosition(b.positionToWorld(Scoreboard.localPoint(
     (slot[1] + slot[2]) / 2, (slot[3] + slot[4]) / 2, CARD_LIFT)))
-  Wait.condition(function()
+end
+
+-- Where a card hanging off slotKey's edge should sit, given `span`, its
+-- extent down the board as a share of the board's height.
+local function hangV(slot, span)
+  if slot.hang == "up" then
+    return slot[4] - CARD_INSET - span / 2
+  elseif slot.hang == "down" then
+    return slot[3] + CARD_INSET + span / 2
+  end
+  return (slot[3] + slot[4]) / 2
+end
+
+-- A locked copy of a card in its slot, square to the board. Every card gets
+-- the same scale, which makes it taller than its slot: it hangs off the
+-- board's edge (see SLOTS), keeping its other edge inside the slot's colour.
+local function placeCard(card, slotKey)
+  local slot = SLOTS[slotKey]
+  local b = board()
+  readyCard(card, slot)
+  local rotation = b.getRotation()
+  card.setRotation(rotation)
+  sizeWhenReady(card, function(width, height)
     if card.isDestroyed() then return end
-    -- getBoundsNormalized ignores rotation: x is the card's width, z its
-    -- height, here per unit of scale.
-    local size = card.getBoundsNormalized().size
-    local unit = card.getScale().x
-    local width, height = size.x / unit, size.z / unit
     local scale = b.getScale()
-    if width > 0 and height > 0 then
-      local s = CARD_SCALE_PER_BOARD * scale.x
-      card.setScale({s, 1, s})
-      -- The card's extent down the board, as a share of the board's height.
-      local span = (sideways and width or height) * s / (LOCAL_DEPTH * scale.z)
-      local v = (slot[3] + slot[4]) / 2
-      if slot.hang == "up" then
-        v = slot[4] - CARD_INSET - span / 2
-      elseif slot.hang == "down" then
-        v = slot[3] + CARD_INSET + span / 2
-      end
-      card.setPosition(b.positionToWorld(Scoreboard.localPoint(
-        (slot[1] + slot[2]) / 2, v, CARD_LIFT)))
-    end
+    local s = CARD_SCALE_PER_BOARD * scale.x
+    card.setScale({s, 1, s})
     card.setRotation(rotation)
-  end, function() return card.isDestroyed() or not card.spawning end)
+    -- The card's extent down the board, as a share of the board's height.
+    local span = height * s / (LOCAL_DEPTH * scale.z)
+    card.setPosition(b.positionToWorld(Scoreboard.localPoint(
+      (slot[1] + slot[2]) / 2, hangV(slot, span), CARD_LIFT)))
+  end)
+  return card
+end
+
+-- How a map card of raw (width, height) should turn and scale, keeping its
+-- own image's aspect ratio, so whichever of its own raw dimensions ends up
+-- running across the slot (`width` already does; `height` needs a quarter
+-- turn, clockwise, to do the same) ends up exactly `targetWidth` (the
+-- slot's reserved span). The other axis follows at the same scale, keeping
+-- its own aspect ratio, instead of being stretched to a second target.
+function Scoreboard.mapCardFit(width, height, targetWidth)
+  local landscape = width > height
+  local spin = landscape and 0 or 90
+  local scale = targetWidth / (landscape and width or height)
+  return scale, spin
+end
+
+-- The mission's map card: scaled, keeping its own image's aspect ratio, to
+-- fill the width the slot itself reserves (unlike a normal card, which
+-- keeps its own size and just hangs off the slot's edge).
+local function placeMapCard(card, slotKey)
+  local slot = SLOTS[slotKey]
+  local b = board()
+  readyCard(card, slot)
+  local scale = b.getScale()
+  local targetWidth = (slot[2] - slot[1]) * LOCAL_WIDTH * scale.x
+  sizeWhenReady(card, function(width, height)
+    if card.isDestroyed() then return end
+    local k, spin = Scoreboard.mapCardFit(width, height, targetWidth)
+    card.setScale({k, 1, k})
+    card.setRotation(Scoreboard.spunRotation(b.getRotation(), spin))
+    -- The card's actual extent down the board: a quarter turn (see
+    -- mapCardFit) swaps which raw dimension that is.
+    local span = k * (spin == 0 and height or width) / (LOCAL_DEPTH * scale.z)
+    card.setPosition(b.positionToWorld(Scoreboard.localPoint(
+      (slot[1] + slot[2]) / 2, hangV(slot, span), CARD_LIFT)))
+  end)
 end
 
 -- The Objective's map card, from the objects the Objective sets out.
@@ -482,16 +548,16 @@ function Scoreboard.setUp(params)
   Scoreboard.clear()
   b.setGMNotes(JSON.encode({blueSeat = params.blueSeat or "Blue"}))
   local function battleCard(kind, name, slotKey)
-    if name == nil then return end
-    placeCard(Deck:spawnBattleCard(Deck.BATTLE_KINDS[kind].key, name, params.scenario), slotKey)
+    if name == nil then return nil end
+    return placeCard(Deck:spawnBattleCard(Deck.BATTLE_KINDS[kind].key, name, params.scenario), slotKey)
   end
-  battleCard("objective", params.objective, "objective")
+  local objectiveCard = battleCard("objective", params.objective, "objective")
   battleCard("secondary", params.secondary, "secondary")
   battleCard("advantage", params.advantage.Blue, "advantageBlue")
   battleCard("advantage", params.advantage.Red, "advantageRed")
-  if params.objective then
+  if objectiveCard then
     local map = mapCardFor(params.objective, params.scenario)
-    if map then placeCard(map, "objectiveMap", true) end
+    if map then placeMapCard(map, "objectiveMap") end
   end
 
   -- Each player's badge on their seat's side; each starts on 0 VP with their
