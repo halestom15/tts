@@ -422,29 +422,45 @@ end
 -- them: "Name: Title" for units, "Front / Back" for double-sided upgrades.
 -- Miniatures are left alone. A command keeps its card back.
 -- A card is spawned again with the art (see LegionHelperOriginal.respawn).
+-- A unit and an upgrade can share a name (Clone Trooper Infantry and its
+-- Personnel upgrade, IG-100 MagnaGuard, Imperial Probe Droid, Black Sun Vigo,
+-- Pyke Syndicate Capo): one table for both gave the unit's card on the table
+-- the upgrade's art (reported on Discord, 23 Nov 2026). A unit's card is the
+-- one its leader names (cardGUID); any other card of that name is the upgrade.
 local function reskinTable(art)
-  local byName = {}
+  local byUnit, byOther = {}, {}
   for _, units in pairs(art.units) do
     for _, card in pairs(units) do
-      byName[card.shown:upper()] = {card.image, card.image}
+      byUnit[card.shown:upper()] = {card.image, card.image}
     end
   end
   for _, card in pairs(art.upgrades) do
     if card.backName then
-      byName[(card.name .. " / " .. card.backName):upper()] = {card.image, card.back}
+      byOther[(card.name .. " / " .. card.backName):upper()] = {card.image, card.back}
     else
-      byName[card.name:upper()] = {card.image, card.image}
+      byOther[card.name:upper()] = {card.image, card.image}
     end
   end
   for name, image in pairs(art.commands) do
-    byName[name] = {image}
+    byOther[name] = {image}
+  end
+  local unitCards = {}
+  for _, obj in ipairs(getAllObjects()) do
+    local ok, guid = pcall(function() return obj.getVar("cardGUID") end)
+    if ok and type(guid) == "string" then
+      unitCards[guid] = true
+    end
   end
   for _, obj in ipairs(getAllObjects()) do
     enqueue(function()
       if obj.isDestroyed() or obj.type ~= "Card" then
         return
       end
-      local card = byName[obj.getName():upper()]
+      local key = obj.getName():upper()
+      local card = byOther[key]
+      if byUnit[key] and (unitCards[obj.getGUID()] or not card) then
+        card = byUnit[key]
+      end
       if not card then
         return
       end
