@@ -1743,11 +1743,13 @@
         "name": "Gas Grenades",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15166236056464647433/F8D1CE447C4A033A0ECB89F0B528524CBAE1D073/",
         "points": 5,
-        "include": {
-          "unit": [
-            "Riot Control Stormtroopers",
-            "Wet-Weather Gear Stormtroopers"
-          ]
+        "restrictions": {
+          "include": {
+            "unit": [
+              "Stormtrooper Riot Squad",
+              "Wet-Weather Gear Stormtroopers"
+            ]
+          }
         }
       },
       {
