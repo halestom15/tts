@@ -62,6 +62,7 @@
           - Fix: Mac Compatibility
           - Fix: Deployment button snaps to board edge
           - Fix: Tokens, the POI bag and the silhouette bases collide by their real shape, not a square box
+          - Fix: Card names as printed
           - Add: Takras Card art compatibility
           - Add: New Token art
           - Add: Much more!

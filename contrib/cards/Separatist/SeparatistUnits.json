@@ -140,7 +140,7 @@
       ],
       "commands": [
         {
-          "name": "Trained In Your Jedi Arts",
+          "name": "Trained in Your Jedi Arts",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/11841679467163445808/24C6A8AB0E5E086AA9ADF40E91E3E737B4A809C6/",
           "pip": 1
         },
@@ -196,7 +196,7 @@
           "pip": 1
         },
         {
-          "name": "Double The Fall",
+          "name": "Double the Fall",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131525177/CD39DEA23EB51B132F1263FEF158FBED10C5C32A/",
           "pip": 2
         },
@@ -214,7 +214,7 @@
     },
     {
       "name": "T-Series Tactical Droid",
-      "title": "Programmed For Strategy",
+      "title": "Programmed for Strategy",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131433848/B4160FE013FB7B00BA8A6DE876F507A667602F6A/",
       "size": "small",
       "type": "Droid Trooper",
@@ -372,7 +372,7 @@
       ],
       "commands": [
         {
-          "name": "We Shall Start With Revenge",
+          "name": "We Shall Start with Revenge",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10750064270635517385/492A552BB4056A4CBF9CD01FB5195521104C9F9E/",
           "pip": 1
         }
@@ -443,7 +443,7 @@
       ],
       "commands": [
         {
-          "name": "Duel Of The Fates",
+          "name": "Duel of the Fates",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131525195/991D793228F9D99D199201EEF560C5A4F294C4C1/",
           "pip": 1
         },
@@ -483,7 +483,7 @@
           "pip": 1
         },
         {
-          "name": "I am Fear",
+          "name": "I Am Fear",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131525215/8F52AEE8AA429791E8333BC3F3F8B89E6157246B/",
           "pip": 2
         },
@@ -946,7 +946,7 @@
       ]
     },
     {
-      "name": "Persuader-Class Tank Droid",
+      "name": "Persuader-class Tank Droid",
       "displayName": "Persuader Tank",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131496505/E6D1491724153DE1BE82FA00B4630DC24E9877ED/",
       "size": "snail",
@@ -969,7 +969,7 @@
       ]
     },
     {
-      "name": "Persuader-Class Tank Droid",
+      "name": "Persuader-class Tank Droid",
       "title": "Prototype Tank Droid",
       "displayName": "Prototype Tank Droid",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081131496505/E6D1491724153DE1BE82FA00B4630DC24E9877ED/",

@@ -2,7 +2,7 @@
   "Commander": [
     {
       "name": "Luke Skywalker",
-      "title": "Hero Of The Rebellion",
+      "title": "Hero of the Rebellion",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133196942/E1A8548A9C0688D979CAD83F32F130B0115D9C50/",
       "size": "small",
       "type": "Trooper",
@@ -22,7 +22,7 @@
       ],
       "commands": [
         {
-          "name": "Son Of Skywalker",
+          "name": "Son of Skywalker",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133712958/CF63D0FDA40318CE886E6DA309CEB291857776E4/",
           "pip": 1
         },
@@ -32,22 +32,22 @@
           "pip": 1
         },
         {
-          "name": "My Ally Is The Force",
+          "name": "My Ally Is the Force",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133711308/CECAE0B5B62858582522F7FBED6463FE5834A64E/",
           "pip": 2
         },
         {
-          "name": "Full Of Surprises",
+          "name": "Full of Surprises",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133709999/FA890B2A2EA1528C8BCF2A80AEB3B97A97BB9E15/",
           "pip": 2
         },
         {
-          "name": "Return Of The Jedi",
+          "name": "Return of the Jedi",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133711996/90C4CB28C0554DEC3797882252E6C5D3CCAC65A1/",
           "pip": 3
         },
         {
-          "name": "I Am A Jedi",
+          "name": "I Am a Jedi",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133710140/F162DE57287EB8C43F845BF34550B6666929E36A/",
           "pip": 3
         }
@@ -75,7 +75,7 @@
       ],
       "commands": [
         {
-          "name": "Son Of Skywalker",
+          "name": "Son of Skywalker",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133712958/CF63D0FDA40318CE886E6DA309CEB291857776E4/",
           "pip": 1
         },
@@ -85,17 +85,17 @@
           "pip": 2
         },
         {
-          "name": "My Ally Is The Force",
+          "name": "My Ally Is the Force",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133711308/CECAE0B5B62858582522F7FBED6463FE5834A64E/",
           "pip": 2
         },
         {
-          "name": "Full Of Surprises",
+          "name": "Full of Surprises",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133709999/FA890B2A2EA1528C8BCF2A80AEB3B97A97BB9E15/",
           "pip": 2
         },
         {
-          "name": "Return Of The Jedi",
+          "name": "Return of the Jedi",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133711996/90C4CB28C0554DEC3797882252E6C5D3CCAC65A1/",
           "pip": 3
         },
@@ -108,7 +108,7 @@
     },
     {
       "name": "Leia Organa",
-      "title": "Fearless And Inventive",
+      "title": "Fearless and Inventive",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133196907/3603F95E0847EC7E202162FF2BA8E587A3B8E8D8/",
       "size": "small",
       "type": "Trooper",
@@ -142,7 +142,7 @@
           "pip": 2
         },
         {
-          "name": "Somebody Has To Save Our Skins",
+          "name": "Somebody Has to Save Our Skins",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133712915/7EFEAD84C8B64A86D130C765225552D91AEAF814/",
           "pip": 3
         }
@@ -169,7 +169,7 @@
       ],
       "commands": [
         {
-          "name": "Sorry About The Mess",
+          "name": "Sorry About the Mess",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/16308736517290848799/A8ED064B88D1C70281984CD88B069A5AD95F4330/",
           "pip": 1
         },
@@ -179,7 +179,7 @@
           "pip": 2
         },
         {
-          "name": "Change Of Plans",
+          "name": "Change of Plans",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/17707426851635788122/DBEE48D7645CE505C9CF0934C7553286844F66FD/",
           "pip": 3
         }
@@ -333,7 +333,7 @@
       ]
     },
     {
-      "name": "C-3P0",
+      "name": "C-3PO",
       "title": "Golden God",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133206077/3E485B54786039A916672ED9387F5C2AC4415B97/",
       "size": "small",
@@ -384,7 +384,7 @@
       ],
       "commands": [
         {
-          "name": "See You in Hell",
+          "name": "See You In Hell",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10773409737362779349/F1880C8286BA798323F594FA7DF7ABDB85A0A3DD/",
           "pip": 1
         }
@@ -519,7 +519,7 @@
           "pip": 1
         },
         {
-          "name": "Brains And Brawn",
+          "name": "Brains and Brawn",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133708752/39258ED34508F7BBCDB7FB38DC6E533D0F76A2AE/",
           "pip": 2
         },
@@ -556,12 +556,12 @@
           "pip": 1
         },
         {
-          "name": "Symbol Of Rebellion",
+          "name": "Symbol of Rebellion",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133714045/1B46D54400840D3F7B1C5DC9E65757945FD482C9/",
           "pip": 2
         },
         {
-          "name": "Legacy Of Mandalore",
+          "name": "Legacy of Mandalore",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133711283/D9F6D219F5B6DA873D7D366B31BC6EC667478368/",
           "pip": 3
         }
@@ -592,7 +592,7 @@
       ],
       "commands": [
         {
-          "name": "Son Of Skywalker",
+          "name": "Son of Skywalker",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133712958/CF63D0FDA40318CE886E6DA309CEB291857776E4/",
           "pip": 1
         },
@@ -602,22 +602,22 @@
           "pip": 1
         },
         {
-          "name": "My Ally Is The Force",
+          "name": "My Ally Is the Force",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133711308/CECAE0B5B62858582522F7FBED6463FE5834A64E/",
           "pip": 2
         },
         {
-          "name": "Full Of Surprises",
+          "name": "Full of Surprises",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133709999/FA890B2A2EA1528C8BCF2A80AEB3B97A97BB9E15/",
           "pip": 2
         },
         {
-          "name": "Return Of The Jedi",
+          "name": "Return of the Jedi",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133711996/90C4CB28C0554DEC3797882252E6C5D3CCAC65A1/",
           "pip": 3
         },
         {
-          "name": "I Am A Jedi",
+          "name": "I Am a Jedi",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133710140/F162DE57287EB8C43F845BF34550B6666929E36A/",
           "pip": 3
         }
@@ -643,7 +643,7 @@
       ],
       "commands": [
         {
-          "name": "Never Tell Me The Odds",
+          "name": "Never Tell me the Odds",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/14182119297452525555/7CB1D3A3EB957159DC03788C7FC9137630B874E6/",
           "pip": 1
         },
@@ -661,7 +661,7 @@
     },
     {
       "name": "R2-D2",
-      "title": "Hero Of A Thousand Devices",
+      "title": "Hero of a Thousand Devices",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384863210/CC236C516A4590747888E3A71ABA6C543905BD5F/",
       "size": "small",
       "type": "Droid Trooper",
@@ -799,7 +799,7 @@
       ],
       "commands": [
         {
-          "name": "I am no Jedi",
+          "name": "I Am No Jedi",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133710197/7F9F965E20829475FF9BA4912847B9C623A46ACF/",
           "pip": 1
         },
@@ -1490,7 +1490,7 @@
           "pip": 1
         },
         {
-          "name": "Brains And Brawn",
+          "name": "Brains and Brawn",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133708752/39258ED34508F7BBCDB7FB38DC6E533D0F76A2AE/",
           "pip": 2
         },

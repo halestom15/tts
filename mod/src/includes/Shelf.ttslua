@@ -1,3 +1,5 @@
+require('!/CardNames')
+
 -- Utilities around creating and managing minis.
 Shelf = {}
 Shelf.__index = Shelf;
@@ -94,7 +96,7 @@ function Shelf:spawnUnitModels(params)
     scheduleDud("No matching faction found: \"" .. faction .. "\".")
     return
   end
-  local card = units[name:upper()]
+  local card = CardNames.find("unit", units, name)
   if card == nil then
     scheduleDud("No matching unit found.\nFaction: \"" .. faction .. "\".")
     return
@@ -311,16 +313,7 @@ function Shelf:_spawnCard(front, back)
 end
 
 function Shelf:_fetchUpgradeByName(name)
-  -- TODO: Remove remapping.
-  local remap = {
-    ["Battle Shield Wookiee"]        = "Battle Shield Wookiee (Offensive)",
-    ["C-3PO Human-Cyborg Relations"] = "C-3PO",
-    ["C-3PO Made to Suffer"]         = "C-3PO",
-  }
-  if remap[name] ~= nil then
-    name = remap[name]
-  end
-  return self:_getSchema().upgrades[name:upper()]
+  return CardNames.find("upgrade", self:_getSchema().upgrades, name)
 end
 
 function Shelf:_spawnDudModel(name, description)

@@ -1,3 +1,5 @@
+require('!/CardNames')
+
 -- Utilities around creating and managing decks of cards.
 Deck = {}
 Deck.__index = Deck;
@@ -83,7 +85,7 @@ function Deck:spawnUnitCard(faction, name)
   if units == nil then
     return self:_spawnUnitOrBattleDud(name, "No matching faction found: \"" .. faction .. "\".")
   end
-  local unit = units[name:upper()]
+  local unit = CardNames.find("unit", units, name)
   if unit == nil then
     return self:_spawnUnitOrBattleDud(name, "No matching unit found.\n" .. "Faction: " .. faction)
   else
@@ -130,23 +132,7 @@ function Deck:spawnUnitDeck(faction, position)
 end
 
 function Deck:spawnUpgradeCard(name)
-  -- TODO: Remove remapping.
-  local remap = {
-    ["A-180 Config"]                    = "A-180 Rifle Config",
-    ["A-300 Config"]                    = "A-300 Long Range Config",
-    ["A-280-CFE Config"]                = "A280-CFE Sniper Config",
-    ["Battle Shield Wookiee"]           = "Battle Shield Wookiee (Offensive)",
-    ["E-11D Config"]                    = "E-11D Focused Fire Config",
-    ["DW-3 Concussion Grenade Launcher"] = "DW-3 Grenade Launcher",
-    ["J-19 Bo-rifle"]                   = "J-19 Bo-Rifle Blaster",
-    ["C-3PO Human-Cyborg Relations"]    = "C-3PO",
-    ["C-3PO Made to Suffer"]            = "C-3PO",
-    ["Iden's ID10 Seeker Droid Droid"]  = "Iden's ID10 Seeker Droid",
-  }
-  if remap[name] ~= nil then
-    name = remap[name]
-  end
-  local upgrade = self:_getSchema().upgrades[name:upper()]
+  local upgrade = CardNames.find("upgrade", self:_getSchema().upgrades, name)
   if upgrade == nil then
     return self:_spawnUpgradeDud(name, "No matching upgrade found.")
   else
@@ -204,7 +190,7 @@ function Deck:spawnCommandCard(name, isContingency)
     self:_cacheCommandCardsByName()
     self._cache.commandsRevision = revision
   end
-  local command = self._cache.commands[name:upper()]
+  local command = CardNames.find("command", self._cache.commands, name)
   if command == nil then
     return self:_spawnCommandDud(name, "No matching command found.", isContingency)
   else
@@ -415,7 +401,7 @@ function Deck:getUnitByFactionAndName(faction, name)
   if not units then
     return nil
   end
-  return units[name:upper()]
+  return CardNames.find("unit", units, name)
 end
 
 function Deck:getUpgradesByType(type, filterForUnit)
@@ -549,7 +535,7 @@ function Deck:_isUpgradeValidFor(upgrade, unit)
 end
 
 function Deck:getUpgradeByName(name)
-  return self:_getSchema().upgrades[name:upper()]
+  return CardNames.find("upgrade", self:_getSchema().upgrades, name)
 end
 
 function Deck:getCommandsByFactionAndUnits(faction, units)
@@ -567,7 +553,7 @@ function Deck:getCommandsByFactionAndUnits(faction, units)
   end
   local result = {}
   for _, name in ipairs(units) do
-    local unit = database[name:upper()]
+    local unit = CardNames.find("unit", database, name)
     if unit and unit.commands then
       for _, command in ipairs(unit.commands) do
         table.insert(result, command)
