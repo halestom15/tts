@@ -25,6 +25,8 @@ CardNames.ALIASES = {
     ["C-3P0 Golden God"]               = "C-3PO Golden God",
     -- DTT Army builder leaves out the title of this one-card unit.
     ["Major Marquand"]                 = "Major Marquand Tempest Scout 2",
+    -- Legion Helper's name for this one.
+    ["Stormtrooper Riot Squad Trench Buster"] = "Stormtrooper Riot Squad Trench Busters",
   },
   upgrade = {
     ["A-180 Config"]                    = "A-180 Rifle Config",
@@ -37,6 +39,8 @@ CardNames.ALIASES = {
     ["A280"]                            = "A280, Pistol Config",
     ["E-11D"]                           = "E-11D Focused Fire Config",
     ["DC-17m ICWS"]                     = "DC-17m ICWS Config",
+    -- Legion Helper's name for it (the card, retired since, is plural).
+    ["Super Commando Combat Shield"]    = "Super Commando Combat Shields",
     ["DW-3 Concussion Grenade Launcher"] = "DW-3 Grenade Launcher",
     ["J-19 Bo-rifle"]                   = "J-19 Bo-rifle Blaster",
     ["C-3PO Made to Suffer"]            = "C-3PO",
