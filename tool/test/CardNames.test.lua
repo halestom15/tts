@@ -253,6 +253,18 @@ for _, upgrade in pairs(schema.upgrades) do
   end
 end
 
+-- Errata Nov. 2026: Grogu is "Counterpart: Din Djarin, IG-11".
+local ig11 = CardNames.findUnit(schema.units, "", "IG-11 Nurse and Protect")
+check("IG-11 has a Counterpart slot", ig11 ~= nil and ig11.upgrades.Counterpart == 1)
+for _, name in ipairs({"GROGU THE CHILD", "GROGU THE CHILD (COTW)"}) do
+  local allowed = {}
+  for _, unit in ipairs(schema.upgrades[name].restrictions.include.unit) do
+    allowed[unit] = true
+  end
+  check(name .. " goes to IG-11 and both Din Djarin",
+    allowed["IG-11"] and allowed["Din Djarin"] and allowed["Din Djarin (CotW)"])
+end
+
 if failures > 0 then
   error(failures .. " failure(s)")
 end
