@@ -143,3 +143,52 @@ function CardNames.find(kind, entries, name)
   return found
 end
 
+-- How lists name a faction, to the catalogue's key. DTT Army builder calls
+-- the mercenaries "fringe"; old lists say "imperial".
+CardNames.FACTIONS = {
+  imperial = "EMPIRE",
+  fringe   = "MERCENARY",
+}
+
+function CardNames.factionKey(faction)
+  local f = tostring(faction or ""):lower()
+  return CardNames.FACTIONS[f] or f:upper()
+end
+
+-- A unit of a list: looked for in the list's faction first, then in the
+-- others. A list does not always say its faction: Tabletop Admiral leaves it
+-- empty for a battle force since Sept. 2026 (501st Legion, Blizzard Force…),
+-- and the mod reads an empty faction as "mercenary", where no clone or
+-- stormtrooper is found. allUnits: the catalogue's `units`, by faction.
+-- Returns the unit and the faction it was found in.
+function CardNames.findUnit(allUnits, faction, name)
+  if allUnits == nil or name == nil then
+    return nil
+  end
+  local first = CardNames.factionKey(faction)
+  local unit = CardNames.find("unit", allUnits[first], name)
+  if unit ~= nil then
+    return unit, first
+  end
+  -- the same order every time: mercenaries (the empty faction's meaning),
+  -- then the others alphabetically
+  local others = {}
+  for key, _ in pairs(allUnits) do
+    if key ~= first then
+      table.insert(others, key)
+    end
+  end
+  table.sort(others, function(a, b)
+    if a == "MERCENARY" or b == "MERCENARY" then
+      return a == "MERCENARY"
+    end
+    return a < b
+  end)
+  for _, key in ipairs(others) do
+    unit = CardNames.find("unit", allUnits[key], name)
+    if unit ~= nil then
+      return unit, key
+    end
+  end
+  return nil
+end

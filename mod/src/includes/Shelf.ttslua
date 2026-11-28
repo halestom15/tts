@@ -69,17 +69,6 @@ function Shelf:spawnUnitModels(params)
 
   local additionalObjects = {}
 
-  -- TODO: Remove remapping.
-  local remap = {
-    ["rebel"]      = "Rebel",
-    ["imperial"]   = "Empire",
-    ["separatist"] = "Separatist",
-    ["republic"]   = "Republic",
-  }
-  if remap[faction] ~= nil then
-    faction = remap[faction]
-  end
-
   local function scheduleDud(description)
     schedule(function()
       local model = self:_spawnDudModel(name, description)
@@ -91,14 +80,9 @@ function Shelf:spawnUnitModels(params)
     end)
   end
 
-  local units = self:_getSchema().units[faction:upper()]
-  if units == nil then
-    scheduleDud("No matching faction found: \"" .. faction .. "\".")
-    return
-  end
-  local card = CardNames.find("unit", units, name)
+  local card = CardNames.findUnit(self:_getSchema().units, faction, name)
   if card == nil then
-    scheduleDud("No matching unit found.\nFaction: \"" .. faction .. "\".")
+    scheduleDud("No matching unit found.\nFaction: \"" .. tostring(faction) .. "\".")
     return
   end
   local size = self._colliders[card.size][2]

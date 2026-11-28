@@ -64,6 +64,7 @@
           - Fix: Tokens, the POI bag and the silhouette bases collide by their real shape, not a square box
           - Fix: Card names as printed
           - Fix: Upgrade restrictions
+          - Fix: Battle force lists import
           - Add: Takras Card art compatibility
           - Add: New Token art
           - Add: Much more!

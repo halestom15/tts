@@ -74,20 +74,9 @@ function Deck:_scenarioKey(scenario)
 end
 
 function Deck:spawnUnitCard(faction, name)
-  -- TODO: Remove remapping.
-  local remap = {
-    ["imperial"]   = "Empire",
-  }
-  if remap[faction] ~= nil then
-    faction = remap[faction]
-  end
-  local units = self:_getSchema().units[faction:upper()]
-  if units == nil then
-    return self:_spawnUnitOrBattleDud(name, "No matching faction found: \"" .. faction .. "\".")
-  end
-  local unit = CardNames.find("unit", units, name)
+  local unit = CardNames.findUnit(self:_getSchema().units, faction, name)
   if unit == nil then
-    return self:_spawnUnitOrBattleDud(name, "No matching unit found.\n" .. "Faction: " .. faction)
+    return self:_spawnUnitOrBattleDud(name, "No matching unit found.\n" .. "Faction: " .. tostring(faction))
   else
     local image = unit.image
     if image == "" then
@@ -369,13 +358,7 @@ function Deck:getFactions()
 end
 
 function Deck:getUnitsByFactionAndRank(faction, rank)
-  -- TODO: Remove remapping.
-  local remap = {
-    ["imperial"]   = "Empire",
-  }
-  if remap[faction] ~= nil then
-    faction = remap[faction]
-  end
+  faction = CardNames.factionKey(faction)
   local units = self:_getSchema().units[faction:upper()]
   if units == nil then
     return {}
@@ -390,18 +373,7 @@ function Deck:getUnitsByFactionAndRank(faction, rank)
 end
 
 function Deck:getUnitByFactionAndName(faction, name)
-  -- TODO: Remove remapping.
-  local remap = {
-    ["imperial"]   = "Empire",
-  }
-  if remap[faction] ~= nil then
-    faction = remap[faction]
-  end
-  local units = self:_getSchema().units[faction:upper()]
-  if not units then
-    return nil
-  end
-  return CardNames.find("unit", units, name)
+  return (CardNames.findUnit(self:_getSchema().units, faction, name))
 end
 
 function Deck:getUpgradesByType(type, filterForUnit)
@@ -539,13 +511,7 @@ function Deck:getUpgradeByName(name)
 end
 
 function Deck:getCommandsByFactionAndUnits(faction, units)
-  -- TODO: Remove remapping.
-  local remap = {
-    ["imperial"]   = "Empire",
-  }
-  if remap[faction] ~= nil then
-    faction = remap[faction]
-  end
+  faction = CardNames.factionKey(faction)
   local schema = self:_getSchema()
   local database = schema.units[faction:upper()]
   if not database then

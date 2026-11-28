@@ -191,6 +191,22 @@ for _, r in ipairs(OTHERS) do
   check(r[1] .. " \"" .. r[2] .. "\" finds \"" .. r[3] .. "\"", entry ~= nil and fullName(entry) == r[3])
 end
 
+-- A unit of a list whose faction is empty (Tabletop Admiral's battle forces,
+-- read as "mercenary") or unknown (DTT's "fringe") is still found.
+local function unitOf(faction, name)
+  local unit, key = CardNames.findUnit(schema.units, faction, name)
+  return unit and fullName(unit), key
+end
+check("battle force, empty faction: Clone Trooper Infantry", unitOf("", "Clone Trooper Infantry") == "Clone Trooper Infantry")
+check("battle force, empty faction: Darth Vader", unitOf("", "Darth Vader Dark Lord Of The Sith") == "Darth Vader Dark Lord of the Sith")
+check("mercenary read for an empty faction: Clone Trooper Infantry", unitOf("mercenary", "Clone Trooper Infantry") == "Clone Trooper Infantry")
+check("DTT's fringe: Mandalorian Warriors", select(2, unitOf("fringe", "Mandalorian Warriors")) == "MERCENARY")
+check("old lists' imperial: Stormtroopers", select(2, unitOf("imperial", "Stormtroopers")) == "EMPIRE")
+check("the list's faction comes first", select(2, unitOf("empire", "Bossk Trandoshan Terror")) == "EMPIRE")
+check("then the mercenaries", select(2, unitOf("", "Bossk Trandoshan Terror")) == "MERCENARY")
+check("no faction at all", unitOf(nil, "AT-RT") == "AT-RT")
+check("a unit no faction has", unitOf("republic", "Clone Commandos (DS) Delta Squad") == nil)
+
 -- Too vague: several cards could be meant, the list gets a dud.
 check("\"Heavy Blaster Pistol\" alone finds nothing", find("upgrade", "Heavy Blaster Pistol") == nil)
 check("\"Combat Armor\" alone finds nothing", find("upgrade", "Combat Armor") == nil)
