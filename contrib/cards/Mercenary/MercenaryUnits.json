@@ -23,7 +23,7 @@
       ],
       "commands": [
         {
-          "name": "Marked for Elimination",
+          "name": "Marked For Elimination",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139734189/BFD230D0FDCC337658C60B4254D6718684F4EF21/",
           "pip": 1
         },
@@ -46,7 +46,7 @@
     },
     {
       "name": "Gar Saxon",
-      "title": "Militant Commando",
+      "title": "Militant Commander",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139719525/A5642D0B10D7426AD751D9428A0C249D5F4BAF2F/",
       "size": "small",
       "type": "Mandalorian Trooper",
@@ -65,7 +65,7 @@
       ],
       "commands": [
         {
-          "name": "Marked for Elimination",
+          "name": "Marked For Elimination",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139734189/BFD230D0FDCC337658C60B4254D6718684F4EF21/",
           "pip": 1
         },
@@ -164,7 +164,7 @@
   "Operative": [
     {
       "name": "Maul",
-      "title": "A Rival",
+      "title": "a Rival",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385139718510/46475D968DFF923C51695A46BB5A652D2194E600/",
       "size": "small",
       "type": "Trooper",
@@ -231,7 +231,7 @@
       ],
       "commands": [
         {
-          "name": "We Shall Start With Revenge",
+          "name": "We Shall Start with Revenge",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10750064270635517385/492A552BB4056A4CBF9CD01FB5195521104C9F9E/",
           "pip": 1
         }
@@ -257,7 +257,7 @@
       ],
       "commands": [
         {
-          "name": "Go, There are Too Many...",
+          "name": "Go, There Are Too Many...",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/17111513574639896571/F49CF2B140D47616B1081CB8E7519E98BD1DB88C/",
           "pip": 1
         }
@@ -319,7 +319,7 @@
           "pip": 1
         },
         {
-          "name": "Symbol Of Rebellion",
+          "name": "Symbol of Rebellion",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133714045/1B46D54400840D3F7B1C5DC9E65757945FD482C9/",
           "pip": 2
         },
@@ -329,7 +329,7 @@
           "pip": 2
         },
         {
-          "name": "Legacy Of Mandalore",
+          "name": "Legacy of Mandalore",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133711283/D9F6D219F5B6DA873D7D366B31BC6EC667478368/",
           "pip": 3
         }

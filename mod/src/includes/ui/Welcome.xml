@@ -62,6 +62,13 @@
           - Fix: Mac Compatibility
           - Fix: Deployment button snaps to board edge
           - Fix: Tokens, the POI bag and the silhouette bases collide by their real shape, not a square box
+          - Fix: Card names as printed
+          - Fix: Upgrade restrictions
+          - Fix: Battle force lists import
+          - Fix: Lists copied from Longshanks
+          - Fix: Grogu with IG-11
+          - Fix: Legion Helper art on every card
+          - Fix: Unit / unique personnel upgrade not spawning
           - Add: Takras Card art compatibility
           - Add: New Token art
           - Add: Much more!

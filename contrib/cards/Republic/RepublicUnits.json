@@ -201,12 +201,12 @@
       ],
       "commands": [
         {
-          "name": "Hello There!",
+          "name": "Hello There",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134023412/5FD1AF7B0198FBD887EA7A072F53A8EFE47BA5AD/",
           "pip": 1
         },
         {
-          "name": "Knowledge And Defense",
+          "name": "Knowledge and Defense",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134023462/0B7E151462188D5E5706415F406F0B51892CE553/",
           "pip": 2
         },
@@ -275,7 +275,7 @@
       ],
       "commands": [
         {
-          "name": "This Is Where The Fun Begins",
+          "name": "This Is Where the Fun Begins",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384887696/8B9FE3223AA89990AC33B6326946F049921EC4D7/",
           "pip": 1
         },
@@ -293,7 +293,7 @@
     },
     {
       "name": "Clone Commander",
-      "title": "Trained For Leadership",
+      "title": "Trained for Leadership",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134030932/097AEAB205D99962C4D1BF4136A36D73029A43B2/",
       "size": "small",
       "type": "Clone Trooper",
@@ -312,7 +312,7 @@
     },
     {
       "name": "Yoda",
-      "title": "Grand Master Of The Jedi Order",
+      "title": "Grand Master of the Jedi Order",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134036684/529CFF85876C6F4710D6E97CBBB99E15323584D4/",
       "size": "small",
       "type": "Trooper",
@@ -366,7 +366,7 @@
     },
     {
       "name": "Chewbacca",
-      "title": "Hero Of Kashyyyk",
+      "title": "Hero of Kashyyyk",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134028001/43E55FD3A97B6A7800A94B65EA47507F7033CA65/",
       "size": "small",
       "type": "Wookiee Trooper",
@@ -416,12 +416,12 @@
       ],
       "commands": [
         {
-          "name": "Bring it Down!",
+          "name": "Bring It Down!",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134025758/112F3DFC81DC78543EDFE2947CF3F3F007471510/",
           "pip": 1
         },
         {
-          "name": "Have I Ever Let you Down?",
+          "name": "Have I Ever Let You Down?",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134026057/C02C788C4E22D659C4C1FC71FA93C5CED64C4B87/",
           "pip": 2
         },
@@ -601,7 +601,7 @@
       ]
     },
     {
-      "name": "Padme Amidala",
+      "name": "Padmé Amidala",
       "title": "Spirited Senator",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134139534/3D7B05D39495FB34AE0D4985A9B7E7771F738CAF/",
       "size": "small",
@@ -622,7 +622,7 @@
       ],
       "commands": [
         {
-          "name": "Our Fate Is In Your Hands",
+          "name": "Our Fate is in Your Hands",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134139479/047DB4C4D70DEF7A41C639D90C4931DD04C9BD5C/",
           "pip": 1
         },
@@ -796,7 +796,7 @@
       ]
     },
     {
-      "name": "Arc Troopers",
+      "name": "ARC Troopers",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384861176/4AB3CC68BD898A328A2FB935E6F120934123D54E/",
       "size": "small",
       "type": "Clone Trooper",
@@ -813,19 +813,19 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1009315641457802621/01F605D855048F823A0ECA6C46D2A62B56C04124/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         },
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1009315641457799750/AE83DC038BA8AAF48678D07E1F9734D4A9944C1D/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         },
         {
           "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/arc_2_metal_v2.unity3d",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         },
         {
           "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/arc_3_metal_v2.unity3d",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         }
       ]
     },
@@ -960,9 +960,9 @@
   ],
   "Support": [
     {
-      "name": "Arc Troopers",
+      "name": "ARC Troopers",
       "title": "Strike Team",
-      "displayName": "Arc Troopers (Strike Team)",
+      "displayName": "ARC Troopers (Strike Team)",
       "heavyWeaponTeam": true,
       "image": "https://steamusercontent-a.akamaihd.net/ugc/11640734367175082150/31600D0C168D48D5E353E7E0A6D60C4935531D62/",
       "size": "small",
@@ -979,7 +979,7 @@
       "minis": [
         {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1009315641457802621/01F605D855048F823A0ECA6C46D2A62B56C04124/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         }
       ]
     },
@@ -1145,7 +1145,7 @@
   ],
   "Heavy": [
     {
-      "name": "Saber-Class Tank",
+      "name": "Saber-class Tank",
       "displayName": "Saber Tank",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384863579/ABC4E8CCA9A2C837A86FF23215B5AE4885E2A9DF/",
       "size": "epic",
@@ -1170,7 +1170,7 @@
       ]
     },
     {
-      "name": "LAAT/LE Patrol Transport",
+      "name": "LAAT/le Patrol Transport",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384862727/5EB0BB290C80AE07B16848984044B13E3C405E05/",
       "size": "laat",
       "type": "Repulsor Vehicle",

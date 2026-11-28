@@ -1,0 +1,198 @@
+-- Finds a card of the catalogue from the name a list builder wrote.
+--
+-- The catalogue spells every card as it is printed (November 2026 AMG cards
+-- and Errata Reference). List builders do not always agree with it, nor with
+-- one another: "Hunter Of Spectres" / "Hunter of Spectres", "Padme" / "Padmé",
+-- "Hello There!" / "Hello There", "\"Bunker Buster\" Shells". And lists saved
+-- before the catalogue was renamed carry its old spellings.
+--
+-- So a name is looked up in three steps, each only when the one before found
+-- nothing:
+--   1. as written, ignoring case (what the mod always did);
+--   2. through ALIASES: an old or another builder's name that differs by
+--      more than case and punctuation (other words, other letters);
+--   3. by key: letters and digits only, accents dropped, case ignored.
+-- A name none of them finds stays a dud card: no guessing on what is left
+-- (e.g. "Heavy Blaster Pistol" alone could be several cards).
+
+CardNames = {}
+
+-- Old or other spellings, per kind of card, to the catalogue's name. Only
+-- what the key of step 3 cannot match: a different word or letter.
+CardNames.ALIASES = {
+  unit = {
+    ["Gar Saxon Militant Commando"]    = "Gar Saxon Militant Commander",
+    ["C-3P0 Golden God"]               = "C-3PO Golden God",
+    -- DTT Army builder leaves out the title of this one-card unit.
+    ["Major Marquand"]                 = "Major Marquand Tempest Scout 2",
+    -- Legion Helper's name for this one.
+    ["Stormtrooper Riot Squad Trench Buster"] = "Stormtrooper Riot Squad Trench Busters",
+  },
+  upgrade = {
+    ["A-180 Config"]                    = "A-180 Rifle Config",
+    ["A-300 Config"]                    = "A-300 Long Range Config",
+    ["Battle Shield Wookiee"]           = "Battle Shield Wookiee (Offensive)",
+    ["E-11D Config"]                    = "E-11D Focused Fire Config",
+    -- A two-sided card named by its weapon alone: one card, both sides.
+    ["A-180"]                           = "A-180 Pistol Config",
+    ["A-300"]                           = "A-300 Long Range Config",
+    ["A280"]                            = "A280, Pistol Config",
+    ["E-11D"]                           = "E-11D Focused Fire Config",
+    ["DC-17m ICWS"]                     = "DC-17m ICWS Config",
+    -- Legion Helper's name for it (the card, retired since, is plural).
+    ["Super Commando Combat Shield"]    = "Super Commando Combat Shields",
+    ["DW-3 Concussion Grenade Launcher"] = "DW-3 Grenade Launcher",
+    ["J-19 Bo-rifle"]                   = "J-19 Bo-rifle Blaster",
+    ["C-3PO Made to Suffer"]            = "C-3PO",
+    ["Iden's ID10 Seeker Droid Droid"]  = "Iden's ID10 Seeker Droid",
+    ["Hound & Grizzer"]                 = "Hound and Grizzer",
+    ["T-7 Ion Snowtrooper"]             = "T-7 Ion Rifle Snowtrooper",
+    -- Sabine's card is the only one AMG prints for her two units; the
+    -- other Darksabers are named after their bearer.
+    ["The Darksaber"]                   = "The Darksaber (Sabine)",
+    -- Renamed to their printed title (Nov. 2026); lists saved before.
+    ["Mertalizer"]                      = "Mertalizer Dark Trooper",
+    ["Missile Pod Rocket Droid"]        = "Anti-Infantry Missile Pod Rocket Droid",
+    -- Other builders' names for these cards, checked on the card images.
+    ["The Mando's Jetpack"]             = "Din's Jetpack",
+    ["Echo The Bad Batch"]              = "Echo, Clone Force 99",
+    ["Paz Viszla"]                      = "Paz Vizsla",
+    ["Clone Trooper Marksman"]          = "Clone Marksman",
+    ["Tools of the Trade, Whipcord Launcher"] = "Whipcord Launcher",
+    ["Tools of the Trade, Jetpack Rockets"]   = "Jetpack Rockets",
+    -- The card of the Mandalorian (Din Djarin); the (CotW) one is the
+    -- Children of the Watch battle force's.
+    ["Grogu"]                           = "Grogu The Child",
+  },
+  command = {
+    ["Agressive Negotiations"]          = "Aggressive Negotiations",
+    ["Out Of The Shadow"]               = "Out of the Shadows",
+  },
+}
+
+-- Accented letters as they appear in card names, in both cases: TTS may or
+-- may not change their case in string.upper / string.lower.
+local ACCENTS = {
+  ["é"] = "e", ["è"] = "e", ["ê"] = "e", ["ë"] = "e",
+  ["É"] = "e", ["È"] = "e", ["Ê"] = "e", ["Ë"] = "e",
+  ["à"] = "a", ["â"] = "a", ["ä"] = "a", ["À"] = "a", ["Â"] = "a", ["Ä"] = "a",
+  ["ô"] = "o", ["ö"] = "o", ["Ô"] = "o", ["Ö"] = "o",
+  ["û"] = "u", ["ü"] = "u", ["ù"] = "u", ["Û"] = "u", ["Ü"] = "u", ["Ù"] = "u",
+  ["î"] = "i", ["ï"] = "i", ["Î"] = "i", ["Ï"] = "i",
+  ["ç"] = "c", ["Ç"] = "c",
+}
+
+-- "Padmé Amidala: Spirited Senator" -> "padmeamidalaspiritedsenator"
+function CardNames.key(name)
+  local s = tostring(name or "")
+  -- step 3 keys the whole catalogue: skip the accents on plain ASCII names
+  if s:find("[\128-\255]") then
+    for letter, plain in pairs(ACCENTS) do
+      s = s:gsub(letter, plain)
+    end
+  end
+  return (s:lower():gsub("[^a-z0-9]", ""))
+end
+
+-- The alias of a name, matched on its key too ("hound & grizzer" works).
+-- The aliases' keys are worked out once, on the first lookup that needs one.
+local aliasKeys
+local function aliasOf(kind, name)
+  if aliasKeys == nil then
+    aliasKeys = {}
+    for k, list in pairs(CardNames.ALIASES) do
+      aliasKeys[k] = {}
+      for from, to in pairs(list) do
+        aliasKeys[k][CardNames.key(from)] = to
+      end
+    end
+  end
+  return (aliasKeys[kind] or {})[CardNames.key(name)]
+end
+
+local function byKey(entries, key)
+  for _, entry in pairs(entries) do
+    local full = entry.name
+    if entry.title ~= nil then
+      full = full .. " " .. entry.title
+    end
+    if CardNames.key(full) == key then
+      return entry
+    end
+  end
+  return nil
+end
+
+-- entries: the catalogue table for that kind of card, keyed by upper-case
+-- name (units: "NAME TITLE" of one faction; upgrades; commands).
+function CardNames.find(kind, entries, name)
+  if entries == nil or name == nil then
+    return nil
+  end
+  local found = entries[name:upper()]
+  if found ~= nil then
+    return found
+  end
+  local alias = aliasOf(kind, name)
+  if alias ~= nil then
+    found = entries[alias:upper()]
+    if found ~= nil then
+      return found
+    end
+  end
+  found = byKey(entries, CardNames.key(name))
+  if found == nil and alias ~= nil then
+    found = byKey(entries, CardNames.key(alias))
+  end
+  return found
+end
+
+-- How lists name a faction, to the catalogue's key. DTT Army builder calls
+-- the mercenaries "fringe"; old lists say "imperial".
+CardNames.FACTIONS = {
+  imperial = "EMPIRE",
+  fringe   = "MERCENARY",
+}
+
+function CardNames.factionKey(faction)
+  local f = tostring(faction or ""):lower()
+  return CardNames.FACTIONS[f] or f:upper()
+end
+
+-- A unit of a list: looked for in the list's faction first, then in the
+-- others. A list does not always say its faction: Tabletop Admiral leaves it
+-- empty for a battle force since Sept. 2026 (501st Legion, Blizzard Force…),
+-- and the mod reads an empty faction as "mercenary", where no clone or
+-- stormtrooper is found. allUnits: the catalogue's `units`, by faction.
+-- Returns the unit and the faction it was found in.
+function CardNames.findUnit(allUnits, faction, name)
+  if allUnits == nil or name == nil then
+    return nil
+  end
+  local first = CardNames.factionKey(faction)
+  local unit = CardNames.find("unit", allUnits[first], name)
+  if unit ~= nil then
+    return unit, first
+  end
+  -- the same order every time: mercenaries (the empty faction's meaning),
+  -- then the others alphabetically
+  local others = {}
+  for key, _ in pairs(allUnits) do
+    if key ~= first then
+      table.insert(others, key)
+    end
+  end
+  table.sort(others, function(a, b)
+    if a == "MERCENARY" or b == "MERCENARY" then
+      return a == "MERCENARY"
+    end
+    return a < b
+  end)
+  for _, key in ipairs(others) do
+    unit = CardNames.find("unit", allUnits[key], name)
+    if unit ~= nil then
+      return unit, key
+    end
+  end
+  return nil
+end

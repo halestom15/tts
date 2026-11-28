@@ -14,6 +14,8 @@
 -- JSON.decode of the full file freezes the table for 41 s in TTS, the
 -- upgrades file for 7.6 s (measured 12 Oct 2026).
 
+require('!/CardNames')
+
 -- One set of addresses per language; a language selector on the computer
 -- only has to set LEGION_HELPER_LANGUAGE.
 LEGION_HELPER_LANGUAGE = "en"
@@ -507,10 +509,137 @@ function restoreModCardArt()
   startQueue()
 end
 
+-- The key a catalogue table files each entry under, read once per table:
+-- not worked out again from the name, as the generated catalogue writes
+-- "PADMÉ" where Lua's upper() gives "PADMé".
+local function keyIndex(cache, entries)
+  local index = cache[entries]
+  if not index then
+    index = {}
+    for key, value in pairs(entries) do
+      index[value] = key
+    end
+    cache[entries] = index
+  end
+  return index
+end
+
+-- Legion Helper sometimes repeats the title at the end of the name
+-- ("Clone Commandos Delta Squad" + "•Delta Squad"): the key without the
+-- repeated words, or nil when nothing repeats.
+local function withoutRepeatedTitle(key)
+  local words = {}
+  for word in key:gmatch("%S+") do
+    table.insert(words, (word:lower():gsub("[^%w]", "")))
+  end
+  for n = math.floor(#words / 2), 1, -1 do
+    local same = true
+    for i = 1, n do
+      if words[#words - n + i] ~= words[#words - 2 * n + i] then
+        same = false
+        break
+      end
+    end
+    if same then
+      local kept = {}
+      for word in key:gmatch("%S+") do
+        if #kept < #words - n then
+          table.insert(kept, word)
+        end
+      end
+      return table.concat(kept, " ")
+    end
+  end
+end
+
+-- Legion Helper does not always spell a card as the catalogue does: old
+-- names of the mod ("C-3P0 Golden God", "Padme Amidala", "The Darksaber",
+-- "Hello There!") or other words. Each card it gives is found the way a
+-- list's card is (CardNames) and filed under the catalogue's name, which is
+-- also the name of the cards on the table. A card it does not find is kept
+-- as it is, and simply matches nothing.
+function legionHelperCatalogueArt(art)
+  local schema = _G.CardsSchema
+  local out = {units = {}, upgrades = {}, commands = {}}
+  local keys = {}
+  -- A unit Legion Helper files under another faction than the catalogue
+  -- (it puts IG-11, Boba Fett or the Ewoks with the mercenaries) takes its
+  -- art in every faction that has it.
+  local function file(faction, key, unit, card)
+    local shown = unit.name
+    if unit.title ~= nil then
+      shown = shown .. ": " .. unit.title
+    end
+    out.units[faction] = out.units[faction] or {}
+    out.units[faction][key] = {image = card.image, shown = shown}
+  end
+  for faction, units in pairs(art.units) do
+    for key, card in pairs(units) do
+      local known = schema.units[faction]
+      local short
+      local function find(entries)
+        local unit = CardNames.find("unit", entries, key)
+        if unit == nil then
+          short = short or withoutRepeatedTitle(key) or false
+          unit = short and CardNames.find("unit", entries, short) or nil
+        end
+        return unit
+      end
+      local unit = known and find(known)
+      if unit then
+        file(faction, keyIndex(keys, known)[unit], unit, card)
+      else
+        local found = false
+        for other, entries in pairs(schema.units) do
+          local elsewhere = find(entries)
+          if elsewhere then
+            file(other, keyIndex(keys, entries)[elsewhere], elsewhere, card)
+            found = true
+          end
+        end
+        if not found then
+          out.units[faction] = out.units[faction] or {}
+          out.units[faction][key] = card
+        end
+      end
+    end
+  end
+  for name, card in pairs(art.upgrades) do
+    local upgrade = CardNames.find("upgrade", schema.upgrades, name)
+    if upgrade then
+      out.upgrades[keyIndex(keys, schema.upgrades)[upgrade]] = {
+        image = card.image,
+        name = upgrade.name,
+        back = card.back,
+        backName = upgrade.flip and upgrade.flip.name or card.backName,
+      }
+    else
+      out.upgrades[name] = card
+    end
+  end
+  local commands = {}
+  for _, units in pairs(schema.units) do
+    for _, unit in pairs(units) do
+      for _, command in ipairs(unit.commands or {}) do
+        commands[command.name:upper()] = command
+      end
+    end
+  end
+  for _, command in pairs(schema.commands) do
+    commands[command.name:upper()] = command
+  end
+  for name, image in pairs(art.commands) do
+    local command = CardNames.find("command", commands, name)
+    out.commands[command and command.name:upper() or name] = image
+  end
+  return out
+end
+
 local function finish(art, number)
   if number ~= loadNumber then
     return
   end
+  art = legionHelperCatalogueArt(art)
   local count = applyArt(art)
   if count == 0 then
     fail("no card art matched the mod's cards.")

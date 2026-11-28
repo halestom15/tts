@@ -9,7 +9,8 @@
   "upgrades": {
     "Training": 2,
     "Comms": 1,
-    "Gear": 1
+    "Gear": 1,
+    "Counterpart": 1
   },
   "minis": [
     {

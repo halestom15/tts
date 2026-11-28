@@ -2,7 +2,7 @@
   "Commander": [
     {
       "name": "Darth Vader",
-      "title": "Dark Lord Of The Sith",
+      "title": "Dark Lord of the Sith",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135444419/726425B7C209349209399BDDB87B34BE0B4447AA/",
       "size": "small",
       "type": "Trooper",
@@ -29,17 +29,17 @@
           "pip": 1
         },
         {
-          "name": "New Ways To Motivate Them",
+          "name": "New Ways to Motivate Them",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135444510/952B5595A8E35BF7E2A0B51933DEC0A855D8EBAB/",
           "pip": 2
         },
         {
-          "name": "Fear And Dead Men",
+          "name": "Fear and Dead Men",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384885751/FEED7C91A363ECAC94BCD7395AB4CA196889147B/",
           "pip": 2
         },
         {
-          "name": "Master Of Evil",
+          "name": "Master of Evil",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135444481/AF8E308CE2EE310C787E53AA0BAC97471DC05621/",
           "pip": 3
         },
@@ -88,7 +88,7 @@
     },
     {
       "name": "Director Orson Krennic",
-      "title": "Architect Of Terror",
+      "title": "Architect of Terror",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384861964/1F16DA425DE63290D76463CDDDE253E5B201EA64/",
       "size": "small",
       "type": "Trooper",
@@ -111,7 +111,7 @@
           "pip": 1
         },
         {
-          "name": "Deploy The Garrison",
+          "name": "Deploy the Garrison",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/12892698832465049230/B1371A5A16B4A487680730048ABA1D8AD5711C43/",
           "pip": 2
         },
@@ -314,7 +314,7 @@
       ],
       "commands": [
         {
-          "name": "Die at My Hand",
+          "name": "Die At My Hand",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135445379/2E1BA2F22E9816B73C934205D77DDAB726F93D44/",
           "pip": 1
         },
@@ -422,17 +422,17 @@
           "pip": 1
         },
         {
-          "name": "New Ways To Motivate Them",
+          "name": "New Ways to Motivate Them",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135444510/952B5595A8E35BF7E2A0B51933DEC0A855D8EBAB/",
           "pip": 2
         },
         {
-          "name": "Fear And Dead Men",
+          "name": "Fear and Dead Men",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384885751/FEED7C91A363ECAC94BCD7395AB4CA196889147B/",
           "pip": 2
         },
         {
-          "name": "Master Of Evil",
+          "name": "Master of Evil",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135444481/AF8E308CE2EE310C787E53AA0BAC97471DC05621/",
           "pip": 3
         },
@@ -480,7 +480,7 @@
     },
     {
       "name": "Fifth Brother",
-      "title": "The Kill is Mine",
+      "title": "The Kill Is Mine",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137011062/2CD518FAF98E506E8D2316B4A21294FAE1D2DAF8/",
       "size": "small",
       "type": "Trooper",
@@ -502,7 +502,7 @@
           "pip": 2
         },
         {
-          "name": "I Care Not for your Struggles",
+          "name": "I Care Not for Your Struggles",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137018989/07882CCD7D056DFFB777074A53C21811352E6844/",
           "pip": 3
         }
@@ -532,7 +532,7 @@
           "pip": 1
         },
         {
-          "name": "Unexpected, but not Unwelcome",
+          "name": "Unexpected, But Not Unwelcome",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385137019893/59EB748713DD2A67E92CCFE9D3243D15C3670FBC/",
           "pip": 2
         },
@@ -545,7 +545,7 @@
     },
     {
       "name": "Agent Kallus",
-      "title": "Hunter Of Spectres",
+      "title": "Hunter of Spectres",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135448854/CC65D752275214DB6D5791534DDEFF4784D6259E/",
       "size": "small",
       "type": "Trooper",
@@ -1198,7 +1198,7 @@
       ]
     },
     {
-      "name": "LAAT/LE Patrol Transport",
+      "name": "LAAT/le Patrol Transport",
       "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384862671/52E7A6A14E5822A396F273D924D083F6F3A86286/",
       "size": "laat",
       "type": "Repulsor Vehicle",
@@ -1274,7 +1274,7 @@
           "pip": 1
         },
         {
-          "name": "Squadron, on me",
+          "name": "Squadron, On Me",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/2495640747384887260/11CDA1204949826F29A70E5544BF0ED0C5E2A153/",
           "pip": 2
         },

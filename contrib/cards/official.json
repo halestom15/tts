@@ -95,7 +95,7 @@
         "name": "DC-17m ICWS Config",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135385953/007D0426E485963714BCBE0B74B2B8AE5B7F1869/",
         "flip": {
-          "name": "DC-17m ICWS Config",
+          "name": "DC-17m ICWS Anti-Armor Configuration",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385135386003/EB0729A53546B70CB9054BAF5306E3F5368FC9DF/"
         },
         "points": 0,
@@ -111,7 +111,7 @@
         "points": 0,
         "restrictions": {
           "include": {
-            "unit": ["Jedi Knight Genral", "Jedi Knight"]
+            "unit": ["Jedi Knight General", "Jedi Knight"]
           }
         }
       },
@@ -260,10 +260,10 @@
         }
       },
       {
-        "name": "J-19 Bo-Rifle Blaster",
+        "name": "J-19 Bo-rifle Blaster",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/1680393865568143236/93E8E40BBA0157ACB1CC8492BFB7BCB58913BF28/",
         "flip": {
-          "name": "J-19 Bo-Rifle Staff",
+          "name": "J-19 Bo-rifle Staff",
           "image": "https://steamusercontent-a.akamaihd.net/ugc/1680393865568143309/544D8E7915CDDF661A0F75AD56BD3C4AF023108F/"
         },
         "points": 5,
@@ -289,7 +289,7 @@
         "points": 0,
         "restrictions": {
           "include": {
-            "unit": ["Jedi Knight Genral", "Jedi Knight"]
+            "unit": ["Jedi Knight General", "Jedi Knight"]
           }
         }
       },
@@ -299,7 +299,7 @@
         "points": 5,
         "restrictions": {
           "include": {
-            "unit": ["Padme Amidala"]
+            "unit": ["Padmé Amidala"]
           }
         }
       },
@@ -384,7 +384,7 @@
         }
       },
       {
-        "name": "The Darksaber",
+        "name": "The Darksaber (Sabine)",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140090412/816EE4F5B469EC8334D0E84042E5C008FC67B04B/",
         "points": 15,
         "restrictions": {
@@ -449,7 +449,7 @@
         "points": 0,
         "restrictions": {
           "include": {
-            "unit": ["Jedi Knight Genral", "Jedi Knight"]
+            "unit": ["Jedi Knight General", "Jedi Knight"]
           }
         }
       },
@@ -599,7 +599,7 @@
         "points": 5
       },
       {
-        "name": "Lead by Example",
+        "name": "Lead By Example",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/13953261892853714692/D7C43A7643D1580E6B7859A468734D1784D046EA/",
         "points": 8
       },
@@ -626,7 +626,7 @@
         "points": 4,
         "restrictions": {
           "include": {
-            "unit": ["Droid Trooper"]
+            "type": ["Droid Trooper"]
           }
         }
       },
@@ -636,7 +636,7 @@
         "points": 2,
         "restrictions": {
           "include": {
-            "unit": ["Vehicle"]
+            "type": ["Vehicle"]
           }
         }
       },
@@ -789,7 +789,7 @@
         }
       },
       {
-        "name": "Grogu the Child",
+        "name": "Grogu The Child",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10193011638909819730/8D53047BE6DF276528CA0FD2BB8283DF4AAD1377/",
         "points": 17,
         "mini": {
@@ -797,12 +797,12 @@
         },
         "restrictions": {
           "include": {
-            "unit": ["Din Djarin"]
+            "unit": ["Din Djarin", "Din Djarin (CotW)", "IG-11"]
           }
         }
       },
       {
-        "name": "Grogu the Child (CotW)",
+        "name": "Grogu The Child (CotW)",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/11388601843123969042/E41CE9146D66F0A89063F32A2AE747FFE230B48E/",
         "points": 17,
         "mini": {
@@ -810,7 +810,7 @@
         },
         "restrictions": {
           "include": {
-            "unit": ["Din Djarin", "IG-11"]
+            "unit": ["Din Djarin", "Din Djarin (CotW)", "IG-11"]
           }
         }
       },
@@ -831,7 +831,7 @@
     ],
     "Crew": [
       {
-        "name": "A-300 Rifle Gunner",
+        "name": "A300 Rifle Gunner",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140081194/2DC1EEA962453DA3D345451038A56B1A9E6219E7/",
         "points": 1,
         "restrictions": {
@@ -1195,12 +1195,12 @@
         "points": 0
       },
       {
-        "name": "I've Altered The Deal",
+        "name": "I've Altered the Deal",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/1616219505080628591/9F5E8A23795A68A3AA5FE82B933F4BDA78084207/",
         "points": 0
       },
       {
-        "name": "Not A Story The Jedi Would Tell",
+        "name": "Not a Story the Jedi Would Tell",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/1616219505080628743/9BF0AAE54D0CF62B22871F7E99B1DCD5617E05DA/",
         "points": 0
       }
@@ -1232,7 +1232,7 @@
         "points": 5
       },
       {
-        "name": "Burst Of Speed",
+        "name": "Burst of Speed",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14427447140841744055/38C9A267DCB2BBD3F385EB1FBDA2A4D12687CC66/",
         "points": 10
       },
@@ -1868,7 +1868,7 @@
         }
       },
       {
-        "name": "AX-108 \"Ground Buzzer\"",
+        "name": "Ax-108 \"Ground Buzzer\"",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140081842/2473F73E42DEF62BE49EA8789193A8AEDEECB097/",
         "points": 10,
         "restrictions": {
@@ -1928,7 +1928,7 @@
         }
       },
       {
-        "name": "MO/DK Power Harpoon",
+        "name": "Mo/Dk Power Harpoon",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081140086620/85D8AFAE73115CB7E7F35C5167E442B97CD1B01E/",
         "points": 0,
         "restrictions": {
@@ -2013,7 +2013,7 @@
         "points": 15,
         "restrictions": {
           "include": {
-            "unit": ["Saber-Class Tank"]
+            "unit": ["Saber-class Tank"]
           }
         }
       },
@@ -2023,7 +2023,7 @@
         "points": 14,
         "restrictions": {
           "include": {
-            "unit": ["Saber-Class Tank"]
+            "unit": ["Saber-class Tank"]
           }
         }
       }
@@ -2100,7 +2100,7 @@
         }
       },
       {
-        "name": "T-7 Ion Snowtrooper",
+        "name": "T-7 Ion Rifle Snowtrooper",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385140097979/9F3CCF24FCF1D8F02F5B9CEEF9B8B4B157295F2F/",
         "mini": {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/785234540541802160/69A03779E6B67F6F547C2FBD70ACDFC39281387D/",
@@ -2281,7 +2281,7 @@
         }
       },
       {
-        "name": "Mertalizer",
+        "name": "Mertalizer Dark Trooper",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385148691701/24C8FA07250A2FF8E6E94EC79E6B3F87145E7D5A/",
         "mini": {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/2004698291313161066/7BD340C7AAB594CDA1644D900F606FEC8A0165A1/",
@@ -2454,7 +2454,7 @@
         "name": "Yoda",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15958305278999607730/04C16D674E2F94A0C15A8F1CE3E77792EAF601DC/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1617345381346377755/75D0ACFDFFCA5A08D7CAB59DA941B226D1563D46/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/yoda_metal_v1.unity3d"
         },
         "points": 20,
         "restrictions": {
@@ -2467,7 +2467,7 @@
         "name": "Wookiee Chieftain",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12540357121251476862/AF070BCD8512D8F258E80F37DAF5D3F22DB82A0D/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1619598523372467360/2810096383D51B0939DC3FFCBC83155C6D08CB53/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wookiee_chieftain_model_metal_v1.unity3d"
         },
         "points": 26,
         "leader": true,
@@ -2478,7 +2478,7 @@
         }
       },
       {
-        "name": "RT-97c Stormtrooper (Wet)",
+        "name": "RT-97C Stormtrooper (Wet)",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/13905886405880747515/67D3C20B969FC8A6DD86E9E7ED43014C423C16B2/",
         "mini": {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/12596488329106912847/08D9FE380FDF1889292B0E8A80440CDD9F8589F3/",
@@ -2548,7 +2548,7 @@
         }
       },
       {
-        "name": "Stolen RT-97c",
+        "name": "Stolen RT-97C",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14337183593482020521/4C5E89A4832E484802017086433CA99EE8BD2341/",
         "mini": {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/15030946982178110670/57E5FB292B2458E3DE8537AB9EE8D41C10F0A527/",
@@ -2590,7 +2590,7 @@
         }
       },
       {
-        "name": "Missile Pod Rocket Droid",
+        "name": "Anti-Infantry Missile Pod Rocket Droid",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/18092846818600646440/C9F00A52A3BD29EDA03B7C92B5C37350EC2D0778/",
         "flip": {
           "name": "Anti-Armor Missile Pod Rocket Droid",
@@ -2980,7 +2980,7 @@
         "name": "War Grove Battle Shield Wookiee",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16854706686564826834/5849886F817C9C4005298A155B100DB7D778145D/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1621849308236386933/DCD62751F06157E85CE575C8BB1CCF86379BB7DE/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wookiee_warriors_battle_shield_model_metal_v2.unity3d"
         },
         "points": 32,
         "restrictions": {
@@ -3102,11 +3102,11 @@
         }
       },
       {
-        "name": "DC-15X ARC Trooper Sniper",
+        "name": "DC-15x ARC Trooper Sniper",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/9340306715371279306/77343FF20A60FEBDE4596D9E73806219B98BFB74/",
         "mini": {
           "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/arc_dc15x_metal_v2.unity3d",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         },
         "points": 26,
         "restrictions": {
@@ -3116,11 +3116,11 @@
         }
       },
       {
-        "name": "DC-15X ARC Trooper Gunner",
+        "name": "DC-15x ARC Trooper Gunner",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15700525996033034674/C04F340906CF0532B3825D5C67357C094FA10B29/",
         "mini": {
           "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/arc_dc15x_metal_v2.unity3d",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         },
         "points": 26,
         "restrictions": {
@@ -3172,7 +3172,7 @@
         }
       },
       {
-        "name": "DLT-19X Sniper",
+        "name": "DLT-19x Sniper",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15525633462179263891/86D8A2EF8EBA4D9BF3DD245487375FB807A7E8B3/",
         "mini": {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/770610077943667377/92306C3BFB675310563691C3C582BF5B9FC9ACD4/",
@@ -3271,7 +3271,7 @@
         }
       },
       {
-        "name": "E-5S B1 Battle Droid",
+        "name": "E-5s B1 Battle Droid",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081139931066/BDF09AC95FA4C63AC25459B1636B8F0E6F0D7AFC/",
         "mini": {
           "mesh": "https://steamusercontent-a.akamaihd.net/ugc/766102422959434489/60F05B7FC8544DFC640CB33DA55F19EB5F2CB55A/",
@@ -3400,7 +3400,7 @@
         "name": "War Grove Long Gun Wookiee",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12159085153469962893/D6C4AAC0441559051D8E3048DCBB3D93957981E5/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1619598366708042667/2DABB5788E51006EDB3FCB03400ACD4CE07755F3/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wookiee_warriors_long_gun_wookiee_model_metal_v1.unity3d"
         },
         "points": 28,
         "restrictions": {
@@ -3543,13 +3543,13 @@
         "image": "https://steamusercontent-a.akamaihd.net/ugc/9658373454287592162/44D8DDF66AC5AF9D9A11F59E01EABB89D08BF135/",
         "mini": {
           "bundle": "http://cloud-3.steamusercontent.com/ugc/1009315641457801321/CED1CD80F307683E79B9A4ED87CECAED7C070EBF/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         },
         "leader": true,
         "points": 36,
         "restrictions": {
           "include": {
-            "unit": ["Arc Troopers", "Clone Trooper Marksmen"]
+            "unit": ["ARC Troopers", "Clone Trooper Marksmen"]
           }
         }
       },
@@ -3638,7 +3638,7 @@
         "leader": true,
         "restrictions": {
           "include": {
-            "unit": ["Clone Trooper Infantry", "Arc Troopers"]
+            "unit": ["Clone Trooper Infantry", "ARC Troopers"]
           }
         }
       },
@@ -3667,7 +3667,7 @@
         "leader": true,
         "restrictions": {
           "include": {
-            "units": ["Clone Trooper Infantry", "Arc Troopers"]
+            "units": ["Clone Trooper Infantry", "ARC Troopers"]
           }
         }
       },
@@ -3731,7 +3731,7 @@
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15919933353467134702/9F4BAC79193184F129D95072922C7372906C31B1/",
         "mini": {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1009315641457802221/506D704E232C1BFD85F063A24EBF24C5914C2C40/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         },
         "leader": true,
         "points": 36,
@@ -3758,7 +3758,7 @@
     ],
     "Ordnance": [
       {
-        "name": "\"Bunker Buster\" Shells",
+        "name": "Bunker Buster Shells",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/9396219603588818774/E619EEF276816268108D1338C25AD01D6B6B7D5D/",
         "points": 12
       },
@@ -5138,7 +5138,7 @@
         "points": 5,
         "restrictions": {
           "include": {
-            "unit": ["Saber-Class Tank"]
+            "unit": ["Saber-class Tank"]
           }
         }
       },
@@ -5160,7 +5160,7 @@
         "restrictions": {
           "include": {
             "faction": ["Republic"],
-            "unit": ["LAAT/LE Patrol Transport"]
+            "unit": ["LAAT/le Patrol Transport"]
           }
         }
       },
@@ -5192,7 +5192,7 @@
         "points": 10,
         "restrictions": {
           "include": {
-            "unit": ["WLO-5 Speeder Truck", "AA5 Speeder Truck"]
+            "unit": ["WLO-5 Speeder Tank", "A-A5 Speeder Truck"]
           }
         }
       },
@@ -5218,13 +5218,13 @@
         }
       },
       {
-        "name": "Hound & Grizzer",
+        "name": "Hound and Grizzer",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/13575491821704896451/EDE4AFDD9E9AEC222C4B8F7C91F124B3F32B8A73/",
         "points": 8,
         "restrictions": {
           "include": {
             "faction": ["Republic"],
-            "unit": ["LAAT/LE Patrol Transport"]
+            "unit": ["LAAT/le Patrol Transport"]
           }
         }
       },
@@ -5308,7 +5308,7 @@
         "points": 9,
         "restrictions": {
           "include": {
-            "unit": ["Saber-Class Tank"]
+            "unit": ["Saber-class Tank"]
           }
         }
       },
@@ -5642,7 +5642,7 @@
         }
       },
       {
-        "name": "Go for Broke",
+        "name": "Go For Broke",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12895134279705796265/311401A8B412C871CFFD26ABBC26DD13DF3CBCA8/",
         "points": 5,
         "restrictions": {
@@ -5736,7 +5736,7 @@
         }
       },
       {
-        "name": "Duck And Cover",
+        "name": "Duck and Cover",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15529355718365557412/FFC51C64FA7773BCC25038D8D5D818D2AE5241BC/",
         "points": 2
       },
@@ -5756,7 +5756,7 @@
         "points": 6
       },
       {
-        "name": "Into The Fray",
+        "name": "Into the Fray",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/14109187506581343144/00287D0E98E6349774A91B470804179CCBFE529E/",
         "points": 4
       },
@@ -5792,7 +5792,7 @@
         "points": 5
       },
       {
-        "name": "Seize The Initiative",
+        "name": "Seize the Initiative",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15625749152448275367/CF9CACC1FA903168B23F5EACE6E091603EF4D0BA/",
         "points": 5,
         "restrictions": {
@@ -6036,7 +6036,7 @@
         "pip": 1
       },
       {
-        "name": "Turning The Tide",
+        "name": "Turning the Tide",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/59218081133714141/B32483DB97F481A24CA78CB828326E29DCBDFBB4/",
         "pip": 2
       },
@@ -6118,7 +6118,7 @@
         "pip": 2
       },
       {
-        "name": "MROWGH GHRRMROWRIG!",
+        "name": "Mrowgh Ghrrmrowrig!",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/1680393865564035071/5DAC9F1B36A1D6CCF3DB6BF0CB95D9D548A79F30/",
         "pip": 2
       },
@@ -6138,7 +6138,7 @@
         "pip": 2
       },
       {
-        "name": "Attack Of the Clones",
+        "name": "Attack of the Clones",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/10804385134033797/3AA33B36A7B9EAAC8444A6CAC176F2130EE30E6C/",
         "pip": 3
       },
