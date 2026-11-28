@@ -218,6 +218,25 @@ end
 noCollision("upgrade", schema.upgrades)
 noCollision("command", COMMANDS)
 
+-- Every unit named by an upgrade's restrictions exists (compared ignoring
+-- case, as Deck:_isUpgradeValidFor does). KNOWN: a unit the game no longer has.
+local KNOWN = {
+  ["Electrostaff Guard|IMPERIAL ROYAL GUARDS"] = true,
+}
+local unitNames = {}
+for _, units in pairs(schema.units) do
+  for _, unit in pairs(units) do
+    unitNames[unit.name:upper()] = true
+  end
+end
+for _, upgrade in pairs(schema.upgrades) do
+  local include = upgrade.restrictions and upgrade.restrictions.include
+  for _, name in ipairs(include and include.unit or {}) do
+    check(upgrade.name .. " restricted to an existing unit (" .. name .. ")",
+      unitNames[name:upper()] == true or KNOWN[upgrade.name .. "|" .. name:upper()] == true)
+  end
+end
+
 if failures > 0 then
   error(failures .. " failure(s)")
 end

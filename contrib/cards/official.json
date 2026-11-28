@@ -111,7 +111,7 @@
         "points": 0,
         "restrictions": {
           "include": {
-            "unit": ["Jedi Knight Genral", "Jedi Knight"]
+            "unit": ["Jedi Knight General", "Jedi Knight"]
           }
         }
       },
@@ -289,7 +289,7 @@
         "points": 0,
         "restrictions": {
           "include": {
-            "unit": ["Jedi Knight Genral", "Jedi Knight"]
+            "unit": ["Jedi Knight General", "Jedi Knight"]
           }
         }
       },
@@ -449,7 +449,7 @@
         "points": 0,
         "restrictions": {
           "include": {
-            "unit": ["Jedi Knight Genral", "Jedi Knight"]
+            "unit": ["Jedi Knight General", "Jedi Knight"]
           }
         }
       },
@@ -626,7 +626,7 @@
         "points": 4,
         "restrictions": {
           "include": {
-            "unit": ["Droid Trooper"]
+            "type": ["Droid Trooper"]
           }
         }
       },
@@ -636,7 +636,7 @@
         "points": 2,
         "restrictions": {
           "include": {
-            "unit": ["Vehicle"]
+            "type": ["Vehicle"]
           }
         }
       },
@@ -5192,7 +5192,7 @@
         "points": 10,
         "restrictions": {
           "include": {
-            "unit": ["WLO-5 Speeder Truck", "AA5 Speeder Truck"]
+            "unit": ["WLO-5 Speeder Tank", "A-A5 Speeder Truck"]
           }
         }
       },
