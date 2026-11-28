@@ -2454,7 +2454,7 @@
         "name": "Yoda",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15958305278999607730/04C16D674E2F94A0C15A8F1CE3E77792EAF601DC/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1617345381346377755/75D0ACFDFFCA5A08D7CAB59DA941B226D1563D46/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/yoda_metal_v1.unity3d"
         },
         "points": 20,
         "restrictions": {
@@ -2467,7 +2467,7 @@
         "name": "Wookiee Chieftain",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12540357121251476862/AF070BCD8512D8F258E80F37DAF5D3F22DB82A0D/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1619598523372467360/2810096383D51B0939DC3FFCBC83155C6D08CB53/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wookiee_chieftain_model_metal_v1.unity3d"
         },
         "points": 26,
         "leader": true,
@@ -2980,7 +2980,7 @@
         "name": "War Grove Battle Shield Wookiee",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/16854706686564826834/5849886F817C9C4005298A155B100DB7D778145D/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1621849308236386933/DCD62751F06157E85CE575C8BB1CCF86379BB7DE/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wookiee_warriors_battle_shield_model_metal_v2.unity3d"
         },
         "points": 32,
         "restrictions": {
@@ -3106,7 +3106,7 @@
         "image": "https://steamusercontent-a.akamaihd.net/ugc/9340306715371279306/77343FF20A60FEBDE4596D9E73806219B98BFB74/",
         "mini": {
           "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/arc_dc15x_metal_v2.unity3d",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         },
         "points": 26,
         "restrictions": {
@@ -3120,7 +3120,7 @@
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15700525996033034674/C04F340906CF0532B3825D5C67357C094FA10B29/",
         "mini": {
           "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/arc_dc15x_metal_v2.unity3d",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         },
         "points": 26,
         "restrictions": {
@@ -3400,7 +3400,7 @@
         "name": "War Grove Long Gun Wookiee",
         "image": "https://steamusercontent-a.akamaihd.net/ugc/12159085153469962893/D6C4AAC0441559051D8E3048DCBB3D93957981E5/",
         "mini": {
-          "bundle": "http://cloud-3.steamusercontent.com/ugc/1619598366708042667/2DABB5788E51006EDB3FCB03400ACD4CE07755F3/"
+          "bundle": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/wookiee_warriors_long_gun_wookiee_model_metal_v1.unity3d"
         },
         "points": 28,
         "restrictions": {
@@ -3543,7 +3543,7 @@
         "image": "https://steamusercontent-a.akamaihd.net/ugc/9658373454287592162/44D8DDF66AC5AF9D9A11F59E01EABB89D08BF135/",
         "mini": {
           "bundle": "http://cloud-3.steamusercontent.com/ugc/1009315641457801321/CED1CD80F307683E79B9A4ED87CECAED7C070EBF/",
-          "secondary": "http://cloud-3.steamusercontent.com/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         },
         "leader": true,
         "points": 36,
@@ -3731,7 +3731,7 @@
         "image": "https://steamusercontent-a.akamaihd.net/ugc/15919933353467134702/9F4BAC79193184F129D95072922C7372906C31B1/",
         "mini": {
           "bundle": "https://steamusercontent-a.akamaihd.net/ugc/1009315641457802221/506D704E232C1BFD85F063A24EBF24C5914C2C40/",
-          "secondary": "https://steamusercontent-a.akamaihd.net/ugc/773995200348530664/5E248091F8CC37B1023257338D4947E4ADFE48AB/"
+          "secondary": "https://raw.githubusercontent.com/ironsquadronfr-hub/swl-assets/main/assets/6345daea425a5294708c.unity3d"
         },
         "leader": true,
         "points": 36,
