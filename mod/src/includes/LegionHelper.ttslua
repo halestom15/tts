@@ -509,21 +509,19 @@ function restoreModCardArt()
   startQueue()
 end
 
--- Legion Helper does not always spell a card as the catalogue does: old
--- names of the mod ("C-3P0 Golden God", "Padme Amidala", "The Darksaber",
--- "Hello There!") or other words. Each card it gives is found the way a
--- list's card is (CardNames) and filed under the catalogue's name, which is
--- also the name of the cards on the table. A card it does not find is kept
--- as it is, and simply matches nothing.
--- The key a catalogue table files `entry` under: not worked out again from
--- its name, as the generated catalogue writes "PADMÉ" where Lua's upper()
--- gives "PADMé".
-local function keyOf(entries, entry)
-  for key, value in pairs(entries) do
-    if value == entry then
-      return key
+-- The key a catalogue table files each entry under, read once per table:
+-- not worked out again from the name, as the generated catalogue writes
+-- "PADMÉ" where Lua's upper() gives "PADMé".
+local function keyIndex(cache, entries)
+  local index = cache[entries]
+  if not index then
+    index = {}
+    for key, value in pairs(entries) do
+      index[value] = key
     end
+    cache[entries] = index
   end
+  return index
 end
 
 -- Legion Helper sometimes repeats the title at the end of the name
@@ -554,9 +552,16 @@ local function withoutRepeatedTitle(key)
   end
 end
 
+-- Legion Helper does not always spell a card as the catalogue does: old
+-- names of the mod ("C-3P0 Golden God", "Padme Amidala", "The Darksaber",
+-- "Hello There!") or other words. Each card it gives is found the way a
+-- list's card is (CardNames) and filed under the catalogue's name, which is
+-- also the name of the cards on the table. A card it does not find is kept
+-- as it is, and simply matches nothing.
 function legionHelperCatalogueArt(art)
   local schema = _G.CardsSchema
   local out = {units = {}, upgrades = {}, commands = {}}
+  local keys = {}
   -- A unit Legion Helper files under another faction than the catalogue
   -- (it puts IG-11, Boba Fett or the Ewoks with the mercenaries) takes its
   -- art in every faction that has it.
@@ -571,19 +576,24 @@ function legionHelperCatalogueArt(art)
   for faction, units in pairs(art.units) do
     for key, card in pairs(units) do
       local known = schema.units[faction]
-      local short = withoutRepeatedTitle(key)
+      local short
       local function find(entries)
-        return CardNames.find("unit", entries, key) or (short and CardNames.find("unit", entries, short))
+        local unit = CardNames.find("unit", entries, key)
+        if unit == nil then
+          short = short or withoutRepeatedTitle(key) or false
+          unit = short and CardNames.find("unit", entries, short) or nil
+        end
+        return unit
       end
       local unit = known and find(known)
       if unit then
-        file(faction, keyOf(known, unit), unit, card)
+        file(faction, keyIndex(keys, known)[unit], unit, card)
       else
         local found = false
         for other, entries in pairs(schema.units) do
           local elsewhere = find(entries)
           if elsewhere then
-            file(other, keyOf(entries, elsewhere), elsewhere, card)
+            file(other, keyIndex(keys, entries)[elsewhere], elsewhere, card)
             found = true
           end
         end
@@ -597,7 +607,7 @@ function legionHelperCatalogueArt(art)
   for name, card in pairs(art.upgrades) do
     local upgrade = CardNames.find("upgrade", schema.upgrades, name)
     if upgrade then
-      out.upgrades[keyOf(schema.upgrades, upgrade)] = {
+      out.upgrades[keyIndex(keys, schema.upgrades)[upgrade]] = {
         image = card.image,
         name = upgrade.name,
         back = card.back,
