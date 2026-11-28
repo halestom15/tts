@@ -686,12 +686,25 @@ function listImportFieldChanged(_, text, id)
   importFromText(nil, previous)
 end
 
+-- Longshanks shows a list's line breaks as "||" in its list window, so a
+-- pretty-printed list (LegionHQ's) copied from there is no longer JSON:
+-- `{ ||     "author": "Legion HQ", ||`. A space in their place gives the
+-- list back; inside a card name it only adds spaces, which the card lookup
+-- ignores (CardNames). 705 of the 715 broken lists harvested from Longshanks
+-- (Nov. 2026) read again; the rest were cut short by Longshanks.
+function repairLongshanksList(text)
+  return (text:gsub('||', ' '))
+end
+
 function importFromText(_, text)
   -- Blurring the import field fires onEndEdit even when nothing was typed, and
   -- JSON.decode either returns nil or raises on invalid text, so decode
   -- defensively and do nothing at all when there is no list to load.
   if text == nil or text == '' then return end
   local ok, data = pcall(function() return JSON.decode(text) end)
+  if (not ok or type(data) ~= 'table') and text:find('||', 1, true) then
+    ok, data = pcall(function() return JSON.decode(repairLongshanksList(text)) end)
+  end
   if not ok or type(data) ~= 'table' then
     broadcastToAll('List import: that text is not a valid list.', {0.9, 0.4, 0.4})
     return
